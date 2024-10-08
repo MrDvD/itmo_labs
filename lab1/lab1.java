@@ -6,13 +6,16 @@ public class lab1 {
     // returns the value of a compound function
     public static double function(long[] w, double[] x, int i, int j) {
         double xj = x[j], wi = w[i];
-        if (wi == 11) {
-            return Math.cos(Math.sin(Math.cbrt(xj)));
+        switch (wi) {
+            case 11:
+                return Math.cos(Math.sin(Math.cbrt(xj)));
+            case 13:
+            case 15:
+            case 19:
+                return Math.pow(4.0 / Math.pow(2 * Math.asin((xj - 2.5) / 13.0), Math.pow(xj / (xj - 3), 2)), 3);
+            default:
+                return 2 * (1.0 / 2) * Math.pow((2.0 / 3 - Math.cbrt(xj)) / Math.PI, 3);
         }
-        if (wi == 13 || wi == 15 || wi == 19) {
-            return Math.pow(4.0 / Math.pow(2 * Math.asin((xj - 2.5) / 13.0), Math.pow(xj / (xj - 3), 2)), 3);
-        }
-        return 2 * (1.0 / 2) * Math.pow((2.0 / 3 - Math.cbrt(xj)) / Math.PI, 3);
     }
     // prints the final matrix
     public static void showMatrix(double[][] f) {
