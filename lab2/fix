@@ -1,16 +1,17 @@
 ### Structure
 
-.
+./
  |
- ---> src
- | |---> Main.java
- | |---> CustomPokemons.java
- | |---> CustomPhysicalMoves.java
- | |---> CustomSpecialMoves.java
- | |---> CustomStatusMoves.java
- ---> out
+ ---> src/
+ | |---> lab/
+ |   |---> Main.java
+ |   |---> CustomPokemons.java
+ |   |---> CustomPhysicalMoves.java
+ |   |---> CustomSpecialMoves.java
+ |   |---> CustomStatusMoves.java
+ ---> out/
  | |---> Pokemon.jar
- ---> lab   // created from a command
+ ---> lab/   // created from a command
    |---> Main.class
    |---> *.class
 
@@ -21,6 +22,6 @@ Class-Path: out/Pokemon.jar
 
 ### Commands
 
-javac -cp "out/Pokemon.jar:lab/" -d . src/*
+javac -cp "out/Pokemon.jar:lab/" -d . src/lab/*
 jar -cfm lab.jar MANIFEST.MF lab/*
 java -jar lab.jar

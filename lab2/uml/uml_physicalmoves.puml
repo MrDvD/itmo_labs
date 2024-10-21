@@ -1,0 +1,32 @@
+@startuml name
+PhysicalMove <|-- Facade
+PhysicalMove <|-- LowSweep
+PhysicalMove <|-- AerialAce
+
+class AerialAce {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~AerialAce()
+    +describe(): string
+    +checkAccuracy(): boolean
+}
+
+class LowSweep {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~LowSweep()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+}
+
+class Facade {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~Facade()
+    +describe(): string
+    +applySelfEffects(p: Pokemon): void
+}
+@enduml
