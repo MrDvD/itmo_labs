@@ -1,2 +1,4 @@
 lab*/*.aux
 lab*/*.log
+*.class
+*.jar

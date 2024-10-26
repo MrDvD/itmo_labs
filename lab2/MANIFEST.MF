@@ -1,2 +1,0 @@
-Main-Class: lab.Main
-Class-Path: out/Pokemon.jar

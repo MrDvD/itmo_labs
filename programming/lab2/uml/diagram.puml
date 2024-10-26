@@ -1,0 +1,172 @@
+@startuml name
+StatusMove <|-- SwordsDance
+StatusMove <|-- NastyPlot
+StatusMove <|-- Confide
+StatusMove <|-- Swagger
+
+PhysicalMove <|-- Facade
+PhysicalMove <|-- LowSweep
+PhysicalMove <|-- AerialAce
+
+SpecialMove <|-- ShadowBall
+SpecialMove <|-- Thunderbolt
+SpecialMove <|-- DreamEater
+SpecialMove <|-- Bubble
+Bubble <|-- BubbleBeam
+
+Pokemon <|-- Mesprit
+Pokemon <|-- Sneasel
+Sneasel <|--Weavile
+Pokemon <|-- Poliwag
+Poliwag <|-- Poliwhirl
+Poliwhirl <|-- Politoed
+
+Mesprit <.. ShadowBall : setMove()
+Mesprit <.. Facade : setMove()
+Mesprit <.. Thunderbolt : setMove()
+Mesprit <.. DreamEater : setMove()
+
+Sneasel <.. LowSweep : setMove()
+Sneasel <.. AerialAce : setMove()
+Sneasel <.. SwordsDance : setMove()
+
+Weavile <.. NastyPlot : addMove()
+
+Poliwag <.. BubbleBeam : setMove()
+Poliwag <.. Confide : setMove()
+
+Poliwhirl <.. Bubble : addMove()
+
+Politoed <.. Swagger : addMove()
+
+class BubbleBeam {
+    #power: double
+    ~BubbleBeam()
+    +describe(): string
+}
+
+class Bubble {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~Bubble()
+    +describe(): string
+}
+
+class DreamEater {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~DreamEater()
+    +describe(): string
+    +checkAccuracy(): boolean
+    +applySelfDamage(p: Pokemon, damage: double): void
+}
+
+class Thunderbolt {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~Thunderbolt()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+}
+
+class ShadowBall {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~ShadowBall()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+}
+
+class AerialAce {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~AerialAce()
+    +describe(): string
+    +checkAccuracy(): boolean
+}
+
+class LowSweep {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~LowSweep()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+}
+
+class Facade {
+    #power: double
+    #type: Type
+    #accuracy: double
+    ~Facade()
+    +describe(): string
+    +applySelfEffects(p: Pokemon): void
+}
+
+class Swagger {
+    #type: Type
+    #accuracy: double
+    ~Swagger()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+}
+
+class Confide {
+    #type: Type
+    ~Confide()
+    +describe(): string
+    +applyOppEffects(p: Pokemon): void
+    +checkAccuracy(): boolean
+}
+
+class NastyPlot {
+    #type: Type
+    ~NastyPlot()
+    +describe(): string
+    +applySelfEffects(p: Pokemon): void
+    +checkAccuracy(): boolean
+}
+
+class SwordsDance {
+    #type: Type
+    ~SwordsDance()
+    +describe(): string
+    +applySelfEffects(p: Pokemon): void
+    +checkAccuracy(): boolean
+}
+
+class Mesprit {
+    ~Mesprit()
+    ~Mesprit(name: string, level: int)
+}
+
+class Sneasel {
+    ~Sneasel()
+    ~Sneasel(name: string, level: int)
+}
+
+class Weavile {
+    ~Weavile()
+    ~Weavile(name: string, level: int)
+}
+
+class Poliwag {
+    ~Poliwag()
+    ~Poliwag(name: string, level: int)
+}
+
+class Poliwhirl {
+    ~Poliwhirl()
+    ~Poliwhirl(name: string, level: int)
+}
+
+class Politoed {
+    ~Politoed()
+    ~Politoed(name: string, level: int)
+}
+@enduml
