@@ -1,0 +1,63 @@
+<schedule>
+   <weekday>
+      <name>СР</name>
+      <item>
+         <time>08:20-09:50</time>
+         <group>Информ 1.16 (P3131)</group>
+         <teacher>Балакшин Павел Валерьевич</teacher>
+         <room>Ауд. Актовый зал (1216/0 (усл)), ул.Ломоносова, д.9, лит. М</room>
+         <lesson>Информатика (лекция)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+      <item>
+         <time>10:00-11:30</time>
+         <group>Осн Проф деят 1.21 (Р3131)</group>
+         <teacher>Клименков Сергей Викторович</teacher>
+         <room>Ауд. Актовый зал (1216/0 (усл)), ул.Ломоносова, д.9, лит. М</room>
+         <lesson>Основы профессиональной деятельности (лекция)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+      <item>
+         <time>13:30-15:00</time>
+         <group>Прог 1.21 (Р3131)</group>
+         <teacher>Наумова Надежда Александровна</teacher>
+         <room>Ауд. Актовый зал (1216/0 (усл)), ул.Ломоносова, д.9, лит. М</room>
+         <lesson>Программирование (лабораторная)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+      <item>
+         <time>15:20-16:50</time>
+         <group>Прог 1.21 (Р3131)</group>
+         <teacher>Наумова Надежда Александровна</teacher>
+         <room>Ауд. Актовый зал (1216/0 (усл)), ул.Ломоносова, д.9, лит. М</room>
+         <lesson>Программирование (лабораторная)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+   </weekday>
+   <weekday>
+      <name>СБ</name>
+      <item>
+         <time>08:20-09:50</time>
+         <group>Лин Алг 5.1</group>
+         <teacher>Свинцов Михаил Викторович</teacher>
+         <lesson>Линейная алгебра (лекция)</lesson>
+         <lesson-format>Дистанционно</lesson-format>
+      </item>
+      <item>
+         <time>13:30-15:00</time>
+         <group>Осн Проф деят 1.21 (Р3131)</group>
+         <teacher>Обляшевский Севастьян Александрович</teacher>
+         <room>Ауд. 2112, Кронверкский пр., д.49, лит.А</room>
+         <lesson>Основы профессиональной деятельности (лабораторная)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+      <item>
+         <time>15:20-16:50</time>
+         <group>Осн Проф деят 1.21 (Р3131)</group>
+         <teacher>Обляшевский Севастьян Александрович</teacher>
+         <room>Ауд. 2112, Кронверкский пр., д.49, лит.А</room>
+         <lesson>Основы профессиональной деятельности (лабораторная)</lesson>
+         <lesson-format>Очно</lesson-format>
+      </item>
+   </weekday>
+</schedule>
