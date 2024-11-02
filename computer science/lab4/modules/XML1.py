@@ -109,4 +109,5 @@ class XML(Parser):
       """
       Parses the content of input XML string into object.
       """
-      self._object = self.parse_tag()[1]
+      name, obj, _ = self.parse_tag()
+      self._object = {name: obj}
