@@ -74,12 +74,11 @@ class XML(Parser):
          fields['_' + key] = meta[key]
       if not is_closed:
          idx = self.scan_until_symbol(idx)
-         while self.is_key(True, idx):   
+         while self.is_key(True, idx): # if the following is a tag
             inner_name, obj, idx = self.parse_tag(idx)
             fields = self.add_tag_to_obj(fields, inner_name, obj)
-            # fields[inner_name] = obj
             idx = self.scan_until_symbol(idx)
-         if fields == dict():
+         if fields == dict(): # if the following is the tag's value
             value = ''
             while not self.is_key(False, idx):
                value += self._content[idx]

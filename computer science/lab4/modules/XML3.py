@@ -8,6 +8,12 @@ class XML(Parser):
       """
       super().__init__(content, object, False)
       self._emptyContent = '<emptyXML>'
+      # patterns
+      self.tag_pattern = re.compile(r'<([\w-]+)(?:(.*)(\/))?>')
+      self.attr_pattern = re.compile(r'([\w-]+)=(\'|")(.*)\2')
+      self.opening_tag_pattern = re.compile(r'\s*<\w')
+      self.closing_tag_pattern = re.compile(r'\s*<\/[\w-]+>')
+      self.value_pattern = re.compile(r'(.*)<\/[\w-]+>')
       if autogen:
          self.autogenerate()
 
@@ -15,25 +21,13 @@ class XML(Parser):
       """
       Returns the tuple (name, dict_of_metatags, is_closed)
       """
-      tags, values, current, is_closed = list(), list(), '', 0
-      idx += 1
-      while True:
-         match self._content[idx]:
-            case '=': # assigning value to a metatag
-               tags.append(current) ; current = ''
-               values.append(self.parse_quotes(idx + 1))
-               idx += 1
-            case ' ': # splitting metatags
-               tags.append(current) ; current = ''
-            case '>': # closing tag
-               tags.append(current)
-               if self._content[idx - 1] == '/':
-                  is_closed = 1
-               break
-            case _: # fill current keyword
-               current += self._content[idx]
-         idx += 1
-      return (tags[0], dict(zip(tags[1:], values)), is_closed, idx + 1)
+      attrs, values = list(), list()
+      tag_obj = self.tag_pattern.search(self._content, idx)
+      if tag_obj.group(2) is not None:
+         for attr in self.attr_pattern.finditer(tag_obj.group(2)):
+            attrs.append(attr.group(1))
+            values.append(attr.group(3))
+      return (tag_obj.group(1), dict(zip(attrs, values)), tag_obj.group(3) is not None, tag_obj.end())
 
    def add_tag_to_obj(self, obj, key, value):
       """
@@ -48,66 +42,31 @@ class XML(Parser):
          obj[key] = value
       return obj
 
-   def parse_closing_key(self, idx=0):
-      """
-      Returns the index of the next symbol just after the end of closing key.
-      """
-      while self._content[idx] != '>':
-         idx += 1
-      return idx + 1
-
-   def scan_until_symbol(self, idx=0):
-      """
-      Scans the content until the non-space symbol is encountered.
-      """
-      while self._content[idx] in ' \n\t':
-         idx += 1
-      return idx
-
    def parse_tag(self, idx=0):
       """
       Parses the content of XML tag entirely and returns the tuple (tag_name, python_obj, idx).
       """
       fields = dict()
-      idx = self.scan_until_symbol(idx)
       name, meta, is_closed, idx = self.parse_opening_tag(idx)
       for key in meta:
          fields['_' + key] = meta[key]
       if not is_closed:
-         idx = self.scan_until_symbol(idx)
-         while self.is_key(True, idx):   
+         # if the following is a tag
+         while self.opening_tag_pattern.match(self._content, idx):
             inner_name, obj, idx = self.parse_tag(idx)
             fields = self.add_tag_to_obj(fields, inner_name, obj)
-            # fields[inner_name] = obj
-            idx = self.scan_until_symbol(idx)
+         # if the following is the tag's value
          if fields == dict():
-            value = ''
-            while not self.is_key(False, idx):
-               value += self._content[idx]
-               idx += 1
-            fields = value
-         idx = self.parse_closing_key(idx)
+            value_obj = self.value_pattern.search(self._content, idx)
+            fields = value_obj.group(1)
+            idx = value_obj.end()
+         else:
+            idx = self.closing_tag_pattern.match(self._content, idx).end()
       return (name, fields, idx)
-
-   def parse_quotes(self, idx=0):
-      """
-      Reads the content of quoted string 'as is'.
-      """
-      result, quote = '', self._content[idx]
-      idx += 1
-      while self._content[idx] != quote:
-         result += self._content[idx]
-         idx += 1
-      return result
-
-   def is_key(self, opening=False, idx=0):
-      """
-      Checks if the following symbol is tag (opening/closing).
-      """
-      return self._content[idx] == '<' and self._content[idx + 1] != '/' if opening else self._content[idx:idx+2] == '</'
    
    def parse_string(self):
       """
       Parses the content of input XML string into object.
       """
-      self._object = self.parse_tag()[1]
+      name, obj, _ = self.parse_tag()
+      self._object = {name: obj}

@@ -1,5 +1,5 @@
 from modules.XML3 import *
-from modules.JSON3 import *
+from modules.JSON import *
 
 def main():
    """

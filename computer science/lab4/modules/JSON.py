@@ -29,7 +29,6 @@ class JSON(Parser):
          return self.format_primitives(object)
       else:
          if isinstance(object, dict):
-            keys_stack, values_stack = list(), list()
             string_result, keys = '{' + self.add_indentations(depth + 1), list(object.keys())
             N = len(keys)
             for i in range(N):
