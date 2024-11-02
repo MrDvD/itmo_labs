@@ -1,5 +1,5 @@
-from modules.XML1 import *
-from modules.JSON1 import *
+import xmltodict as XML
+import json as JSON
 
 def main():
    """
@@ -7,9 +7,8 @@ def main():
    """
    with open('schedule.xml') as f:
       with open('schedule.out', 'w') as g:
-         xml = XML(content=f.read())
-         json = JSON(object=xml)
-         g.write(str(json))
+         xml = XML.parse(f.read())
+         JSON.dump(xml, g, ensure_ascii=False, indent=3)
 
 if __name__ == '__main__':
    main()
