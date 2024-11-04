@@ -1,0 +1,122 @@
+@startuml name
+abstract class Being
+
+Being <|-- LittleGuy
+ICapitalisticActive <|.. LittleGuy : implements
+ICapitalisticActive <|.. ICapitalisticPassive : sold
+
+object ponchik
+object piluylkin
+object neznayka
+
+LittleGuy <|-- ponchik
+LittleGuy <|-- piluylkin
+LittleGuy <|-- neznayka
+
+object borscht
+object porridge
+object salt
+Eatable <|-- borscht
+Eatable <|-- porridge
+Eatable <|-- salt
+
+ICapitalisticPassive <|.. SolidSurface : implements
+ICapitalisticPassive <|.. EatableContainer : implements
+ICapitalisticPassive <|.. Eatable : implements
+
+IMeasurable <|.. EatableContainer : implements
+IMeasurable <|.. Eatable : implements
+EatableContainer <|-- Bowl
+EatableContainer <|.. Eatable : contained
+SolidSurface <|-- Table
+SolidSurface <|.. IMeasurable : contained
+
+SolidSurface <|.. EatableContainer : contained
+
+Being <|.. Place : refers
+Place <|.. Being : contained
+Place <|-- Planet
+
+Planet <|-- Moon
+Moon <|-- Underground
+Moon <|-- LosPaganos
+
+Effect <|.. Being : refers
+
+class LittleGuy {
+   -dutyName: String
+   +LittleGuy(name)
+}
+
+enum Effect {
+   NORMAL
+   SHOCKED
+}
+
+interface ICapitalisticPassive {
+   +void sell()
+   +float cost()
+}
+interface ICapitalisticActive {
+   +float getBalance()
+   +String getDuty()
+   +void setDuty(duty)
+   +void sell(obj)
+}
+
+abstract class Being {
+   -name: String
+   -type: String
+   -hunger: byte
+   -location: Place
+   -effect: Effect
+   Being()
+   Being(name, type)
+   +void setEffect(effect)
+   +void eat(obj)
+   +void eat(obj, speed)
+   +void force()
+   ' to do something
+}
+
+class Eatable << (R,#FF7700) >> {
+   -name: String
+   -saturation: byte
+   -cost: float
+   +Eatable(name, saturation)
+   +Eatable(name, saturation, cost)
+}
+
+abstract class EatableContainer {
+   -type: String
+   -filling: Eatable
+   +String getName()
+   +String getType()
+   +void empty()
+}
+
+abstract class SolidSurface {
+   -spaceLeft: float
+   -content[]: IMeasurable
+   SolidSurface()
+   SolidSurface(name)
+   +void addItem(obj)
+}
+
+class Table {
+   +Table()
+}
+
+abstract class Place {
+   -name: String
+   -visitors[]: Being
+   +String getAddress()
+   ' get address recursively: super().address() + ',' + this.name
+}
+
+interface IMeasurable {
+   boolean canFit(float size)
+}
+@enduml
+
+' make size attribute to define whether the item can be keepable in the EatableContainer or not
