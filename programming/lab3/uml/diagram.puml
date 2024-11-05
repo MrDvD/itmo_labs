@@ -1,9 +1,10 @@
 @startuml name
-abstract class Being
-
 Being <|-- LittleGuy
 ICapitalisticActive <|.. LittleGuy : implements
-ICapitalisticActive <|.. ICapitalisticPassive : sold
+ICapitalisticActive <|.. ICapitalisticPassive : sell()
+
+Being <|.. Container : eatIterative()
+Being <|.. Eatable : eat()
 
 object ponchik
 object piluylkin
@@ -20,18 +21,17 @@ Eatable <|-- borscht
 Eatable <|-- porridge
 Eatable <|-- salt
 
-ICapitalisticPassive <|.. SolidSurface : implements
-ICapitalisticPassive <|.. EatableContainer : implements
+ICapitalisticPassive <|.. Container : implements
 ICapitalisticPassive <|.. Eatable : implements
 
-IMeasurable <|.. EatableContainer : implements
 IMeasurable <|.. Eatable : implements
-EatableContainer <|-- Bowl
-EatableContainer <|.. Eatable : contained
-SolidSurface <|-- Table
-SolidSurface <|.. IMeasurable : contained
+IMeasurable <|.. Container : implements
+IWeightable <|.. Being : implements
 
-SolidSurface <|.. EatableContainer : contained
+Container <|-- Bowl
+Container <|-- Table
+Container <|.. IMeasurable : addItem()
+Container <|.. IWeightable : addItem()
 
 Being <|.. Place : refers
 Place <|.. Being : contained
@@ -54,6 +54,7 @@ enum Effect {
 }
 
 interface ICapitalisticPassive {
+   DEFAULT_COST: float
    +void sell()
    +float cost()
 }
@@ -74,7 +75,9 @@ abstract class Being {
    Being(name, type)
    +void setEffect(effect)
    +void eat(obj)
-   +void eat(obj, speed)
+   +void eat(obj, eatingSpeed)
+   +void eatIterative(obj)
+   +void eatIterative(obj, eatingSpeed)
    +void force()
    ' to do something
 }
@@ -87,24 +90,22 @@ class Eatable << (R,#FF7700) >> {
    +Eatable(name, saturation, cost)
 }
 
-abstract class EatableContainer {
-   -type: String
-   -filling: Eatable
-   +String getName()
-   +String getType()
-   +void empty()
-}
-
-abstract class SolidSurface {
+abstract class Container {
    -spaceLeft: float
-   -content[]: IMeasurable
-   SolidSurface()
-   SolidSurface(name)
-   +void addItem(obj)
+   Container()
+   Container(name)
+   +void addItem(obj: IMeasurable)
+   +void addItem(obj: IWeightable)
+   +float getSize()
+   +void empty()
 }
 
 class Table {
    +Table()
+}
+
+class Bowl {
+   +Bowl()
 }
 
 abstract class Place {
@@ -115,8 +116,12 @@ abstract class Place {
 }
 
 interface IMeasurable {
-   boolean canFit(float size)
+   +boolean canFit(size: float)
+}
+
+interface IWeightable {
+   +boolean canWithstand(weight: float)
 }
 @enduml
 
-' make size attribute to define whether the item can be keepable in the EatableContainer or not
+' make size attribute to define whether the item can be keepable in the Container or not
