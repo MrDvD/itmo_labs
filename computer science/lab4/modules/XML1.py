@@ -59,7 +59,7 @@ class XML(Parser):
       """
       Scans the content until the non-space symbol is encountered.
       """
-      while self._content[idx] in ' \n\t':
+      while self._content[idx] in ' \r\n\t':
          idx += 1
       return idx
 
@@ -74,16 +74,30 @@ class XML(Parser):
          fields['_' + key] = meta[key]
       if not is_closed:
          idx = self.scan_until_symbol(idx)
-         while self.is_key(True, idx): # if the following is a tag
-            inner_name, obj, idx = self.parse_tag(idx)
-            fields = self.add_tag_to_obj(fields, inner_name, obj)
-            idx = self.scan_until_symbol(idx)
-         if fields == dict(): # if the following is the tag's value
-            value = ''
-            while not self.is_key(False, idx):
-               value += self._content[idx]
+         while not self.is_key(False, idx):
+            if self.is_key(True, idx): # if the following is a tag
+               if isinstance(fields, str):
+                  fields = {'__text': fields}
+               inner_name, obj, idx = self.parse_tag(idx)
+               fields = self.add_tag_to_obj(fields, inner_name, obj)
+               idx = self.scan_until_symbol(idx)
+            else:
+               if isinstance(fields, dict):
+                  if fields == dict():
+                     fields = repr(self._content[idx])[1:-1]
+                  else:
+                     fields['__text'] = fields.get('__text', '') + repr(self._content[idx])[1:-1]
+               else:
+                  fields += self._content[idx]
                idx += 1
-            fields = value
+               if self.is_key(True, self.scan_until_symbol(idx)):
+                  idx = self.scan_until_symbol(idx)
+                  if isinstance(fields, str):
+                     fields += '\\n'
+                  else:
+                     fields['__text'] += '\\n'
+         if '__text' in fields:
+            fields['__text'] = fields['__text'].rstrip(' ').rstrip('\\n')
          idx = self.parse_closing_key(idx)
       return (name, fields, idx)
 

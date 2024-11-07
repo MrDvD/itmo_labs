@@ -2,6 +2,7 @@ package lab;
 
 import lab.classes.being.*;
 import lab.classes.container.*;
+import lab.classes.place.*;
 import lab.enums.*;
 import lab.records.Eatable;
 
@@ -13,6 +14,7 @@ class Main {
       ponchik.setEffect(Effect.SHOCKED);
 
       Table table = new Table();
+      table.addUser(ponchik);
 
       Bowl bowl_borscht = new Bowl();
       Eatable borscht = new Eatable("Борщ", 75); 
@@ -23,9 +25,18 @@ class Main {
       bowl_porridge.addItem(porridge);
       table.addItem(bowl_porridge);
 
-      ponchik.eatIterative(table);
-
+      ponchik.eatIterative(table, (byte) 120);
 
       LittleGuy neznayka = new LittleGuy("Незнайка");
+      Rocket rocket = new Rocket();
+      rocket.addUser(neznayka);
+      rocket.addUser(ponchik);
+      Moon moon = new Moon();
+      rocket.setLocation(moon);
+      // ...
+      Eatable salt = new Eatable("Соль", 30, 150);
+      ponchik.sell(salt);
+      // ... разорился
+      ponchik.setDuty("Член Общества свободных крутильщиков");
    }
 }

@@ -23,6 +23,10 @@ class XML(Parser):
       self.EmptyElemTag = re.compile('<' + self.Name + '(' + self.S + self.Attribute + ')*' + self.S + '?/>')
       self.STag = re.compile('<' + f'({self.Name})' + f'((?:{self.S + self.Attribute})*)' + self.S + '?>')
       self.CharData = '[^<&]*'
+      self.CDStart = r'<!\[CDATA\['
+      self.CData = '(' + self.Char + r'*?(?=]]>))'
+      self.CDEnd = ']]>'
+      self.CDSect = re.compile(self.CDStart + self.CData + self.CDEnd)
       self.Comment = re.compile(r'<!--' + '((?!-)' + self.Char + '|' + '-(?!-)' + self.Char + ')*' +  '-->')
       # temp_patterns
       self.iterativeAttribute = re.compile(self.S + self.Attribute)
@@ -30,7 +34,7 @@ class XML(Parser):
          self.autogenerate()
    
    def parseContent():
-      
+
       pass
 
    def parse_opening_tag(self, idx=0):

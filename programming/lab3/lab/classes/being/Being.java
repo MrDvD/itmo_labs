@@ -4,8 +4,9 @@ import lab.classes.container.Container;
 import lab.enums.Effect;
 import lab.records.Eatable;
 import lab.interfaces.IMeasurable;
+import lab.interfaces.IWeightable;
 
-public abstract class Being implements IMeasurable {
+public abstract class Being implements IMeasurable, IWeightable {
    public final byte DEF_EATING_SPEED = 90;
    private final String name;
    private final String type;

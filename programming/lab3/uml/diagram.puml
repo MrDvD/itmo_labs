@@ -2,6 +2,8 @@
 Being <|-- LittleGuy
 ICapitalisticActive <|.. LittleGuy : implements
 ICapitalisticActive <|.. ICapitalisticPassive : sell()
+ICapitalisticPassive <|.. ICapitalisticActive : getOwner()
+ISociable <|.. LittleGuy : implements
 
 Being <|.. Container : eatIterative()
 Being <|.. Eatable : eat()
@@ -30,39 +32,57 @@ IWeightable <|.. Being : implements
 
 Container <|-- Bowl
 Container <|-- Table
+Container <|-- Rocket
 Container <|.. IMeasurable : addItem()
 Container <|.. IWeightable : addItem()
 
-Being <|.. Place : refers
-Place <|.. Being : contained
-Place <|-- Planet
+ILocatable <|.. Rocket : implements
+ILocatable <|.. Being : implements
+Place <|.. ILocatable : getLocation()
 
-Planet <|-- Moon
+Place <|-- Moon
 Moon <|-- Underground
 Moon <|-- LosPaganos
+Moon <|-- Cave
 
-Effect <|.. Being : refers
+State <|.. Being : refers
+
+SocialOrganization <|.. SocialStatus : refers
+ICapitalisticActive <|.. Duty : setDuty()
+ISociable <|.. SocialStatus : addSocialStatus()
 
 class LittleGuy {
    -dutyName: String
    +LittleGuy(name)
 }
 
-enum Effect {
+enum State {
    NORMAL
    SHOCKED
+   UNCONSCIOUS
 }
 
 interface ICapitalisticPassive {
    DEFAULT_COST: float
-   +void sell()
+   +ICapitalisticActive getOwner()
    +float cost()
+   +void sell()
 }
+
 interface ICapitalisticActive {
    +float getBalance()
+   #void setBalace(balance: float)
    +String getDuty()
-   +void setDuty(duty)
-   +void sell(obj)
+   +void setDuty(duty: Duty)
+   +void work()
+   +void sell(obj: ICapitalisticPassive)
+   +void buy(obj: ICapitalisticPassive)
+}
+
+interface ISociable {
+   +void say(text: String)
+   +void addSocialStatus(obj: SocialStatus)
+   +ArrayList<SocialStatus> getSocialStatuses()
 }
 
 abstract class Being {
@@ -70,15 +90,17 @@ abstract class Being {
    -type: String
    -hunger: byte
    -location: Place
-   -effect: Effect
-   Being()
-   Being(name, type)
-   +void setEffect(effect)
-   +void eat(obj)
-   +void eat(obj, eatingSpeed)
-   +void eatIterative(obj)
-   +void eatIterative(obj, eatingSpeed)
+   -state: State
+   +Being()
+   +Being(name: String, type: String)
+   +void eat(obj: Eatable)
+   +void eat(obj: Eatable, eatingSpeed: byte)
+   +void eatIterative(obj: Container)
+   +void eatIterative(obj: Container, eatingSpeed: byte)
+   +void setState(state: State)
    +void force()
+   #void addHunger(byte hunger)
+   #void subHunger(byte hunger)
    ' to do something
 }
 
@@ -86,16 +108,38 @@ class Eatable << (R,#FF7700) >> {
    -name: String
    -saturation: byte
    -cost: float
-   +Eatable(name, saturation)
-   +Eatable(name, saturation, cost)
+   +Eatable(name: String, saturation: byte)
+   +Eatable(name: String, saturation: byte, cost: float)
+}
+
+class Duty << (R,#FF7700) >> {
+   -name: String
+   -wage: float
+   -days: int
+   +Duty(name: String, wage: float, days: int)
+}
+
+class SocialStatus << (R,#FF7700) >> {
+   -name: String
+   -organization: SocialOrganization
+   +SocialStatus(name: String, organization: SocialOrganization)
+}
+
+class SocialOrganization << (R,#FF7700) >> {
+   -name: String
+   +SocialOrganization(name: String)
 }
 
 abstract class Container {
    -spaceLeft: float
-   Container()
-   Container(name)
+   +Container()
+   +Container(name)
    +void addItem(obj: IMeasurable)
-   +void addItem(obj: IWeightable)
+   +void addUser(obj: IWeightable)
+   +List<IMeasurable> getItemList()
+   +List<IWeightable> getUserList()
+   +void delItem(obj: IMeasurable)
+   +void delUser(obj: IWeightable)
    +float getSize()
    +void empty()
 }
@@ -108,11 +152,33 @@ class Bowl {
    +Bowl()
 }
 
+class Rocket {
+   +Rocket()
+}
+
+class Moon {
+   +Moon()
+}
+
+class LosPaganos {
+   +LosPaganos()
+}
+
+class Underground {
+   +Underground()
+}
+
+class Cave {
+   +Cave()
+}
+
 abstract class Place {
    -name: String
-   -visitors[]: Being
+   -List<> visitors: Being
+   +Place(name)
+   +String getParent()
    +String getAddress()
-   ' get address recursively: super().address() + ',' + this.name
+   +List<> getVisitors()
 }
 
 interface IMeasurable {
@@ -121,6 +187,11 @@ interface IMeasurable {
 
 interface IWeightable {
    +boolean canWithstand(weight: float)
+}
+
+interface ILocatable {
+   +Place getLocation()
+   +void setLocation(obj: Location)
 }
 @enduml
 

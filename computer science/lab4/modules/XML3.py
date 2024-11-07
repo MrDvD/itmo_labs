@@ -13,7 +13,7 @@ class XML(Parser):
       self.attr_pattern = re.compile(r'([\w-]+)=(\'|")(.*)\2')
       self.opening_tag_pattern = re.compile(r'\s*<\w')
       self.closing_tag_pattern = re.compile(r'\s*<\/[\w-]+>')
-      self.value_pattern = re.compile(r'(.*)<\/[\w-]+>')
+      self.value_pattern = re.compile(r'\s*(?:(.*)(?=<\/[\w-]+>)|(?(1)|(.+)))')
       if autogen:
          self.autogenerate()
 
@@ -51,15 +51,29 @@ class XML(Parser):
       for key in meta:
          fields['_' + key] = meta[key]
       if not is_closed:
-         # if the following is a tag
-         while self.opening_tag_pattern.match(self._content, idx):
-            inner_name, obj, idx = self.parse_tag(idx)
-            fields = self.add_tag_to_obj(fields, inner_name, obj)
-         # if the following is the tag's value
-         if fields == dict():
-            value_obj = self.value_pattern.search(self._content, idx)
-            fields = value_obj.group(1)
-            idx = value_obj.end()
+         while not self.closing_tag_pattern.match(self._content, idx):
+            # if the following is a tag
+            print('before', self._content[idx-10:idx], 'after:', self._content[idx:idx+10] )
+            if self.opening_tag_pattern.match(self._content, idx):
+               if isinstance(fields, str):
+                  fields = {'__text': fields}
+               inner_name, obj, idx = self.parse_tag(idx)
+               fields = self.add_tag_to_obj(fields, inner_name, obj)
+            # if the following is the tag's value
+            elif self.value_pattern.match(self._content, idx):
+               value_obj = self.value_pattern.search(self._content, idx)
+               value = value_obj.group(1) if value_obj.group(1) else value_obj.group(2)
+               if isinstance(fields, dict):
+                  if fields == dict():
+                     fields = value
+                     idx = value_obj.end()
+                  else:
+                     fields['__text'] = fields.get('__text', '') + value
+               else:
+                  fields += value
+               idx = value_obj.end()
+            if idx >= len(self._content):
+               break
          else:
             idx = self.closing_tag_pattern.match(self._content, idx).end()
       return (name, fields, idx)
