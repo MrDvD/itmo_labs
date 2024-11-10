@@ -29,8 +29,7 @@ class XML(Parser):
       if autogen:
          self.autogenerate()
    
-   def parseContent():
-      
+   def parseContent(self, idx=0):
       pass
 
    def parse_opening_tag(self, idx=0):

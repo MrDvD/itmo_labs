@@ -53,7 +53,6 @@ class XML(Parser):
       if not is_closed:
          while not self.closing_tag_pattern.match(self._content, idx):
             # if the following is a tag
-            print('before', self._content[idx-10:idx], 'after:', self._content[idx:idx+10] )
             if self.opening_tag_pattern.match(self._content, idx):
                if isinstance(fields, str):
                   fields = {'__text': fields}
@@ -68,7 +67,10 @@ class XML(Parser):
                      fields = value
                      idx = value_obj.end()
                   else:
-                     fields['__text'] = fields.get('__text', '') + value
+                     if '__text' in fields:
+                        fields['__text'] += '\\n' + value
+                     else:
+                        fields['__text'] = value
                else:
                   fields += value
                idx = value_obj.end()

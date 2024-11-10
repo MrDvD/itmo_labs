@@ -1,12 +1,9 @@
 @startuml name
 Being <|-- LittleGuy
 ICapitalisticActive <|.. LittleGuy : implements
-ICapitalisticActive <|.. ICapitalisticPassive : sell()
-ICapitalisticPassive <|.. ICapitalisticActive : getOwner()
 ISociable <|.. LittleGuy : implements
 
-Being <|.. Container : eatIterative()
-Being <|.. Eatable : eat()
+Being +-- Narrator
 
 object ponchik
 object piluylkin
@@ -28,28 +25,25 @@ ICapitalisticPassive <|.. Eatable : implements
 
 IMeasurable <|.. Eatable : implements
 IMeasurable <|.. Container : implements
-IWeightable <|.. Being : implements
 
 Container <|-- Bowl
 Container <|-- Table
 Container <|-- Rocket
-Container <|.. IMeasurable : addItem()
-Container <|.. IWeightable : addItem()
+
+Rocket +-- Motor
 
 ILocatable <|.. Rocket : implements
 ILocatable <|.. Being : implements
-Place <|.. ILocatable : getLocation()
 
-Place <|-- Moon
-Moon <|-- Underground
-Moon <|-- LosPaganos
-Moon <|-- Cave
+Location <|-- Moon
+Location <|-- Underground
+Location <|-- Town
+Town <|-- LosPaganos
+Location <|-- Cave
 
-State <|.. Being : refers
-
-SocialOrganization <|.. SocialStatus : refers
-ICapitalisticActive <|.. Duty : setDuty()
-ISociable <|.. SocialStatus : addSocialStatus()
+static class Narrator { 
+   {static} +void say(message: String)
+}
 
 class LittleGuy {
    -dutyName: String
@@ -82,14 +76,14 @@ interface ICapitalisticActive {
 interface ISociable {
    +void say(text: String)
    +void addSocialStatus(obj: SocialStatus)
-   +ArrayList<SocialStatus> getSocialStatuses()
+   +List<SocialStatus> getSocialStatuses()
 }
 
 abstract class Being {
    -name: String
    -type: String
    -hunger: byte
-   -location: Place
+   -location: Location
    -state: State
    +Being()
    +Being(name: String, type: String)
@@ -98,7 +92,8 @@ abstract class Being {
    +void eatIterative(obj: Container)
    +void eatIterative(obj: Container, eatingSpeed: byte)
    +void setState(state: State)
-   +void force()
+   +void use(obj: Container)
+   +void unuse(obj: Container)
    #void addHunger(byte hunger)
    #void subHunger(byte hunger)
    ' to do something
@@ -135,13 +130,16 @@ abstract class Container {
    +Container()
    +Container(name)
    +void addItem(obj: IMeasurable)
-   +void addUser(obj: IWeightable)
    +List<IMeasurable> getItemList()
-   +List<IWeightable> getUserList()
    +void delItem(obj: IMeasurable)
-   +void delUser(obj: IWeightable)
    +float getSize()
    +void empty()
+}
+
+class Motor {
+   +void start()
+   +void stop()
+   +boolean getState()
 }
 
 class Table {
@@ -160,6 +158,10 @@ class Moon {
    +Moon()
 }
 
+class Town {
+   +Town()
+}
+
 class LosPaganos {
    +LosPaganos()
 }
@@ -172,12 +174,15 @@ class Cave {
    +Cave()
 }
 
-abstract class Place {
+abstract class Location {
    -name: String
    -List<> visitors: Being
-   +Place(name)
+   +Location(name)
+   +void setParent(obj: Location)
    +String getParent()
    +String getAddress()
+   +void addVisitor(obj: Being)
+   +void delVisitor(obj: Being)
    +List<> getVisitors()
 }
 
@@ -185,12 +190,8 @@ interface IMeasurable {
    +boolean canFit(size: float)
 }
 
-interface IWeightable {
-   +boolean canWithstand(weight: float)
-}
-
 interface ILocatable {
-   +Place getLocation()
+   +Location getLocation()
    +void setLocation(obj: Location)
 }
 @enduml
