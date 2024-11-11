@@ -235,9 +235,12 @@ class XML(Parser):
                      self.add_tag_to_obj(fields, key, var[key])
                if data is not None:
                   if isinstance(fields, dict):
-                     fields['__text'] = fields.get('__text', '') + data.rstrip()
+                     if '__text' in fields:
+                        fields['__text'] += '\\n' + data.rstrip()
+                     else:
+                        fields['__text'] = data.rstrip()
                   else:
-                     fields += data.rstrip()
+                     fields += '\\n' + data.rstrip()
             yield fields, idx
       return result
    
