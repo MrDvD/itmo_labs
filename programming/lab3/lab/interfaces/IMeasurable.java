@@ -1,5 +1,6 @@
 package lab.interfaces;
 
 public interface IMeasurable {
-   boolean canFit(float size);
+   boolean canFit(double size);
+   double getSize();
 }

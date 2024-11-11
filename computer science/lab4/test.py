@@ -1,16 +1,51 @@
 from itertools import chain
 import re
 
+# def ast_sequence(func):
+#    """
+#    Yields the func as much as possible.
+#    """
+#    def result(idx):
+#       while True:
+#          flag = False
+#          for val, idx in func(idx):
+#             yield val, idx
+#             flag = True
+#          if not flag: 
+#             yield None, idx
+#             return
+#    return result
+
+def asterisk(func):
+   def result(idx=0):
+      for (val1, others), idx in sequence(func,
+                                          asterisk(func))(idx):
+         yield [val1] + others, idx
+         return
+      yield [], idx
+   return result
+
+def q_sequence(func):
+   """
+   Yields the match once if possible.
+   """
+   def result(idx):
+      for val, idx in func(idx):
+         yield val, idx
+         return
+      yield None, idx
+   return result
+
 def sequence(*funcs):
-    if len(funcs) == 0:
-        def result(src):
-            yield (), src
-        return result
-    def result(src):
-        for arg1, src in funcs[0](src):
-            for others, src in sequence(*funcs[1:])(src):
-                yield (arg1,) + others, src
-    return result
+   if len(funcs) == 0:
+      def result(src):
+         yield (), src
+      return result
+   def result(src):
+      for arg1, src in funcs[0](src):
+         for others, src in sequence(*funcs[1:])(src):
+            yield (arg1,) + others, src
+   return result
 
 number_regex = re.compile(r"(-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?)\s*(.*)", re.DOTALL)
 
@@ -131,4 +166,13 @@ def parse(s):
         raise ValueError("not a valid JSON string")
     return result
 
-print(parse("{'s': 'take', '5': true}"))
+text = '[[['
+
+for ast, text in asterisk(parse_word('[', '['))(text):
+    print(ast)
+print('result:', text)
+
+# for ast, text in q_sequence(parse_left_square_bracket)(text):
+#     print(text)
+
+# print(parse("{'s': 'take', '5': true}"))

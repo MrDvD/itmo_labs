@@ -14,7 +14,7 @@ class Main {
       ponchik.setEffect(Effect.SHOCKED);
 
       Table table = new Table();
-      table.addUser(ponchik);
+      // table.addUser(ponchik);
 
       Bowl bowl_borscht = new Bowl();
       Eatable borscht = new Eatable("Борщ", 75); 
@@ -29,8 +29,8 @@ class Main {
 
       LittleGuy neznayka = new LittleGuy("Незнайка");
       Rocket rocket = new Rocket();
-      rocket.addUser(neznayka);
-      rocket.addUser(ponchik);
+      // rocket.addUser(neznayka);
+      // rocket.addUser(ponchik);
       Moon moon = new Moon();
       rocket.setLocation(moon);
       // ...

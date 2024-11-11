@@ -3,7 +3,7 @@ Being <|-- LittleGuy
 ICapitalisticActive <|.. LittleGuy : implements
 ISociable <|.. LittleGuy : implements
 
-Being +-- Narrator
+Being +-- Log
 
 object ponchik
 object piluylkin
@@ -41,8 +41,8 @@ Location <|-- Town
 Town <|-- LosPaganos
 Location <|-- Cave
 
-static class Narrator { 
-   {static} +void say(message: String)
+static class Log { 
+   {static} +void println(message: String)
 }
 
 class LittleGuy {
@@ -85,8 +85,8 @@ abstract class Being {
    -hunger: byte
    -location: Location
    -state: State
-   +Being()
-   +Being(name: String, type: String)
+   #Being()
+   #Being(name: String, type: String)
    +void eat(obj: Eatable)
    +void eat(obj: Eatable, eatingSpeed: byte)
    +void eatIterative(obj: Container)
@@ -126,13 +126,14 @@ class SocialOrganization << (R,#FF7700) >> {
 }
 
 abstract class Container {
-   -spaceLeft: float
+   -name: String
+   -size: double
+   -spaceLeft: double
    +Container()
-   +Container(name)
+   +Container(name: String, size: double)
    +void addItem(obj: IMeasurable)
-   +List<IMeasurable> getItemList()
    +void delItem(obj: IMeasurable)
-   +float getSize()
+   +List<IMeasurable> getItemList()
    +void empty()
 }
 
@@ -187,7 +188,8 @@ abstract class Location {
 }
 
 interface IMeasurable {
-   +boolean canFit(size: float)
+   +boolean canFit(size: double)
+   +double getSize()
 }
 
 interface ILocatable {
