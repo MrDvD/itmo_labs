@@ -32,4 +32,5 @@ STag	         ::=   	'<' Name (S Attribute)* S? '>'
 Attribute	   ::=   	Name Eq AttValue
 ETag	         ::=   	'</' Name S? '>'
 content	      ::=   	CharData? ((element | Comment) CharData?)*
+++ content	   ::=   	S* CharData? ((element | Comment) S* CharData?)*
 EmptyElemTag	::=   	'<' Name (S Attribute)* S? '/>'

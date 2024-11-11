@@ -59,7 +59,7 @@ class XML(Parser):
       NameChar = '(?:' + NameStartChar + '|[-.0-9\u00B7\u0300-\u036F\u203F-\u2040])'
       Name = re.compile(NameStartChar + NameChar + '*')
       AttValue = re.compile('\"([^<&\"]*)\"')
-      CharData = re.compile('[^<&]*')
+      CharData = re.compile('[^<&]+')
    
    def __init__(self, content=None, object=None, autogen=True):
       """
@@ -194,11 +194,19 @@ class XML(Parser):
 
    def parseElemTag(self):
       def result(idx=0):
-         for (fields, content, _) in sequence(self.parseSTag(),
-                                              self.parseContent(),
-                                              self.parseETag())(idx):
-            
-            yield content, idx
+         for (fields, content, _), idx in sequence(self.parseSTag(),
+                                                   self.parseContent(),
+                                                   self.parseETag())(idx):
+            key = next(iter(fields))
+            if isinstance(content, str):
+               if len(fields[key]) == 0:
+                  fields[key] = content
+               else:
+                  fields[key]['__text'] = content
+            else:
+               for subkey in content.keys():
+                  self.add_tag_to_obj(fields[key], subkey, content[subkey])
+            yield fields, idx
       return result
 
    def parseElement(self):
@@ -211,10 +219,44 @@ class XML(Parser):
    def parseContent(self):
       def result(idx=0):
          fields = dict()
-         for (value, other), idx in sequence(self.parseCharData(),
-                                             asterisk(sequence(lor(self.parseElement(),
-                                                                   self.parseComment()),
-                                                               question(self.parseCharData()))))(idx):
-            pass
-            yield value, idx
+         for (_, value, other), idx in sequence(asterisk(self.parseS()),
+                                                question(self.parseCharData()),
+                                                asterisk(sequence(lor(self.parseElement(),
+                                                                  self.parseComment()),
+                                                                  asterisk(self.parseS()),
+                                                                  question(self.parseCharData()))))(idx):
+            if value is not None:
+               fields = value.rstrip()
+            for var, _, data in other:
+               if var is not None:
+                  if isinstance(fields, str):
+                     fields = {'__text': fields}
+                  for key in var:
+                     self.add_tag_to_obj(fields, key, var[key])
+               if data is not None:
+                  if isinstance(fields, dict):
+                     fields['__text'] = fields.get('__text', '') + data.rstrip()
+                  else:
+                     fields += data.rstrip()
+            yield fields, idx
       return result
+   
+   def add_tag_to_obj(self, obj, key, value):
+      """
+      Adds a key-value pair to an object in an XML way.
+      """
+      if key in obj:
+         if isinstance(obj[key], list):
+            obj[key].append(value)
+         else:
+            obj[key] = [obj[key], value]
+      else:
+         obj[key] = value
+      return obj
+   
+   def parse_string(self):
+      """
+      Parses the content of input XML string into object.
+      """
+      for value, idx in self.parseElement()():
+         self._object = value
