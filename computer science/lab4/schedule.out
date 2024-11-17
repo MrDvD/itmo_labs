@@ -1,2 +1,26 @@
-[schedule]
-name = ['СР', 'СР']
+{
+   "schedule": {
+      "weekday": {
+         "name": "СР",
+         "item": [
+            {
+               "group": "Информ 1.16 (P3131)",
+               "__text": "xxxxxxxxx\nasdfasdf",
+               "teacher": [
+                  "Балакшин Павел Валерьевич",
+                  {
+                     "ss": "tttt"
+                  }
+               ],
+               "lesson-format": "Очно"
+            },
+            {
+               "__text": "sssssss\naaaaaaa",
+               "time": "10:00-11:30",
+               "group": "Осн Проф деят 1.21 (Р3131)",
+               "lesson-format": "Очно"
+            }
+         ]
+      }
+   }
+}

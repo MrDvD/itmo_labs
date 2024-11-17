@@ -1,4 +1,11 @@
 <schedule>
-      <name>СР</name>
-      <name>СР</name>
+   <name>СР</name>
+   <item>
+      <group>Информ 1.16 (P3131)</group>
+      xxxxxxxxx
+      <teacher>Балакшин Павел Валерьевич</teacher>
+      <teacher><ss>tttt</ss></teacher>
+      asdfasdf
+      <lesson-format>Очно</lesson-format>
+   </item>
 </schedule>

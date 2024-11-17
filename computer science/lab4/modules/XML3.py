@@ -13,7 +13,8 @@ class XML(Parser):
       self.attr_pattern = re.compile(r'([\w-]+)=(\'|")(.*)\2')
       self.opening_tag_pattern = re.compile(r'\s*<\w')
       self.closing_tag_pattern = re.compile(r'\s*<\/[\w-]+>')
-      self.value_pattern = re.compile(r'\s*(?:(.*)(?=<\/[\w-]+>)|(?(1)|(.+)))')
+      self.value_pattern = re.compile(r'\s*([^\/\n]*(?:(?<!<)\/[^\/]*|)(?:|\n))(?<!<)')
+      # working partly: \s*([^\/\n]*(?:|\n))(?<!<)
       if autogen:
          self.autogenerate()
 
