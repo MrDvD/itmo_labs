@@ -18,15 +18,14 @@ class TOML(Parser):
          return item
       return '"' + item.replace("\"", "\\\"") + '"'
    
-   # def add_indentations(self, depth):
-   #    return '\n' + self._tabSymbol * self._tabCount * depth
-
-   def has_inner_dict(self, obj):
+   def is_dict_primitive(self, obj):
       """
-      Checks if the dict has inner dicts.
+      Check if the dict has inner dicts.
       """
-      for key in obj:
-         return isinstance(obj[key], dict)
+      for key in obj.keys():
+         if isinstance(obj[key], list):
+            return self.is_list_primitive(obj[key])
+         return not isinstance(obj[key], dict)
    
    def is_list_primitive(self, obj):
       """
@@ -35,41 +34,63 @@ class TOML(Parser):
       for key in obj:
          return not isinstance(key, (list, dict))
    
-   def gen_tree(self, object, prev_key='', parent=''):
-      """
-      Generates tree from an object.
-      """
+   def generate_tree(self, object, parent=''):
       result = list()
       if isinstance(object, dict):
+         stash_items = list()
+         object_items = list()
          for key in object.keys():
-            result.append(self.gen_tree(object[key], key, parent + '.' + prev_key if parent else prev_key))
+            if isinstance(object[key], list) and self.is_list_primitive(object[key]):
+               stash_items.append((key, object[key]))
+            elif isinstance(object[key], (list, dict)):
+               object_items += self.generate_tree(object[key], parent + '.' + key if parent else key)
+            else:
+               stash_items.append((key, object[key]))
+         if stash_items:
+            result.append((parent, stash_items))
+         if object_items:
+            result += object_items
       elif isinstance(object, list):
          if self.is_list_primitive(object):
-            return (parent, (prev_key, object))
+            result.append((parent, object))
          else:
             for item in object:
-               result.append(self.gen_tree(item, prev_key, parent))
-      else:
-         return (parent, (prev_key, object))
-      return result if len(result) > 1 else result[0]
+               result += self.generate_tree(item, parent)
+      return result
    
-   def parse_structure(self, tree):
+   def get_array_tags(self, tree):
       """
-      Parses the tree and returns its string equivalent.
+      Returns the array dict tags.
       """
-      string_result, flag = '', False
+      visited, array = set(), set()
       for item in tree:
-         if isinstance(item, tuple):
-            if not flag:
-               string_result += f'\n[[{item[0]}]]\n'
-               flag = True
-            string_result += f'{item[1][0]} = {self.format_primitives(item[1][1])}\n'
+         if item[0] in visited:
+            array.add(item[0])
          else:
-            string_result += self.parse_structure(item)
+            visited.add(item[0])
+      return array
+   
+   def parse_structure(self, object):
+      """
+      Parses the tag structure and returns its string equivalent.
+      """
+      string_result = ''
+      tree = self.generate_tree(object)
+      array_tags = self.get_array_tags(tree)
+      for tag, value in tree:
+         if tag in array_tags:
+            string_result += f'\n[[{tag}]]\n'
+         else:
+            string_result += f'\n[{tag}]\n'
+         if isinstance(value, list):
+            for name, info in value:
+               string_result += f'{name} = {self.format_primitives(info)}\n'
+         else:
+            string_result += f'{tag[0]} = {self.format_primitives(tag[1])}\n'
       return string_result
 
    def stringify_object(self):
       """
       Fills the str content of TOML object from given object.
       """
-      self._content = self.parse_structure(self.gen_tree(self._object)).strip()
+      self._content = self.parse_structure(self._object).strip()
