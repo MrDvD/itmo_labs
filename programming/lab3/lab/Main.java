@@ -2,14 +2,16 @@ package lab;
 
 import lab.classes.being.*;
 import lab.classes.container.*;
-import lab.classes.place.*;
+import lab.classes.location.*;
+import lab.classes.transport.Rocket;
 import lab.enums.*;
-import lab.records.Eatable;
+import lab.records.*;
 
 class Main {
    public static void main(String[] args) {
       LittleGuy piluylkin = new LittleGuy("Пилюлькин");
-      piluylkin.setDuty("Доктор");
+      Duty doctor = new Duty("Доктор", 7500, 30);
+      piluylkin.setDuty(doctor);
       LittleGuy ponchik = new LittleGuy("Пончик");
       ponchik.setEffect(Effect.SHOCKED);
 
@@ -28,15 +30,18 @@ class Main {
       ponchik.eatIterative(table, (byte) 120);
 
       LittleGuy neznayka = new LittleGuy("Незнайка");
-      Rocket rocket = new Rocket();
-      // rocket.addUser(neznayka);
-      // rocket.addUser(ponchik);
+      Earth earth = new Earth();
+      Rocket rocket = new Rocket(earth);
+      rocket.addPassenger(neznayka);
+      rocket.addPassenger(ponchik);
+
       Moon moon = new Moon();
       rocket.setLocation(moon);
       // ...
       Eatable salt = new Eatable("Соль", 30, 150);
       ponchik.sell(salt);
       // ... разорился
-      ponchik.setDuty("Член Общества свободных крутильщиков");
+      SocialOrganization freeSpinners = new SocialOrganization("Общество свободных крутильщиков");
+      ponchik.addSocialStatus(new SocialStatus("Член", freeSpinners));
    }
 }

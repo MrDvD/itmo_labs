@@ -1,6 +1,6 @@
-package lab.classes.place;
+package lab.classes.location;
 
-public class Underground extends Place {
+public class Underground extends Location {
    public Underground() {
       super("Подлунный мир");
    }

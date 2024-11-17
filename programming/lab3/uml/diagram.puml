@@ -4,6 +4,7 @@ ICapitalisticActive <|.. LittleGuy : implements
 ISociable <|.. LittleGuy : implements
 
 Being +-- Log
+Being +-- Locomotion
 
 object ponchik
 object piluylkin
@@ -12,6 +13,9 @@ object neznayka
 LittleGuy <|-- ponchik
 LittleGuy <|-- piluylkin
 LittleGuy <|-- neznayka
+
+LittleGuy +-- Legs
+Locomotion <|-- Legs
 
 object borscht
 object porridge
@@ -25,17 +29,26 @@ ICapitalisticPassive <|.. Eatable : implements
 
 IMeasurable <|.. Eatable : implements
 IMeasurable <|.. Container : implements
+IMeasurable <|.. Being : implements
 
 Container <|-- Bowl
 Container <|-- Table
-Container <|-- Rocket
 
-Rocket +-- Motor
+Transport <|-- Rocket
 
-ILocatable <|.. Rocket : implements
+Rocket +-- LuggageSection
+Container <|-- LuggageSection
+
+ILocatable <|.. Transport : implements
 ILocatable <|.. Being : implements
 
+IEnvironment <|.. Transport : implements
+IEnvironment <|.. Location : implements
+IEnvironment <|.. Locomotion : implements
+
 Location <|-- Moon
+Location <|-- Planet
+Planet <|-- Earth
 Location <|-- Underground
 Location <|-- Town
 Town <|-- LosPaganos
@@ -47,6 +60,7 @@ static class Log {
 
 class LittleGuy {
    -dutyName: String
+   -socialStatuses: List<SocialStatus>
    +LittleGuy(name)
 }
 
@@ -56,8 +70,16 @@ enum State {
    UNCONSCIOUS
 }
 
+enum Environment {
+   SPACE
+   AIR
+   GROUND
+   WATER
+}
+
 interface ICapitalisticPassive {
    DEFAULT_COST: float
+   PRICELESS: float
    +ICapitalisticActive getOwner()
    +float cost()
    +void sell()
@@ -76,7 +98,8 @@ interface ICapitalisticActive {
 interface ISociable {
    +void say(text: String)
    +void addSocialStatus(obj: SocialStatus)
-   +List<SocialStatus> getSocialStatuses()
+   +void popSocialStatus()
+   +List<SocialStatus> getSocialStatusList()
 }
 
 abstract class Being {
@@ -90,13 +113,26 @@ abstract class Being {
    +void eat(obj: Eatable)
    +void eat(obj: Eatable, eatingSpeed: byte)
    +void eatIterative(obj: Container)
+   +void eatIterative(obj: Eatable)
+   +void eatIterative(obj: IMeasurable)
    +void eatIterative(obj: Container, eatingSpeed: byte)
+   +void eatIterative(obj: Eatable, eatingSpeed: byte)
+   +void eatIterative(obj: IMeasurable, eatingSpeed: byte)
    +void setState(state: State)
    +void use(obj: Container)
    +void unuse(obj: Container)
    #void addHunger(byte hunger)
    #void subHunger(byte hunger)
+   {static} +Locomotion getLocomotion()
    ' to do something
+}
+
+abstract class Locomotion {
+   -currEnvironment: List<Environment>
+   -defaultEnvironment: List<Environment>
+   +Locomotion(Environment ... type)
+   +void setDefaultEnvironment(Environment ... list)
+   +void resetEnvironment()
 }
 
 class Eatable << (R,#FF7700) >> {
@@ -125,6 +161,19 @@ class SocialOrganization << (R,#FF7700) >> {
    +SocialOrganization(name: String)
 }
 
+abstract class Transport {
+   -name: String
+   -environment: Environment
+   -maxPassengerCount: int
+   -currPassengerCount: int
+   -maxPassengerSize: double
+   -passengers: List<Being>
+   +Transport(name: String, environment: Environment, maxPassengerCount: int, maxPassengerSize: double)
+   +void addPassenger(obj: Being)
+   +void popPassenger()
+   +List<Being> getPassengerList()
+}
+
 abstract class Container {
    -name: String
    -size: double
@@ -137,10 +186,8 @@ abstract class Container {
    +void empty()
 }
 
-class Motor {
-   +void start()
-   +void stop()
-   +boolean getState()
+class Legs {
+   +Legs()
 }
 
 class Table {
@@ -151,12 +198,27 @@ class Bowl {
    +Bowl()
 }
 
+class LuggageSection {
+   +LuggageSection()
+}
+
 class Rocket {
-   +Rocket()
+   -luggage: LuggageSection
+   +Rocket(name: String, location: Location)
+   +LuggageSection getLuggage();
 }
 
 class Moon {
    +Moon()
+}
+
+class Planet {
+   +Planet()
+   +Planet(name: String)
+}
+
+class Earth {
+   +Earth()
 }
 
 class Town {
@@ -177,14 +239,16 @@ class Cave {
 
 abstract class Location {
    -name: String
-   -List<> visitors: Being
+   -parent: Location
+   -List<> visitorList: Being
+   -environment: List<Environment>
    +Location(name)
    +void setParent(obj: Location)
    +String getParent()
    +String getAddress()
    +void addVisitor(obj: Being)
    +void delVisitor(obj: Being)
-   +List<> getVisitors()
+   +List<Being> getVisitorList()
 }
 
 interface IMeasurable {
@@ -195,6 +259,12 @@ interface IMeasurable {
 interface ILocatable {
    +Location getLocation()
    +void setLocation(obj: Location)
+   +boolean isReachable(obj: Location)
+}
+
+interface IEnvironment {
+   +void setEnvironment(Environment ... obj)
+   +List<Environment> getEnvironment()
 }
 @enduml
 

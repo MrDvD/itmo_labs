@@ -10,13 +10,12 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
    private final String name;
    private final double size;
    private double spaceLeft;
-
    private List<IMeasurable> content = new ArrayList<>();
 
-   Container() {
+   public Container() {
       this("Безымянный контейнер", 10.0);
    }
-   Container(String name, double size) {
+   public Container(String name, double size) {
       this.name = name;
       this.size = size;
       this.spaceLeft = size;
@@ -38,10 +37,16 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
    public List<IMeasurable> getItemList() {
       return content;
    }
+   @Override
    public boolean canFit(double size) {
       return size > this.size;
    }
+   @Override
    public double getSize() {
       return this.size;
+   }
+   @Override
+   public String toString() {
+      return name;
    }
 }

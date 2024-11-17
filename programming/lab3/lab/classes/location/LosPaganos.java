@@ -1,6 +1,6 @@
-package lab.classes.place;
+package lab.classes.location;
 
-public class LosPaganos extends Place {
+public class LosPaganos extends Location {
    public LosPaganos() {
       super("г. Лос-Паганос");
    }

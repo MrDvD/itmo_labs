@@ -1,8 +1,9 @@
 package lab.interfaces;
 
-import lab.classes.place.Place;
+import lab.classes.location.Location;
 
 public interface ILocatable {
-   Place getLocation();
-   void setLocation(Place location);
+   public Location getLocation();
+   public boolean isReachable(Location obj);
+   public void setLocation(Location location);
 }
