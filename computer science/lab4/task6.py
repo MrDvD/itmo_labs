@@ -1,15 +1,15 @@
-from modules.XML3 import *
-from modules.JSON import *
+from modules.XML1 import *
+from modules.TOML import *
 
 def main():
    """
    Main function.
    """
-   with open('schedule_test.xml') as f:
+   with open('schedule.xml') as f:
       with open('schedule.out', 'w') as g:
          xml = XML(content=f.read())
-         json = JSON(object=xml)
-         g.write(str(json))
+         toml = TOML(object=xml)
+         g.write(str(toml))
 
 if __name__ == '__main__':
    main()
