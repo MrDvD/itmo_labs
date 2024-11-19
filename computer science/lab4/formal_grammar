@@ -1,16 +1,5 @@
 document	      ::=   	prolog element Misc*
 
-// prolog	      ::=   	XMLDecl? Misc* (doctypedecl Misc*)?
-// XMLDecl	      ::=   	'<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
-// VersionInfo	   ::=   	S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
-// VersionNum	   ::=   	'1.' [0-9]+
-// Misc	         ::=   	Comment | PI | S
-
-// doctypedecl	   ::=   	'<!DOCTYPE' S Name (S ExternalID)? S? ('[' intSubset ']' S?)? '>'
-// DeclSep	      ::=   	PEReference | S
-// intSubset	   ::=   	(markupdecl | DeclSep)*
-// markupdecl	   ::=   	elementdecl | AttlistDecl | EntityDecl | NotationDecl | PI | Comment
-
 S	            ::=   	(#x20 | #x9 | #xD | #xA)+
 Eq	            ::=   	S? '=' S?
 

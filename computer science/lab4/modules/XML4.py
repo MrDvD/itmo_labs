@@ -1,6 +1,6 @@
-from modules.Parser import *
-from itertools import chain
 import re
+
+from modules.Parser import *
 
 def sequence(*funcs):
    """

@@ -1,5 +1,6 @@
-from modules.Parser import *
 import re
+
+from modules.Parser import *
 
 class XML(Parser):
    def __init__(self, content=None, object=None, autogen=True):
@@ -14,7 +15,6 @@ class XML(Parser):
       self.opening_tag_pattern = re.compile(r'\s*<\w')
       self.closing_tag_pattern = re.compile(r'\s*<\/[\w-]+>')
       self.value_pattern = re.compile(r'\s*([^\/\n]*(?:(?<!<)\/[^\/]*|)(?:|\n))(?<!<)')
-      # working partly: \s*([^\/\n]*(?:|\n))(?<!<)
       if autogen:
          self.autogenerate()
 
