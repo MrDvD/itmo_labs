@@ -20,7 +20,7 @@ def lor(*funcs):
    """
    Yields the first non-None match.
    """
-   def result(idx):
+   def result(idx=0):
       for func in funcs:
          for val, idx in func(idx):
             yield val, idx
@@ -31,7 +31,7 @@ def question(func):
    """
    Yields the match once if possible.
    """
-   def result(idx):
+   def result(idx=0):
       for val, idx in func(idx):
          yield val, idx
          return
@@ -39,10 +39,10 @@ def question(func):
    return result
 
 def asterisk(func):
+   """
+   Yields the list of func as much as possible.
+   """
    def result(idx=0):
-      """
-      Yields the list of func as much as possible.
-      """
       for (val1, others), idx in sequence(func,
                                           asterisk(func))(idx):
          yield [val1] + others, idx
@@ -60,6 +60,7 @@ class XML(Parser):
       Name = re.compile(NameStartChar + NameChar + '*')
       AttValue = re.compile('\"([^<&\"]*)\"')
       CharData = re.compile('[^<&]+')
+      EntityRef = {'lt': '<', 'gt': '>', 'amp': '&', 'apos': '\'', 'quot': '\"'}
    
    def __init__(self, content=None, object=None, autogen=True):
       """
@@ -71,24 +72,15 @@ class XML(Parser):
          self.autogenerate()
    
    def minus(self, pattern, chars):
+      """
+      Substracts 'chars' from matched pattern symbol.
+      """
       def result(idx=0):
-         """
-         Substracts 'chars' from matched pattern symbol.
-         """
          obj = pattern.match(self._content[idx:])
          if obj is not None:
             if obj.group(0) not in chars:
                yield obj.group(0), idx + obj.end()
       return result
-   
-   def parsePattern(self, pattern, idx=0):
-      """
-      Parses the input pattern, increments the idx by its length.
-      Returns a pair (match_obj, idx).
-      """
-      result = pattern.match(self._content[idx:])
-      if result is not None:
-         yield result, idx + result.end()
    
    def parseCharData(self):
       def result(idx=0):
@@ -215,32 +207,42 @@ class XML(Parser):
                                self.parseElemTag())(idx):
             yield value, idx
       return result
+   
+   def parseEntityRef(self):
+      def result(idx=0):
+         for (_, name, _), idx in sequence(self.parseWord('&'),
+                                           self.parseName(),
+                                           self.parseWord(';'))(idx):
+            yield self.Pattern.EntityRef[name], idx
+      return result
 
    def parseContent(self):
       def result(idx=0):
          fields = dict()
-         for (_, value, other), idx in sequence(asterisk(self.parseS()),
-                                                question(self.parseCharData()),
+         for (value, other), idx in sequence(question(self.parseCharData()),
                                                 asterisk(sequence(lor(self.parseElement(),
-                                                                  self.parseComment()),
-                                                                  asterisk(self.parseS()),
+                                                                      self.parseEntityRef(),
+                                                                      self.parseComment()),
                                                                   question(self.parseCharData()))))(idx):
-            if value is not None:
-               fields = value.rstrip()
-            for var, _, data in other:
+            if value is not None and value.lstrip():
+               fields = value
+            for var, data in other:
                if var is not None:
-                  if isinstance(fields, str):
-                     fields = {'__text': fields}
-                  for key in var:
-                     self.add_tag_to_obj(fields, key, var[key])
-               if data is not None:
-                  if isinstance(fields, dict):
-                     if '__text' in fields:
-                        fields['__text'] += '\\n' + data.rstrip()
+                  if isinstance(var, str):
+                     if isinstance(fields, dict):
+                        fields = var
                      else:
-                        fields['__text'] = data.rstrip()
+                        fields += var
                   else:
-                     fields += '\\n' + data.rstrip()
+                     if isinstance(fields, str):
+                        fields = {'__text': fields}
+                     for key in var:
+                        self.add_tag_to_obj(fields, key, var[key])
+               if data is not None and data.lstrip():
+                  if isinstance(fields, dict):
+                     fields['__text'] = fields.get('__text', '') + data
+                  else:
+                     fields += data
             yield fields, idx
       return result
    
@@ -261,5 +263,5 @@ class XML(Parser):
       """
       Parses the content of input XML string into object.
       """
-      for value, idx in self.parseElement()():
+      for value, _ in self.parseElement()():
          self._object = value

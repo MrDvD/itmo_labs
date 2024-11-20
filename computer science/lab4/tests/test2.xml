@@ -1,0 +1,20 @@
+<schedule>
+   <weekday>
+      <name>СР</name>
+      <item>
+         <group>Информ 1.16 (P3131)</group>
+         xxxxxxxxx
+         <teacher>hehe &amp;t</teacher>
+         <teacher><ss>12345</ss></teacher>
+         asdfasdf
+         <lesson-format>Оч &gt; но</lesson-format>
+      </item>
+      <item>
+         sssssss
+         <time>10:00-11:30</time>
+         <group>Осн Проф деят 1.21 (Р3131)</group>
+         <lesson-format>Очно</lesson-format>
+         aaaaaaa
+      </item>
+   </weekday>
+</schedule>

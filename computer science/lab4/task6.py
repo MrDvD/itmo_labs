@@ -5,7 +5,7 @@ def main():
    """
    Main function.
    """
-   with open('schedule.xml') as f:
+   with open('tests/schedule.xml') as f:
       with open('schedule.out', 'w') as g:
          xml = XML(content=f.read())
          toml = TOML(object=xml)

@@ -37,7 +37,7 @@ def main():
    """
    Main function.
    """
-   with open('schedule.xml') as f:
+   with open('tests/schedule.xml') as f:
       content = f.read()
    print('task1.py:', measure_ptime(xml1, content))
    print('task2.py:', measure_ptime(xml2, content))
