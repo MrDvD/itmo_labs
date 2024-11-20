@@ -7,6 +7,7 @@ class XML(Parser):
       """
       super().__init__(content, object, False)
       self._emptyContent = '<emptyXML>'
+      self.S = ' \n\r\t'
       if autogen:
          self.autogenerate()
 
@@ -25,9 +26,11 @@ class XML(Parser):
             case ' ': # splitting metatags
                tags.append(current) ; current = ''
             case '>': # closing tag
-               tags.append(current)
                if self._content[idx - 1] == '/':
+                  tags.append(current[:-1])
                   is_closed = 1
+               else:
+                  tags.append(current)
                break
             case _: # fill current keyword
                current += self._content[idx]
@@ -38,6 +41,8 @@ class XML(Parser):
       """
       Adds a key-value pair to an object in an XML way.
       """
+      if isinstance(value, (dict, list)) and not len(value):
+         value = None
       if key in obj:
          if isinstance(obj[key], list):
             obj[key].append(value)
@@ -75,30 +80,28 @@ class XML(Parser):
       if not is_closed:
          idx = self.scan_until_symbol(idx)
          while not self.is_key(False, idx):
-            if self.is_key(True, idx): # if the following is a tag
+            if self.is_key(True, idx): # if the following is an opening tag
                if isinstance(fields, str):
                   fields = {'__text': fields}
                inner_name, obj, idx = self.parse_tag(idx)
                fields = self.add_tag_to_obj(fields, inner_name, obj)
-               idx = self.scan_until_symbol(idx)
-            else:
+            else: # if the following is the tag's value
                if isinstance(fields, dict):
-                  if fields == dict():
-                     fields = repr(self._content[idx])[1:-1]
+                  if fields == dict() and self._content[idx] not in self.S:
+                     fields = self._content[idx]
                   else:
-                     fields['__text'] = fields.get('__text', '') + repr(self._content[idx])[1:-1]
+                     if '__text' in fields:
+                        fields['__text'] += self._content[idx]
+                     elif self._content[idx] not in self.S:
+                        fields['__text'] = self._content[idx]
                else:
                   fields += self._content[idx]
                idx += 1
-               if self.is_key(True, self.scan_until_symbol(idx)):
-                  idx = self.scan_until_symbol(idx)
-                  if isinstance(fields, str):
-                     fields += '\\n'
-                  else:
-                     fields['__text'] += '\\n'
-         if '__text' in fields:
-            fields['__text'] = fields['__text'].rstrip(' ').rstrip('\\n')
          idx = self.parse_closing_key(idx)
+      if isinstance(fields, dict) and '__text' in fields:
+         fields['__text'] = repr(fields['__text'].rstrip())[1:-1]
+      elif isinstance(fields, str):
+         fields = repr(fields.rstrip())[1:-1]
       return (name, fields, idx)
 
    def parse_quotes(self, idx=0):

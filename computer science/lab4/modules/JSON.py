@@ -14,6 +14,8 @@ class JSON(Parser):
       """
       Formats primitives in a JSON-like manner.
       """
+      if item is None:
+         return 'null'
       if not isinstance(item, str):
          return item
       return '"' + item.replace("\"", "\\\"") + '"'

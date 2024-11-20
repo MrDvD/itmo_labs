@@ -145,6 +145,8 @@ class XML(Parser):
                   _, kv = kv
                   for k in kv.keys():
                      tag[name]['_' + k] = kv[k]
+            if not len(tag[name]):
+               tag[name] = None
             yield tag, idx
       return result
    
@@ -198,6 +200,8 @@ class XML(Parser):
             else:
                for subkey in content.keys():
                   self.add_tag_to_obj(fields[key], subkey, content[subkey])
+               if not len(content):
+                  fields[key] = None
             yield fields, idx
       return result
 

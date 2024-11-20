@@ -12,9 +12,10 @@ class XML(Parser):
       # patterns
       self.tag_pattern = re.compile(r'<([\w-]+)(?:(.*)(\/))?>')
       self.attr_pattern = re.compile(r'([\w-]+)=(\'|")(.*)\2')
-      self.opening_tag_pattern = re.compile(r'\s*<\w')
-      self.closing_tag_pattern = re.compile(r'\s*<\/[\w-]+>')
-      self.value_pattern = re.compile(r'\s*([^\/\n]*(?:(?<!<)\/[^\/]*|)(?:|\n))(?<!<)')
+      self.opening_tag_pattern = re.compile(r'<\w')
+      self.closing_tag_pattern = re.compile(r'<\/[\w-]+>')
+      self.value_pattern = re.compile(r'[ \n\r\t]*([^<&]+(?:&\w+;[^<&]*)*)')
+      self.S = re.compile(r'[ \r\n\t]+')
       if autogen:
          self.autogenerate()
 
@@ -34,6 +35,8 @@ class XML(Parser):
       """
       Adds a key-value pair to an object in an XML way.
       """
+      if isinstance(value, (dict, list)) and not len(value):
+         value = None
       if key in obj:
          if isinstance(obj[key], list):
             obj[key].append(value)
@@ -62,23 +65,25 @@ class XML(Parser):
             # if the following is the tag's value
             elif self.value_pattern.match(self._content, idx):
                value_obj = self.value_pattern.search(self._content, idx)
-               value = value_obj.group(1) if value_obj.group(1) else value_obj.group(2)
                if isinstance(fields, dict):
-                  if fields == dict():
-                     fields = value
-                     idx = value_obj.end()
+                  if fields == dict() and not self.S.fullmatch(value_obj.group(1)):
+                     fields = value_obj.group(1)
                   else:
                      if '__text' in fields:
-                        fields['__text'] += '\\n' + value
-                     else:
-                        fields['__text'] = value
+                        fields['__text'] += value_obj.group(0)
+                     elif not self.S.fullmatch(value_obj.group(1)):
+                        fields['__text'] = value_obj.group(1)
                else:
-                  fields += value
+                  fields += value_obj.group(0)
                idx = value_obj.end()
             if idx >= len(self._content):
                break
          else:
             idx = self.closing_tag_pattern.match(self._content, idx).end()
+      if isinstance(fields, dict) and '__text' in fields:
+         fields['__text'] = fields['__text'].rstrip()
+      elif isinstance(fields, str):
+         fields = fields.rstrip()
       return (name, fields, idx)
    
    def parse_string(self):

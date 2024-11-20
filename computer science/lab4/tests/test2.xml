@@ -1,6 +1,7 @@
 <schedule>
    <weekday>
-      <name>СР</name>
+      <kkk/>
+      <name></name>
       <item>
          <group>Информ 1.16 (P3131)</group>
          xxxxxxxxx
@@ -11,7 +12,7 @@
       </item>
       <item>
          sssssss
-         <time>10:00-11:30</time>
+         <time/>
          <group>Осн Проф деят 1.21 (Р3131)</group>
          <lesson-format>Очно</lesson-format>
          aaaaaaa
