@@ -14,8 +14,10 @@ class XML(Parser):
       self.attr_pattern = re.compile(r'([\w-]+)=(\'|")(.*)\2')
       self.opening_tag_pattern = re.compile(r'<\w')
       self.closing_tag_pattern = re.compile(r'<\/[\w-]+>')
-      self.value_pattern = re.compile(r'[ \n\r\t]*([^<&]+(?:&\w+;[^<&]*)*)')
+      self.value_pattern = re.compile(r'[ \n\r\t]*[^<&]+')
+      self.screened_pattern = re.compile(r'&(\w+);')
       self.S = re.compile(r'[ \r\n\t]+')
+      self.screened = {'lt': '<', 'gt': '>', 'amp': '&', 'apos': '\'', 'quot': '\"'}
       if autogen:
          self.autogenerate()
 
@@ -45,6 +47,25 @@ class XML(Parser):
       else:
          obj[key] = value
       return obj
+   
+   def add_string_to_obj(self, obj, string):
+      if isinstance(obj, dict):
+         if obj == dict() and not self.S.fullmatch(string):
+            obj = string.lstrip()
+         else:
+            if '__text' in obj:
+               obj['__text'] += string
+            elif not self.S.fullmatch(string):
+               obj['__text'] = string.lstrip()
+      else:
+         obj += string
+      return obj
+   
+   def parse_screened(self, code):
+      """
+      Parses the screened version of some chars.
+      """
+      return self.screened[code]
 
    def parse_tag(self, idx=0):
       """
@@ -65,17 +86,12 @@ class XML(Parser):
             # if the following is the tag's value
             elif self.value_pattern.match(self._content, idx):
                value_obj = self.value_pattern.search(self._content, idx)
-               if isinstance(fields, dict):
-                  if fields == dict() and not self.S.fullmatch(value_obj.group(1)):
-                     fields = value_obj.group(1)
-                  else:
-                     if '__text' in fields:
-                        fields['__text'] += value_obj.group(0)
-                     elif not self.S.fullmatch(value_obj.group(1)):
-                        fields['__text'] = value_obj.group(1)
-               else:
-                  fields += value_obj.group(0)
+               fields = self.add_string_to_obj(fields, value_obj.group(0))
                idx = value_obj.end()
+            elif self.screened_pattern.match(self._content, idx):
+               screened_obj = self.screened_pattern.search(self._content, idx)
+               fields = self.add_string_to_obj(fields, self.parse_screened(screened_obj.group(1)))
+               idx = screened_obj.end()
             if idx >= len(self._content):
                break
          else:

@@ -8,6 +8,7 @@ class XML(Parser):
       super().__init__(content, object, False)
       self._emptyContent = '<emptyXML>'
       self.S = ' \n\r\t'
+      self.screened = {'lt': '<', 'gt': '>', 'amp': '&', 'apos': '\'', 'quot': '\"'}
       if autogen:
          self.autogenerate()
 
@@ -67,6 +68,24 @@ class XML(Parser):
       while self._content[idx] in ' \r\n\t':
          idx += 1
       return idx
+   
+   def parse_screened(self, idx=0):
+      """
+      Parses the screened version of some chars.
+      """
+      code = ''
+      while self._content[idx] != ';':
+         code += self._content[idx]
+         idx += 1
+      return self.screened[code[1:]], idx
+   
+   def parse_char(self, idx=0):
+      """
+      Parses the following char.
+      """
+      if self._content[idx] == '&':
+         return self.parse_screened(idx)
+      return self._content[idx], idx
 
    def parse_tag(self, idx=0):
       """
@@ -86,16 +105,17 @@ class XML(Parser):
                inner_name, obj, idx = self.parse_tag(idx)
                fields = self.add_tag_to_obj(fields, inner_name, obj)
             else: # if the following is the tag's value
+               char, idx = self.parse_char(idx)
                if isinstance(fields, dict):
-                  if fields == dict() and self._content[idx] not in self.S:
-                     fields = self._content[idx]
+                  if fields == dict() and char not in self.S:
+                     fields = char
                   else:
                      if '__text' in fields:
-                        fields['__text'] += self._content[idx]
+                        fields['__text'] += char
                      elif self._content[idx] not in self.S:
-                        fields['__text'] = self._content[idx]
+                        fields['__text'] = char
                else:
-                  fields += self._content[idx]
+                  fields += char
                idx += 1
          idx = self.parse_closing_key(idx)
       if isinstance(fields, dict) and '__text' in fields:
