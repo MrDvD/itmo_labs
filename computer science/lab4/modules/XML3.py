@@ -16,6 +16,7 @@ class XML(Parser):
       self.closing_tag_pattern = re.compile(r'<\/[\w-]+>')
       self.value_pattern = re.compile(r'[ \n\r\t]*[^<&]+')
       self.screened_pattern = re.compile(r'&(\w+);')
+      self.comment_pattern = re.compile(r'<!--.*?-->')
       self.S = re.compile(r'[ \r\n\t]+')
       self.screened = {'lt': '<', 'gt': '>', 'amp': '&', 'apos': '\'', 'quot': '\"'}
       if autogen:
@@ -83,11 +84,15 @@ class XML(Parser):
                   fields = {'__text': fields}
                inner_name, obj, idx = self.parse_tag(idx)
                fields = self.add_tag_to_obj(fields, inner_name, obj)
+            # if the following is a comment
+            elif self.comment_pattern.match(self._content, idx):
+               idx = self.comment_pattern.match(self._content, idx).end()
             # if the following is the tag's value
             elif self.value_pattern.match(self._content, idx):
                value_obj = self.value_pattern.search(self._content, idx)
                fields = self.add_string_to_obj(fields, value_obj.group(0))
                idx = value_obj.end()
+            # if the following is a screened symbol
             elif self.screened_pattern.match(self._content, idx):
                screened_obj = self.screened_pattern.search(self._content, idx)
                fields = self.add_string_to_obj(fields, self.parse_screened(screened_obj.group(1)))

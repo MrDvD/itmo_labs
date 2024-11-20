@@ -5,7 +5,7 @@ def main():
    """
    Main function.
    """
-   with open('tests/test2.xml') as f:
+   with open('tests/schedule.xml') as f:
       with open('schedule.out', 'w') as g:
          xml = XML(content=f.read())
          json = JSON(object=xml)

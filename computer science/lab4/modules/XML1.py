@@ -92,7 +92,10 @@ class XML(Parser):
       Parses the content of XML tag entirely and returns the tuple (tag_name, python_obj, idx).
       """
       fields = dict()
-      idx = self.scan_until_symbol(idx)
+      while not self.is_key(True, idx):
+         idx = self.scan_until_symbol(idx)
+         if self.is_comment(idx):
+            idx = self.parse_comment(idx)
       name, meta, is_closed, idx = self.parse_opening_tag(idx)
       for key in meta:
          fields['_' + key] = meta[key]
@@ -104,7 +107,10 @@ class XML(Parser):
                   fields = {'__text': fields}
                inner_name, obj, idx = self.parse_tag(idx)
                fields = self.add_tag_to_obj(fields, inner_name, obj)
-            else: # if the following is the tag's value
+            else: # if the following is the tag's value (or a comment)
+               if self.is_comment(idx):
+                  idx = self.parse_comment(idx)
+                  continue
                char, idx = self.parse_char(idx)
                if isinstance(fields, dict):
                   if fields == dict() and char not in self.S:
@@ -134,11 +140,27 @@ class XML(Parser):
          result += self._content[idx]
          idx += 1
       return result
+   
+   def is_comment(self, idx=0):
+      """
+      Checks if the string is a comment.
+      """
+      return self._content[idx:idx+2] == '<!'
+   
+   def parse_comment(self, idx=0):
+      """
+      Omits the whole comment.
+      """
+      while self._content[idx-2:idx+1] != '-->':
+         idx += 1
+      return idx + 1
 
    def is_key(self, opening=False, idx=0):
       """
       Checks if the following symbol is tag (opening/closing).
       """
+      if self._content[idx:idx+2] == '<!':
+         return False
       return self._content[idx] == '<' and self._content[idx + 1] != '/' if opening else self._content[idx:idx+2] == '</'
    
    def parse_string(self):
