@@ -3,7 +3,6 @@ package lab.classes.being;
 import java.util.ArrayList;
 import java.util.List;
 
-import lab.enums.Environment;
 import lab.interfaces.ICapitalisticActive;
 import lab.interfaces.ICapitalisticPassive;
 import lab.interfaces.ISociable;
@@ -13,18 +12,12 @@ import lab.records.SocialStatus;
 public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
    private List<SocialStatus> socialStatusList = new ArrayList<>();
    private float balance = 0.0f;
-   private Legs locomotion;
    private Duty duty;
    private int workingDays = 0;
 
    public LittleGuy(String name, double size) {
       super(name, "Коротышка", size);
       duty = new Duty("Безработный", 0, 0);
-      locomotion = new Legs();
-   }
-   @Override
-   public Locomotion getLocomotion() {
-      return locomotion;
    }
    @Override
    public void addSocialStatus(SocialStatus obj) {
@@ -77,10 +70,5 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
    @Override
    public void say(String phrase) {
       // ??? зачем
-   }
-   private class Legs extends Locomotion {
-      Legs() {
-         super(Environment.GROUND);
-      }
    }
 }

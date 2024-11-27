@@ -1,17 +1,13 @@
 package lab.classes.location;
 
 import lab.classes.being.Being;
-import lab.enums.Environment;
-import lab.interfaces.IEnvironment;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
-public abstract class Location implements IEnvironment {
+public abstract class Location {
    private final String name;
    private List<Being> visitorList = new ArrayList<>();
-   private List<Environment> environment = new ArrayList<>();
    private Location parent;
 
    protected Location(String name) {
@@ -35,14 +31,6 @@ public abstract class Location implements IEnvironment {
    }
    public List<Being> getVisitorList() {
       return visitorList;
-   }
-   @Override
-   public void setEnvironment(Environment ... arr) {
-      environment = Arrays.asList(arr);
-   }
-   @Override
-   public List<Environment> getEnvironment() {
-      return environment;
    }
    @Override
    public String toString() {

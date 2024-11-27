@@ -15,7 +15,8 @@ class Main {
       LittleGuy ponchik = new LittleGuy("Пончик", 142.0);
       ponchik.setEffect(Effect.SHOCKED);
 
-      Table table = new Table(4);
+      Table table = new Table(100.0);
+      table.initChairs(4, 200.0);
       ponchik.seat(table.getFreeChair());
 
       Bowl bowl_borscht = new Bowl(25.0);

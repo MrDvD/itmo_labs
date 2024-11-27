@@ -1,15 +1,13 @@
 package lab.classes.transport;
 
-import java.util.Arrays;
 import java.util.List;
 
 import lab.classes.being.Being;
 import lab.classes.location.Location;
 import lab.enums.Environment;
-import lab.interfaces.IEnvironment;
 import lab.interfaces.ILocatable;
 
-public abstract class Transport implements ILocatable, IEnvironment {
+public abstract class Transport implements ILocatable {
    private String name;
    private int maxPassengerCount, currPassengerCount = 0;
    private double maxPassengerSize;
@@ -32,7 +30,6 @@ public abstract class Transport implements ILocatable, IEnvironment {
          if (currPassengerCount + 1 <= maxPassengerCount) {
             if (obj.canFit(maxPassengerSize)) {
                passengers.add(obj);
-               obj.getLocomotion().setEnvironment();
                currPassengerCount += 1;
             } else {
                // throw an exception
@@ -46,7 +43,6 @@ public abstract class Transport implements ILocatable, IEnvironment {
    }
    public void popPassenger() {
       if (passengers.size() > 0) {
-         passengers.getLast().getLocomotion().resetEnvironment();
          passengers.removeLast();
       } else {
          // throw an exception
@@ -55,39 +51,12 @@ public abstract class Transport implements ILocatable, IEnvironment {
    public List<Being> getPassengerList() {
       return passengers;
    }
-   // @Override
-   // public boolean isReachable(Location obj) {
-   //    if (getLocation() == obj) {
-   //       return true;
-   //    }
-   //    if (getLocation().getParent() == obj || obj.getParent() == getLocation() || getLocation().getParent() == obj.getParent()) {
-   //       // считается, что из L1 в L2 можно попасть напрямую, если у них общий предок
-   //       for (Environment t1 : getEnvironment()) {
-   //          for (Environment t2 : getLocation().getEnvironment()) {
-   //             if (t1 == t2) {
-   //                return true;
-   //             }
-   //          }
-   //       }
-   //    }
-   //    return false;
-   // }
-   @Override
-   public List<Environment> getEnvironment() {
-      return transportTypeList;
-   }
-   @Override
-   public void setEnvironment(Environment ... list) {
-      transportTypeList = Arrays.asList(list);
-   }
    @Override
    public void setLocation(Location obj) {
-      // if (isReachable(obj)) {
-         location = obj;
-         for (Being b : getPassengerList()) {
-            b.setLocation(obj);
-         }
-      // }
+      location = obj;
+      for (Being b : getPassengerList()) {
+         b.setLocation(obj);
+      }
    }
    @Override
    public Location getLocation() {

@@ -4,7 +4,6 @@ ICapitalisticActive <|.. LittleGuy : implements
 ISociable <|.. LittleGuy : implements
 
 Being +-- Log
-Being +-- Locomotion
 
 object ponchik
 object piluylkin
@@ -13,9 +12,6 @@ object neznayka
 LittleGuy <|-- ponchik
 LittleGuy <|-- piluylkin
 LittleGuy <|-- neznayka
-
-LittleGuy +-- Legs
-Locomotion <|-- Legs
 
 object borscht
 object porridge
@@ -48,10 +44,6 @@ Container <|-- LuggageSection
 ILocatable <|.. Transport : implements
 ILocatable <|.. Being : implements
 
-IEnvironment <|.. Transport : implements
-IEnvironment <|.. Location : implements
-IEnvironment <|.. Locomotion : implements
-
 Location <|-- Moon
 Location <|-- Planet
 Location <|-- Underground
@@ -73,13 +65,6 @@ enum State {
    NORMAL
    SHOCKED
    UNCONSCIOUS
-}
-
-enum Environment {
-   SPACE
-   AIR
-   GROUND
-   WATER
 }
 
 interface ICapitalisticPassive {
@@ -132,16 +117,6 @@ abstract class Being {
    +void unuse(obj: Container)
    #void addHunger(byte hunger)
    #void subHunger(byte hunger)
-   {static} +Locomotion getLocomotion()
-   ' to do something
-}
-
-abstract class Locomotion {
-   -currEnvironment: List<Environment>
-   -defaultEnvironment: List<Environment>
-   #Locomotion(Environment ... type)
-   +void setDefaultEnvironment(Environment ... list)
-   +void resetEnvironment()
 }
 
 class Eatable << (R,#FF7700) >> {
@@ -194,10 +169,6 @@ abstract class Container {
    +void delItem(obj: IMeasurable)
    +List<IMeasurable> getItemList()
    +void empty()
-}
-
-class Legs {
-   +Legs()
 }
 
 class Table {
@@ -272,11 +243,6 @@ interface ILocatable {
    +Location getLocation()
    +void setLocation(obj: Location)
    +boolean isReachable(obj: Location)
-}
-
-interface IEnvironment {
-   +void setEnvironment(Environment ... obj)
-   +List<Environment> getEnvironment()
 }
 @enduml
 

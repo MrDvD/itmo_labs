@@ -1,15 +1,9 @@
 package lab.classes.being;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import lab.classes.container.Container;
 import lab.classes.location.Location;
 import lab.enums.Effect;
-import lab.enums.Environment;
 import lab.records.Eatable;
-import lab.interfaces.IEnvironment;
 import lab.interfaces.ILocatable;
 import lab.interfaces.IMeasurable;
 import lab.interfaces.ISeatable;
@@ -78,16 +72,16 @@ public abstract class Being implements ILocatable, IMeasurable {
    public void seat(ISeatable obj) {
       if (canFit(obj.getSize())) {
          obj.setState(true);
-         Log.printf("%s %s присел за/на %s", obj.toString());
+         Log.printf("%s присел за/на %s", toString(), obj.toString());
       } else {
          // error
       }
    }
    public void getUp() {
       if (seat != null) {
-         Log.printf("%s %s встал с/из-за %s", seat.toString());
+         Log.printf("%s встал с/из-за %s", toString(), seat.toString());
       } else {
-         Log.printf("%s %s осознал, что уже стоит");
+         Log.printf("%s осознал, что уже стоит", toString());
       }
    }
    @Override
@@ -106,26 +100,8 @@ public abstract class Being implements ILocatable, IMeasurable {
    public boolean canFit(double obj) {
       return obj > size;
    }
-   public abstract Locomotion getLocomotion();
-   public abstract class Locomotion implements IEnvironment {
-      private List<Environment> currEnvironment, defaultEnvironment;
-      public Locomotion(Environment ... arr) {
-         currEnvironment = Arrays.asList(arr);
-         defaultEnvironment = Arrays.asList(arr);
-      }
-      public void setDefaultEnvironment(Environment ... arr) {
-         defaultEnvironment = Arrays.asList(arr);
-      }
-      public void resetEnvironment() {
-         currEnvironment = new ArrayList<>(defaultEnvironment);
-      }
-      @Override
-      public void setEnvironment(Environment ... arr) {
-         currEnvironment = Arrays.asList(arr);
-      }
-      @Override
-      public List<Environment> getEnvironment() {
-         return currEnvironment;
-      }
-   } 
+   @Override
+   public String toString() {
+      return type + ' ' + name;
+   }
 }
