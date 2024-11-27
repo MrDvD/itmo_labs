@@ -12,6 +12,7 @@ import lab.records.Eatable;
 import lab.interfaces.IEnvironment;
 import lab.interfaces.ILocatable;
 import lab.interfaces.IMeasurable;
+import lab.interfaces.ISeatable;
 
 public abstract class Being implements ILocatable, IMeasurable {
    public final byte DEF_EATING_SPEED = 90;
@@ -20,6 +21,7 @@ public abstract class Being implements ILocatable, IMeasurable {
    private byte hunger = 100;
    private Effect effect;
    private Location location;
+   private ISeatable seat;
    
    static class Log {
       static void println(String message) {
@@ -72,6 +74,21 @@ public abstract class Being implements ILocatable, IMeasurable {
       Log.printf("%s %s рассматривает %s на наличие съестного.\n", this.type, this.name, obj);
       for (IMeasurable item : obj.getItemList()) {
          eatIterative(item, eatingSpeed);
+      }
+   }
+   public void seat(ISeatable obj) {
+      if (canFit(obj.getSize())) {
+         obj.setState(true);
+         Log.printf("%s %s присел за/на %s", obj.toString());
+      } else {
+         // error
+      }
+   }
+   public void getUp() {
+      if (seat != null) {
+         Log.printf("%s %s встал с/из-за %s", seat.toString());
+      } else {
+         Log.printf("%s %s осознал, что уже стоит");
       }
    }
    @Override

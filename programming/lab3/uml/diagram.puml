@@ -33,8 +33,14 @@ IMeasurable <|.. Being : implements
 
 Container <|-- Bowl
 Container <|-- Table
+Container <|-- Chair
+
+Table +-- Chair
+ISeatable <|-- Chair
 
 Transport <|-- Rocket
+Transport +-- Seat
+ISeatable <|-- Seat
 
 Rocket +-- LuggageSection
 Container <|-- LuggageSection
@@ -48,10 +54,8 @@ IEnvironment <|.. Locomotion : implements
 
 Location <|-- Moon
 Location <|-- Planet
-Planet <|-- Earth
 Location <|-- Underground
 Location <|-- Town
-Town <|-- LosPaganos
 Location <|-- Cave
 
 static class Log { 
@@ -60,6 +64,7 @@ static class Log {
 
 class LittleGuy {
    -dutyName: String
+   -balance: float
    -socialStatuses: List<SocialStatus>
    +LittleGuy(name)
 }
@@ -82,17 +87,22 @@ interface ICapitalisticPassive {
    PRICELESS: float
    +ICapitalisticActive getOwner()
    +float cost()
-   +void sell()
 }
 
 interface ICapitalisticActive {
    +float getBalance()
-   #void setBalace(balance: float)
+   +void setBalace(balance: float)
    +String getDuty()
    +void setDuty(duty: Duty)
    +void work()
    +void sell(obj: ICapitalisticPassive)
    +void buy(obj: ICapitalisticPassive)
+}
+
+interface ISeatable {
+   +boolean inUse()
+   +void setState(state: boolean)
+   +double getSize()
 }
 
 interface ISociable {
@@ -192,6 +202,13 @@ class Legs {
 
 class Table {
    +Table()
+   +Chair getFreeChair()
+}
+
+class Chair {
+   -size: double
+   -inUse: boolean
+   +Chair(size: double)
 }
 
 class Bowl {
@@ -217,16 +234,9 @@ class Planet {
    +Planet(name: String)
 }
 
-class Earth {
-   +Earth()
-}
-
 class Town {
    +Town()
-}
-
-class LosPaganos {
-   +LosPaganos()
+   +Town(name: String)
 }
 
 class Underground {

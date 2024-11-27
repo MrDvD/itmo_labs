@@ -3,9 +3,11 @@ package lab.interfaces;
 import lab.records.Duty;
 
 public interface ICapitalisticActive {
-   float getBalance();
-   void setBalance(float balance);
-   String getDuty();
-   void setDuty(Duty duty);
-   void sell(ICapitalisticPassive obj);
+   public float getBalance();
+   public void setBalance(float balance);
+   public String getDuty();
+   public void setDuty(Duty duty);
+   public void sell(ICapitalisticPassive obj);
+   public void buy(ICapitalisticPassive obj);
+   public void work();
 }
