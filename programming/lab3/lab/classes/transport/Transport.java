@@ -17,7 +17,7 @@ public abstract class Transport implements ILocatable, IEnvironment {
    private List<Environment> transportTypeList;
    private Location location;
    
-   public Transport(String name, Environment type, Location location, int maxPassengerCount, double maxPassengerSize) {
+   protected Transport(String name, Environment type, Location location, int maxPassengerCount, double maxPassengerSize) {
       this.name = name;
       this.transportTypeList.add(type);
       this.location = location;
@@ -55,23 +55,23 @@ public abstract class Transport implements ILocatable, IEnvironment {
    public List<Being> getPassengerList() {
       return passengers;
    }
-   @Override
-   public boolean isReachable(Location obj) {
-      if (getLocation() == obj) {
-         return true;
-      }
-      if (getLocation().getParent() == obj || obj.getParent() == getLocation() || getLocation().getParent() == obj.getParent()) {
-         // считается, что из L1 в L2 можно попасть напрямую, если у них общий предок
-         for (Environment t1 : getEnvironment()) {
-            for (Environment t2 : getLocation().getEnvironment()) {
-               if (t1 == t2) {
-                  return true;
-               }
-            }
-         }
-      }
-      return false;
-   }
+   // @Override
+   // public boolean isReachable(Location obj) {
+   //    if (getLocation() == obj) {
+   //       return true;
+   //    }
+   //    if (getLocation().getParent() == obj || obj.getParent() == getLocation() || getLocation().getParent() == obj.getParent()) {
+   //       // считается, что из L1 в L2 можно попасть напрямую, если у них общий предок
+   //       for (Environment t1 : getEnvironment()) {
+   //          for (Environment t2 : getLocation().getEnvironment()) {
+   //             if (t1 == t2) {
+   //                return true;
+   //             }
+   //          }
+   //       }
+   //    }
+   //    return false;
+   // }
    @Override
    public List<Environment> getEnvironment() {
       return transportTypeList;
@@ -82,12 +82,12 @@ public abstract class Transport implements ILocatable, IEnvironment {
    }
    @Override
    public void setLocation(Location obj) {
-      if (isReachable(obj)) {
+      // if (isReachable(obj)) {
          location = obj;
          for (Being b : getPassengerList()) {
             b.setLocation(obj);
          }
-      }
+      // }
    }
    @Override
    public Location getLocation() {

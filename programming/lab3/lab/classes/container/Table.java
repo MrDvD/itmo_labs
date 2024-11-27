@@ -7,10 +7,19 @@ import lab.interfaces.ISeatable;
 
 public class Table extends Container {
    private List<Chair> chairs = new ArrayList<>(); 
-   public Table(int chairs) {
-      super("Стол");
-      for (int i = 0; i < chairs; i++) {
-         chairs.add(new Chair());
+   public Table(double size) {
+      super("Стол", size);
+   }
+   public Table(double size, float cost) {
+      super("Стол", size, cost);
+   }
+   public void initChairs(int num, double size) {
+      if (chairs.size() == 0) {
+         for (int i = 0; i < num; i++) {
+            chairs.add(new Chair(size));
+         }
+      } else {
+         // show exception (already initialized)
       }
    }
    public Chair getFreeChair() {

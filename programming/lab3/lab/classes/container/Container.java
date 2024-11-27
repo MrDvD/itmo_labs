@@ -9,16 +9,18 @@ import java.util.ArrayList;
 public abstract class Container implements ICapitalisticPassive, IMeasurable {
    private final String name;
    private final double size;
+   private final float cost;
    private double spaceLeft;
    private List<IMeasurable> content = new ArrayList<>();
 
-   public Container() {
-      this("Безымянный контейнер", 10.0);
+   protected Container(String name, double size) {
+      this(name, size, ICapitalisticPassive.DEFAULT_COST);
    }
-   public Container(String name, double size) {
+   protected Container(String name, double size, float cost) {
       this.name = name;
       this.size = size;
       this.spaceLeft = size;
+      this.cost = cost;
    }
    public void addItem(IMeasurable obj) {
       if (obj.canFit(spaceLeft)) {
@@ -44,6 +46,10 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
    @Override
    public double getSize() {
       return this.size;
+   }
+   @Override
+   public float cost() { // а как реализовать продажу контейнера с содержимым?
+      return cost;
    }
    @Override
    public String toString() {

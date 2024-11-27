@@ -7,15 +7,19 @@ import lab.enums.Environment;
 import lab.interfaces.ICapitalisticActive;
 import lab.interfaces.ICapitalisticPassive;
 import lab.interfaces.ISociable;
+import lab.records.Duty;
 import lab.records.SocialStatus;
 
 public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
    private List<SocialStatus> socialStatusList = new ArrayList<>();
    private float balance = 0.0f;
    private Legs locomotion;
+   private Duty duty;
+   private int workingDays = 0;
 
-   public LittleGuy(String name) {
-      super(name, "Коротышка");
+   public LittleGuy(String name, double size) {
+      super(name, "Коротышка", size);
+      duty = new Duty("Безработный", 0, 0);
       locomotion = new Legs();
    }
    @Override
@@ -53,6 +57,26 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       } else {
          // throw an error?
       }
+   }
+   @Override
+   public Duty getDuty() {
+      return duty;
+   }
+   @Override
+   public void setDuty(Duty duty) {
+      this.duty = duty;
+   }
+   @Override
+   public void work() {
+      workingDays++;
+      if (getDuty().days() >= workingDays) {
+         workingDays = 0;
+         setBalance(getBalance() + getDuty().wage());
+      }
+   }
+   @Override
+   public void say(String phrase) {
+      // ??? зачем
    }
    private class Legs extends Locomotion {
       Legs() {

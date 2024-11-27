@@ -3,7 +3,6 @@ package lab.classes.transport;
 import lab.classes.container.Container;
 import lab.classes.location.Location;
 import lab.enums.Environment;
-import lab.interfaces.ILocatable;
 
 public class Rocket extends Transport {
    private LuggageSection luggage;

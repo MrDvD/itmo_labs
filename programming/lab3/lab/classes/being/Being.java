@@ -18,6 +18,7 @@ public abstract class Being implements ILocatable, IMeasurable {
    public final byte DEF_EATING_SPEED = 90;
    private final String name;
    private final String type;
+   private final double size;
    private byte hunger = 100;
    private Effect effect;
    private Location location;
@@ -31,12 +32,10 @@ public abstract class Being implements ILocatable, IMeasurable {
          System.out.printf(message, args);
       }
    }
-   protected Being() {
-      this("Безымянный", "Нечто");
-   }
-   protected Being(String name, String type) {
+   protected Being(String name, String type, double size) {
       this.name = name;
       this.type = type;
+      this.size = size;
    }
    public void setEffect(Effect effect) {
       this.effect = effect;
@@ -100,8 +99,12 @@ public abstract class Being implements ILocatable, IMeasurable {
       return location;
    }
    @Override
-   public boolean isReachable(Location obj) {
-      // ...
+   public double getSize() {
+      return size;
+   }
+   @Override
+   public boolean canFit(double obj) {
+      return obj > size;
    }
    public abstract Locomotion getLocomotion();
    public abstract class Locomotion implements IEnvironment {

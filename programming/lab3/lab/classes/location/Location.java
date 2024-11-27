@@ -14,7 +14,7 @@ public abstract class Location implements IEnvironment {
    private List<Environment> environment = new ArrayList<>();
    private Location parent;
 
-   public Location(String name) {
+   protected Location(String name) {
       this.name = name;
    }
    public void setParent(Location obj) {

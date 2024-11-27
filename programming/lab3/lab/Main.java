@@ -9,28 +9,28 @@ import lab.records.*;
 
 class Main {
    public static void main(String[] args) {
-      LittleGuy piluylkin = new LittleGuy("Пилюлькин");
+      LittleGuy piluylkin = new LittleGuy("Пилюлькин", 140.0);
       Duty doctor = new Duty("Доктор", 7500, 30);
       piluylkin.setDuty(doctor);
-      LittleGuy ponchik = new LittleGuy("Пончик");
+      LittleGuy ponchik = new LittleGuy("Пончик", 142.0);
       ponchik.setEffect(Effect.SHOCKED);
 
       Table table = new Table(4);
       ponchik.seat(table.getFreeChair());
 
-      Bowl bowl_borscht = new Bowl();
-      Eatable borscht = new Eatable("Борщ", (byte) 75); 
+      Bowl bowl_borscht = new Bowl(25.0);
+      Eatable borscht = new Eatable("Борщ", (byte) 75, 23.3); 
       bowl_borscht.addItem(borscht);
       table.addItem(bowl_borscht);
-      Bowl bowl_porridge = new Bowl();
-      Eatable porridge = new Eatable("Каша", (byte) 60);
+      Bowl bowl_porridge = new Bowl(26.0);
+      Eatable porridge = new Eatable("Каша", (byte) 60, 24.7);
       bowl_porridge.addItem(porridge);
       table.addItem(bowl_porridge);
 
       ponchik.eatIterative(table, (byte) 120);
       ponchik.getUp();
 
-      LittleGuy neznayka = new LittleGuy("Незнайка");
+      LittleGuy neznayka = new LittleGuy("Незнайка", 141.0);
       Planet earth = new Planet("Земля");
       Rocket rocket = new Rocket(earth);
       rocket.addPassenger(neznayka);

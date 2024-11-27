@@ -5,7 +5,7 @@ import lab.records.Duty;
 public interface ICapitalisticActive {
    public float getBalance();
    public void setBalance(float balance);
-   public String getDuty();
+   public Duty getDuty();
    public void setDuty(Duty duty);
    public void sell(ICapitalisticPassive obj);
    public void buy(ICapitalisticPassive obj);
