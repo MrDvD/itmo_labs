@@ -2,12 +2,11 @@ package lab.classes.transport;
 
 import lab.classes.container.Container;
 import lab.classes.location.Location;
-import lab.enums.Environment;
 
 public class Rocket extends Transport {
    private LuggageSection luggage;
    public Rocket(Location location) {
-      super("Ракета", Environment.SPACE, location, 4, 200);
+      super("Ракета", location, 4, 200);
       luggage = new LuggageSection();
    }
    public LuggageSection getLuggage() {

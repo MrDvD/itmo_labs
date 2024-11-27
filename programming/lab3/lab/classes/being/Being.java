@@ -44,11 +44,11 @@ public abstract class Being implements ILocatable, IMeasurable {
          hunger = 0;
       }
       if (eatingSpeed > 175) {
-         Log.printf("%s %s быстро упитал %s.\n", this.type, this.name, obj.name());
+         Log.printf("%s быстро упитал %s.\n", toString(), obj.name());
       } else if (eatingSpeed < 75) {
-         Log.printf("%s %s медленно употребил %s.\n", this.type, this.name, obj.name());
+         Log.printf("%s медленно употребил %s.\n", toString(), obj.name());
       } else {
-         Log.printf("%s %s съел %s.\n", this.type, this.name, obj.name());
+         Log.printf("%s съел %s.\n", toString(), obj.name());
       }
    }
    public void eatIterative(Eatable obj) {
@@ -61,10 +61,10 @@ public abstract class Being implements ILocatable, IMeasurable {
       eat(obj, eatingSpeed);
    }
    public void eatIterative(IMeasurable obj, byte eatingSpeed) {
-      Log.printf("%s %s чуть не начал есть %s.\n", this.type, this.name, obj);
+      Log.printf("%s чуть не начал есть %s.\n", toString(), obj);
    }
    public void eatIterative(Container obj, byte eatingSpeed) {
-      Log.printf("%s %s рассматривает %s на наличие съестного.\n", this.type, this.name, obj);
+      Log.printf("%s рассматривает %s на наличие съестного.\n", toString(), obj);
       for (IMeasurable item : obj.getItemList()) {
          eatIterative(item, eatingSpeed);
       }
@@ -72,16 +72,16 @@ public abstract class Being implements ILocatable, IMeasurable {
    public void seat(ISeatable obj) {
       if (canFit(obj.getSize())) {
          obj.setState(true);
-         Log.printf("%s присел за/на %s", toString(), obj.toString());
+         Log.printf("%s присел за/на %s\n", toString(), obj.toString());
       } else {
          // error
       }
    }
    public void getUp() {
       if (seat != null) {
-         Log.printf("%s встал с/из-за %s", toString(), seat.toString());
+         Log.printf("%s встал с/из-за %s\n", toString(), seat.toString());
       } else {
-         Log.printf("%s осознал, что уже стоит", toString());
+         Log.printf("%s осознал, что уже стоит\n", toString());
       }
    }
    @Override

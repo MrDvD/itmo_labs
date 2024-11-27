@@ -51,5 +51,9 @@ public class Table extends Container {
       public void setState(boolean state) {
          inUse = state;
       }
+      @Override
+      public String toString() {
+         return "Стул";
+      }
    }
 }

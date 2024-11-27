@@ -4,7 +4,6 @@ import java.util.List;
 
 import lab.classes.being.Being;
 import lab.classes.location.Location;
-import lab.enums.Environment;
 import lab.interfaces.ILocatable;
 
 public abstract class Transport implements ILocatable {
@@ -12,12 +11,10 @@ public abstract class Transport implements ILocatable {
    private int maxPassengerCount, currPassengerCount = 0;
    private double maxPassengerSize;
    private List<Being> passengers;
-   private List<Environment> transportTypeList;
    private Location location;
    
-   protected Transport(String name, Environment type, Location location, int maxPassengerCount, double maxPassengerSize) {
+   protected Transport(String name, Location location, int maxPassengerCount, double maxPassengerSize) {
       this.name = name;
-      this.transportTypeList.add(type);
       this.location = location;
       this.maxPassengerCount = maxPassengerCount;
       this.maxPassengerSize = maxPassengerSize;

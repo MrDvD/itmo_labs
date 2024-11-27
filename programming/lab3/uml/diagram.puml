@@ -147,12 +147,11 @@ class SocialOrganization << (R,#FF7700) >> {
 
 abstract class Transport {
    -name: String
-   -environment: Environment
    -maxPassengerCount: int
    -currPassengerCount: int
    -maxPassengerSize: double
    -passengers: List<Being>
-   #Transport(name: String, environment: Environment, maxPassengerCount: int, maxPassengerSize: double)
+   #Transport(name: String, maxPassengerCount: int, maxPassengerSize: double)
    +void addPassenger(obj: Being)
    +void popPassenger()
    +List<Being> getPassengerList()
