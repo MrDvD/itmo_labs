@@ -1,5 +1,6 @@
 package lab;
 
+import lab.classes.Log;
 import lab.classes.being.*;
 import lab.classes.container.*;
 import lab.classes.location.*;
@@ -17,6 +18,7 @@ class Main {
       LittleGuy ponchik = new LittleGuy("Пончик", 142.0);
       ponchik.setLocation(earth);
       ponchik.setEffect(Effect.SHOCKED);
+      piluylkin.work();
 
       Table table = new Table(100.0);
       // chairs make no sense without table in this model
@@ -32,7 +34,7 @@ class Main {
       bowl_porridge.addItem(porridge);
       table.addItem(bowl_porridge);
 
-      ponchik.eatIterative(table, (byte) 120);
+      ponchik.eatIterative(table, (byte) 180);
       ponchik.getUp();
 
       LittleGuy neznayka = new LittleGuy("Незнайка", 141.0);
@@ -53,32 +55,36 @@ class Main {
       rocket.popPassenger();
 
       Cave cave = new Cave();
+      cave.setParent(moon);
       neznayka.setLocation(cave); // сделать так, чтобы тратился голод?
       ponchik.setLocation(cave);
 
       Underground underground = new Underground();
+      underground.setParent(cave);
       neznayka.setLocation(underground);
-      cave.getVisitorList();
+      Log.Console.printf("Список живых сущностей в локации %s:\n", cave);
+      Log.Console.println(cave.getVisitorSet());
 
-      ponchik.setLocation(moon); // изменить текст в зависимости от родителя
+      ponchik.setLocation(moon);
       rocket.addPassenger(ponchik);
       ponchik.eatIterative(rocket.getLuggage());
       rocket.popPassenger();
       ponchik.setLocation(cave);
       ponchik.setLocation(underground);
-      Town lospaganos = new Town("Лос-Паганос"); // сделать вместо отдельного класса общий
+      Town lospaganos = new Town("Лос-Паганос");
       lospaganos.setParent(underground);
       ponchik.setLocation(lospaganos);
       
       for (int i = 0; i < 25; i++) {
-         ponchik.sell(new Eatable("Соль", (byte) 20, 120));
+         ponchik.sell(new Eatable("Соль", (byte) 20, 12, 120));
       }
-      Eatable sushi = new Eatable("Суши", (byte) 255, 10000);
+      Eatable sushi = new Eatable("Суши", (byte) 255, 10, 3000);
       ponchik.buy(sushi);
+      Log.Console.printf("Текущий баланс %s: %.2f у.е.\n", ponchik, ponchik.getBalance());
 
       Duty worker = new Duty("Рабочий чёртового колеса", 100, 7);
       ponchik.setDuty(worker);
-      for (int i = 0; i < 7; i++) {
+      for (int i = 0; i < 9; i++) {
          ponchik.work();
       }
       SocialOrganization freeSpinners = new SocialOrganization("Общество свободных крутильщиков");

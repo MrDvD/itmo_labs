@@ -3,8 +3,6 @@ Being <|-- LittleGuy
 ICapitalisticActive <|.. LittleGuy : implements
 ISociable <|.. LittleGuy : implements
 
-Being +-- Log
-
 object ponchik
 object piluylkin
 object neznayka
@@ -50,8 +48,16 @@ Location <|-- Underground
 Location <|-- Town
 Location <|-- Cave
 
-static class Log { 
-   {static} +void println(message: String)
+Log +-- Console
+
+static class Log {
+   {static} +long getTime()
+}
+
+static class Console {
+   {static} +void print(message: Object)
+   {static} +void printf(message: String, Object ... args)
+   {static} +void println(message: Object)
 }
 
 class LittleGuy {
@@ -114,6 +120,9 @@ abstract class Being {
    +void getUp()
    #void addHunger(byte hunger)
    #void subHunger(byte hunger)
+   +String toString()
+   +int hashCode()
+   +boolean equals(obj: Being)
 }
 
 class Eatable << (R,#FF7700) >> {
@@ -135,11 +144,13 @@ class SocialStatus << (R,#FF7700) >> {
    -name: String
    -organization: SocialOrganization
    +SocialStatus(name: String, organization: SocialOrganization)
+   +String toString()
 }
 
 class SocialOrganization << (R,#FF7700) >> {
    -name: String
    +SocialOrganization(name: String)
+   +String toString()
 }
 
 abstract class Transport {
@@ -219,15 +230,14 @@ class Cave {
 abstract class Location {
    -name: String
    -parent: Location
-   -List<> visitorList: Being
-   -environment: List<Environment>
+   -Set<Being> visitorSet: Being
    #Location(name)
    +void setParent(obj: Location)
-   +String getParent()
-   +String getAddress()
+   +String getName()
    +void addVisitor(obj: Being)
    +void delVisitor(obj: Being)
-   +List<Being> getVisitorList()
+   +Set<Being> getVisitorSet()
+   +String toString()
 }
 
 interface IMeasurable {

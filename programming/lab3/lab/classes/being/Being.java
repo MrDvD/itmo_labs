@@ -1,5 +1,6 @@
 package lab.classes.being;
 
+import lab.classes.Log;
 import lab.classes.container.Container;
 import lab.classes.location.Location;
 import lab.enums.Effect;
@@ -17,15 +18,7 @@ public abstract class Being implements ILocatable, IMeasurable {
    private Effect effect;
    private Location location;
    private ISeatable seat;
-   
-   static class Log {
-      static void println(String message) {
-         System.out.println(message);
-      }
-      static void printf(String message, Object ... args) {
-         System.out.printf(message, args);
-      }
-   }
+
    protected Being(String name, String type, double size) {
       this.name = name;
       this.type = type;
@@ -38,24 +31,25 @@ public abstract class Being implements ILocatable, IMeasurable {
       eat(obj, DEF_EATING_SPEED);
    }
    public void eat(Eatable obj, byte eatingSpeed) {
-      if (hunger >= obj.saturation()) {
+      
+      if ((hunger & 0xFF) >= (obj.saturation() & 0xFF)) {
          hunger -= obj.saturation();
       } else {
          hunger = 0;
       }
-      if (eatingSpeed > 175) {
-         Log.printf("%s быстро упитал %s.\n", toString(), obj.name());
-      } else if (eatingSpeed < 75) {
-         Log.printf("%s медленно употребил %s.\n", toString(), obj.name());
+      if ((eatingSpeed & 0xFF) > 175) {
+         Log.Console.printf("%s быстро уписал %s.\n", this, obj.name());
+      } else if ((eatingSpeed & 0xFF) < 75) {
+         Log.Console.printf("%s медленно употребил %s.\n", this, obj.name());
       } else {
-         Log.printf("%s съел %s.\n", toString(), obj.name());
+         Log.Console.printf("%s съел %s.\n", this, obj.name());
       }
    }
    public void eatIterative(Container obj) {
       eatIterative(obj, DEF_EATING_SPEED);
    }
    public void eatIterative(Container obj, byte eatingSpeed) {
-      Log.printf("%s рассматривает %s на наличие съестного.\n", toString(), obj);
+      Log.Console.printf("%s рассматривает %s на наличие съестного.\n", this, obj);
       // check if it's correct (from SOLID pov)
       for (IMeasurable item : obj.getItemList()) {
          if (item instanceof Eatable) {
@@ -63,7 +57,7 @@ public abstract class Being implements ILocatable, IMeasurable {
          } else if (item instanceof Container) {
             eatIterative((Container) item, eatingSpeed);
          } else {
-            Log.printf("%s чуть не начал есть %s.\n", toString(), obj);
+            Log.Console.printf("%s чуть не начал есть %s.\n", this, obj);
          }
       }
    }
@@ -71,7 +65,7 @@ public abstract class Being implements ILocatable, IMeasurable {
       if (canFit(obj.getSize())) {
          seat = obj;
          seat.setState(true);
-         Log.printf("%s присел за/на %s\n", toString(), seat.toString());
+         Log.Console.printf("%s присел за/на %s.\n", this, seat);
       } else {
          // error
       }
@@ -79,15 +73,20 @@ public abstract class Being implements ILocatable, IMeasurable {
    public void getUp() {
       if (seat != null) {
          seat.setState(false);
-         Log.printf("%s встал с/из-за %s\n", toString(), seat.toString());
+         Log.Console.printf("%s встал с/из-за %s.\n", this, seat);
          seat = null;
       } else {
-         Log.printf("%s осознал, что уже стоит\n", toString());
+         Log.Console.printf("%s осознал, что уже стоит.\n", this);
       }
    }
    @Override
    public void setLocation(Location location) {
+      if (this.location != null) {
+         this.location.delVisitor(this);
+      }
       this.location = location;
+      this.location.addVisitor(this);
+      Log.Console.printf("%s переместился в локацию %s.\n", this, location);
    }
    @Override
    public Location getLocation() {
@@ -104,5 +103,17 @@ public abstract class Being implements ILocatable, IMeasurable {
    @Override
    public String toString() {
       return type + ' ' + name;
+   }
+   @Override
+   public int hashCode() {
+      return name.hashCode() + type.hashCode() + (int) size;
+   }
+   @Override
+   public boolean equals(Object obj) {
+      if (obj == null || !(obj instanceof Being)) {
+         return false;
+      }
+      Being other = (Being) obj;
+      return this.name == other.name && this.type == other.type && this.size == other.size;
    }
 }

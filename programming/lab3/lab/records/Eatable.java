@@ -15,4 +15,8 @@ public record Eatable(String name, byte saturation, double size, float cost) imp
    public boolean canFit(double obj) {
       return obj > size;
    }
+   @Override
+   public String toString() {
+      return name();
+   }
 }

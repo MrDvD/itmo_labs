@@ -3,6 +3,7 @@ package lab.classes.transport;
 import java.util.ArrayList;
 import java.util.List;
 
+import lab.classes.Log;
 import lab.classes.being.Being;
 import lab.classes.location.Location;
 import lab.interfaces.ILocatable;
@@ -29,6 +30,7 @@ public abstract class Transport implements ILocatable {
             if (obj.canFit(maxPassengerSize)) {
                passengers.add(obj);
                currPassengerCount += 1;
+               Log.Console.printf("%s сел в транспорт %s.\n", obj, this);
             } else {
                // throw an exception
             }
@@ -41,6 +43,7 @@ public abstract class Transport implements ILocatable {
    }
    public void popPassenger() {
       if (passengers.size() > 0) {
+         Log.Console.printf("%s вышел из транспорта %s.\n", passengers.getLast(), this);
          passengers.removeLast();
       } else {
          // throw an exception

@@ -2,12 +2,12 @@ package lab.classes.location;
 
 import lab.classes.being.Being;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public abstract class Location {
    private final String name;
-   private List<Being> visitorList = new ArrayList<>();
+   private Set<Being> visitorSet = new HashSet<>();
    private Location parent;
 
    protected Location(String name) {
@@ -19,21 +19,24 @@ public abstract class Location {
    public Location getParent() {
       return parent;
    }
-   public String getAddress() {
-      if (parent != null) {
-         return getParent().toString() + ", " + toString();
-      } else {
-         return toString();
-      }
+   public String getName() {
+      return name;
    }
    public void addVisitor(Being obj) {
-      visitorList.add(obj);
+      visitorSet.add(obj);
    }
-   public List<Being> getVisitorList() {
-      return visitorList;
+   public void delVisitor(Being obj) {
+      visitorSet.remove(obj);
+   }
+   public Set<Being> getVisitorSet() {
+      return visitorSet;
    }
    @Override
    public String toString() {
-      return name;
+      if (parent != null) {
+         return getParent().toString() + ", " + getName();
+      } else {
+         return getName();
+      }
    }
 }

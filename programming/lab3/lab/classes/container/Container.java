@@ -1,5 +1,6 @@
 package lab.classes.container;
 
+import lab.classes.Log;
 import lab.interfaces.ICapitalisticPassive;
 import lab.interfaces.IMeasurable;
 
@@ -26,6 +27,7 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
       if (obj.canFit(spaceLeft)) {
          content.add(obj);
          spaceLeft -= obj.getSize();
+         Log.Console.printf("В %s помещён объект %s.\n", this, obj);
       } else {
          // place custom error here
       }
