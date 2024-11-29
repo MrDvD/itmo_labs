@@ -9,13 +9,17 @@ import lab.records.*;
 
 class Main {
    public static void main(String[] args) {
+      Planet earth = new Planet("Земля");
       LittleGuy piluylkin = new LittleGuy("Пилюлькин", 140.0);
+      piluylkin.setLocation(earth);
       Duty doctor = new Duty("Доктор", 7500, 30);
       piluylkin.setDuty(doctor);
       LittleGuy ponchik = new LittleGuy("Пончик", 142.0);
+      ponchik.setLocation(earth);
       ponchik.setEffect(Effect.SHOCKED);
 
       Table table = new Table(100.0);
+      // chairs make no sense without table in this model
       table.initChairs(4, 200.0);
       ponchik.seat(table.getFreeChair());
 
@@ -32,8 +36,12 @@ class Main {
       ponchik.getUp();
 
       LittleGuy neznayka = new LittleGuy("Незнайка", 141.0);
-      Planet earth = new Planet("Земля");
+      neznayka.setLocation(earth);
       Rocket rocket = new Rocket(earth);
+      for (int i = 0; i < 7; i++) {
+         rocket.getLuggage().addItem(new Eatable("Картошка", (byte) 40, 40.2));
+
+      }
       rocket.addPassenger(neznayka);
       rocket.addPassenger(ponchik);
 

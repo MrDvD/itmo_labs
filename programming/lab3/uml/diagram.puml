@@ -102,19 +102,16 @@ abstract class Being {
    -type: String
    -hunger: byte
    -location: Location
-   -state: State
+   -effect: Effect
+   -seat: ISeatable
    #Being(name: String, type: String, size: double)
    +void eat(obj: Eatable)
    +void eat(obj: Eatable, eatingSpeed: byte)
    +void eatIterative(obj: Container)
-   +void eatIterative(obj: Eatable)
-   +void eatIterative(obj: IMeasurable)
    +void eatIterative(obj: Container, eatingSpeed: byte)
-   +void eatIterative(obj: Eatable, eatingSpeed: byte)
-   +void eatIterative(obj: IMeasurable, eatingSpeed: byte)
-   +void setState(state: State)
-   +void use(obj: Container)
-   +void unuse(obj: Container)
+   +void setEffect(effect: Effect)
+   +void seat(obj: ISeatable)
+   +void getUp()
    #void addHunger(byte hunger)
    #void subHunger(byte hunger)
 }

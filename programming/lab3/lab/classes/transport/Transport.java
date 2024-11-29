@@ -1,5 +1,6 @@
 package lab.classes.transport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lab.classes.being.Being;
@@ -10,7 +11,7 @@ public abstract class Transport implements ILocatable {
    private String name;
    private int maxPassengerCount, currPassengerCount = 0;
    private double maxPassengerSize;
-   private List<Being> passengers;
+   private List<Being> passengers = new ArrayList<>();
    private Location location;
    
    protected Transport(String name, Location location, int maxPassengerCount, double maxPassengerSize) {

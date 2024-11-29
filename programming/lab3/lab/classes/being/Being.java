@@ -51,42 +51,43 @@ public abstract class Being implements ILocatable, IMeasurable {
          Log.printf("%s съел %s.\n", toString(), obj.name());
       }
    }
-   public void eatIterative(Eatable obj) {
-      eat(obj);
-   }
    public void eatIterative(Container obj) {
       eatIterative(obj, DEF_EATING_SPEED);
    }
-   public void eatIterative(Eatable obj, byte eatingSpeed) {
-      eat(obj, eatingSpeed);
-   }
-   public void eatIterative(IMeasurable obj, byte eatingSpeed) {
-      Log.printf("%s чуть не начал есть %s.\n", toString(), obj);
-   }
    public void eatIterative(Container obj, byte eatingSpeed) {
       Log.printf("%s рассматривает %s на наличие съестного.\n", toString(), obj);
+      // check if it's correct (from SOLID pov)
       for (IMeasurable item : obj.getItemList()) {
-         eatIterative(item, eatingSpeed);
+         if (item instanceof Eatable) {
+            eat((Eatable) item, eatingSpeed);
+         } else if (item instanceof Container) {
+            eatIterative((Container) item, eatingSpeed);
+         } else {
+            Log.printf("%s чуть не начал есть %s.\n", toString(), obj);
+         }
       }
    }
    public void seat(ISeatable obj) {
       if (canFit(obj.getSize())) {
-         obj.setState(true);
-         Log.printf("%s присел за/на %s\n", toString(), obj.toString());
+         seat = obj;
+         seat.setState(true);
+         Log.printf("%s присел за/на %s\n", toString(), seat.toString());
       } else {
          // error
       }
    }
    public void getUp() {
       if (seat != null) {
+         seat.setState(false);
          Log.printf("%s встал с/из-за %s\n", toString(), seat.toString());
+         seat = null;
       } else {
          Log.printf("%s осознал, что уже стоит\n", toString());
       }
    }
    @Override
    public void setLocation(Location location) {
-      // ...
+      this.location = location;
    }
    @Override
    public Location getLocation() {
