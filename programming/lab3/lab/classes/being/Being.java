@@ -79,14 +79,20 @@ public abstract class Being implements ILocatable, IMeasurable {
          Log.Console.printf("%s осознал, что уже стоит.\n", this);
       }
    }
-   @Override
-   public void setLocation(Location location) {
+   public void setLocation(Location location, boolean force) {
+      if (!force && seat != null) {
+         // throw exception
+      }
       if (this.location != null) {
          this.location.delVisitor(this);
       }
       this.location = location;
       this.location.addVisitor(this);
       Log.Console.printf("%s переместился в локацию %s.\n", this, location);
+   }
+   @Override
+   public void setLocation(Location location) {
+      setLocation(location, false);
    }
    @Override
    public Location getLocation() {

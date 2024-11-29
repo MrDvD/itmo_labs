@@ -56,7 +56,7 @@ public abstract class Transport implements ILocatable {
    public void setLocation(Location obj) {
       location = obj;
       for (Being b : getPassengerList()) {
-         b.setLocation(obj);
+         b.setLocation(obj, true);
       }
    }
    @Override

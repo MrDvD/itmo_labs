@@ -248,7 +248,6 @@ interface IMeasurable {
 interface ILocatable {
    +Location getLocation()
    +void setLocation(obj: Location)
-   +boolean isReachable(obj: Location)
 }
 @enduml
 
