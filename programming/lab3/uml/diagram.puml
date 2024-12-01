@@ -27,14 +27,18 @@ IMeasurable <|.. Being : implements
 
 Container <|-- Bowl
 Container <|-- Table
-Container <|-- Chair
+
+IHavingSeat <|.. Table : implements
+
+ISeatHandler <|.. SeatableHandler : implements
 
 Table +-- Chair
 ISeatable <|-- Chair
 
 Transport <|-- Rocket
 Transport +-- Seat
-ISeatable <|-- Seat
+ISeatable <|.. Seat : implements
+Rocket +-- PassengerSeat
 
 Rocket +-- LuggageSection
 Container <|-- LuggageSection
@@ -61,10 +65,23 @@ static class Console {
 }
 
 class LittleGuy {
-   -dutyName: String
+   -duty: Duty
    -balance: float
-   -socialStatuses: List<SocialStatus>
+   -socialStatusList: List<SocialStatus>
+   -workingDays: int
    +LittleGuy(name)
+   +LittleGuy(name, size)
+}
+
+abstract class Seat {
+   -size: double
+   -inUse: boolean
+   -name: String
+   #Seat(name: String, size: double)
+}
+
+class PassengerSeat {
+   +PassengerSeat(size: double)
 }
 
 enum Effect {
@@ -73,9 +90,12 @@ enum Effect {
    UNCONSCIOUS
 }
 
+interface IHavingSeat {
+   +ISeatable getFreeSeat(obj: Being)
+}
+
 interface ICapitalisticPassive {
    DEFAULT_COST: float
-   PRICELESS: float
    +ICapitalisticActive getOwner()
    +float cost()
 }
@@ -85,9 +105,9 @@ interface ICapitalisticActive {
    +void setBalace(balance: float)
    +Duty getDuty()
    +void setDuty(duty: Duty)
-   +void work()
    +void sell(obj: ICapitalisticPassive)
    +void buy(obj: ICapitalisticPassive)
+   +void work()
 }
 
 interface ISeatable {
@@ -96,38 +116,50 @@ interface ISeatable {
    +double getSize()
 }
 
+interface ISeatHandler {
+   +void reserveSeat(being: Being, obj: IHavingSeat)
+   +void reserveSeat(being: Being, obj: IReservingSeat)
+   +void exitSeat(obj: Being)
+   +ISeatable getSeat()
+
+}
+
 interface ISociable {
-   +void say(text: String)
    +void addSocialStatus(obj: SocialStatus)
    +void popSocialStatus()
    +List<SocialStatus> getSocialStatusList()
 }
 
+interface IReservingSeat {
+   +ISeatable reserveFreeSeat(obj: Being)
+   +void notifyOnExit(obj: Being)
+}
+
 abstract class Being {
    -name: String
    -type: String
+   -size: double
    -hunger: byte
    -location: Location
    -effect: Effect
-   -seat: ISeatable
+   -seat: ISeatHandler
    #Being(name: String, type: String, size: double)
    #byte getHunger()
    #void setHunger(hunger: byte)
    #void addHunger(hunger: byte)
    #void subHunger(hunger: byte)
-   +void eat(obj: Eatable)
-   +void eat(obj: Eatable, eatingSpeed: byte)
-   +void eatIterative(obj: Container)
-   +void eatIterative(obj: Container, eatingSpeed: byte)
    +void setEffect(effect: Effect)
    +Effect getEffect()
-   +void updateHungerEffect(hunger: byte)
-   +void seat(obj: ISeatable)
+   +void updateHungerEffect()
+   +boolean eat(obj: Eatable)
+   +boolean eat(obj: Eatable, eatingSpeed: byte)
+   +void eatIterative(obj: Container)
+   +void eatIterative(obj: Container, eatingSpeed: byte)
+   +void seat(obj: IHavingSeat)
+   +void seat(obj: IReservingSeat)
    +void getUp()
    +void sleep()
-   +String toString()
-   +int hashCode()
-   +boolean equals(obj: Being)
+   +void goTo(location: Location)
 }
 
 class Eatable << (R,#FF7700) >> {
@@ -158,16 +190,20 @@ class SocialOrganization << (R,#FF7700) >> {
    +String toString()
 }
 
+class SeatableHandler {
+   -parent: IReservingSeat
+   -currSeat: ISeatable
+}
+
 abstract class Transport {
    -name: String
-   -maxPassengerCount: int
-   -currPassengerCount: int
-   -maxPassengerSize: double
-   -passengers: List<Being>
-   #Transport(name: String, maxPassengerCount: int, maxPassengerSize: double)
-   +void addPassenger(obj: Being)
-   +Being popPassenger()
-   +List<Being> getPassengerList()
+   -location: Location
+   -passengerSet: Set<Being>
+   -seatList: List<Seat>
+   #Transport(name: String, location: Location)
+   {abstract} void initSeats(seatsCount: int, size: double)
+   +Set<Being> getPassengerSet()
+   +List<Seat> getSeatList()
 }
 
 abstract class Container {
@@ -180,15 +216,14 @@ abstract class Container {
    +Container(name: String, size: double, cost: float)
    +void addItem(obj: IMeasurable)
    +void delItem(obj: IMeasurable)
-   +List<IMeasurable> getItemSet()
-   +void empty()
+   +Set<IMeasurable> getItemSet()
 }
 
 class Table {
+   -chairs: List<Chair>
    +Table(size: double)
    +Table(size: double, cost: float)
    +initChairs(num: int, size: double)
-   +Chair getFreeChair()
 }
 
 class Chair {
@@ -207,7 +242,7 @@ class LuggageSection {
 
 class Rocket {
    -luggage: LuggageSection
-   +Rocket(name: String, location: Location)
+   +Rocket(location: Location, seatsCount: int, size: double)
    +LuggageSection getLuggage();
 }
 

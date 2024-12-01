@@ -1,7 +1,0 @@
-package lab.classes.exception;
-
-public class AlreadyInitialized extends RuntimeException {
-   public AlreadyInitialized(String nameObject) {
-      super(String.format("%s уже инициализирован.\n", nameObject));
-   } 
-}

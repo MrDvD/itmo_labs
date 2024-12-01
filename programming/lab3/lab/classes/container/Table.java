@@ -3,8 +3,8 @@ package lab.classes.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import lab.classes.Log;
 import lab.classes.being.Being;
-import lab.classes.exception.AlreadyInitialized;
 import lab.interfaces.IHavingSeat;
 import lab.interfaces.ISeatable;
 
@@ -18,7 +18,7 @@ public class Table extends Container implements IHavingSeat {
    }
    public void initChairs(int num, double size) {
       if (chairs.size() > 0) {
-         throw new AlreadyInitialized("Массив стульев");
+         Log.Console.printf(Log.warnDecorate("Список стульев в объекте %s уже был инициализирован.\n"), this);
       } else {
          for (int i = 0; i < num; i++) {
             chairs.add(new Chair(size));

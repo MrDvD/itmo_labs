@@ -6,6 +6,7 @@ import java.util.Set;
 import lab.classes.Log;
 import lab.classes.container.Container;
 import lab.classes.exception.BusyWithSeatable;
+import lab.classes.exception.HungerOverflow;
 import lab.classes.helper.SeatableHandler;
 import lab.classes.location.Location;
 import lab.enums.Effect;
@@ -37,18 +38,18 @@ public abstract class Being implements ILocatable, IMeasurable {
    protected void setHunger(byte hunger) {
       this.hunger = hunger;
       // effects
-      updateHungerEffect(hunger);
+      updateHungerEffect();
    }
    protected void addHunger(byte hunger) {
       if ((hunger & 0xFF) + getHunger() > 255) {
-         setHunger((byte) 255);
+         throw new HungerOverflow(this);
       } else {
          setHunger((byte) (hunger + getHunger()));
       }
    }
    protected void subHunger(byte hunger) {
       if (getHunger() - (hunger & 0xFF) < 0) {
-         setHunger((byte) 0);
+         throw new HungerOverflow(this);
       } else {
          setHunger((byte) (getHunger() - hunger));
       }
@@ -60,12 +61,12 @@ public abstract class Being implements ILocatable, IMeasurable {
    public Effect getEffect() {
       return effect;
    }
-   public void updateHungerEffect(byte hunger) {
-      if ((hunger & 0xFF) < 30) {
+   public void updateHungerEffect() {
+      if ((getHunger() & 0xFF) < 30) {
          if (getEffect() != Effect.NORMAL) {
             setEffect(Effect.NORMAL);
          }
-      } else if ((hunger & 0xFF) > 220) {
+      } else if ((getHunger() & 0xFF) > 220) {
          if (getEffect() != Effect.UNCONSCIOUS) {
             setEffect(Effect.UNCONSCIOUS);
          }
@@ -75,13 +76,11 @@ public abstract class Being implements ILocatable, IMeasurable {
          }
       }
    }
-   public void eat(Eatable obj) {
-      eat(obj, DEF_EATING_SPEED);
+   public boolean eat(Eatable obj) {
+      return eat(obj, DEF_EATING_SPEED);
    }
-   public void eat(Eatable obj, byte eatingSpeed) {
-      if (getHunger() == 0) {
-         // throw an error
-      } else {
+   public boolean eat(Eatable obj, byte eatingSpeed) {
+      try {
          subHunger(obj.saturation());
          // logs
          if ((eatingSpeed & 0xFF) > 175) {
@@ -91,6 +90,10 @@ public abstract class Being implements ILocatable, IMeasurable {
          } else {
             Log.Console.printf("%s съел %s.\n", this, obj.name());
          }
+         return true;
+      } catch (HungerOverflow e) {
+         Log.Console.printf(Log.errDecorate("Шкала насыщения сущности %s переполнена, невозможно съесть %s.\n"), this, obj);
+         return false;
       }
    }
    public void eatIterative(Container obj) {
@@ -102,8 +105,11 @@ public abstract class Being implements ILocatable, IMeasurable {
       // check if it's correct (from SOLID pov)
       for (IMeasurable item : obj.getItemSet()) {
          if (item instanceof Eatable) {
-            eat((Eatable) item, eatingSpeed);
-            toRemove.add(item);
+            if (eat((Eatable) item, eatingSpeed)) {
+               toRemove.add(item);
+            } else {
+               break;
+            }
          } else if (item instanceof Container) {
             eatIterative((Container) item, eatingSpeed);
          } else {
@@ -140,14 +146,27 @@ public abstract class Being implements ILocatable, IMeasurable {
       }
    }
    public void sleep() {
-      addHunger((byte) 35);
+      try {
+         addHunger((byte) 35);
+      } catch (HungerOverflow e) {
+         setHunger((byte) 255);
+      }
       Log.Console.printf("%s немного отдохнул.\n", this);
    }
-   public void goTo(Location location) throws BusyWithSeatable {
-      if (getSeatHandler() != null) {
-         throw new BusyWithSeatable(this);
+   public void goTo(Location location) {
+      if (getEffect() != Effect.UNCONSCIOUS) {
+         if (getSeatHandler() != null) {
+            throw new BusyWithSeatable(this);
+         }
+         try {
+            addHunger((byte) 30);
+            setLocation(location);
+         } catch (HungerOverflow e) {
+            Log.Console.printf(Log.errDecorate("Уровень голода блокирует возможность передвижения для %s.\n"), this);
+         }
+      } else {
+         Log.Console.printf(Log.errDecorate("Состояние %s блокирует возможность передвижения для %s.\n"), this.getEffect(), this);
       }
-      setLocation(location);
    }
    @Override
    public void setLocation(Location location) {

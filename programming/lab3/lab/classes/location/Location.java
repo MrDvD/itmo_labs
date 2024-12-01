@@ -34,6 +34,7 @@ public abstract class Location {
    public void delVisitor(Being obj) {
       if (getVisitorSet().contains(obj)) {
          getVisitorSet().remove(obj);
+         Log.Console.printf("Из локации %s ушёл посетитель: %s.\n", this, obj);
       } else {
          Log.Console.printf(Log.warnDecorate("В локации %s нет посетителя %s.\n"), this, obj);
       }

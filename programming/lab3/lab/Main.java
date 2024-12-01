@@ -3,21 +3,19 @@ package lab;
 import lab.classes.Log;
 import lab.classes.being.*;
 import lab.classes.container.*;
-import lab.classes.exception.AlreadyInitialized;
-import lab.classes.exception.NegativeBalance;
 import lab.classes.location.*;
 import lab.classes.transport.Rocket;
 import lab.enums.*;
 import lab.records.*;
 
 class Main {
-   public static void main(String[] args) throws NegativeBalance, AlreadyInitialized {
+   public static void main(String[] args) {
       Planet earth = new Planet("Земля");
       LittleGuy piluylkin = new LittleGuy("Пилюлькин", 140.0);
       piluylkin.setLocation(earth);
       Duty doctor = new Duty("Доктор", 7500, 30);
       piluylkin.setDuty(doctor);
-      LittleGuy ponchik = new LittleGuy("Пончик", 142.0);
+      LittleGuy ponchik = new LittleGuy("Пончик");
       ponchik.setLocation(earth);
       ponchik.setEffect(Effect.SHOCKED);
       piluylkin.work();
@@ -55,27 +53,27 @@ class Main {
 
       Cave cave = new Cave();
       cave.setParent(moon);
-      neznayka.setLocation(cave); // сделать так, чтобы тратился голод?
-      ponchik.setLocation(cave);
+      neznayka.goTo(cave);
+      ponchik.goTo(cave);
 
       Underground underground = new Underground();
       underground.setParent(cave);
-      neznayka.setLocation(underground);
+      neznayka.goTo(underground);
       Log.Console.printf("Список живых сущностей в локации %s:\n", cave);
       Log.Console.println(cave.getVisitorSet());
 
-      ponchik.setLocation(moon);
+      ponchik.goTo(moon);
       ponchik.seat(rocket);
       while (rocket.getLuggage().getItemSet().size() > 0) {
          ponchik.eatIterative(rocket.getLuggage());
          ponchik.sleep();
       }
       ponchik.getUp();
-      ponchik.setLocation(cave);
-      ponchik.setLocation(underground);
+      ponchik.goTo(cave);
+      ponchik.goTo(underground);
       Town lospaganos = new Town("Лос-Паганос");
       lospaganos.setParent(underground);
-      ponchik.setLocation(lospaganos);
+      ponchik.goTo(lospaganos);
       
       for (int i = 0; i < 25; i++) {
          ponchik.sell(new Eatable("Соль", (byte) 20, 12, 120));

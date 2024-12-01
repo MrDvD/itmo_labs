@@ -58,8 +58,14 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
       return this.size;
    }
    @Override
-   public float cost() { // а как реализовать продажу контейнера с содержимым?
-      return cost;
+   public float cost() {
+      float currCost = 0;
+      for (IMeasurable item : getItemSet()) {
+         if (item instanceof ICapitalisticPassive) {
+            currCost += ((ICapitalisticPassive) item).cost();
+         }
+      }
+      return cost + currCost;
    }
    @Override
    public String toString() {

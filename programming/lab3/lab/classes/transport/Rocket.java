@@ -1,20 +1,20 @@
 package lab.classes.transport;
 
+import lab.classes.Log;
 import lab.classes.container.Container;
-import lab.classes.exception.AlreadyInitialized;
 import lab.classes.location.Location;
 
 public class Rocket extends Transport {
    private LuggageSection luggage;
-   public Rocket(Location location, int seatsCount, double size) throws AlreadyInitialized {
+   public Rocket(Location location, int seatsCount, double size) {
       super("Ракета", location);
       luggage = new LuggageSection();
       initSeats(seatsCount, size);
    }
    @Override
-   public void initSeats(int seatsCount, double size) throws AlreadyInitialized {
+   public void initSeats(int seatsCount, double size) {
       if (getSeatList().size() > 0) {
-         throw new AlreadyInitialized("Массив пассажирских сидений");
+         Log.Console.printf(Log.warnDecorate("Список пассажирских сидений в объекте %s уже был инициализирован.\n"), this);
       } else {
          for (int i = 0; i < seatsCount; i++) {
             getSeatList().add(new PassengerSeat(size));

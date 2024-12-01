@@ -1,7 +1,9 @@
 package lab.classes.exception;
 
-public class HungerOverflow extends Exception {
-   public HungerOverflow(String errorMessage) {
-      super(errorMessage);
+import lab.classes.being.Being;
+
+public class HungerOverflow extends RuntimeException {
+   public HungerOverflow(Being obj) {
+      super(String.format("У сущности %s произошло переполнение шкалы голода.\n", obj));
    }
 }

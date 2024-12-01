@@ -15,12 +15,14 @@ import lab.records.SocialStatus;
 public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
    private List<SocialStatus> socialStatusList = new ArrayList<>();
    private float balance = 0.0f;
-   private Duty duty;
+   private Duty duty = new Duty("Безработный", 0, 0);
    private int workingDays = 0;
 
+   public LittleGuy(String name) {
+      super(name, "Коротышка", Math.random() * 12 + 132);
+   }
    public LittleGuy(String name, double size) {
       super(name, "Коротышка", size);
-      duty = new Duty("Безработный", 0, 0);
    }
    @Override
    public void addSocialStatus(SocialStatus obj) {
@@ -37,7 +39,7 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       return socialStatusList;
    }
    @Override
-   public void setBalance(float value) throws NegativeBalance {
+   public void setBalance(float value) {
       if (value >= 0) {
          balance = value;
       } else {
@@ -49,7 +51,7 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       return balance;
    }
    @Override
-   public void sell(ICapitalisticPassive obj) throws NegativeBalance {
+   public void sell(ICapitalisticPassive obj) {
       setBalance(getBalance() + obj.cost());
       Log.Console.printf("%s продал объект %s, получив %.2f у.е.\n", this, obj, obj.cost());
    }
@@ -72,7 +74,7 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       Log.Console.printf("У %s появилась новая работа: %s.\n", this, duty.name());
    }
    @Override
-   public void work() throws NegativeBalance {
+   public void work() {
       // effect
       if (getEffect() != Effect.UNCONSCIOUS) {
          workingDays++;
@@ -87,9 +89,5 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       } else {
          Log.Console.printf(Log.errDecorate("Состояние %s блокирует возможность работы для %s.\n"), this.getEffect(), this);
       }
-   }
-   @Override
-   public void say(String phrase) {
-      // ??? зачем
    }
 }

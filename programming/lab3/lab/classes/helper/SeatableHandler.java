@@ -1,5 +1,6 @@
 package lab.classes.helper;
 
+import lab.classes.Log;
 import lab.classes.being.Being;
 import lab.interfaces.IHavingSeat;
 import lab.interfaces.IReservingSeat;
@@ -24,13 +25,13 @@ public class SeatableHandler implements ISeatHandler {
    }
    @Override
    public void exitSeat(Being being) {
-      if (currSeat != null) {
+      if (getSeat() != null) {
          if (parent != null) {
             parent.notifyOnExit(being);
          }
          getSeat().setState(false);
       } else {
-         // thrown exception or log
+         Log.Console.printf(Log.warnDecorate("%s уже не сидит на чём-либо.\n"), being);
       }
    }
 }
