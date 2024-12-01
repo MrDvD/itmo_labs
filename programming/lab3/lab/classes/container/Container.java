@@ -34,7 +34,7 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
                spaceLeft -= obj.getSize();
                Log.Console.printf("В %s помещён объект %s.\n", objState, obj);
             } else {
-               Log.Console.printf(Log.warnDecorate("Объект %s уже есть в %s.\n"), obj, this);
+               Log.Console.printf(Log.errDecorate("Объект %s слишком большой для %s.\n"), obj, this);
             }
          } catch (NullPointerException e) {
             Log.Console.printf(Log.errDecorate("Невозможно добавить пустой объект в %s.\n"), this);

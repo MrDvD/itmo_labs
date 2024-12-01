@@ -54,6 +54,11 @@ Location <|-- Cave
 
 Log +-- Console
 
+"Exception" <|-- BusyWithSeatable
+"Exception" <|-- RuntimeException
+RuntimeException <|-- HungerOverflow
+RuntimeException <|-- NegativeBalance
+
 static class Log {
    {static} +String warnDecorate(line: String)
 }
@@ -169,6 +174,29 @@ class Eatable << (R,#FF7700) >> {
    +Eatable(name: String, saturation: byte)
    +Eatable(name: String, saturation: byte, cost: float)
    +Eatable(name: String, saturation: byte, size: double, cost: float)
+}
+
+class Duty << (R,#FF7700) >> {
+   -name: String
+   -wage: float
+   -days: int
+   +Duty(name: String, wage: float, days: int)
+}
+
+class Exception << (X,#d83614) >>
+
+class RuntimeException << (X,#d83614) >>
+
+class BusyWithSeatable << (X,#d83614) >> {
+   +BusyWithSeatable(obj: Being)
+}
+
+class HungerOverflow << (X,#d83614) >> {
+   +HungerOverflow(obj: Being)
+}
+
+class NegativeBalance << (X,#d83614) >> {
+   +NegativeBalance(obj: ICapitalisticActive)
 }
 
 class Duty << (R,#FF7700) >> {

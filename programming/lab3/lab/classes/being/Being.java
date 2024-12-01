@@ -145,8 +145,12 @@ public abstract class Being implements ILocatable, IMeasurable {
    }
    public void goTo(Location location) {
       if (getEffect() != Effect.UNCONSCIOUS) {
-         if (getSeatHandler().getSeat() != null) {
-            throw new BusyWithSeatable(this);
+         try {
+            if (getSeatHandler().getSeat() != null) {
+               throw new BusyWithSeatable(this);
+            }
+         } catch (BusyWithSeatable e) {
+            Log.Console.println(e.getMessage());
          }
          try {
             addHunger((byte) 30);
