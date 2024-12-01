@@ -1,5 +1,6 @@
 package lab.classes.location;
 
+import lab.classes.Log;
 import lab.classes.being.Being;
 
 import java.util.Set;
@@ -23,10 +24,19 @@ public abstract class Location {
       return name;
    }
    public void addVisitor(Being obj) {
-      visitorSet.add(obj);
+      if (getVisitorSet().contains(obj)) {
+         Log.Console.printf(Log.warnDecorate("В локации %s уже есть посетитель %s.\n"), this, obj);
+      } else {
+         getVisitorSet().add(obj);
+         Log.Console.printf("В локации %s новый посетитель: %s.\n", this, obj);
+      }
    }
    public void delVisitor(Being obj) {
-      visitorSet.remove(obj);
+      if (getVisitorSet().contains(obj)) {
+         getVisitorSet().remove(obj);
+      } else {
+         Log.Console.printf(Log.warnDecorate("В локации %s нет посетителя %s.\n"), this, obj);
+      }
    }
    public Set<Being> getVisitorSet() {
       return visitorSet;

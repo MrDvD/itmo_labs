@@ -4,15 +4,15 @@ import lab.classes.Log;
 import lab.interfaces.ICapitalisticPassive;
 import lab.interfaces.IMeasurable;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 public abstract class Container implements ICapitalisticPassive, IMeasurable {
    private final String name;
    private final double size;
    private final float cost;
    private double spaceLeft;
-   private List<IMeasurable> content = new ArrayList<>();
+   private Set<IMeasurable> content = new HashSet<>();
 
    protected Container(String name, double size) {
       this(name, size, ICapitalisticPassive.DEFAULT_COST);
@@ -24,21 +24,29 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
       this.cost = cost;
    }
    public void addItem(IMeasurable obj) {
-      if (obj.canFit(spaceLeft)) {
-         content.add(obj);
-         spaceLeft -= obj.getSize();
-         Log.Console.printf("В %s помещён объект %s.\n", this, obj);
+      if (getItemSet().contains(obj)) {
+         Log.Console.printf(Log.warnDecorate("В %s уже есть объект %s.\n"), this, obj);
       } else {
-         // place custom error here
+         if (obj.canFit(spaceLeft)) {
+            String objState = this.toString();
+            getItemSet().add(obj);
+            spaceLeft -= obj.getSize();
+            Log.Console.printf("В %s помещён объект %s.\n", objState, obj);
+         } else {
+            // place custom error here
+         }
       }
    }
    public void delItem(IMeasurable obj) {
-      // ...
+      if (getItemSet().contains(obj)) {
+         String objState = this.toString();
+         getItemSet().remove(obj);
+         Log.Console.printf("Из %s убран объект %s.\n", objState, obj);
+      } else {
+         Log.Console.printf(Log.warnDecorate("В %s отсутствует объект %s.\n"), this, obj);
+      }
    }
-   public void empty() {
-      // ...
-   }
-   public List<IMeasurable> getItemList() {
+   public Set<IMeasurable> getItemSet() {
       return content;
    }
    @Override
@@ -55,6 +63,6 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
    }
    @Override
    public String toString() {
-      return name;
+      return name + getItemSet().toString();
    }
 }

@@ -1,9 +1,8 @@
 package lab.classes;
 
 public final class Log {
-   static long line = 0;
-   public static long getTime() {
-      return ++line;
+   public static String warnDecorate(String line) {
+      return "(!) " + line;
    }
    public static class Console {
       public static void print(Object message) {

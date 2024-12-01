@@ -3,9 +3,11 @@ package lab.classes.container;
 import java.util.ArrayList;
 import java.util.List;
 
+import lab.classes.being.Being;
+import lab.interfaces.IHavingSeat;
 import lab.interfaces.ISeatable;
 
-public class Table extends Container {
+public class Table extends Container implements IHavingSeat {
    private List<Chair> chairs = new ArrayList<>(); 
    public Table(double size) {
       super("Стол", size);
@@ -22,16 +24,16 @@ public class Table extends Container {
          // show exception (already initialized)
       }
    }
-   public Chair getFreeChair() {
+   @Override
+   public Chair getFreeSeat(Being obj) {
       for (int i = 0; i < chairs.size(); i++) {
          Chair curr = chairs.get(i);
-         if (!curr.inUse()) {
+         if (!curr.inUse() && obj.canFit(curr.getSize())) {
             curr.setState(true);
             return curr;
          }
       }
       return null;
-      // выкидывает ошибку здесь или выше??? когда мест свободных нет
    }
    public class Chair implements ISeatable {
       private double size;

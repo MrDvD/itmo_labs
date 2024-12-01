@@ -19,4 +19,11 @@ public record Eatable(String name, byte saturation, double size, float cost) imp
    public String toString() {
       return name();
    }
+   @Override
+   public boolean equals(Object other) {
+      if (!(other instanceof Eatable)) {
+         return false;
+      }
+      return this == other;
+   }
 }

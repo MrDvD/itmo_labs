@@ -51,7 +51,7 @@ Location <|-- Cave
 Log +-- Console
 
 static class Log {
-   {static} +long getTime()
+   {static} +String warnDecorate(line: String)
 }
 
 static class Console {
@@ -67,7 +67,7 @@ class LittleGuy {
    +LittleGuy(name)
 }
 
-enum State {
+enum Effect {
    NORMAL
    SHOCKED
    UNCONSCIOUS
@@ -111,15 +111,20 @@ abstract class Being {
    -effect: Effect
    -seat: ISeatable
    #Being(name: String, type: String, size: double)
+   #byte getHunger()
+   #void setHunger(hunger: byte)
+   #void addHunger(hunger: byte)
+   #void subHunger(hunger: byte)
    +void eat(obj: Eatable)
    +void eat(obj: Eatable, eatingSpeed: byte)
    +void eatIterative(obj: Container)
    +void eatIterative(obj: Container, eatingSpeed: byte)
    +void setEffect(effect: Effect)
+   +Effect getEffect()
+   +void updateHungerEffect(hunger: byte)
    +void seat(obj: ISeatable)
    +void getUp()
-   #void addHunger(byte hunger)
-   #void subHunger(byte hunger)
+   +void sleep()
    +String toString()
    +int hashCode()
    +boolean equals(obj: Being)
@@ -161,7 +166,7 @@ abstract class Transport {
    -passengers: List<Being>
    #Transport(name: String, maxPassengerCount: int, maxPassengerSize: double)
    +void addPassenger(obj: Being)
-   +void popPassenger()
+   +Being popPassenger()
    +List<Being> getPassengerList()
 }
 
@@ -170,11 +175,12 @@ abstract class Container {
    -size: double
    -spaceLeft: double
    -cost: float
+   -content: Set<IMeasurable>
    +Container(name: String, size: double)
    +Container(name: String, size: double, cost: float)
    +void addItem(obj: IMeasurable)
    +void delItem(obj: IMeasurable)
-   +List<IMeasurable> getItemList()
+   +List<IMeasurable> getItemSet()
    +void empty()
 }
 

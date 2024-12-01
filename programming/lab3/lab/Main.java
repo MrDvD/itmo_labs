@@ -23,15 +23,13 @@ class Main {
       Table table = new Table(100.0);
       // chairs make no sense without table in this model
       table.initChairs(4, 200.0);
-      ponchik.seat(table.getFreeChair());
+      ponchik.seat(table);
 
       Bowl bowl_borscht = new Bowl(25.0);
-      Eatable borscht = new Eatable("Борщ", (byte) 75, 23.3); 
-      bowl_borscht.addItem(borscht);
+      bowl_borscht.addItem(new Eatable("Борщ", (byte) 45, 23.3));
       table.addItem(bowl_borscht);
       Bowl bowl_porridge = new Bowl(26.0);
-      Eatable porridge = new Eatable("Каша", (byte) 60, 24.7);
-      bowl_porridge.addItem(porridge);
+      bowl_porridge.addItem(new Eatable("Каша", (byte) 40, 24.7));
       table.addItem(bowl_porridge);
 
       ponchik.eatIterative(table, (byte) 180);
@@ -39,20 +37,19 @@ class Main {
 
       LittleGuy neznayka = new LittleGuy("Незнайка", 141.0);
       neznayka.setLocation(earth);
-      Rocket rocket = new Rocket(earth);
+      Rocket rocket = new Rocket(earth, 6, 200.0);
       for (int i = 0; i < 7; i++) {
          rocket.getLuggage().addItem(new Eatable("Картошка", (byte) 40, 40.2));
 
       }
-      rocket.addPassenger(neznayka);
-      rocket.addPassenger(ponchik);
+      neznayka.seat(rocket);
+      ponchik.seat(rocket);
 
       Moon moon = new Moon();
       rocket.setLocation(moon);
 
-      // clear all?
-      rocket.popPassenger();
-      rocket.popPassenger();
+      neznayka.getUp();
+      ponchik.getUp();
 
       Cave cave = new Cave();
       cave.setParent(moon);
@@ -66,9 +63,12 @@ class Main {
       Log.Console.println(cave.getVisitorSet());
 
       ponchik.setLocation(moon);
-      rocket.addPassenger(ponchik);
-      ponchik.eatIterative(rocket.getLuggage());
-      rocket.popPassenger();
+      ponchik.seat(rocket);
+      while (rocket.getLuggage().getItemSet().size() > 0) {
+         ponchik.eatIterative(rocket.getLuggage());
+         ponchik.sleep();
+      }
+      ponchik.getUp();
       ponchik.setLocation(cave);
       ponchik.setLocation(underground);
       Town lospaganos = new Town("Лос-Паганос");

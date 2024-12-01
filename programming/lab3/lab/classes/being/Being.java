@@ -1,13 +1,19 @@
 package lab.classes.being;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import lab.classes.Log;
 import lab.classes.container.Container;
+import lab.classes.helper.SeatableHandler;
 import lab.classes.location.Location;
 import lab.enums.Effect;
 import lab.records.Eatable;
+import lab.interfaces.IHavingSeat;
 import lab.interfaces.ILocatable;
 import lab.interfaces.IMeasurable;
-import lab.interfaces.ISeatable;
+import lab.interfaces.IReservingSeat;
+import lab.interfaces.ISeatHandler;
 
 public abstract class Being implements ILocatable, IMeasurable {
    public final byte DEF_EATING_SPEED = 90;
@@ -15,34 +21,75 @@ public abstract class Being implements ILocatable, IMeasurable {
    private final String type;
    private final double size;
    private byte hunger = 100;
-   private Effect effect;
+   private Effect effect = Effect.NORMAL;
    private Location location;
-   private ISeatable seat;
+   private ISeatHandler seat;
 
    protected Being(String name, String type, double size) {
       this.name = name;
       this.type = type;
       this.size = size;
    }
+   protected byte getHunger() {
+      return hunger;
+   }
+   protected void setHunger(byte hunger) {
+      this.hunger = hunger;
+      // effects
+      updateHungerEffect(hunger);
+   }
+   protected void addHunger(byte hunger) {
+      if ((hunger & 0xFF) + getHunger() > 255) {
+         setHunger((byte) 255);
+      } else {
+         setHunger((byte) (hunger + getHunger()));
+      }
+   }
+   protected void subHunger(byte hunger) {
+      if (getHunger() - (hunger & 0xFF) < 0) {
+         setHunger((byte) 0);
+      } else {
+         setHunger((byte) (getHunger() - hunger));
+      }
+   }
    public void setEffect(Effect effect) {
       this.effect = effect;
+      Log.Console.printf("%s обновил своё состояние: %s.\n", this, effect);
+   }
+   public Effect getEffect() {
+      return effect;
+   }
+   public void updateHungerEffect(byte hunger) {
+      if ((hunger & 0xFF) < 30) {
+         if (getEffect() != Effect.NORMAL) {
+            setEffect(Effect.NORMAL);
+         }
+      } else if ((hunger & 0xFF) > 220) {
+         if (getEffect() != Effect.UNCONSCIOUS) {
+            setEffect(Effect.UNCONSCIOUS);
+         }
+      } else {
+         if (getEffect() == Effect.UNCONSCIOUS) {
+            setEffect(Effect.NORMAL);
+         }
+      }
    }
    public void eat(Eatable obj) {
       eat(obj, DEF_EATING_SPEED);
    }
    public void eat(Eatable obj, byte eatingSpeed) {
-      
-      if ((hunger & 0xFF) >= (obj.saturation() & 0xFF)) {
-         hunger -= obj.saturation();
+      if (getHunger() == 0) {
+         // throw an error
       } else {
-         hunger = 0;
-      }
-      if ((eatingSpeed & 0xFF) > 175) {
-         Log.Console.printf("%s быстро уписал %s.\n", this, obj.name());
-      } else if ((eatingSpeed & 0xFF) < 75) {
-         Log.Console.printf("%s медленно употребил %s.\n", this, obj.name());
-      } else {
-         Log.Console.printf("%s съел %s.\n", this, obj.name());
+         subHunger(obj.saturation());
+         // logs
+         if ((eatingSpeed & 0xFF) > 175) {
+            Log.Console.printf("%s быстро упитал %s.\n", this, obj.name());
+         } else if ((eatingSpeed & 0xFF) < 75) {
+            Log.Console.printf("%s медленно употребил %s.\n", this, obj.name());
+         } else {
+            Log.Console.printf("%s съел %s.\n", this, obj.name());
+         }
       }
    }
    public void eatIterative(Container obj) {
@@ -50,45 +97,56 @@ public abstract class Being implements ILocatable, IMeasurable {
    }
    public void eatIterative(Container obj, byte eatingSpeed) {
       Log.Console.printf("%s рассматривает %s на наличие съестного.\n", this, obj);
+      Set<IMeasurable> toRemove = new HashSet<>();
       // check if it's correct (from SOLID pov)
-      for (IMeasurable item : obj.getItemList()) {
+      for (IMeasurable item : obj.getItemSet()) {
          if (item instanceof Eatable) {
             eat((Eatable) item, eatingSpeed);
+            toRemove.add(item);
          } else if (item instanceof Container) {
             eatIterative((Container) item, eatingSpeed);
          } else {
             Log.Console.printf("%s чуть не начал есть %s.\n", this, obj);
          }
       }
-   }
-   public void seat(ISeatable obj) {
-      if (canFit(obj.getSize())) {
-         seat = obj;
-         seat.setState(true);
-         Log.Console.printf("%s присел за/на %s.\n", this, seat);
-      } else {
-         // error
+      for (var i : toRemove) {
+         obj.delItem(i);
       }
+   }
+   public void seat(IHavingSeat obj) {
+      SeatableHandler handler = new SeatableHandler();
+      handler.reserveSeat(this, obj);
+      seat = handler;
+      Log.Console.printf("%s присел на объект %s.\n", this, seat.getSeat());
+   }
+   public void seat(IReservingSeat obj) {
+      SeatableHandler handler = new SeatableHandler();
+      handler.reserveSeat(this, obj);
+      seat = handler;
+      Log.Console.printf("%s присел на объект %s.\n", this, seat.getSeat());
    }
    public void getUp() {
       if (seat != null) {
-         seat.setState(false);
-         Log.Console.printf("%s встал с/из-за %s.\n", this, seat);
+         seat.exitSeat(this);
+         Log.Console.printf("%s встал с объекта %s.\n", this, seat.getSeat());
          seat = null;
       } else {
-         Log.Console.printf("%s осознал, что уже стоит.\n", this);
+         Log.Console.printf(Log.warnDecorate("%s осознал, что уже стоит.\n"), this);
       }
+   }
+   public void sleep() {
+      addHunger((byte) 35);
+      Log.Console.printf("%s немного отдохнул.\n", this);
    }
    public void setLocation(Location location, boolean force) {
       if (!force && seat != null) {
          // throw exception
       }
-      if (this.location != null) {
+      if (getLocation() != null) {
          this.location.delVisitor(this);
       }
       this.location = location;
       this.location.addVisitor(this);
-      Log.Console.printf("%s переместился в локацию %s.\n", this, location);
    }
    @Override
    public void setLocation(Location location) {
