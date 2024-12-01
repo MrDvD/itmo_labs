@@ -155,6 +155,7 @@ abstract class Being {
    +boolean eat(obj: Eatable, eatingSpeed: byte)
    +void eatIterative(obj: Container)
    +void eatIterative(obj: Container, eatingSpeed: byte)
+   +ISeatHandler getSeatHandler()
    +void seat(obj: IHavingSeat)
    +void seat(obj: IReservingSeat)
    +void getUp()

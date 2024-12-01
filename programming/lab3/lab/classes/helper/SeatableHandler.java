@@ -14,10 +14,12 @@ public class SeatableHandler implements ISeatHandler {
    public void reserveSeat(Being being, IReservingSeat obj) {
       currSeat = obj.reserveFreeSeat(being);
       parent = obj;
+      Log.Console.printf("%s присел на объект %s.\n", being, getSeat());
    }
    @Override
    public void reserveSeat(Being being, IHavingSeat obj) {
       currSeat = obj.getFreeSeat(being);
+      Log.Console.printf("%s присел на объект %s.\n", being, getSeat());
    }
    @Override
    public ISeatable getSeat() {
@@ -30,6 +32,9 @@ public class SeatableHandler implements ISeatHandler {
             parent.notifyOnExit(being);
          }
          getSeat().setState(false);
+         Log.Console.printf("%s встал с объекта %s.\n", being, getSeat());
+         currSeat = null;
+         parent = null;
       } else {
          Log.Console.printf(Log.warnDecorate("%s уже не сидит на чём-либо.\n"), being);
       }

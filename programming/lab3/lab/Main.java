@@ -47,7 +47,6 @@ class Main {
 
       Moon moon = new Moon();
       rocket.setLocation(moon);
-
       neznayka.getUp();
       ponchik.getUp();
 

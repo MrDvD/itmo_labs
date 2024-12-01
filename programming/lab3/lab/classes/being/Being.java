@@ -25,7 +25,7 @@ public abstract class Being implements ILocatable, IMeasurable {
    private byte hunger = 100;
    private Effect effect = Effect.NORMAL;
    private Location location;
-   private ISeatHandler seat;
+   private ISeatHandler seat = new SeatableHandler();
 
    protected Being(String name, String type, double size) {
       this.name = name;
@@ -123,27 +123,14 @@ public abstract class Being implements ILocatable, IMeasurable {
    public ISeatHandler getSeatHandler() {
       return seat;
    }
-   public void setSeatHandler(ISeatHandler obj) {
-      seat = obj;
-   }
    public void seat(IHavingSeat obj) {
-      setSeatHandler(new SeatableHandler());
       getSeatHandler().reserveSeat(this, obj);
-      Log.Console.printf("%s присел на объект %s.\n", this, getSeatHandler().getSeat());
    }
    public void seat(IReservingSeat obj) {
-      setSeatHandler(new SeatableHandler());
       getSeatHandler().reserveSeat(this, obj);
-      Log.Console.printf("%s присел на объект %s.\n", this, getSeatHandler().getSeat());
    }
    public void getUp() {
-      if (getSeatHandler() != null) {
-         getSeatHandler().exitSeat(this);
-         Log.Console.printf("%s встал с объекта %s.\n", this, getSeatHandler().getSeat());
-         setSeatHandler(null);
-      } else {
-         Log.Console.printf(Log.warnDecorate("%s осознал, что уже стоит.\n"), this);
-      }
+      getSeatHandler().exitSeat(this);
    }
    public void sleep() {
       try {
@@ -155,7 +142,7 @@ public abstract class Being implements ILocatable, IMeasurable {
    }
    public void goTo(Location location) {
       if (getEffect() != Effect.UNCONSCIOUS) {
-         if (getSeatHandler() != null) {
+         if (getSeatHandler().getSeat() != null) {
             throw new BusyWithSeatable(this);
          }
          try {
