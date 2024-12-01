@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lab.classes.Log;
+import lab.classes.exception.NegativeBalance;
 import lab.enums.Effect;
 import lab.interfaces.ICapitalisticActive;
 import lab.interfaces.ICapitalisticPassive;
@@ -36,25 +37,29 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       return socialStatusList;
    }
    @Override
-   public void setBalance(float value) {
-      balance = value;
+   public void setBalance(float value) throws NegativeBalance {
+      if (value >= 0) {
+         balance = value;
+      } else {
+         throw new NegativeBalance(this);
+      }
    }
    @Override
    public float getBalance() {
       return balance;
    }
    @Override
-   public void sell(ICapitalisticPassive obj) {
+   public void sell(ICapitalisticPassive obj) throws NegativeBalance {
       setBalance(getBalance() + obj.cost());
       Log.Console.printf("%s продал объект %s, получив %.2f у.е.\n", this, obj, obj.cost());
    }
    @Override
    public void buy(ICapitalisticPassive obj) {
-      if (getBalance() >= obj.cost()) {
+      try {
          setBalance(getBalance() - obj.cost());
          Log.Console.printf("%s купил объект %s, потратив %.2f у.е.\n", this, obj, obj.cost());
-      } else {
-         // throw an error?
+      } catch (NegativeBalance e) {
+         Log.Console.printf(Log.errDecorate("У %s недостаточно средств для покупки %s.\n"), this, obj);
       }
    }
    @Override
@@ -67,7 +72,8 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
       Log.Console.printf("У %s появилась новая работа: %s.\n", this, duty.name());
    }
    @Override
-   public void work() {
+   public void work() throws NegativeBalance {
+      // effect
       if (getEffect() != Effect.UNCONSCIOUS) {
          workingDays++;
          Log.Console.printf("%s поработал %d-й день в качестве %s.\n", this, workingDays, getDuty().name());
@@ -79,7 +85,7 @@ public class LittleGuy extends Being implements ICapitalisticActive, ISociable {
          // hunger
          setHunger((byte) (getHunger() + 50 < 256 ? getHunger() + 50: 255));
       } else {
-         // throw an error
+         Log.Console.printf(Log.errDecorate("Состояние %s блокирует возможность работы для %s.\n"), this.getEffect(), this);
       }
    }
    @Override

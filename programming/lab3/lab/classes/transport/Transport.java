@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import lab.classes.being.Being;
+import lab.classes.exception.AlreadyInitialized;
 import lab.classes.location.Location;
 import lab.interfaces.ILocatable;
 import lab.interfaces.IReservingSeat;
@@ -21,7 +22,7 @@ public abstract class Transport implements ILocatable, IReservingSeat {
       this.name = name;
       this.location = location;
    }
-   public abstract void initSeats(int seatsCount, double size);
+   public abstract void initSeats(int seatsCount, double size) throws AlreadyInitialized;
    public Set<Being> getPassengerSet() {
       return passengerSet;
    }

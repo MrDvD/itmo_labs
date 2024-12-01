@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import lab.classes.being.Being;
+import lab.classes.exception.AlreadyInitialized;
 import lab.interfaces.IHavingSeat;
 import lab.interfaces.ISeatable;
 
@@ -15,13 +16,13 @@ public class Table extends Container implements IHavingSeat {
    public Table(double size, float cost) {
       super("Стол", size, cost);
    }
-   public void initChairs(int num, double size) {
-      if (chairs.size() == 0) {
+   public void initChairs(int num, double size) throws AlreadyInitialized {
+      if (chairs.size() > 0) {
+         throw new AlreadyInitialized("Массив стульев");
+      } else {
          for (int i = 0; i < num; i++) {
             chairs.add(new Chair(size));
          }
-      } else {
-         // show exception (already initialized)
       }
    }
    @Override

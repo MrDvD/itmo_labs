@@ -3,13 +3,15 @@ package lab;
 import lab.classes.Log;
 import lab.classes.being.*;
 import lab.classes.container.*;
+import lab.classes.exception.AlreadyInitialized;
+import lab.classes.exception.NegativeBalance;
 import lab.classes.location.*;
 import lab.classes.transport.Rocket;
 import lab.enums.*;
 import lab.records.*;
 
 class Main {
-   public static void main(String[] args) {
+   public static void main(String[] args) throws NegativeBalance, AlreadyInitialized {
       Planet earth = new Planet("Земля");
       LittleGuy piluylkin = new LittleGuy("Пилюлькин", 140.0);
       piluylkin.setLocation(earth);
