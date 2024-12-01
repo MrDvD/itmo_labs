@@ -27,13 +27,17 @@ public abstract class Container implements ICapitalisticPassive, IMeasurable {
       if (getItemSet().contains(obj)) {
          Log.Console.printf(Log.warnDecorate("В %s уже есть объект %s.\n"), this, obj);
       } else {
-         if (obj.canFit(spaceLeft)) {
-            String objState = this.toString();
-            getItemSet().add(obj);
-            spaceLeft -= obj.getSize();
-            Log.Console.printf("В %s помещён объект %s.\n", objState, obj);
-         } else {
-            Log.Console.printf(Log.warnDecorate("Объект %s уже есть в %s.\n"), obj, this);
+         try {
+            if (obj.canFit(spaceLeft)) {
+               String objState = this.toString();
+               getItemSet().add(obj);
+               spaceLeft -= obj.getSize();
+               Log.Console.printf("В %s помещён объект %s.\n", objState, obj);
+            } else {
+               Log.Console.printf(Log.warnDecorate("Объект %s уже есть в %s.\n"), obj, this);
+            }
+         } catch (NullPointerException e) {
+            Log.Console.printf(Log.errDecorate("Невозможно добавить пустой объект в %s.\n"), this);
          }
       }
    }

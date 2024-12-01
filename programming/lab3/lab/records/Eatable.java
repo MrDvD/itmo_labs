@@ -4,6 +4,9 @@ import lab.interfaces.ICapitalisticPassive;
 import lab.interfaces.IMeasurable;
 
 public record Eatable(String name, byte saturation, double size, float cost) implements ICapitalisticPassive, IMeasurable {
+   public Eatable(String name, byte saturation) {
+      this(name, saturation, Math.random() * 6 + 20, ICapitalisticPassive.DEFAULT_COST);
+   }
    public Eatable(String name, byte saturation, double size) {
       this(name, saturation, size, ICapitalisticPassive.DEFAULT_COST);
    }

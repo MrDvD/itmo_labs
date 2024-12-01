@@ -96,7 +96,6 @@ interface IHavingSeat {
 
 interface ICapitalisticPassive {
    DEFAULT_COST: float
-   +ICapitalisticActive getOwner()
    +float cost()
 }
 
@@ -169,6 +168,7 @@ class Eatable << (R,#FF7700) >> {
    -cost: float
    +Eatable(name: String, saturation: byte)
    +Eatable(name: String, saturation: byte, cost: float)
+   +Eatable(name: String, saturation: byte, size: double, cost: float)
 }
 
 class Duty << (R,#FF7700) >> {

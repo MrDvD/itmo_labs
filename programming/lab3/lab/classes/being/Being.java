@@ -37,18 +37,16 @@ public abstract class Being implements ILocatable, IMeasurable {
    }
    protected void setHunger(byte hunger) {
       this.hunger = hunger;
-      // effects
-      updateHungerEffect();
    }
    protected void addHunger(byte hunger) {
-      if ((hunger & 0xFF) + getHunger() > 255) {
+      if ((hunger & 0xFF) + (getHunger() & 0xFF) > 255) {
          throw new HungerOverflow(this);
       } else {
          setHunger((byte) (hunger + getHunger()));
       }
    }
    protected void subHunger(byte hunger) {
-      if (getHunger() - (hunger & 0xFF) < 0) {
+      if ((getHunger() & 0xFF) < (hunger & 0xFF)) {
          throw new HungerOverflow(this);
       } else {
          setHunger((byte) (getHunger() - hunger));
@@ -90,9 +88,14 @@ public abstract class Being implements ILocatable, IMeasurable {
          } else {
             Log.Console.printf("%s съел %s.\n", this, obj.name());
          }
+         updateHungerEffect();
          return true;
-      } catch (HungerOverflow e) {
-         Log.Console.printf(Log.errDecorate("Шкала насыщения сущности %s переполнена, невозможно съесть %s.\n"), this, obj);
+      } catch (HungerOverflow | NullPointerException e) {
+         if (e instanceof HungerOverflow) {
+            Log.Console.printf(Log.errDecorate("Шкала насыщения сущности %s переполнена, невозможно съесть %s.\n"), this, obj);
+         } else if (e instanceof NullPointerException) {
+            Log.Console.println(Log.errDecorate("Невозможно съесть пустую еду."));
+         }
          return false;
       }
    }

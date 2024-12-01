@@ -38,9 +38,8 @@ class Main {
       LittleGuy neznayka = new LittleGuy("Незнайка", 141.0);
       neznayka.setLocation(earth);
       Rocket rocket = new Rocket(earth, 6, 200.0);
-      for (int i = 0; i < 7; i++) {
+      for (int i = 0; i < 4; i++) {
          rocket.getLuggage().addItem(new Eatable("Картошка", (byte) 40, 40.2));
-
       }
       neznayka.seat(rocket);
       ponchik.seat(rocket);
@@ -74,17 +73,17 @@ class Main {
       lospaganos.setParent(underground);
       ponchik.goTo(lospaganos);
       
-      for (int i = 0; i < 25; i++) {
+      for (int i = 0; i < 10; i++) {
          ponchik.sell(new Eatable("Соль", (byte) 20, 12, 120));
       }
-      Eatable sushi = new Eatable("Суши", (byte) 255, 10, 3000);
-      ponchik.buy(sushi);
+      ponchik.buy(new Eatable("Суши", (byte) 255, 10, 1200));
       Log.Console.printf("Текущий баланс %s: %.2f у.е.\n", ponchik, ponchik.getBalance());
 
-      Duty worker = new Duty("Рабочий чёртового колеса", 100, 7);
+      Duty worker = new Duty("Рабочий чёртового колеса", 120.5f, 5);
       ponchik.setDuty(worker);
-      for (int i = 0; i < 9; i++) {
+      for (int i = 0; i < 7; i++) {
          ponchik.work();
+         ponchik.eat(new Eatable("Съестное", (byte) 35));
       }
       SocialOrganization freeSpinners = new SocialOrganization("Общество свободных крутильщиков");
       ponchik.addSocialStatus(new SocialStatus("Член", freeSpinners));
