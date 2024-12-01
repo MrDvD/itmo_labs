@@ -5,6 +5,7 @@ import java.util.Set;
 
 import lab.classes.Log;
 import lab.classes.container.Container;
+import lab.classes.exception.BusyWithSeatable;
 import lab.classes.helper.SeatableHandler;
 import lab.classes.location.Location;
 import lab.enums.Effect;
@@ -113,23 +114,27 @@ public abstract class Being implements ILocatable, IMeasurable {
          obj.delItem(i);
       }
    }
+   public ISeatHandler getSeatHandler() {
+      return seat;
+   }
+   public void setSeatHandler(ISeatHandler obj) {
+      seat = obj;
+   }
    public void seat(IHavingSeat obj) {
-      SeatableHandler handler = new SeatableHandler();
-      handler.reserveSeat(this, obj);
-      seat = handler;
-      Log.Console.printf("%s присел на объект %s.\n", this, seat.getSeat());
+      setSeatHandler(new SeatableHandler());
+      getSeatHandler().reserveSeat(this, obj);
+      Log.Console.printf("%s присел на объект %s.\n", this, getSeatHandler().getSeat());
    }
    public void seat(IReservingSeat obj) {
-      SeatableHandler handler = new SeatableHandler();
-      handler.reserveSeat(this, obj);
-      seat = handler;
-      Log.Console.printf("%s присел на объект %s.\n", this, seat.getSeat());
+      setSeatHandler(new SeatableHandler());
+      getSeatHandler().reserveSeat(this, obj);
+      Log.Console.printf("%s присел на объект %s.\n", this, getSeatHandler().getSeat());
    }
    public void getUp() {
-      if (seat != null) {
-         seat.exitSeat(this);
-         Log.Console.printf("%s встал с объекта %s.\n", this, seat.getSeat());
-         seat = null;
+      if (getSeatHandler() != null) {
+         getSeatHandler().exitSeat(this);
+         Log.Console.printf("%s встал с объекта %s.\n", this, getSeatHandler().getSeat());
+         setSeatHandler(null);
       } else {
          Log.Console.printf(Log.warnDecorate("%s осознал, что уже стоит.\n"), this);
       }
@@ -138,19 +143,19 @@ public abstract class Being implements ILocatable, IMeasurable {
       addHunger((byte) 35);
       Log.Console.printf("%s немного отдохнул.\n", this);
    }
-   public void setLocation(Location location, boolean force) {
-      if (!force && seat != null) {
-         // throw exception
+   public void goTo(Location location) throws BusyWithSeatable {
+      if (getSeatHandler() != null) {
+         throw new BusyWithSeatable(this);
       }
+      setLocation(location);
+   }
+   @Override
+   public void setLocation(Location location) {
       if (getLocation() != null) {
          this.location.delVisitor(this);
       }
       this.location = location;
       this.location.addVisitor(this);
-   }
-   @Override
-   public void setLocation(Location location) {
-      setLocation(location, false);
    }
    @Override
    public Location getLocation() {

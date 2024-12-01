@@ -47,7 +47,7 @@ public abstract class Transport implements ILocatable, IReservingSeat {
    public void setLocation(Location obj) {
       location = obj;
       for (Being b : getPassengerSet()) {
-         b.setLocation(obj, true);
+         b.setLocation(obj);
       }
    }
    @Override

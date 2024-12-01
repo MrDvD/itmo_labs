@@ -16,7 +16,7 @@ public class Table extends Container implements IHavingSeat {
    public Table(double size, float cost) {
       super("Стол", size, cost);
    }
-   public void initChairs(int num, double size) throws AlreadyInitialized {
+   public void initChairs(int num, double size) {
       if (chairs.size() > 0) {
          throw new AlreadyInitialized("Массив стульев");
       } else {
