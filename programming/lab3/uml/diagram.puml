@@ -52,6 +52,10 @@ Location <|-- Underground
 Location <|-- Town
 Location <|-- Cave
 
+Seat <|-- PassengerSeat
+
+IReservingSeat <|.. Transport : implements
+
 Log +-- Console
 
 "Exception" <|-- BusyWithSeatable
@@ -131,7 +135,7 @@ interface ISeatHandler {
 interface ISociable {
    +void addSocialStatus(obj: SocialStatus)
    +void popSocialStatus()
-   +List<SocialStatus> getSocialStatusList()
+   +List<SocialStatus> getSocialStatuses()
 }
 
 interface IReservingSeat {
@@ -231,8 +235,8 @@ abstract class Transport {
    -seatList: List<Seat>
    #Transport(name: String, location: Location)
    {abstract} void initSeats(seatsCount: int, size: double)
-   +Set<Being> getPassengerSet()
-   +List<Seat> getSeatList()
+   +Set<Being> getPassengers()
+   +List<Seat> getSeats()
 }
 
 abstract class Container {
@@ -245,7 +249,7 @@ abstract class Container {
    +Container(name: String, size: double, cost: float)
    +void addItem(obj: IMeasurable)
    +void delItem(obj: IMeasurable)
-   +Set<IMeasurable> getItemSet()
+   +Set<IMeasurable> getItems()
 }
 
 class Table {
@@ -306,7 +310,7 @@ abstract class Location {
    +String getName()
    +void addVisitor(obj: Being)
    +void delVisitor(obj: Being)
-   +Set<Being> getVisitorSet()
+   +Set<Being> getVisitors()
    +String toString()
 }
 

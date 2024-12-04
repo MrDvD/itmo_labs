@@ -25,12 +25,12 @@ class Main {
       table.initChairs(4, 200.0);
       ponchik.seat(table);
 
-      Bowl bowl_borscht = new Bowl(25.0);
-      bowl_borscht.addItem(new Eatable("Борщ", (byte) 45, 23.3));
-      table.addItem(bowl_borscht);
-      Bowl bowl_porridge = new Bowl(26.0);
-      bowl_porridge.addItem(new Eatable("Каша", (byte) 40, 24.7));
-      table.addItem(bowl_porridge);
+      Bowl bowlBorscht = new Bowl(25.0);
+      bowlBorscht.addItem(new Eatable("Борщ", (byte) 45, 23.3));
+      table.addItem(bowlBorscht);
+      Bowl bowlPorridge = new Bowl(26.0);
+      bowlPorridge.addItem(new Eatable("Каша", (byte) 40, 24.7));
+      table.addItem(bowlPorridge);
 
       ponchik.eatIterative(table, (byte) 180);
       ponchik.getUp();
