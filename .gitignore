@@ -1,5 +1,5 @@
-lab*/*.aux
-lab*/*.log
+computer\ science/annotations
 *.class
 *.jar
 *.docx
+*.doc
