@@ -1,6 +1,113 @@
 @startuml name
 
-class Command {
+Command <-- HelpCommand : implements
+Command <-- InfoCommand : implements
+Command <-- ShowCommand : implements
+Command <-- MinByPriceCommand : implements
+Command <-- CountGreaterThanEventCommand : implements
+Command <-- PrintFieldDescendingTypeCommand : implements
+Command <-- AddCommand : implements
+Command <-- AddIfMaxCommand : implements
+Command <-- UpdateCommand : implements
+Command <-- RemoveByIdCommand : implements
+Command <-- RemoveAtCommand : implements
+Command <-- RemoveLastCommand : implements
+Command <-- ClearCommand : implements
+Command <-- SaveCommand : implements
+Command <-- ExecuteScriptCommand : implements
+Command <-- ExitCommand : implements
+
+OutputDevice <.. Console : implements
+OutputDevice <.. XMLStorage : implements
+CollectionWorker <.. TicketCollection : implements
+Shell <-- TicketShell
+
+class Console
+class TicketCollection
+class TicketShell
+
+abstract class Shell {
+   +help(): void
+   +run(cmd: Command)
+   +close(): void
+}
+
+class TicketShell {
+   +TicketShell()
+   +saveCollection(): void
+}
+
+class HelpCommand {
+   +HelpCommand(out: OutputDevice)
+}
+
+class InfoCommand {
+   +InfoCommand(out: OutputDevice)
+}
+
+class ShowCommand {
+   +ShowCommand(collection: CollectionWorker, out: OutputDevice)
+}
+
+class MinByPriceCommand {
+   +MinByPriceCommand(collection: CollectionWorker, out: OutputDevice)
+}
+
+class CountGreaterThanEventCommand {
+   +CountGreaterThanEventCommand(collection: CollectionWorker, out: OutputDevice)
+}
+
+class PrintFieldDescendingTypeCommand {
+   +PrintFieldDescendingTypeCommand(collection: CollectionWorker, out: OutputDevice)
+}
+
+class AddCommand {
+   +AddCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class AddIfMaxCommand {
+   +AddIfMaxCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class UpdateCommand {
+   +UpdateCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class RemoveByIdCommand {
+   +RemoveByIdCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class RemoveAtCommand {
+   +RemoveAtCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class RemoveLastCommand {
+   +RemoveLastCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class ClearCommand {
+   +ClearCommand(collection: CollectionWorker, log: OutputDevice)
+}
+
+class TicketCollection {
+   +add(ifMax: boolean): void
+   +removeAt(idx: int): void
+   +removeLast(): void
+   +sort(field: TicketField, reverse: boolean): ArrayList
+}
+
+interface OutputDevice {
+   +write(str: String): void
+}
+
+interface CollectionWorker {
+   +add(): void
+   +update(id: Long): void
+   +remove(id: Long): void
+   +clear(): void
+}
+
+interface Command {
    +execute(): void
    +description(): String
 }
@@ -34,6 +141,14 @@ enum EventType {
    CONCERT
    BASEBALL
    OPERA
+}
+
+enum TicketField {
+   NAME
+   CREATION_DATE
+   PRICE
+   TYPE
+   EVENT
 }
 
 @enduml

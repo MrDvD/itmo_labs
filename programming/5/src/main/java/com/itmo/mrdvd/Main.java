@@ -4,10 +4,9 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 public class Main {
-  public static void main(String[] args) throws FileNotFoundException, IOException {
+  public static void main(String[] args) throws FileNotFoundException {
     String envVar = "CONSOLE_CPATH";
     String collectionPath = System.getenv(envVar);
     if (collectionPath == null) {
@@ -16,11 +15,11 @@ public class Main {
         if (new File(collectionPath).isFile()) {
             FileInputStream file = new FileInputStream(collectionPath);
             BufferedInputStream in = new BufferedInputStream(file);
-            int ch = in.read();
-            while (ch != -1) {
-                System.out.print((char) ch);
-                ch = in.read();
-            }
+            // int ch = in.read();
+            // while (ch != -1) {
+            //     System.out.print((char) ch);
+            //     ch = in.read();
+            // }
             in.close();
         } else {
             System.out.format("[ERROR] File '%s' does not exist.\n", collectionPath); // what's with permissions?   
