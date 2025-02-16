@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class InfoCommand {
+public class InfoCommand implements Command  {
 
 }

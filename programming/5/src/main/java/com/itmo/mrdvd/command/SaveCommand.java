@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class SaveCommand {
+public class SaveCommand implements Command  {
 
 }

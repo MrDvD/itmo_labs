@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class CountGreaterThanEventCommand {
+public class CountGreaterThanEventCommand implements Command {
 
 }

@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class ClearCommand {
+public class ClearCommand implements Command  {
 
 }

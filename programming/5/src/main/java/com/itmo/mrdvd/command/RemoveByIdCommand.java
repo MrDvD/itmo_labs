@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class RemoveByIdCommand {
+public class RemoveByIdCommand implements Command  {
 
 }

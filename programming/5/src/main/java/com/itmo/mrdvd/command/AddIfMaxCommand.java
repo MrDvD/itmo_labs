@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class AddIfMaxCommand {
+public class AddIfMaxCommand implements Command  {
 
 }

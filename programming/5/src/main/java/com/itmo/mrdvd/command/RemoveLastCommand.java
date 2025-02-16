@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class RemoveLastCommand {
+public class RemoveLastCommand implements Command  {
 
 }
