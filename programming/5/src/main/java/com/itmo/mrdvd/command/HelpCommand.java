@@ -13,12 +13,16 @@ public class HelpCommand implements Command {
    @Override
    public void execute(String[] params) {
       for (Command cmd : shell.getCommands().values()) {
-         out.write(String.format("%s\t%s\n", cmd.name(), cmd.description()));
+         out.write(String.format("%-30s\t%s\n", cmd.signature(), cmd.description()));
       }
    }
    @Override
    public String name() {
       return "help";
+   }
+   @Override
+   public String signature() {
+      return name();
    }
    @Override
    public String description() {

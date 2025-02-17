@@ -2,6 +2,8 @@ package com.itmo.mrdvd.object;
 
 import java.time.LocalDateTime;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 public class Ticket implements Validatable {
    private Long id;
    private String name;
@@ -10,22 +12,12 @@ public class Ticket implements Validatable {
    private int price;
    private TicketType type;
    private Event event;
-   // public Ticket(Long id, String name, Coordinates coords, LocalDateTime date, int price, TicketType type, Event event) {
-   //    this.id = id;
-   //    this.name = name;
-   //    this.coordinates = coords;
-   //    this.creationDate = date;
-   //    this.price = price;
-   //    this.type = type;
-   //    this.event = event;
-   //    // GENERATE ID
-   // }
    public static class TicketValidator {
+      public static boolean validateId(Long id) {
+         return id != null && id > 0;
+      }
       public static boolean validateName(String name) {
-         if (name == null) {
-            return false;
-         }
-         return true;
+         return name != null && !name.isBlank();
       }
       public static boolean validateCoordinates(Coordinates coords) {
          return coords != null && coords.isValid();
@@ -33,11 +25,37 @@ public class Ticket implements Validatable {
       public static boolean validatePrice(int cost) {
          return cost > 0;
       }
+      public static boolean validateType(TicketType type) {
+         return type != null;
+      }
+      public static boolean validateEvent(Event event) {
+         return event != null && event.isValid();
+      }
+   }
+   public static class TicketParser {
+      public static Long parseId(String id) {
+         long result = NumberUtils.toLong(id);
+         return (result == 0 ? null : result);
+      }
+      public static int parsePrice(String price) {
+         return NumberUtils.toInt(price, -1); 
+      }
+      public static TicketType parseType(String type) {
+         for (TicketType obj : TicketType.values()) {
+            if (type.equalsIgnoreCase(obj.name())) {
+               return obj;
+            }
+         }
+         return null;
+      }
    }
    @Override
    public boolean isValid() {
       return TicketValidator.validateName(getName()) &&
-             TicketValidator.validateCoordinates(getCoordinates());
+             TicketValidator.validateCoordinates(getCoordinates()) &&
+             TicketValidator.validatePrice(getPrice()) &&
+             TicketValidator.validateType(getType()) &&
+             TicketValidator.validateEvent(getEvent());
    }
    public int setName(String name) {
       if (TicketValidator.validateName(name)) {
@@ -60,25 +78,19 @@ public class Ticket implements Validatable {
       }
       return -1;
    }
-   public int setPrice(String price) {
-      // parse
-      return setPrice(price);
-   }
    public int setType(TicketType type) {
-      this.type = type;
-      return 0;
-   }
-   public int setType(String type) {
-      // parse
-      return setType(type);
+      if (TicketValidator.validateType(type)) {
+         this.type = type;
+         return 0;
+      }
+      return -1;
    }
    public int setEvent(Event event) {
-      this.event = event;
-      return 0;
-   }
-   public int setEvent(String type) {
-      // parse
-      return setEvent(type);
+      if (TicketValidator.validateEvent(event)) {
+         this.event = event;
+         return 0;
+      }
+      return -1;
    }
    public Long getId() {
       return id;

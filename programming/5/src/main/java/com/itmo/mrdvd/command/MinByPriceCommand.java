@@ -1,5 +1,5 @@
 package com.itmo.mrdvd.command;
 
-public class MinByPriceCommand implements Command  {
+// public class MinByPriceCommand implements Command  {
 
-}
+// }

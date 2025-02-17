@@ -39,7 +39,7 @@ public class TicketCollection implements CollectionWorker<Ticket> {
    // -2: not existing id object
    @Override
    public int update(Long id, Ticket obj) {
-      if (id >= tickets.size() || !idToIndexTable.containsKey(id)) {
+      if (!exists(id)) {
          return -2;
       }
       if (obj.isValid()) {
@@ -53,13 +53,17 @@ public class TicketCollection implements CollectionWorker<Ticket> {
    // -2: not existing id object
    @Override
    public int remove(Long id) {
-      if (!idToIndexTable.containsKey(id)) {
+      if (!exists(id)) {
          return -2;
       }
       tickets.set(idToIndexTable.get(id), null);
       freeIndexes.add(idToIndexTable.get(id));
       idToIndexTable.remove(id);
       return 0;
+   }
+   @Override
+   public boolean exists(Long id) {
+      return idToIndexTable.containsKey(id);
    }
    @Override
    public void clear() {

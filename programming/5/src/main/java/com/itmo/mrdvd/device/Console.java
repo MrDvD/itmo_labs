@@ -1,21 +1,26 @@
 package com.itmo.mrdvd.device;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
+import java.util.Scanner;
 
 public class Console implements InputDevice, OutputDevice {
-   private BufferedInputStream in;
+   private Scanner in;
    private OutputStreamWriter out;
    public Console() {
-      this.in = new BufferedInputStream(System.in);
       this.out = new OutputStreamWriter(System.out);
+      initIn();
    }
+   private void initIn() {
+      this.in = new Scanner(System.in);
+   }
+   //  0: success
+   // -1: IOException
    @Override
    public int write(String str) {
       try {
          out.write(str);
+         out.flush();
          return 0;
       } catch (IOException e) {
          return -1;
@@ -27,16 +32,28 @@ public class Console implements InputDevice, OutputDevice {
    }
    @Override
    public String read() {
-      try {
-         return new String(in.readAllBytes(), StandardCharsets.UTF_8);
-      } catch (IOException e) {
-         writeln("[ERROR]: Непредвиденная ошибка чтения из консоли.");
-         return null;
+      if (in.hasNextLine()) {
+         return in.nextLine();
       }
+      writeln("");
+      initIn();
+      return "\n";
    }
    @Override
    public String read(String msg) {
       write(msg);
       return read();
+   }
+   //  0: success
+   // -1: IOException
+   @Override
+   public int close() {
+      try {
+         this.in.close();
+         this.out.close();
+         return 0;
+      } catch(IOException e) {
+         return -1;
+      }
    }
 }

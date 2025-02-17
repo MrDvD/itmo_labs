@@ -1,51 +1,54 @@
 package com.itmo.mrdvd.object;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 public class Coordinates implements Validatable {
-   private Long x, y;
+   private Float x, y;
    public static class CoordinatesValidator {
-      public static boolean validateX(String x) {
+      public static boolean validateX(Float x) {
          return x != null;
       }
-      public static boolean validateX(Long x) {
-         return x != null;
-      }
-      public static boolean validateY(String y) {
+      public static boolean validateY(Float y) {
          return y != null;
       }
-      public static boolean validateY(Long y) {
-         return y != null;
+   }
+   public static class CoordinatesParser {
+      public static Float parseX(String x) {
+         if (NumberUtils.isParsable(x)) {
+            return NumberUtils.toFloat(x);
+         }
+         return null;
+      }
+      public static Float parseY(String y) {
+         if (y != null && !y.isBlank() && NumberUtils.isParsable(y)) {
+            return NumberUtils.toFloat(y);
+         }
+         return null;
       }
    }
    @Override
    public boolean isValid() {
-      return CoordinatesValidator.validateX(getX()) && CoordinatesValidator.validateY(getY());
+      return CoordinatesValidator.validateX(getX()) &&
+             CoordinatesValidator.validateY(getY());
    }
-   public int setX(Long x) {
+   public int setX(Float x) {
       if (CoordinatesValidator.validateX(x)) {
          this.x = x;
          return 0;
       }
       return -1;
    }
-   public int setX(String x) {
-      // parse
-      return setX(x);
-   }
-   public int setY(Long y) {
+   public int setY(Float y) {
       if (CoordinatesValidator.validateY(y)) {
          this.y = y;
          return 0;
       }
       return -1;
    }
-   public int setY(String y) {
-      // parse
-      return setY(y);
-   }
-   public Long getX() {
+   public Float getX() {
       return x;
    }
-   public Long getY() {
+   public Float getY() {
       return y;
    }
 }

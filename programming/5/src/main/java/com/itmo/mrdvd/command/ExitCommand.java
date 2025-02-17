@@ -16,6 +16,10 @@ public class ExitCommand implements Command  {
       return "exit";
    }
    @Override
+   public String signature() {
+      return name();
+   }
+   @Override
    public String description() {
       return "завершить программу (без сохранения в файл)";
    }

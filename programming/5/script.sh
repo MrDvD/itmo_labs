@@ -30,6 +30,14 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 # </plugin>
 # <plugin>
 
+# add Apache Commons Lang module
+
+# <dependency>
+#   <groupId>org.apache.commons</groupId>
+#   <artifactId>commons-lang3</artifactId>
+#   <version>3.17.0</version>
+# </dependency>
+
 # compile maven project to single JAR file
 # the result will be placed into the target/ dir
 mvn clean fmt:format compile assembly:single
