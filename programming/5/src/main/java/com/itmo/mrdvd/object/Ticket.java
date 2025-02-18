@@ -16,6 +16,9 @@ public class Ticket implements Validatable {
       public static boolean validateId(Long id) {
          return id != null && id > 0;
       }
+      public static boolean validateCreationDate(LocalDateTime creationDate) {
+         return 
+      }
       public static boolean validateName(String name) {
          return name != null && !name.isBlank();
       }
@@ -51,11 +54,19 @@ public class Ticket implements Validatable {
    }
    @Override
    public boolean isValid() {
-      return TicketValidator.validateName(getName()) &&
+      return TicketValidator.validateId(getId()) &&
+             TicketValidator.validateName(getName()) &&
              TicketValidator.validateCoordinates(getCoordinates()) &&
              TicketValidator.validatePrice(getPrice()) &&
              TicketValidator.validateType(getType()) &&
              TicketValidator.validateEvent(getEvent());
+   }
+   public int setId(Long id) {
+      if (TicketValidator.validateId(id)) {
+         this.id = id;
+         return 0;
+      }
+      return -1;
    }
    public int setName(String name) {
       if (TicketValidator.validateName(name)) {

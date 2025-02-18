@@ -30,7 +30,7 @@ public class UpdateCommand implements Command {
       if (!TicketValidator.validateId(id)) {
          return -1;
       }
-      if (!collect.exists(id)) {
+      if (!collect.getIdGenerator().isTaken(id)) {
          return -2;
       }
       return 0;
@@ -42,57 +42,64 @@ public class UpdateCommand implements Command {
          switch (validationResult) {
             case -1:
                out.writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
-               break;
+               return;
             case -2:
                out.writeln("[ERROR] Указанный id не найден в коллекции.");
-               break;
+               return;
             default:
                out.writeln("[ERROR] Неправильный формат ввода параметров команды.");
-               break;
+               return;
          }
       }
-      Ticket oldTicket = collect
-      Ticket ticket = new Ticket();
-      String name = in.read(String.format("Введите название билета [%s] > "), );
-      while (ticket.setName(name) != 0) {
+      Ticket ticket = collect.get(TicketParser.parseId(params[0]));
+      String name = in.read(String.format("Введите название билета [%s] > ", ticket.getName()));
+      while (!name.isEmpty() && ticket.setName(name) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
-         name = in.read("Введите название билета > ");
+         name = in.read(String.format("Введите название билета [%s] > ", ticket.getName()));
       }
       Coordinates coords = new Coordinates();
-      Float x = CoordinatesParser.parseX(in.read("Введите координату X > "));
-      while (coords.setX(x) != 0) {
+      String xString = in.read(String.format("Введите координату X [%f] > ", ticket.getCoordinates().getX()));
+      Float x = CoordinatesParser.parseX(xString);
+      while (!xString.isEmpty() && coords.setX(x) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: введите число (возможно, дробное).");
-         x = CoordinatesParser.parseX(in.read("Введите координату X > "));
+         xString = in.read(String.format("Введите координату X [%f] > ", ticket.getCoordinates().getX()));
+         x = CoordinatesParser.parseX(xString);
       }
-      Float y = CoordinatesParser.parseY(in.read("Введите координату Y > "));
-      while (coords.setY(y) != 0) {
+      String yString = in.read(String.format("Введите координату Y [%f] > ", ticket.getCoordinates().getY()));
+      Float y = CoordinatesParser.parseY(yString);
+      while (!yString.isEmpty() && coords.setY(y) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: введите число (возможно, дробное).");
-         y = CoordinatesParser.parseY(in.read("Введите координату Y > "));
+         yString = in.read(String.format("Введите координату Y [%f] > ", ticket.getCoordinates().getY()));
+         y = CoordinatesParser.parseY(yString);
       }
       ticket.setCoordinates(coords);
-      int price = TicketParser.parsePrice(in.read("Введите стоимость билета (в у.е.) > "));
-      while (ticket.setPrice(price) != 0) {
+      String priceString = in.read(String.format("Введите стоимость билета (в у.е.) [%d] > ", ticket.getPrice()));
+      int price = TicketParser.parsePrice(priceString);
+      while (!priceString.isEmpty() && ticket.setPrice(price) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: введите натуральное число.");
-         price = TicketParser.parsePrice(in.read("Введите стоимость билета (в у.е.) > "));
+         priceString = in.read(String.format("Введите стоимость билета (в у.е.) [%d] > ", ticket.getPrice()));
+         price = TicketParser.parsePrice(priceString);
       }
       String typeMessage = "Доступные типы билета:\n";
       for (TicketType type : TicketType.values()) {
          typeMessage += "* " + type.name() + "\n";
       }
-      typeMessage += "Введите тип билета > ";
-      TicketType ticketType = TicketParser.parseType(in.read(typeMessage));
-      while (ticket.setType(ticketType) != 0) {
+      typeMessage += String.format("Введите тип билета [%s] > ", ticket.getType().name());
+      String ticketTypeString = in.read(typeMessage);
+      TicketType ticketType = TicketParser.parseType(ticketTypeString);
+      while (!ticketTypeString.isEmpty() && ticket.setType(ticketType) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: указанный тип билета не найден.");
-         ticketType = TicketParser.parseType(in.read(typeMessage));
+         ticketTypeString = in.read(typeMessage);
+         ticketType = TicketParser.parseType(ticketTypeString);
       }
       Event event = new Event();
-      String eventName = in.read("Введите название мероприятия > ");
-      while (event.setName(eventName) != 0) {
+      String eventName = in.read(String.format("Введите название мероприятия [%s] > ", ticket.getEvent().getName()));
+      while (!eventName.isEmpty() && event.setName(eventName) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
-         eventName = in.read("Введите название мероприятия > ");
+         eventName = in.read(String.format("Введите название мероприятия [%s] > ", ticket.getEvent().getName()));
       }
-      String eventDesc = in.read("Введите небольшое описание мероприятия > ");
-      while (event.setName(eventDesc) != 0) {
+      String eventDesc = in.read(String.format("Введите небольшое описание мероприятия [%s] > ", ticket.getEvent().getDescription()));
+      while (!eventDesc.isEmpty() && event.setName(eventDesc) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.");
          eventDesc = in.read("Введите небольшое описание мероприятия > ");
       }
@@ -100,11 +107,13 @@ public class UpdateCommand implements Command {
       for (EventType type : EventType.values()) {
          eventMessage += "* " + type.name() + "\n";
       }
-      eventMessage += "Введите вид мероприятия > ";
-      EventType eventType = EventParser.parseType(in.read(eventMessage));
-      while (event.setEventType(eventType) != 0) {
+      eventMessage += String.format("Введите вид мероприятия [%s] > ", ticket.getEvent().getEventType().name());
+      String eventTypeString = in.read(eventMessage);
+      EventType eventType = EventParser.parseType(eventTypeString);
+      while (!eventTypeString.isEmpty() && event.setEventType(eventType) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.");
-         eventType = EventParser.parseType(in.read(eventMessage));
+         eventTypeString = in.read(eventMessage);
+         eventType = EventParser.parseType(eventTypeString);
       }
       ticket.setEvent(event);
       collect.add(ticket);
@@ -116,7 +125,7 @@ public class UpdateCommand implements Command {
    }
    @Override
    public String signature() {
-      return name() + "id {params}";
+      return name() + " id {params}";
    }
    @Override
    public String description() {

@@ -5,6 +5,5 @@ public interface CollectionWorker<T> {
    public T get(Long id);
    public int update(Long id, T obj);
    public int remove(Long id);
-   public boolean exists(Long id);
    public void clear();
 }
