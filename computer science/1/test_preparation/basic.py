@@ -31,7 +31,7 @@ def parse_base(x, base, prec=8):
          res += curr * base ** (-i - 1)
    else:
       for i in range(len(x) - 1, -1, -1):
-         curr = int(left[len(left) - i - 1])
+         curr = int(x[len(x) - i - 1])
          if curr >= base:
             raise Exception('Wrong input number by definition.')
          res += curr * base ** i
@@ -39,3 +39,6 @@ def parse_base(x, base, prec=8):
 
 assert parse_base('11100111.1101', 2) == 231.8125
 assert to_base(231.8125, 2, prec=4) == '11100111.1101'
+
+print(parse_base('4444', 5))
+# print(parse_base('353', 11) - parse_base('353', 8))

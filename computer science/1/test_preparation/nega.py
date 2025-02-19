@@ -39,7 +39,9 @@ def parse_nega(x, base):
 assert to_nega('1937', 10) == '18077'
 assert parse_nega('18077', 10) == 1937
 
-# x = int(input('Type the base number: '))
-# print('It\'s nega equivalent is:', to_nega(x))
-# y = int(input('Type the nega number: '))
-# print('It\'s base equivalent is:', parse_nega(y))
+# x = input('Type the base number: ')
+# base = int(input('Type the base: '))
+# print('It\'s nega equivalent is:', to_nega(x, base))
+y = input('Type the nega number: ')
+base = int(input('Type the base: '))
+print('It\'s base equivalent is:', parse_nega(y, base))

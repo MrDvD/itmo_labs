@@ -25,6 +25,11 @@ assert get_permutation([1, 2, 3, 4, 5], 3) == '2 3 1 4 5'
 assert get_permutation([1, 2, 3, 4, 5], 119) == '5 4 3 2 1'
 assert get_permutation([1, 2, 3, 4, 5], 0) == '1 2 3 4 5'
 
-# init_set = input('Type the initial set (0-permutations) with spaces: ').split()
-# k = int(input('Type the wanted permutation\'s number: '))
-# print('Result is:', get_permutation(init_set, k))
+# init_set = [1, 2, 3, 4, 5]
+# for i in range(120):
+#    if get_permutation(init_set, i) == '1 4 3 5 2':
+#       print(i)
+
+init_set = input('Type the initial set (0-permutations) with spaces: ').split()
+k = int(input('Type the wanted permutation\'s number: '))
+print('Result is:', get_permutation(init_set, k))

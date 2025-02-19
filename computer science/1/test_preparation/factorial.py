@@ -34,5 +34,5 @@ assert parse_factorial('310') == 20
 
 # x = int(input('Type the decimal number: '))
 # print('It\'s factorial equivalent is:', to_factorial(x))
-# y = int(input('Type the factorial number: '))
+# y = input('Type the factorial number: ')
 # print('It\'s decimal equivalent is:', parse_factorial(y))
