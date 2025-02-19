@@ -6,6 +6,9 @@ public class Event implements Validatable {
    private String description;
    private EventType eventType;
    public static class EventValidator {
+      public static boolean validateId(Long id) {
+         return id != null && id >= 0;
+      }
       public static boolean validateName(String name) {
          return name != null && !name.isBlank();
       }
@@ -28,9 +31,17 @@ public class Event implements Validatable {
    }
    @Override
    public boolean isValid() {
-      return EventValidator.validateName(getName()) &&
+      return EventValidator.validateId(getId()) &&
+             EventValidator.validateName(getName()) &&
              EventValidator.validateDescription(getDescription()) &&
              EventValidator.validateEventType(getEventType());
+   }
+   public int setId(Long id) {
+      if (EventValidator.validateId(id)) {
+         this.id = id;
+         return 0;
+      }
+      return -1;
    }
    public int setName(String name) {
       if (EventValidator.validateName(name)) {

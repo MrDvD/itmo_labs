@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.command;
 
+import java.time.LocalDateTime;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.InputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -24,6 +26,7 @@ public class AddCommand implements Command {
    @Override
    public void execute(String[] params) {
       Ticket ticket = new Ticket();
+      ticket.setCreationDate(LocalDateTime.now());
       String name = in.read("Введите название билета > ");
       while (ticket.setName(name) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");

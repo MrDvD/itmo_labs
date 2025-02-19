@@ -1,59 +1,28 @@
 package com.itmo.mrdvd.collection;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection implements CollectionWorker<Ticket> {
    private ArrayList<Ticket> tickets;
-   private IdGenerator generator;
-   public TicketCollection() {
+   private IdGenerator ticketGenerator;
+   private IdGenerator eventGenerator;
+   public TicketCollection(IdGenerator ticketGen, IdGenerator eventGen) {
       tickets = new ArrayList<Ticket>();
-      generator = new TicketIdGenerator();
-   }
-   public class TicketIdGenerator implements IdGenerator {
-      Set<Long> usedIds;
-      public TicketIdGenerator() {
-         this.usedIds = new HashSet<Long>();
-      }
-      @Override
-      public boolean isTaken(Long id) {
-         return usedIds.contains(id);
-      }
-      @Override
-      public Long getId(Object obj) {
-         if (obj == null) {
-            return null;
-         }
-         Long newId = Math.abs(Long.valueOf(obj.hashCode()));
-         while (isTaken(newId) || newId == 0) {
-            newId = Math.abs(newId + Math.round(Math.random() * 100000000000L - 50000000000L));
-         }
-         usedIds.add(newId);
-         return newId;
-      }
-      //  0: success
-      // -1: id does not exist
-      // -2: incorrect id value
-      @Override
-      public int freeId(Long id) {
-         if (id == null || id <= 0) {
-            return -2;
-         }
-         if (!usedIds.contains(id)) {
-            return -1;
-         }
-         usedIds.remove(id);
-         return 0;
-      }
+      this.ticketGenerator = ticketGen;
+      this.eventGenerator = eventGen;
    }
    //  0: success
    // -1: not valid obj
    public int addRaw(Ticket obj) {
       if (obj.isValid()) {
+         if (getTicketIdGenerator().isTaken(obj.getId()) || getEventIdGenerator().isTaken(obj.getEvent().getId())) {
+            return -1;
+         }
          tickets.add(obj);
+         getTicketIdGenerator().takeId(obj.getId());
+         getEventIdGenerator().takeId(obj.getEvent().getId());
          return 0;
       }
       return -1;
@@ -62,11 +31,14 @@ public class TicketCollection implements CollectionWorker<Ticket> {
    // -1: not valid obj
    @Override
    public int add(Ticket obj) {
-      Long id = getIdGenerator().getId(obj);
-      obj.setId(id);
+      Long ticketId = getTicketIdGenerator().getId(obj);
+      Long eventId = getEventIdGenerator().getId(obj.getEvent());
+      obj.setId(ticketId);
+      obj.getEvent().setId(eventId);
       int returnCode = addRaw(obj);
       if (returnCode != 0) {
-         getIdGenerator().freeId(id);
+         getTicketIdGenerator().freeId(ticketId);
+         getEventIdGenerator().freeId(eventId);
       }
       return returnCode;
    }
@@ -122,8 +94,11 @@ public class TicketCollection implements CollectionWorker<Ticket> {
    public int removeLast() {
       return removeAt(tickets.size() - 1);
    }
-   public IdGenerator getIdGenerator() {
-      return generator;
+   public IdGenerator getTicketIdGenerator() {
+      return ticketGenerator;
+   }
+   public IdGenerator getEventIdGenerator() {
+      return eventGenerator;
    }
    @Override
    public void clear() {

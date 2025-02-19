@@ -20,7 +20,7 @@ public class RemoveByIdCommand implements Command  {
       if (!TicketValidator.validateId(id)) {
          return -1;
       }
-      if (!collection.getIdGenerator().isTaken(id)) {
+      if (!collection.getTicketIdGenerator().isTaken(id)) {
          return -2;
       }
       return 0;

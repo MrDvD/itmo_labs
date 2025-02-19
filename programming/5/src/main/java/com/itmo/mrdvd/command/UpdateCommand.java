@@ -30,7 +30,7 @@ public class UpdateCommand implements Command {
       if (!TicketValidator.validateId(id)) {
          return -1;
       }
-      if (!collect.getIdGenerator().isTaken(id)) {
+      if (!collect.getTicketIdGenerator().isTaken(id)) {
          return -2;
       }
       return 0;
