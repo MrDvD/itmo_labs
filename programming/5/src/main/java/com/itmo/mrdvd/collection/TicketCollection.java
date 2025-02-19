@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.collection;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.itmo.mrdvd.object.Ticket;
 
-public class TicketCollection implements CollectionWorker<Ticket> {
+public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
    private ArrayList<Ticket> tickets;
    private IdGenerator ticketGenerator;
    private IdGenerator eventGenerator;
@@ -20,9 +21,9 @@ public class TicketCollection implements CollectionWorker<Ticket> {
          if (getTicketIdGenerator().isTaken(obj.getId()) || getEventIdGenerator().isTaken(obj.getEvent().getId())) {
             return -1;
          }
-         tickets.add(obj);
          getTicketIdGenerator().takeId(obj.getId());
          getEventIdGenerator().takeId(obj.getEvent().getId());
+         tickets.add(obj);
          return 0;
       }
       return -1;
@@ -31,10 +32,18 @@ public class TicketCollection implements CollectionWorker<Ticket> {
    // -1: not valid obj
    @Override
    public int add(Ticket obj) {
-      Long ticketId = getTicketIdGenerator().getId(obj);
-      Long eventId = getEventIdGenerator().getId(obj.getEvent());
-      obj.setId(ticketId);
-      obj.getEvent().setId(eventId);
+      if (obj == null || obj.getEvent() == null) {
+         return -1;
+      }
+      Long ticketId = null, eventId = null;
+      if (obj.getId() == null) {
+         ticketId = getTicketIdGenerator().bookId(obj);
+         obj.setId(ticketId);
+      }
+      if (obj.getEvent().getId() == null) {
+         eventId = getEventIdGenerator().bookId(obj.getEvent());
+         obj.getEvent().setId(eventId);
+      }
       int returnCode = addRaw(obj);
       if (returnCode != 0) {
          getTicketIdGenerator().freeId(ticketId);
@@ -50,6 +59,10 @@ public class TicketCollection implements CollectionWorker<Ticket> {
          }
       }
       return null;
+   }
+   @Override
+   public Iterator<Ticket> iterator() {
+      return tickets.iterator();
    }
    //  0: success
    // -1: not valid obj

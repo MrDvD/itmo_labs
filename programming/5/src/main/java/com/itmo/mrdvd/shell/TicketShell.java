@@ -13,6 +13,7 @@ import com.itmo.mrdvd.command.HelpCommand;
 import com.itmo.mrdvd.command.RemoveAtCommand;
 import com.itmo.mrdvd.command.RemoveByIdCommand;
 import com.itmo.mrdvd.command.RemoveLastCommand;
+import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.InputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -40,6 +41,8 @@ public class TicketShell extends Shell {
       commands.put(removeAt.name(), removeAt);
       Command removeLast = new RemoveLastCommand(collection, out);
       commands.put(removeLast.name(), removeLast);
+      Command showCommand = new ShowCommand(collection, out);
+      commands.put(showCommand.name(), showCommand);
    }
    public static class RawCommand {
       String cmd;

@@ -63,49 +63,70 @@ public class Ticket implements Validatable {
              TicketValidator.validateEvent(getEvent());
    }
    public int setId(Long id) {
-      if (TicketValidator.validateId(id)) {
+      return setId(id, true);
+   }
+   public int setId(Long id, boolean validate) {
+      if (!validate || TicketValidator.validateId(id)) {
          this.id = id;
          return 0;
       }
       return -1;
    }
    public int setCreationDate(LocalDateTime date) {
-      if (TicketValidator.validateCreationDate(date)) {
+      return setCreationDate(date, true);
+   }
+   public int setCreationDate(LocalDateTime date, boolean validate) {
+      if (!validate || TicketValidator.validateCreationDate(date)) {
          this.creationDate = date;
          return 0;
       }
       return -1;
    }
    public int setName(String name) {
-      if (TicketValidator.validateName(name)) {
+      return setName(name, true);
+   }
+   public int setName(String name, boolean validate) {
+      if (!validate || TicketValidator.validateName(name)) {
          this.name = name;
          return 0;
       }
       return -1;
    }
    public int setCoordinates(Coordinates coords) {
-      if (TicketValidator.validateCoordinates(coords)) {
+      return setCoordinates(coords, true);
+   }
+   public int setCoordinates(Coordinates coords, boolean validate) {
+      if (!validate || TicketValidator.validateCoordinates(coords)) {
          this.coordinates = coords;
          return 0;
       }
       return -1;
    }
    public int setPrice(int price) {
-      if (TicketValidator.validatePrice(price)) {
+      return setPrice(price, true);
+   }
+   public int setPrice(int price, boolean validate) {
+      if (!validate || TicketValidator.validatePrice(price)) {
          this.price = price;
          return 0;
       }
       return -1;
    }
    public int setType(TicketType type) {
-      if (TicketValidator.validateType(type)) {
+      return setType(type, true);
+   }
+   public int setType(TicketType type, boolean validate) {
+      if (!validate || TicketValidator.validateType(type)) {
          this.type = type;
          return 0;
       }
       return -1;
    }
    public int setEvent(Event event) {
-      if (TicketValidator.validateEvent(event)) {
+      return setEvent(event, true);
+   }
+   public int setEvent(Event event, boolean validate) {
+      if (!validate || TicketValidator.validateEvent(event)) {
          this.event = event;
          return 0;
       }
@@ -131,5 +152,20 @@ public class Ticket implements Validatable {
    }
    public Event getEvent() {
       return event;
+   }
+   @Override
+   public String toString() {
+      String s = "";
+      s += "= = = = = = = = = = = = = = = =\n";
+      s += String.format("ID: %d\n", getId());
+      s += String.format("НАЗВАНИЕ БИЛЕТА: %s\n", getName());
+      s += String.format("КООРДИНАТЫ: %s\n", getCoordinates());
+      s += String.format("ДАТА СОЗДАНИЯ: %s\n", getCreationDate());
+      s += String.format("СТОИМОСТЬ: %d у.е.\n", getPrice());
+      s += String.format("ТИП БИЛЕТА: %s\n", getType());
+      s += "######### МЕРОПРИЯТИЕ #########\n";
+      s += getEvent().toString();
+      s += "- - - - - - - - - - - - - - - -";
+      return s;
    }
 }

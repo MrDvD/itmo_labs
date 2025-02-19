@@ -66,7 +66,7 @@ public class AddCommand implements Command {
          eventName = in.read("Введите название мероприятия > ");
       }
       String eventDesc = in.read("Введите небольшое описание мероприятия > ");
-      while (event.setName(eventDesc) != 0) {
+      while (event.setDescription(eventDesc) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.");
          eventDesc = in.read("Введите небольшое описание мероприятия > ");
       }
@@ -80,9 +80,13 @@ public class AddCommand implements Command {
          out.writeln("[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.");
          eventType = EventParser.parseType(in.read(eventMessage));
       }
-      ticket.setEvent(event);
-      collect.add(ticket);
-      out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
+      ticket.setEvent(event, false);
+      int exitCode = collect.add(ticket);
+      if (exitCode == 0) {
+         out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
+      } else {
+         out.writeln(String.format("[ERROR] Не удалось добавить билет в коллекцию. Код ошибки: %d", exitCode));
+      }
    }
    @Override
    public String name() {

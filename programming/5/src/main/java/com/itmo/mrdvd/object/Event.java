@@ -37,28 +37,40 @@ public class Event implements Validatable {
              EventValidator.validateEventType(getEventType());
    }
    public int setId(Long id) {
-      if (EventValidator.validateId(id)) {
+      return setId(id, true);
+   }
+   public int setId(Long id, boolean validate) {
+      if (!validate || EventValidator.validateId(id)) {
          this.id = id;
          return 0;
       }
       return -1;
    }
    public int setName(String name) {
-      if (EventValidator.validateName(name)) {
+      return setName(name, true);
+   }
+   public int setName(String name, boolean validate) {
+      if (!validate || EventValidator.validateName(name)) {
          this.name = name;
          return 0;
       }
       return -1;
    }
    public int setDescription(String desc) {
-      if (EventValidator.validateDescription(desc)) {
+      return setDescription(desc, true);
+   }
+   public int setDescription(String desc, boolean validate) {
+      if (!validate || EventValidator.validateDescription(desc)) {
          this.description = desc;
          return 0;
       }
       return -1;
    }
    public int setEventType(EventType type) {
-      if (EventValidator.validateEventType(type)) {
+      return setEventType(type, true);
+   }
+   public int setEventType(EventType type, boolean validate) {
+      if (!validate || EventValidator.validateEventType(type)) {
          this.eventType = type;
          return 0;
       }
@@ -75,5 +87,14 @@ public class Event implements Validatable {
    }
    public EventType getEventType() {
       return eventType;
+   }
+   @Override
+   public String toString() {
+      String s = "";
+      s += String.format("ID: %d\n", getId());
+      s += String.format("НАЗВАНИЕ: %s\n", getName());
+      s += String.format("ОПИСАНИЕ: %s\n", getDescription());
+      s += String.format("ТИП МЕРОПРИЯТИЯ: %s\n", getEventType());
+      return s;
    }
 }

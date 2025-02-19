@@ -5,23 +5,29 @@ import java.util.Set;
 
 public class TicketIdGenerator implements IdGenerator {
    Set<Long> usedIds;
+   Set<Long> pendingIds;
    public TicketIdGenerator() {
       this.usedIds = new HashSet<Long>();
+      this.pendingIds = new HashSet<Long>();
    }
    @Override
    public boolean isTaken(Long id) {
       return usedIds.contains(id);
    }
    @Override
-   public Long getId(Object obj) {
+   public boolean isBooked(Long id) {
+      return pendingIds.contains(id);
+   }
+   @Override
+   public Long bookId(Object obj) {
       if (obj == null) {
          return null;
       }
       Long newId = Math.abs(Long.valueOf(obj.hashCode()));
-      while (isTaken(newId) || newId == 0) {
+      while (isTaken(newId) || isBooked(newId) || newId == 0) {
          newId = Math.abs(newId + Math.round(Math.random() * 100000000000L - 50000000000L));
       }
-      usedIds.add(newId);
+      pendingIds.add(newId);
       return newId;
    }
    //  0: success
@@ -30,6 +36,9 @@ public class TicketIdGenerator implements IdGenerator {
    public int takeId(Long id) {
       if (isTaken(id)) {
          return -1;
+      }
+      if (isBooked(id)) {
+         pendingIds.remove(id);   
       }
       usedIds.add(id);
       return 0;
@@ -42,10 +51,11 @@ public class TicketIdGenerator implements IdGenerator {
       if (id == null || id <= 0) {
          return -2;
       }
-      if (!usedIds.contains(id)) {
+      if (!isTaken(id) || !isBooked(id)) {
          return -1;
       }
       usedIds.remove(id);
+      pendingIds.remove(id);
       return 0;
    }
 }

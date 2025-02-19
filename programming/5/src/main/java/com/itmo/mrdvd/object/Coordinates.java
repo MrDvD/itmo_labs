@@ -32,14 +32,20 @@ public class Coordinates implements Validatable {
              CoordinatesValidator.validateY(getY());
    }
    public int setX(Float x) {
-      if (CoordinatesValidator.validateX(x)) {
+      return setX(x, true);
+   }
+   public int setX(Float x, boolean validate) {
+      if (!validate || CoordinatesValidator.validateX(x)) {
          this.x = x;
          return 0;
       }
       return -1;
    }
    public int setY(Float y) {
-      if (CoordinatesValidator.validateY(y)) {
+      return setY(y, true);
+   }
+   public int setY(Float y, boolean validate) {
+      if (!validate || CoordinatesValidator.validateY(y)) {
          this.y = y;
          return 0;
       }
@@ -50,5 +56,9 @@ public class Coordinates implements Validatable {
    }
    public Float getY() {
       return y;
+   }
+   @Override
+   public String toString() {
+      return String.format("(%.2f, %.2f)", getX(), getY());
    }
 }
