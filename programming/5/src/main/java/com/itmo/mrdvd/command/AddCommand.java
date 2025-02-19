@@ -94,7 +94,7 @@ public class AddCommand implements Command {
    }
    @Override
    public String signature() {
-      return name() + " {params}";
+      return name() + " {element}";
    }
    @Override
    public String description() {

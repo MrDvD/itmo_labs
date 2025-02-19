@@ -51,25 +51,26 @@ public class UpdateCommand implements Command {
                return;
          }
       }
-      Ticket ticket = collect.get(TicketParser.parseId(params[0]));
+      Long id = TicketParser.parseId(params[0]);
+      Ticket ticket = collect.get(id);
       String name = in.read(String.format("Введите название билета [%s] > ", ticket.getName()));
       while (!name.isEmpty() && ticket.setName(name) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
          name = in.read(String.format("Введите название билета [%s] > ", ticket.getName()));
       }
       Coordinates coords = new Coordinates();
-      String xString = in.read(String.format("Введите координату X [%f] > ", ticket.getCoordinates().getX()));
+      String xString = in.read(String.format("Введите координату X [%.2f] > ", ticket.getCoordinates().getX()));
       Float x = CoordinatesParser.parseX(xString);
       while (!xString.isEmpty() && coords.setX(x) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: введите число (возможно, дробное).");
-         xString = in.read(String.format("Введите координату X [%f] > ", ticket.getCoordinates().getX()));
+         xString = in.read(String.format("Введите координату X [%.2f] > ", ticket.getCoordinates().getX()));
          x = CoordinatesParser.parseX(xString);
       }
-      String yString = in.read(String.format("Введите координату Y [%f] > ", ticket.getCoordinates().getY()));
+      String yString = in.read(String.format("Введите координату Y [%.2f] > ", ticket.getCoordinates().getY()));
       Float y = CoordinatesParser.parseY(yString);
       while (!yString.isEmpty() && coords.setY(y) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: введите число (возможно, дробное).");
-         yString = in.read(String.format("Введите координату Y [%f] > ", ticket.getCoordinates().getY()));
+         yString = in.read(String.format("Введите координату Y [%.2f] > ", ticket.getCoordinates().getY()));
          y = CoordinatesParser.parseY(yString);
       }
       ticket.setCoordinates(coords);
@@ -92,13 +93,13 @@ public class UpdateCommand implements Command {
          ticketTypeString = in.read(typeMessage);
          ticketType = TicketParser.parseType(ticketTypeString);
       }
-      Event event = new Event();
-      String eventName = in.read(String.format("Введите название мероприятия [%s] > ", ticket.getEvent().getName()));
+      Event event = ticket.getEvent();
+      String eventName = in.read(String.format("Введите название мероприятия [%s] > ", event.getName()));
       while (!eventName.isEmpty() && event.setName(eventName) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
-         eventName = in.read(String.format("Введите название мероприятия [%s] > ", ticket.getEvent().getName()));
+         eventName = in.read(String.format("Введите название мероприятия [%s] > ", event.getName()));
       }
-      String eventDesc = in.read(String.format("Введите небольшое описание мероприятия [%s] > ", ticket.getEvent().getDescription()));
+      String eventDesc = in.read(String.format("Введите небольшое описание мероприятия [%s] > ", event.getDescription()));
       while (!eventDesc.isEmpty() && event.setName(eventDesc) != 0) {
          out.writeln("[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.");
          eventDesc = in.read("Введите небольшое описание мероприятия > ");
@@ -107,7 +108,7 @@ public class UpdateCommand implements Command {
       for (EventType type : EventType.values()) {
          eventMessage += "* " + type.name() + "\n";
       }
-      eventMessage += String.format("Введите вид мероприятия [%s] > ", ticket.getEvent().getEventType().name());
+      eventMessage += String.format("Введите вид мероприятия [%s] > ", event.getEventType().name());
       String eventTypeString = in.read(eventMessage);
       EventType eventType = EventParser.parseType(eventTypeString);
       while (!eventTypeString.isEmpty() && event.setEventType(eventType) != 0) {
@@ -115,8 +116,8 @@ public class UpdateCommand implements Command {
          eventTypeString = in.read(eventMessage);
          eventType = EventParser.parseType(eventTypeString);
       }
-      ticket.setEvent(event);
-      collect.add(ticket);
+      ticket.setEvent(event, false);
+      collect.update(id, ticket);
       out.writeln("[INFO] Билет успешно обновлён в коллекции.");
    }
    @Override
@@ -125,7 +126,7 @@ public class UpdateCommand implements Command {
    }
    @Override
    public String signature() {
-      return name() + " id {params}";
+      return name() + " id {element}";
    }
    @Override
    public String description() {

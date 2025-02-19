@@ -6,6 +6,7 @@ import java.util.TreeMap;
 
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.command.AddCommand;
+import com.itmo.mrdvd.command.AddIfMaxCommand;
 import com.itmo.mrdvd.command.ClearCommand;
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.ExitCommand;
@@ -43,6 +44,8 @@ public class TicketShell extends Shell {
       commands.put(removeLast.name(), removeLast);
       Command showCommand = new ShowCommand(collection, out);
       commands.put(showCommand.name(), showCommand);
+      // Command addIfMaxCommand = new AddIfMaxCommand(collection, in, out);
+      // commands.put(addIfMaxCommand.name(), addIfMaxCommand);
    }
    public static class RawCommand {
       String cmd;
