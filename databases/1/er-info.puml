@@ -1,0 +1,78 @@
+@startuml name
+entity Entity {
+   * entity_id
+   ---
+   specie
+   name
+   birth_date
+   gender
+   covering_id
+}
+
+class Covering {
+   * covering_id
+   ---
+   type
+   color
+   pattern
+}
+
+entity ActionInstance {
+   * action_id
+   * entity_id
+   ' тоже: что про уникальность id?
+   ---
+   timestamp
+   duration
+   participant_id
+   ' вынести в отдельную таблицу участников (но что про уникальность id?)
+   object_id
+   place_id
+}
+
+entity Action {
+   * action_id
+   ---
+   name
+   description
+}
+
+entity Place {
+   * place_id
+   ---
+   name
+   description
+}
+
+entity Object {
+   * object_id
+   ---
+   name
+   description
+}
+
+entity State {
+   * state_id
+   ---
+   name
+   description
+}
+
+entity StateInstance {
+   * state_id
+   * object_id
+   ---
+   timestamp
+   duration
+}
+
+Entity ||--|{ Covering
+ActionInstance }|--|| Entity
+ActionInstance }|--|| Place
+ActionInstance }|--|| Object
+ActionInstance }|--|| Action
+StateInstance ||--|{ State
+StateInstance ||--|{ Object
+
+
+@enduml
