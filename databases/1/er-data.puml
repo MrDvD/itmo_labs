@@ -1,0 +1,83 @@
+@startuml name
+
+entity Entity {
+   * entity_id : serial «PK»
+   ---
+   name : char(30)
+   birth_date : date
+   gender : enum
+   + specie_id «FK»
+   + covering_id «FK»
+}
+
+entity Covering {
+   * covering_id : serial «PK»
+   ---
+   type : enum
+   color : varchar(50)
+   pattern : varchar(50)
+}
+
+entity Action {
+   * action_id : serial «PK»
+   ---
+   name : varchar(30)
+   timestamp : timestamp
+   description : text
+   + place_id : serial «FK»
+}
+
+entity Place {
+   * place_id : serial «PK»
+   ---
+   name : varchar(30)
+   description : text
+}
+
+entity Object {
+   * object_id : serial «PK»
+   ---
+   name : varchar(30)
+}
+
+entity State {
+   * state_id : serial «PK»
+   ---
+   name : varchar(30)
+}
+
+entity Specie {
+   * specie_id : serial «PK»
+   ---
+   name : varchar(30)
+   description : text
+}
+
+entity ActionInstance {
+   * actioninstance_id : serial «PK»
+   ---
+   + action_id «FK»
+   + active_entity_id «FK»
+   + object_id «FK»
+   + passive_entity_id «FK»
+}
+
+entity StateInstance {
+   * stateinstance_id : serial «PK»
+   ---
+   + state_id : serial «FK»
+   + object_id : serial «FK»
+   acquisition_time : timestamp
+}
+
+Entity::specie_id }|--|| Specie::specie_id
+Entity::covering_id }|--|| Covering::covering_id
+StateInstance::state_id }|--|| State::state_id
+StateInstance::object_id }|--|| Object::object_id
+ActionInstance::action_id }|--|| Action::action_id
+ActionInstance::active_entity_id }|--|| Entity::entity_id
+ActionInstance::passive_entity_id }|--|| Entity::entity_id
+ActionInstance::object_id }|--|| Object::object_id
+Action::place_id }|--|| Place::place_id
+Object }|--|{ Action
+@enduml

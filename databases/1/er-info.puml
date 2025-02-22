@@ -1,78 +1,61 @@
 @startuml name
 entity Entity {
-   * entity_id
+   * entity_id «PK»
    ---
-   specie
    name
    birth_date
    gender
-   covering_id
+   + specie_id «FK»
+   + covering_id «FK»
 }
 
-class Covering {
-   * covering_id
+entity Covering {
+   * covering_id «PK»
    ---
    type
    color
    pattern
 }
 
-entity ActionInstance {
-   * action_id
-   * entity_id
-   ' тоже: что про уникальность id?
-   ---
-   timestamp
-   duration
-   participant_id
-   ' вынести в отдельную таблицу участников (но что про уникальность id?)
-   object_id
-   place_id
-}
-
 entity Action {
-   * action_id
+   * action_id «PK»
    ---
    name
+   timestamp
    description
+   + place_id «FK»
 }
 
 entity Place {
-   * place_id
+   * place_id «PK»
    ---
    name
    description
 }
 
 entity Object {
-   * object_id
+   * object_id «PK»
    ---
    name
-   description
 }
 
 entity State {
-   * state_id
+   * state_id «PK»
+   ---
+   name
+}
+
+entity Specie {
+   * specie_id «PK»
    ---
    name
    description
 }
 
-entity StateInstance {
-   * state_id
-   * object_id
-   ---
-   timestamp
-   duration
-}
-
-Entity ||--|{ Covering
-ActionInstance }|--|| Entity
-ActionInstance }|--|| Place
-ActionInstance }|--|| Object
-ActionInstance }|--|| Action
-StateInstance ||--|{ State
-StateInstance ||--|{ Object
-
-
+Entity::specie_id }|--|| Specie::specie_id
+Entity::covering_id }|--|| Covering::covering_id
+Entity::entity_id }|--|{ Action::action_id
+State }|--|{ Object
+Action::place_id }|--|| Place::place_id
+Object }|--|{ Action
 @enduml
