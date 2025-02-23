@@ -1,9 +1,9 @@
 @startuml name
 
 entity Entity {
-   * entity_id : serial «PK»
+   * id : serial «PK»
    ---
-   name : char(30)
+   name : varchar(30)
    birth_date : date
    gender : enum
    + specie_id «FK»
@@ -11,15 +11,15 @@ entity Entity {
 }
 
 entity Covering {
-   * covering_id : serial «PK»
+   * id : serial «PK»
    ---
    type : enum
-   color : varchar(50)
-   pattern : varchar(50)
+   color : varchar(45)
+   pattern : varchar(45)
 }
 
 entity Action {
-   * action_id : serial «PK»
+   * id : serial «PK»
    ---
    name : varchar(30)
    timestamp : timestamp
@@ -28,56 +28,58 @@ entity Action {
 }
 
 entity Place {
-   * place_id : serial «PK»
+   * id : serial «PK»
    ---
    name : varchar(30)
    description : text
 }
 
 entity Object {
-   * object_id : serial «PK»
+   * id : serial «PK»
    ---
    name : varchar(30)
+   count : integer
+   + owner : serial «FK»
 }
 
 entity State {
-   * state_id : serial «PK»
+   * id : serial «PK»
    ---
    name : varchar(30)
 }
 
 entity Specie {
-   * specie_id : serial «PK»
+   * id : serial «PK»
    ---
    name : varchar(30)
    description : text
 }
 
 entity ActionInstance {
-   * actioninstance_id : serial «PK»
+   * id : serial «PK»
    ---
-   + action_id «FK»
-   + active_entity_id «FK»
-   + object_id «FK»
-   + passive_entity_id «FK»
+   + action_id serial «FK»
+   + active_entity_id serial «FK»
+   + object_id serial «FK»
+   + passive_entity_id serial «FK»
 }
 
 entity StateInstance {
-   * stateinstance_id : serial «PK»
+   * id : serial «PK»
    ---
    + state_id : serial «FK»
    + object_id : serial «FK»
    acquisition_time : timestamp
 }
 
-Entity::specie_id }|--|| Specie::specie_id
-Entity::covering_id }|--|| Covering::covering_id
-StateInstance::state_id }|--|| State::state_id
-StateInstance::object_id }|--|| Object::object_id
-ActionInstance::action_id }|--|| Action::action_id
-ActionInstance::active_entity_id }|--|| Entity::entity_id
-ActionInstance::passive_entity_id }|--|| Entity::entity_id
-ActionInstance::object_id }|--|| Object::object_id
-Action::place_id }|--|| Place::place_id
-Object }|--|{ Action
+Entity::specie_id }|-d-|| Specie::id
+ActionInstance::active_entity_id }|-l-|| Entity::id
+ActionInstance::passive_entity_id }|-d-|| Entity::id
+Entity::covering_id }|-l-|| Covering::id
+StateInstance::state_id }|-r-|| State::id
+StateInstance::object_id }|-l-|| Object::id
+ActionInstance::action_id }|--|| Action::id
+ActionInstance::object_id }|-r-|| Object::id
+Action::place_id }|-r-|| Place::id
+Object::owner }|-l-|| Entity::id
 @enduml

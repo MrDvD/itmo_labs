@@ -1,0 +1,119 @@
+CREATE TYPE gender AS ENUM('male', 'female');
+CREATE TYPE cover_type AS ENUM('skin', 'fur', 'feathers', 'scales');
+
+CREATE TABLE ENTITY {
+   id serial PRIMARY KEY,
+   name char(30),
+   birth_date date,
+   gender gender NOT NULL,
+   specie_id serial REFERENCES SPECIE(id) NOT NULL,
+   covering_id serial REFERENCES COVERING(id)
+};
+
+CREATE TABLE COVERING {
+   id serial PRIMARY KEY,
+   type cover_type NOT NULL,
+   color varchar(45),
+   pattern varchar(45)
+}
+
+CREATE TABLE ACTION {
+   id serial PRIMARY KEY,
+   name varchar(30),
+   timestamp timestamp,
+   description text,
+   place_id serial REFERENCES PLACE(id)
+}
+
+CREATE TABLE PLACE {
+   id serial PRIMARY KEY,
+   name varchar(30) NOT NULL,
+   description text
+}
+
+CREATE TABLE OBJECT {
+   id serial PRIMARY KEY,
+   name varchar(30) NOT NULL,
+   count integer DEFAULT 1,
+   owner entity_id REFERENCES ENTITY(id)
+}
+
+CREATE TABLE STATE {
+   id serial PRIMARY KEY,
+   name varchar(30) NOT NULL
+}
+
+CREATE TABLE SPECIE {
+   id serial PRIMARY KEY,
+   name varchar(30) NOT NULL,
+   description text
+}
+
+CREATE TABLE ACTION_INSTANCE {
+   id serial PRIMARY KEY,
+   action_id serial REFERENCES ACTION(id),
+   active_entity_id serial REFERENCES ENTITY(id),
+   object_id serial REFERENCES OBJECT(id),
+   passive_entity_id serial REFERENCES ENTITY(id)
+}
+
+CREATE TABLE STATE_INSTANCE {
+   id serial PRIMARY KEY,
+   state_id serial REFERENCES STATE(id) NOT NULL,
+   object_id serial REFERENCES OBJECT(id) NOT NULL,
+   acquisition_time timestamp
+}
+
+INSERT INTO SPECIE(name, description) VALUES
+   ('человек', NULL),
+   ('динозавр', 'лат. Dinosauria');
+
+INSERT INTO COVERING(type, color, pattern) VALUES
+   ('skin', 'темно-бежевый', 'черные пятна'),
+   ('skin', 'бежевый', NULL);
+
+INSERT INTO STATE(name) VALUES
+   ('свежесорванный');
+
+INSERT INTO PLACE(name) VALUES
+   ('поверхность земли');
+
+INSERT INTO ENTITY(name, birth_date, gender, specie_id, covering_id) VALUES
+   ('Грант', NULL, 'male', (SELECT id FROM SPECIE WHERE name = 'человек'), (SELECT id FROM COVERING where color = 'бежевый')),
+   (NULL, '2005-02-11', 'female', (SELECT id FROM SPECIE WHERE name = 'динозавр'), (SELECT id FROM COVERING where color = 'темно-бежевый')),
+   (NULL, 'male', (SELECT id FROM SPECIE WHERE name = 'динозавр'), (SELECT id FROM COVERING where color = 'темно-бежевый'));
+
+INSERT INTO OBJECT(name, count, owner) VALUES
+   ('ветка', 3, NULL),
+   ('писк', 1, (SELECT id from ENTITY WHERE gender = 'male' AND name IS NULL)),
+   ('нога', 1, (SELECT id FROM ENTITY WHERE gender = 'female')),
+   ('голова', 1, (SELECT id FROM ENTITY WHERE gender = 'female'));
+
+INSERT INTO ACTION(name, timestamp, description, place_id) VALUES
+   ('пищать', '2024-07-18 11:14:50', 'настойчиво', (SELECT id FROM PLACE WHERE name = 'поверхность земли')),
+   ('услышать', '2024-07-18 11:14:51', NULL, NULL),
+   ('топтаться', '2024-07-18 11:14:55', 'возле объекта', (SELECT id FROM PLACE WHERE name = 'поверхность земли')),
+   ('нырнуть', '2024-07-18 11:15:00', 'объектом вниз', (SELECT id FROM PLACE WHERE name = 'поверхность земли')),
+   ('наклониться', '2024-07-18 11:15:10', NULL, (SELECT id FROM PLACE WHERE name = 'поверхность земли')),
+   ('увидеть', '2024-07-18 11:15:12', NULL, NULL),
+   ('ждать', '2024-07-18 11:15:15', 'спокойно', NULL),
+   ('встать', '2024-07-18 11:15:32', 'на задние лапы', NULL),
+   ('объедать', '2024-07-18 11:15:53', 'опершись передними лапами', NULL);
+
+INSERT INTO STATE_INSTANCE(state_id, object_id, acquisition_time) VALUES
+   ((SELECT id FROM STATE WHERE name = 'свежесорванный'), (SELECT id FROM OBJECT WHERE name = 'ветки'), '2024-07-18 11:13:26');
+
+INSERT INTO ACTION_INSTANCE(action_id, active_entity_id, object_id, passive_entity_id) VALUES
+   ((SELECT id FROM ACTION WHERE name = 'пищать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), NULL, NULL),
+   ((SELECT id FROM ACTION WHERE name = 'услышать'), (SELECT id FROM ENTITY WHERE name = 'Грант'), (SELECT id FROM OBJECT WHERE name = 'писк'), NULL),
+   ((SELECT id FROM ACTION WHERE name = 'топтаться'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), (SELECT id FROM OBJECT WHERE name = 'нога'), NULL),
+   ((SELECT id FROM ACTION WHERE name = 'нырнуть'), (SELECT id FROM ENTITY WHERE gender = 'female'), (SELECT id FROM OBJECT WHERE name = 'голова'), NULL),
+   ((SELECT id FROM ACTION WHERE name = 'наклониться'), (SELECT id FROM ENTITY WHERE name = 'Грант'), NULL, NULL),
+   ((SELECT id FROM ACTION WHERE name = 'увидеть'), (SELECT id FROM ENTITY WHERE name = 'Грант'), NULL, (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male')),
+   ((SELECT id FROM ACTION WHERE name = 'ждать'), (SELECT id FROM ENTITY WHERE gender = 'female'), NULL, NULL),
+   ((SELECT id FROM ACTION WHERE name = 'встать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), NULL, NULL),
+   ((SELECT id FROM ACTION WHERE name = 'объедать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), (SELECT id FROM OBJECT WHERE name = 'ветка'), NULL),
+   ((SELECT id FROM ACTION WHERE name = 'объедать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), (SELECT id FROM OBJECT WHERE name = 'голова'), (SELECT id FROM ENTITY WHERE gender = 'female'));
+
+-- maybe do some kind of parental relationship ?
+-- check count in object

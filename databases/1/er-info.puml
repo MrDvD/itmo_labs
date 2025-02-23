@@ -1,6 +1,6 @@
 @startuml name
 entity Entity {
-   * entity_id «PK»
+   * id «PK»
    ---
    name
    birth_date
@@ -10,7 +10,7 @@ entity Entity {
 }
 
 entity Covering {
-   * covering_id «PK»
+   * id «PK»
    ---
    type
    color
@@ -18,7 +18,7 @@ entity Covering {
 }
 
 entity Action {
-   * action_id «PK»
+   * id «PK»
    ---
    name
    timestamp
@@ -27,35 +27,37 @@ entity Action {
 }
 
 entity Place {
-   * place_id «PK»
+   * id «PK»
    ---
    name
    description
 }
 
 entity Object {
-   * object_id «PK»
+   * id «PK»
    ---
    name
+   count
+   + owner «FK»
 }
 
 entity State {
-   * state_id «PK»
+   * id «PK»
    ---
    name
 }
 
 entity Specie {
-   * specie_id «PK»
+   * id «PK»
    ---
    name
    description
 }
 
-Entity::specie_id }|--|| Specie::specie_id
-Entity::covering_id }|--|| Covering::covering_id
-Entity::entity_id }|--|{ Action::action_id
+Entity::covering_id }|-l-|| Covering::id
+Entity::specie_id }|-r-|| Specie::id
+Entity }|--|{ Action
 State }|--|{ Object
-Action::place_id }|--|| Place::place_id
+Action::id }|-l-|| Place::id
 Object }|--|{ Action
 @enduml
