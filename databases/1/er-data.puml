@@ -75,9 +75,9 @@ entity StateInstance {
 Entity::specie_id }|-d-|| Specie::id
 ActionInstance::active_entity_id }|-l-|| Entity::id
 ActionInstance::passive_entity_id }|-d-|| Entity::id
-Entity::covering_id }|-l-|| Covering::id
-StateInstance::state_id }|-r-|| State::id
-StateInstance::object_id }|-l-|| Object::id
+Entity::covering_id }|-u-|| Covering::id
+StateInstance::state_id }|-l-|| State::id
+StateInstance::object_id }|-d-|| Object::id
 ActionInstance::action_id }|--|| Action::id
 ActionInstance::object_id }|-r-|| Object::id
 Action::place_id }|-r-|| Place::id

@@ -114,5 +114,3 @@ INSERT INTO ACTION_INSTANCE(action_id, active_entity_id, object_id, passive_enti
    ((SELECT id FROM ACTION WHERE name = 'встать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), NULL, NULL),
    ((SELECT id FROM ACTION WHERE name = 'объедать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), (SELECT id FROM OBJECT WHERE name = 'ветка'), NULL),
    ((SELECT id FROM ACTION WHERE name = 'объедать'), (SELECT id FROM ENTITY WHERE name IS NULL AND gender = 'male'), (SELECT id FROM OBJECT WHERE name = 'голова'), (SELECT id FROM ENTITY WHERE gender = 'female'));
-
--- maybe do some kind of parental relationship ?

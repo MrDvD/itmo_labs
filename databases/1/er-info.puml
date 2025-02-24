@@ -55,9 +55,10 @@ entity Specie {
 }
 
 Entity::covering_id }|-l-|| Covering::id
-Entity::specie_id }|-r-|| Specie::id
+Entity::specie_id }|-u-|| Specie::id
 Entity }|--|{ Action
 State }|--|{ Object
-Action::id }|-l-|| Place::id
+Action::place_id }|-l-|| Place::id
 Object }|--|{ Action
+Entity::id ||-r-|{ Object::owner
 @enduml
