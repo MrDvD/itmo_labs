@@ -1,68 +1,68 @@
 CREATE TYPE gender AS ENUM('male', 'female');
 CREATE TYPE cover_type AS ENUM('skin', 'fur', 'feathers', 'scales');
 
-CREATE TABLE ENTITY {
+CREATE TABLE ENTITY (
    id serial PRIMARY KEY,
    name char(30),
    birth_date date,
    gender gender NOT NULL,
    specie_id serial REFERENCES SPECIE(id) NOT NULL,
    covering_id serial REFERENCES COVERING(id)
-};
+);
 
-CREATE TABLE COVERING {
+CREATE TABLE COVERING (
    id serial PRIMARY KEY,
    type cover_type NOT NULL,
    color varchar(45),
    pattern varchar(45)
-}
+)
 
-CREATE TABLE ACTION {
+CREATE TABLE ACTION (
    id serial PRIMARY KEY,
    name varchar(30),
    timestamp timestamp,
    description text,
    place_id serial REFERENCES PLACE(id)
-}
+)
 
-CREATE TABLE PLACE {
+CREATE TABLE PLACE (
    id serial PRIMARY KEY,
    name varchar(30) NOT NULL,
    description text
-}
+)
 
-CREATE TABLE OBJECT {
+CREATE TABLE OBJECT (
    id serial PRIMARY KEY,
    name varchar(30) NOT NULL,
    count integer DEFAULT 1,
    owner entity_id REFERENCES ENTITY(id)
-}
+)
 
-CREATE TABLE STATE {
+CREATE TABLE STATE (
    id serial PRIMARY KEY,
    name varchar(30) NOT NULL
-}
+)
 
-CREATE TABLE SPECIE {
+CREATE TABLE SPECIE (
    id serial PRIMARY KEY,
    name varchar(30) NOT NULL,
    description text
-}
+)
 
-CREATE TABLE ACTION_INSTANCE {
+CREATE TABLE ACTION_INSTANCE (
    id serial PRIMARY KEY,
    action_id serial REFERENCES ACTION(id),
    active_entity_id serial REFERENCES ENTITY(id),
    object_id serial REFERENCES OBJECT(id),
    passive_entity_id serial REFERENCES ENTITY(id)
-}
+)
 
-CREATE TABLE STATE_INSTANCE {
+CREATE TABLE STATE_INSTANCE (
    id serial PRIMARY KEY,
    state_id serial REFERENCES STATE(id) NOT NULL,
    object_id serial REFERENCES OBJECT(id) NOT NULL,
    acquisition_time timestamp
-}
+)
 
 INSERT INTO SPECIE(name, description) VALUES
    ('человек', NULL),

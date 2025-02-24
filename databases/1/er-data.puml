@@ -24,7 +24,7 @@ entity Action {
    name : varchar(30)
    timestamp : timestamp
    description : text
-   + place_id : serial «FK»
+   + place_id : integer «FK»
 }
 
 entity Place {
@@ -39,7 +39,7 @@ entity Object {
    ---
    name : varchar(30)
    count : integer
-   + owner : serial «FK»
+   + owner : integer «FK»
 }
 
 entity State {
@@ -58,10 +58,10 @@ entity Specie {
 entity ActionInstance {
    * id : serial «PK»
    ---
-   + action_id serial «FK»
-   + active_entity_id serial «FK»
-   + object_id serial «FK»
-   + passive_entity_id serial «FK»
+   + action_id integer «FK»
+   + active_entity_id integer «FK»
+   + object_id integer «FK»
+   + passive_entity_id integer «FK»
 }
 
 entity StateInstance {
