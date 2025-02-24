@@ -16,11 +16,11 @@ CREATE TABLE COVERING (
 
 CREATE TABLE ENTITY (
    id serial PRIMARY KEY,
-   name varchar(30) CHECK(name SIMILAR TO '[\wА-Яа-яЁё]+'),
-   birth_date date DEFAULT CURRENT_DATE,
+   name varchar(30) CHECK(name SIMILAR TO '[A-Za-zА-Яа-яЁё]+'),
+   birth_date date NOT NULL DEFAULT CURRENT_DATE,
    gender gender NOT NULL,
-   specie_id serial REFERENCES SPECIE(id),
-   covering_id integer REFERENCES COVERING(id)
+   specie_id serial REFERENCES SPECIE(id) ON DELETE RESTRICT,
+   covering_id integer REFERENCES COVERING(id) ON DELETE RESTRICT
 );
 
 CREATE TABLE PLACE (
@@ -34,14 +34,14 @@ CREATE TABLE ACTION (
    name varchar(30),
    timestamp timestamp DEFAULT CURRENT_TIMESTAMP,
    description text,
-   place_id integer REFERENCES PLACE(id)
+   place_id integer REFERENCES PLACE(id) ON DELETE SET NULL
 );
 
 CREATE TABLE OBJECT (
    id serial PRIMARY KEY,
    name varchar(30) NOT NULL,
    count integer DEFAULT 1 CHECK(count >= 0),
-   owner integer REFERENCES ENTITY(id)
+   owner_id integer REFERENCES ENTITY(id) ON DELETE SET NULL
 );
 
 CREATE TABLE STATE (
@@ -51,17 +51,20 @@ CREATE TABLE STATE (
 
 CREATE TABLE ACTION_INSTANCE (
    id serial PRIMARY KEY,
-   action_id integer REFERENCES ACTION(id),
-   active_entity_id integer REFERENCES ENTITY(id),
-   object_id integer REFERENCES OBJECT(id),
-   passive_entity_id integer REFERENCES ENTITY(id)
+   action_id integer REFERENCES ACTION(id) ON DELETE SET NULL,
+   active_entity_id integer REFERENCES ENTITY(id) ON DELETE SET NULL,
+   object_id integer REFERENCES OBJECT(id) ON DELETE SET NULL,
+   passive_entity_id integer REFERENCES ENTITY(id) ON DELETE SET NULL
+      CHECK(NOT (action_id IS NULL AND active_entity_id IS NULL AND object_id IS NULL AND passive_entity_id IS NULL))
 );
 
 CREATE TABLE STATE_INSTANCE (
    id serial PRIMARY KEY,
-   state_id serial REFERENCES STATE(id),
-   object_id serial REFERENCES OBJECT(id),
-   acquisition_time timestamp DEFAULT CURRENT_TIMESTAMP
+   state_id serial REFERENCES STATE(id) ON DELETE CASCADE,
+   object_id serial REFERENCES OBJECT(id) ON DELETE CASCADE,
+   acquisition_time timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
+   removal_time timestamp
+      CHECK(removal_time > acquisition_time)
 );
 
 INSERT INTO SPECIE(name, description) VALUES
@@ -79,11 +82,11 @@ INSERT INTO PLACE(name) VALUES
    ('поверхность земли');
 
 INSERT INTO ENTITY(name, birth_date, gender, specie_id, covering_id) VALUES
-   ('Грант', NULL, 'male', (SELECT id FROM SPECIE WHERE name = 'человек'), (SELECT id FROM COVERING where color = 'бежевый')),
+   ('Грант', '1998-11-09', 'male', (SELECT id FROM SPECIE WHERE name = 'человек'), (SELECT id FROM COVERING where color = 'бежевый')),
    (NULL, '2005-02-11', 'female', (SELECT id FROM SPECIE WHERE name = 'динозавр'), (SELECT id FROM COVERING where color = 'темно-бежевый')),
-   (NULL, NULL, 'male', (SELECT id FROM SPECIE WHERE name = 'динозавр'), (SELECT id FROM COVERING where color = 'темно-бежевый'));
+   (NULL, '2023-05-03', 'male', (SELECT id FROM SPECIE WHERE name = 'динозавр'), (SELECT id FROM COVERING where color = 'темно-бежевый'));
 
-INSERT INTO OBJECT(name, count, owner) VALUES
+INSERT INTO OBJECT(name, count, owner_id) VALUES
    ('ветка', 3, NULL),
    ('писк', 1, (SELECT id from ENTITY WHERE gender = 'male' AND name IS NULL)),
    ('нога', 1, (SELECT id FROM ENTITY WHERE gender = 'female')),

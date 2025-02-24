@@ -1,5 +1,5 @@
 @startuml name
-entity Entity {
+ENTITY ENTITY {
    * id «PK»
    ---
    name
@@ -9,7 +9,7 @@ entity Entity {
    + covering_id «FK»
 }
 
-entity Covering {
+ENTITY COVERING {
    * id «PK»
    ---
    type
@@ -17,7 +17,7 @@ entity Covering {
    pattern
 }
 
-entity Action {
+ENTITY ACTION {
    * id «PK»
    ---
    name
@@ -26,39 +26,39 @@ entity Action {
    + place_id «FK»
 }
 
-entity Place {
+ENTITY PLACE {
    * id «PK»
    ---
    name
    description
 }
 
-entity Object {
+ENTITY OBJECT {
    * id «PK»
    ---
    name
    count
-   + owner «FK»
+   + owner_id «FK»
 }
 
-entity State {
+ENTITY STATE {
    * id «PK»
    ---
    name
 }
 
-entity Specie {
+ENTITY SPECIE {
    * id «PK»
    ---
    name
    description
 }
 
-Entity::covering_id }|-l-|| Covering::id
-Entity::specie_id }|-u-|| Specie::id
-Entity }|--|{ Action
-State }|--|{ Object
-Action::place_id }|-l-|| Place::id
-Object }|--|{ Action
-Entity::id ||-r-|{ Object::owner
+ENTITY::covering_id }|-l-|| COVERING::id
+ENTITY::specie_id }|-u-|| SPECIE::id
+ENTITY }|--|{ ACTION
+STATE }|--|{ OBJECT
+ACTION::place_id }|-l-|| PLACE::id
+OBJECT }|--|{ ACTION
+ENTITY::id ||-r-|{ OBJECT::owner_id
 @enduml

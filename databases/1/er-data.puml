@@ -1,6 +1,6 @@
 @startuml name
 
-entity Entity {
+ENTITY ENTITY {
    * id : serial «PK»
    ---
    name : varchar(30)
@@ -10,7 +10,7 @@ entity Entity {
    + covering_id «FK»
 }
 
-entity Covering {
+ENTITY COVERING {
    * id : serial «PK»
    ---
    type : enum
@@ -18,7 +18,7 @@ entity Covering {
    pattern : varchar(45)
 }
 
-entity Action {
+ENTITY ACTION {
    * id : serial «PK»
    ---
    name : varchar(30)
@@ -27,35 +27,35 @@ entity Action {
    + place_id : integer «FK»
 }
 
-entity Place {
+ENTITY PLACE {
    * id : serial «PK»
    ---
    name : varchar(30)
    description : text
 }
 
-entity Object {
+ENTITY OBJECT {
    * id : serial «PK»
    ---
    name : varchar(30)
    count : integer
-   + owner : integer «FK»
+   + owner_id : integer «FK»
 }
 
-entity State {
+ENTITY STATE {
    * id : serial «PK»
    ---
    name : varchar(30)
 }
 
-entity Specie {
+ENTITY SPECIE {
    * id : serial «PK»
    ---
    name : varchar(30)
    description : text
 }
 
-entity ActionInstance {
+ENTITY ACTION_INSTANCE {
    * id : serial «PK»
    ---
    + action_id integer «FK»
@@ -64,22 +64,23 @@ entity ActionInstance {
    + passive_entity_id integer «FK»
 }
 
-entity StateInstance {
+ENTITY STATE_INSTANCE {
    * id : serial «PK»
    ---
    + state_id : serial «FK»
    + object_id : serial «FK»
    acquisition_time : timestamp
+   removal_time : timestamp
 }
 
-Entity::specie_id }|-d-|| Specie::id
-ActionInstance::active_entity_id }|-l-|| Entity::id
-ActionInstance::passive_entity_id }|-d-|| Entity::id
-Entity::covering_id }|-u-|| Covering::id
-StateInstance::state_id }|-l-|| State::id
-StateInstance::object_id }|-d-|| Object::id
-ActionInstance::action_id }|--|| Action::id
-ActionInstance::object_id }|-r-|| Object::id
-Action::place_id }|-r-|| Place::id
-Object::owner }|-l-|| Entity::id
+ENTITY::specie_id }|-d-|| SPECIE::id
+ACTION_INSTANCE::active_entity_id }|-l-|| ENTITY::id
+ACTION_INSTANCE::passive_entity_id }|-d-|| ENTITY::id
+ENTITY::covering_id }|-u-|| COVERING::id
+STATE_INSTANCE::state_id }|-l-|| STATE::id
+STATE_INSTANCE::object_id }|-d-|| OBJECT::id
+ACTION_INSTANCE::action_id }|--|| ACTION::id
+ACTION_INSTANCE::object_id }|-r-|| OBJECT::id
+ACTION::place_id }|-r-|| PLACE::id
+OBJECT::owner_id }|-l-|| ENTITY::id
 @enduml
