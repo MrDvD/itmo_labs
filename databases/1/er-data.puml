@@ -73,14 +73,14 @@ ENTITY STATE_INSTANCE {
    removal_time : timestamp
 }
 
-ENTITY::specie_id }|-d-|| SPECIE::id
-ACTION_INSTANCE::active_entity_id }|-l-|| ENTITY::id
-ACTION_INSTANCE::passive_entity_id }|-d-|| ENTITY::id
-ENTITY::covering_id }|-u-|| COVERING::id
-STATE_INSTANCE::state_id }|-l-|| STATE::id
-STATE_INSTANCE::object_id }|-d-|| OBJECT::id
-ACTION_INSTANCE::action_id }|--|| ACTION::id
-ACTION_INSTANCE::object_id }|-r-|| OBJECT::id
-ACTION::place_id }|-r-|| PLACE::id
-OBJECT::owner_id }|-l-|| ENTITY::id
+ENTITY::specie_id }o-d-|| SPECIE::id
+ACTION_INSTANCE::active_entity_id }o-l-o| ENTITY::id
+ACTION_INSTANCE::passive_entity_id }o-d-o| ENTITY::id
+ENTITY::covering_id }o-u-o| COVERING::id
+STATE_INSTANCE::state_id }o-l-|| STATE::id
+STATE_INSTANCE::object_id }o-d-|| OBJECT::id
+ACTION_INSTANCE::action_id }o--o| ACTION::id
+ACTION_INSTANCE::object_id }o-r-o| OBJECT::id
+ACTION::place_id }o-r-o| PLACE::id
+OBJECT::owner_id }o-l-o| ENTITY::id
 @enduml

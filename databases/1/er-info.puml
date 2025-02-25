@@ -54,11 +54,11 @@ ENTITY SPECIE {
    description
 }
 
-ENTITY::covering_id }|-l-|| COVERING::id
-ENTITY::specie_id }|-u-|| SPECIE::id
+ENTITY::covering_id }o-l-o| COVERING::id
+ENTITY::specie_id }o-u-|| SPECIE::id
 ENTITY }|--|{ ACTION
-STATE }|--|{ OBJECT
-ACTION::place_id }|-l-|| PLACE::id
+STATE }o--o{ OBJECT
+ACTION::place_id }o-l-o| PLACE::id
 OBJECT }|--|{ ACTION
-ENTITY::id ||-r-|{ OBJECT::owner_id
+ENTITY::id |o-r-o{ OBJECT::owner_id
 @enduml
