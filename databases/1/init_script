@@ -1,16 +1,20 @@
+-- DROP TABLES CASCADE;
+DROP SCHEMA s466449 CASCADE;
+CREATE SCHEMA s466449;
+
 CREATE TYPE gender AS ENUM('male', 'female');
 CREATE TYPE cover_type AS ENUM('skin', 'fur', 'feathers', 'scales');
 
 CREATE TABLE SPECIE (
    id serial PRIMARY KEY,
-   name varchar(30) NOT NULL CHECK(name SIMILAR TO '[\wА-Яа-яЁё]+'),
+   name varchar(30) NOT NULL CHECK(name SIMILAR TO '[A-Za-zА-Яа-яЁё]+'),
    description text
 );
 
 CREATE TABLE COVERING (
    id serial PRIMARY KEY,
    type cover_type NOT NULL,
-   color varchar(45),
+   color varchar(45) CHECK(color SIMILAR TO '[A-Za-zА-Яа-яЁё\-]+'),
    pattern varchar(45)
 );
 
