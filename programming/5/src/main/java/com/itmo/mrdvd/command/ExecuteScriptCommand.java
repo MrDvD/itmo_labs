@@ -15,7 +15,8 @@ package com.itmo.mrdvd.command;
    //          BufferedInputStream in = new BufferedInputStream(file);
    //          in.close();
    //      } else {
-   //          System.out.format("[ERROR] File '%s' does not exist.\n", collectionPath); // what's with permissions?   
+   //          System.out.format("[ERROR] File '%s' does not exist.\n", collectionPath); // what's
+   // with permissions?
    //      }
    //  }
 // }
