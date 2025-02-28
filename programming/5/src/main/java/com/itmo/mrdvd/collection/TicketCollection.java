@@ -1,17 +1,18 @@
 package com.itmo.mrdvd.collection;
 
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.TicketField;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.object.TicketField;
+
 public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
-  private ArrayList<Ticket> tickets;
-  private IdGenerator ticketGenerator;
-  private IdGenerator eventGenerator;
+  private final ArrayList<Ticket> tickets;
+  private final IdGenerator ticketGenerator;
+  private final IdGenerator eventGenerator;
 
   public TicketCollection(IdGenerator ticketGen, IdGenerator eventGen) {
-    tickets = new ArrayList<Ticket>();
+    tickets = new ArrayList<>();
     this.ticketGenerator = ticketGen;
     this.eventGenerator = eventGen;
   }

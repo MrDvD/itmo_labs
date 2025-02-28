@@ -4,8 +4,8 @@ import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class ClearCommand implements Command {
-  private TicketCollection collection;
-  private OutputDevice out;
+  private final TicketCollection collection;
+  private final OutputDevice out;
 
   public ClearCommand(TicketCollection collect, OutputDevice out) {
     this.collection = collect;

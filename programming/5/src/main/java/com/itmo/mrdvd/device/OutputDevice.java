@@ -5,5 +5,7 @@ public interface OutputDevice {
 
   public int writeln(String str);
 
-  public int close();
+  public int openOut();
+
+  public int closeOut();
 }

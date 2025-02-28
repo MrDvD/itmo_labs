@@ -4,17 +4,25 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Scanner;
 
-public class Console implements InputDevice, OutputDevice {
+public class Console implements InteractiveInputDevice, OutputDevice {
   private Scanner in;
   private OutputStreamWriter out;
 
   public Console() {
-    this.out = new OutputStreamWriter(System.out);
-    initIn();
+    openIn();
+    openOut();
   }
 
-  private void initIn() {
+  @Override
+  public int openIn() {
     this.in = new Scanner(System.in);
+    return 0;
+  }
+
+  @Override
+  public int openOut() {
+    this.out = new OutputStreamWriter(System.out);
+    return 0;
   }
 
   //  0: success
@@ -41,7 +49,7 @@ public class Console implements InputDevice, OutputDevice {
       return in.nextLine();
     }
     writeln("");
-    initIn();
+    openIn();
     return "\n";
   }
 
@@ -52,11 +60,17 @@ public class Console implements InputDevice, OutputDevice {
   }
 
   //  0: success
+  @Override
+  public int closeIn() {
+    this.in.close();
+    return 0;
+  }
+
+  //  0: success
   // -1: IOException
   @Override
-  public int close() {
+  public int closeOut() {
     try {
-      this.in.close();
       this.out.close();
       return 0;
     } catch (IOException e) {

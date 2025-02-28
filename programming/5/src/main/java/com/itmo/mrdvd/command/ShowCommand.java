@@ -5,8 +5,8 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
 public class ShowCommand implements Command {
-  private TicketCollection collection;
-  private OutputDevice out;
+  private final TicketCollection collection;
+  private final OutputDevice out;
 
   public ShowCommand(TicketCollection collect, OutputDevice out) {
     this.collection = collect;

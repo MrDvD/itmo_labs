@@ -4,8 +4,8 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
 public class HelpCommand implements Command {
-  private Shell shell;
-  private OutputDevice out;
+  private final Shell shell;
+  private final OutputDevice out;
 
   public HelpCommand(Shell shell, OutputDevice out) {
     this.shell = shell;

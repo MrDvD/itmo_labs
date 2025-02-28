@@ -6,8 +6,8 @@ import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.Ticket.TicketValidator;
 
 public class RemoveByIdCommand implements Command {
-  private TicketCollection collection;
-  private OutputDevice out;
+  private final TicketCollection collection;
+  private final OutputDevice out;
 
   public RemoveByIdCommand(TicketCollection collect, OutputDevice out) {
     this.collection = collect;

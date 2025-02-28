@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.InputDevice;
+import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Coordinates.CoordinatesParser;
@@ -14,11 +14,11 @@ import com.itmo.mrdvd.object.TicketType;
 import java.time.LocalDateTime;
 
 public class AddCommand implements Command {
-  private TicketCollection collect;
-  private InputDevice in;
-  private OutputDevice out;
+  private final TicketCollection collect;
+  private final InteractiveInputDevice in;
+  private final OutputDevice out;
 
-  public AddCommand(TicketCollection collect, InputDevice in, OutputDevice out) {
+  public AddCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out) {
     this.collect = collect;
     this.in = in;
     this.out = out;

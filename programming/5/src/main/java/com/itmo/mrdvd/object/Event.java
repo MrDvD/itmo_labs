@@ -31,6 +31,7 @@ public class Event implements Validatable, Comparable<Event> {
       long result = NumberUtils.toLong(id);
       return (result == 0 ? null : result);
     }
+
     public static EventType parseType(String type) {
       for (EventType obj : EventType.values()) {
         if (type.equalsIgnoreCase(obj.name())) {

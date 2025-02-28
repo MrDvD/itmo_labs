@@ -38,6 +38,14 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 #   <version>3.17.0</version>
 # </dependency>
 
+# add JacksonXML module
+
+# <dependency>
+#    <groupId>com.fasterxml.jackson.dataformat</groupId>
+#    <artifactId>jackson-dataformat-xml</artifactId>
+#    <version>2.11.1</version>
+# </dependency>
+
 # compile maven project to single JAR file
 # the result will be placed into the target/ dir
 mvn clean fmt:format compile assembly:single

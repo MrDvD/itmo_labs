@@ -1,10 +1,7 @@
 package com.itmo.mrdvd.command;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
 import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.InputDevice;
+import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Coordinates.CoordinatesParser;
@@ -15,13 +12,15 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.object.TicketType;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class AddIfMaxCommand implements Command {
-  private TicketCollection collect;
-  private InputDevice in;
-  private OutputDevice out;
+  private final TicketCollection collect;
+  private final InteractiveInputDevice in;
+  private final OutputDevice out;
 
-  public AddIfMaxCommand(TicketCollection collect, InputDevice in, OutputDevice out) {
+  public AddIfMaxCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out) {
     this.collect = collect;
     this.in = in;
     this.out = out;

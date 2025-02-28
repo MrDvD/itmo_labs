@@ -1,20 +1,21 @@
 package com.itmo.mrdvd.shell;
 
-import com.itmo.mrdvd.command.Command;
-import com.itmo.mrdvd.device.InputDevice;
-import com.itmo.mrdvd.device.OutputDevice;
 import java.util.Map;
 
-public abstract class Shell {
-  private InputDevice in;
-  private OutputDevice out;
+import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.device.InteractiveInputDevice;
+import com.itmo.mrdvd.device.OutputDevice;
 
-  public Shell(InputDevice in, OutputDevice out) {
+public abstract class Shell {
+  private final InteractiveInputDevice in;
+  private final OutputDevice out;
+
+  public Shell(InteractiveInputDevice in, OutputDevice out) {
     this.in = in;
     this.out = out;
   }
 
-  public InputDevice getInput() {
+  public InteractiveInputDevice getInput() {
     return in;
   }
 

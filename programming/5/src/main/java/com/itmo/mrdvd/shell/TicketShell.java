@@ -19,16 +19,16 @@ import com.itmo.mrdvd.command.RemoveByIdCommand;
 import com.itmo.mrdvd.command.RemoveLastCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
-import com.itmo.mrdvd.device.InputDevice;
+import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class TicketShell extends Shell {
-  private Map<String, Command> commands;
+  private final Map<String, Command> commands;
   private boolean isOpen;
 
-  public TicketShell(InputDevice in, OutputDevice out, TicketCollection collection) {
+  public TicketShell(InteractiveInputDevice in, OutputDevice out, TicketCollection collection) {
     super(in, out);
-    this.commands = new TreeMap<String, Command>();
+    this.commands = new TreeMap<>();
     this.isOpen = false;
     Command add = new AddCommand(collection, in, out);
     commands.put(add.name(), add);

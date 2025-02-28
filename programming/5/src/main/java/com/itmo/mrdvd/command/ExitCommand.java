@@ -3,7 +3,7 @@ package com.itmo.mrdvd.command;
 import com.itmo.mrdvd.shell.Shell;
 
 public class ExitCommand implements Command {
-  private Shell shell;
+  private final Shell shell;
 
   public ExitCommand(Shell shell) {
     this.shell = shell;
