@@ -3,6 +3,8 @@ package com.itmo.mrdvd;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
 import com.itmo.mrdvd.device.Console;
+import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.device.TicketXMLMapper;
 import com.itmo.mrdvd.shell.TicketShell;
 
 /*
@@ -16,7 +18,9 @@ public class Main {
     Console console = new Console();
     TicketCollection collection =
         new TicketCollection(new TicketIdGenerator(), new TicketIdGenerator());
-    TicketShell shell = new TicketShell(console, console, collection);
+    FileIO file = new FileIO();
+    TicketXMLMapper mapper = new TicketXMLMapper();
+    TicketShell shell = new TicketShell(console, console, collection, mapper, mapper, file);
     shell.open();
   }
 }

@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.collection;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -10,9 +11,10 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
   private final ArrayList<Ticket> tickets;
   private final IdGenerator ticketGenerator;
   private final IdGenerator eventGenerator;
+  private LocalDateTime updateTime;
 
   public TicketCollection(IdGenerator ticketGen, IdGenerator eventGen) {
-    tickets = new ArrayList<>();
+    this.tickets = new ArrayList<>();
     this.ticketGenerator = ticketGen;
     this.eventGenerator = eventGen;
   }

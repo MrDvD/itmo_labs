@@ -9,36 +9,48 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-public class FileIO implements InputDevice, OutputDevice {
-  private final String filePath;
+public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
+  private String filePath;
   private InputStream inStream;
   private BufferedInputStream inReader;
   private OutputStream outStream;
   private OutputStreamWriter outWriter;
 
-  public FileIO(String filePath) {
-    this.filePath = filePath;
+  @Override
+  public int setPath(String filePath) {
+   this.filePath = filePath;
+   return 0;
   }
 
   @Override
   public int openIn() {
     try {
+      if (filePath == null) {
+         return -3;
+      }
       this.inStream = new FileInputStream(filePath);
       this.inReader = new BufferedInputStream(inStream);
       return 0;
     } catch (FileNotFoundException e) {
       return -1;
+    } catch (SecurityException e) {
+      return -2;
     }
   }
 
   @Override
   public int openOut() {
     try {
+      if (filePath == null) {
+         return -3;
+      }
       this.outStream = new FileOutputStream(filePath);
       this.outWriter = new OutputStreamWriter(outStream);
       return 0;
     } catch (FileNotFoundException e) {
       return -1;
+    } catch (SecurityException e) {
+      return -2;
     }
   }
 
@@ -67,12 +79,12 @@ public class FileIO implements InputDevice, OutputDevice {
   @Override
   public String read() {
     try {
+      if (inReader == null) {
+         return null;
+      }
       String result = "";
-      while (true) {
+      while (inReader.available() > 0) {
         int chr = inReader.read();
-        if (chr == -1) {
-          break;
-        }
         result += (char) chr;
       }
       return result;
@@ -84,8 +96,12 @@ public class FileIO implements InputDevice, OutputDevice {
   @Override
   public int write(String str) {
     try {
-      outWriter.write(str);
-      return 0;
+      if (outWriter != null) {
+         outWriter.write(str);
+         return 0;
+      } else {
+         return -2;
+      }
     } catch (IOException e) {
       return -1;
     }

@@ -12,21 +12,26 @@ import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.CountGreaterThanEventCommand;
 import com.itmo.mrdvd.command.ExitCommand;
 import com.itmo.mrdvd.command.HelpCommand;
+import com.itmo.mrdvd.command.LoadCommand;
 import com.itmo.mrdvd.command.MinByPriceCommand;
 import com.itmo.mrdvd.command.PrintFieldDescendingTypeCommand;
+import com.itmo.mrdvd.command.ReadEnvironmentFilepathCommand;
 import com.itmo.mrdvd.command.RemoveAtCommand;
 import com.itmo.mrdvd.command.RemoveByIdCommand;
 import com.itmo.mrdvd.command.RemoveLastCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
+import com.itmo.mrdvd.device.Deserializer;
+import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.Serializer;
 
 public class TicketShell extends Shell {
   private final Map<String, Command> commands;
   private boolean isOpen;
 
-  public TicketShell(InteractiveInputDevice in, OutputDevice out, TicketCollection collection) {
+  public TicketShell(InteractiveInputDevice in, OutputDevice out, TicketCollection collection, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial, FileIO fd) {
     super(in, out);
     this.commands = new TreeMap<>();
     this.isOpen = false;
@@ -56,6 +61,10 @@ public class TicketShell extends Shell {
     commands.put(printFieldDescendingTypeCommand.name(), printFieldDescendingTypeCommand);
     Command countGreaterThanEventCommand = new CountGreaterThanEventCommand(collection, out);
     commands.put(countGreaterThanEventCommand.name(), countGreaterThanEventCommand);
+    Command loadCommand = new LoadCommand(fd, collection, deserial, out);
+    commands.put(loadCommand.name(), loadCommand);
+    Command readEnvironmentFilepathCommand = new ReadEnvironmentFilepathCommand("TICKET_TEST", fd, out);
+    commands.put(readEnvironmentFilepathCommand.name(), readEnvironmentFilepathCommand);
   }
 
   public static class RawCommand {
