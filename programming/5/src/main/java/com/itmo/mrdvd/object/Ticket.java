@@ -1,6 +1,7 @@
 package com.itmo.mrdvd.object;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.math.NumberUtils;
 
 public class Ticket implements Validatable {
@@ -86,11 +87,7 @@ public class Ticket implements Validatable {
   }
 
   public int setCreationDate(LocalDateTime date) {
-    return setCreationDate(date, true);
-  }
-
-  public int setCreationDate(LocalDateTime date, boolean validate) {
-    if (!validate || TicketValidator.validateCreationDate(date)) {
+    if (TicketValidator.validateCreationDate(date)) {
       this.creationDate = date;
       return 0;
     }
@@ -192,7 +189,10 @@ public class Ticket implements Validatable {
     s += String.format("ID: %d\n", getId());
     s += String.format("НАЗВАНИЕ БИЛЕТА: %s\n", getName());
     s += String.format("КООРДИНАТЫ: %s\n", getCoordinates());
-    s += String.format("ДАТА СОЗДАНИЯ: %s\n", getCreationDate());
+    s +=
+        String.format(
+            "ДАТА СОЗДАНИЯ: %s\n",
+            getCreationDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
     s += String.format("СТОИМОСТЬ: %d у.е.\n", getPrice());
     s += String.format("ТИП БИЛЕТА: %s\n", getType());
     s += "######### МЕРОПРИЯТИЕ #########\n";

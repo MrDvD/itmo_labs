@@ -1,6 +1,7 @@
 package com.itmo.mrdvd.device;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,16 +18,27 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   private OutputStreamWriter outWriter;
 
   @Override
-  public int setPath(String filePath) {
-   this.filePath = filePath;
-   return 0;
+  public FileIO setPath(String filePath) {
+    this.filePath = filePath;
+    return this;
+  }
+
+  @Override
+  public int createFile() {
+    try {
+      return new File(filePath).createNewFile() ? 0 : -3;
+    } catch (IOException e) {
+      return -1;
+    } catch (SecurityException e) {
+      return -2;
+    }
   }
 
   @Override
   public int openIn() {
     try {
       if (filePath == null) {
-         return -3;
+        return -3;
       }
       this.inStream = new FileInputStream(filePath);
       this.inReader = new BufferedInputStream(inStream);
@@ -42,7 +54,7 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   public int openOut() {
     try {
       if (filePath == null) {
-         return -3;
+        return -3;
       }
       this.outStream = new FileOutputStream(filePath);
       this.outWriter = new OutputStreamWriter(outStream);
@@ -80,7 +92,7 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   public String read() {
     try {
       if (inReader == null) {
-         return null;
+        return null;
       }
       String result = "";
       while (inReader.available() > 0) {
@@ -97,10 +109,10 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   public int write(String str) {
     try {
       if (outWriter != null) {
-         outWriter.write(str);
-         return 0;
+        outWriter.write(str);
+        return 0;
       } else {
-         return -2;
+        return -2;
       }
     } catch (IOException e) {
       return -1;

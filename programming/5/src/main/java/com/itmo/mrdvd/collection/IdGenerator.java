@@ -1,5 +1,8 @@
 package com.itmo.mrdvd.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
+
+@JsonIgnoreType
 public interface IdGenerator {
   public Long bookId(Object obj);
 

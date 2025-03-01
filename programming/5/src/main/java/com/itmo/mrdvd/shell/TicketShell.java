@@ -1,9 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfMaxCommand;
@@ -19,6 +15,7 @@ import com.itmo.mrdvd.command.ReadEnvironmentFilepathCommand;
 import com.itmo.mrdvd.command.RemoveAtCommand;
 import com.itmo.mrdvd.command.RemoveByIdCommand;
 import com.itmo.mrdvd.command.RemoveLastCommand;
+import com.itmo.mrdvd.command.SaveCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.Deserializer;
@@ -26,12 +23,21 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class TicketShell extends Shell {
   private final Map<String, Command> commands;
   private boolean isOpen;
 
-  public TicketShell(InteractiveInputDevice in, OutputDevice out, TicketCollection collection, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial, FileIO fd) {
+  public TicketShell(
+      InteractiveInputDevice in,
+      OutputDevice out,
+      TicketCollection collection,
+      Serializer<TicketCollection> serial,
+      Deserializer<TicketCollection> deserial,
+      FileIO fd) {
     super(in, out);
     this.commands = new TreeMap<>();
     this.isOpen = false;
@@ -63,8 +69,11 @@ public class TicketShell extends Shell {
     commands.put(countGreaterThanEventCommand.name(), countGreaterThanEventCommand);
     Command loadCommand = new LoadCommand(fd, collection, deserial, out);
     commands.put(loadCommand.name(), loadCommand);
-    Command readEnvironmentFilepathCommand = new ReadEnvironmentFilepathCommand("TICKET_TEST", fd, out);
+    Command readEnvironmentFilepathCommand =
+        new ReadEnvironmentFilepathCommand("TICKET_TEST", fd, out);
     commands.put(readEnvironmentFilepathCommand.name(), readEnvironmentFilepathCommand);
+    Command saveCommand = new SaveCommand(collection, serial, fd, out);
+    commands.put(saveCommand.name(), saveCommand);
   }
 
   public static class RawCommand {

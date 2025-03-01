@@ -4,15 +4,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
 public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
-  private final ArrayList<Ticket> tickets;
+  @JsonProperty
+  private ArrayList<Ticket> tickets;
   private final IdGenerator ticketGenerator;
   private final IdGenerator eventGenerator;
   private LocalDateTime updateTime;
 
+  public TicketCollection() {
+    this(null, null);
+  }
+  
   public TicketCollection(IdGenerator ticketGen, IdGenerator eventGen) {
     this.tickets = new ArrayList<>();
     this.ticketGenerator = ticketGen;

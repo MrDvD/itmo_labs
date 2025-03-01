@@ -1,5 +1,6 @@
 package com.itmo.mrdvd;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
 import com.itmo.mrdvd.device.Console;
@@ -14,7 +15,7 @@ import com.itmo.mrdvd.shell.TicketShell;
  */
 
 public class Main {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws JsonProcessingException {
     Console console = new Console();
     TicketCollection collection =
         new TicketCollection(new TicketIdGenerator(), new TicketIdGenerator());
