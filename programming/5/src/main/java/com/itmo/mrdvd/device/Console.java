@@ -8,9 +8,10 @@ public class Console implements InteractiveInputDevice, OutputDevice {
   private Scanner in;
   private OutputStreamWriter out;
 
-  public Console() {
-    openIn();
-    openOut();
+  public Console init() {
+   openIn();
+   openOut();
+   return this;
   }
 
   @Override
@@ -51,6 +52,20 @@ public class Console implements InteractiveInputDevice, OutputDevice {
     writeln("");
     openIn();
     return "\n";
+  }
+
+  @Override
+  public String readAll() {
+    String result = "";
+    while (in.hasNext()) {
+      result += in.next();
+    }
+    writeln("");
+    openIn();
+    if (result.equals("")) {
+      return "\n";
+    }
+    return result;
   }
 
   @Override

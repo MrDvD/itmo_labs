@@ -13,7 +13,9 @@ public class InfoCommand implements Command {
   }
 
   @Override
-  public void execute(String[] params) {}
+  public void execute(String[] params) {
+    out.writeln(collection.getMetadata().toString());
+  }
 
   @Override
   public String name() {

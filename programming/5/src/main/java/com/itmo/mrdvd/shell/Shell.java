@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.Map;
+
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
-import java.util.Map;
 
 public abstract class Shell {
   private final InteractiveInputDevice in;
@@ -23,6 +24,12 @@ public abstract class Shell {
   }
 
   public abstract Map<String, Command> getCommands();
+
+  public abstract int getStackSize();
+
+  public abstract void setStackSize(int size);
+
+  public abstract int processCommandLine(String cmd);
 
   public abstract void open();
 

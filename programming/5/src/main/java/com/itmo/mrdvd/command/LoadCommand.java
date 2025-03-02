@@ -34,7 +34,7 @@ public class LoadCommand implements Command {
       }
       return;
     }
-    String fileContent = in.read();
+    String fileContent = in.readAll();
     in.closeIn();
     if (fileContent == null) {
       out.writeln("[ERROR] Ошибка чтения файла с коллекцией.");

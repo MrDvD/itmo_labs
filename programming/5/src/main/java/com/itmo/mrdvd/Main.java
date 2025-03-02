@@ -16,9 +16,9 @@ import com.itmo.mrdvd.shell.TicketShell;
 
 public class Main {
   public static void main(String[] args) throws JsonProcessingException {
-    Console console = new Console();
+    Console console = new Console().init();
     TicketCollection collection =
-        new TicketCollection(new TicketIdGenerator(), new TicketIdGenerator());
+        new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
     FileIO file = new FileIO();
     TicketXMLMapper mapper = new TicketXMLMapper();
     TicketShell shell = new TicketShell(console, console, collection, mapper, mapper, file);

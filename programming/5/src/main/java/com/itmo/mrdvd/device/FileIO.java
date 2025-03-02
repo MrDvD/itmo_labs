@@ -19,8 +19,18 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
 
   @Override
   public FileIO setPath(String filePath) {
-    this.filePath = filePath;
+    this.filePath = new File(filePath).getAbsolutePath();
     return this;
+  }
+
+  @Override
+  public String getPath() {
+   return this.filePath;
+  }
+
+  @Override
+  public String getName() {
+   return new File(getPath()).getName();
   }
 
   @Override
@@ -88,21 +98,36 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
     }
   }
 
-  @Override
-  public String read() {
-    try {
+  public String read(boolean byLine) {
+   try {
       if (inReader == null) {
         return null;
       }
       String result = "";
       while (inReader.available() > 0) {
         int chr = inReader.read();
+        if (byLine && chr == '\n') {
+         break;
+        }
         result += (char) chr;
+      }
+      if (result.equals("")) {
+         return null;
       }
       return result;
     } catch (IOException e) {
       return null;
     }
+  }
+
+  @Override
+  public String read() {
+   return read(true);
+  }
+
+  @Override
+  public String readAll() {
+    return read(false);
   }
 
   @Override

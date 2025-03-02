@@ -1,13 +1,19 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfMaxCommand;
 import com.itmo.mrdvd.command.ClearCommand;
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.CountGreaterThanEventCommand;
+import com.itmo.mrdvd.command.ExecuteScriptCommand;
 import com.itmo.mrdvd.command.ExitCommand;
 import com.itmo.mrdvd.command.HelpCommand;
+import com.itmo.mrdvd.command.InfoCommand;
 import com.itmo.mrdvd.command.LoadCommand;
 import com.itmo.mrdvd.command.MinByPriceCommand;
 import com.itmo.mrdvd.command.PrintFieldDescendingTypeCommand;
@@ -23,13 +29,11 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
 
 public class TicketShell extends Shell {
   private final Map<String, Command> commands;
   private boolean isOpen;
+  private int stackSize;
 
   public TicketShell(
       InteractiveInputDevice in,
@@ -41,6 +45,7 @@ public class TicketShell extends Shell {
     super(in, out);
     this.commands = new TreeMap<>();
     this.isOpen = false;
+    this.stackSize = 256;
     Command add = new AddCommand(collection, in, out);
     commands.put(add.name(), add);
     Command help = new HelpCommand(this, out);
@@ -74,6 +79,10 @@ public class TicketShell extends Shell {
     commands.put(readEnvironmentFilepathCommand.name(), readEnvironmentFilepathCommand);
     Command saveCommand = new SaveCommand(collection, serial, fd, out);
     commands.put(saveCommand.name(), saveCommand);
+    Command executeScriptCommand = new ExecuteScriptCommand(this, out);
+    commands.put(executeScriptCommand.name(), executeScriptCommand);
+    Command infoCommand = new InfoCommand(collection, out);
+    commands.put(infoCommand.name(), infoCommand);
   }
 
   public static class RawCommand {
@@ -117,15 +126,34 @@ public class TicketShell extends Shell {
     this.isOpen = true;
     while (this.isOpen) {
       String strCmd = getInput().read("> ");
-      RawCommand rawCmd = TShellParser.parseLine(strCmd);
-      if (rawCmd == null) {
-        continue;
+      int code = processCommandLine(strCmd);
+      if (code == -1) {
+        getOutput().writeln(String.format("[ERROR] Не существует команды \"%s\".", TShellParser.parseLine(strCmd).cmd));
       }
-      if (getCommands().containsKey(rawCmd.cmd)) {
-        getCommands().get(rawCmd.cmd).execute(rawCmd.params);
-      } else {
-        getOutput().writeln(String.format("[ERROR] Не существует команды \"%s\".", rawCmd.cmd));
-      }
+    }
+  }
+
+  @Override
+  public void setStackSize(int size) {
+    this.stackSize = size;
+  }
+
+  @Override
+  public int getStackSize() {
+    return this.stackSize;
+  }
+
+  @Override
+  public int processCommandLine(String line) {
+    RawCommand rawCmd = TShellParser.parseLine(line);
+    if (rawCmd == null) {
+      return -2;
+    }
+    if (getCommands().containsKey(rawCmd.cmd)) {
+      getCommands().get(rawCmd.cmd).execute(rawCmd.params);
+      return 0;
+    } else {
+      return -1;
     }
   }
 

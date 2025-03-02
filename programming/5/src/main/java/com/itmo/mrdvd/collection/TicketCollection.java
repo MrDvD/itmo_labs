@@ -1,6 +1,7 @@
 package com.itmo.mrdvd.collection;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -9,18 +10,55 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
 public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
-  @JsonProperty
+   private final TicketCollectionMetadata meta;
+   @JsonProperty
   private ArrayList<Ticket> tickets;
   private final IdGenerator ticketGenerator;
   private final IdGenerator eventGenerator;
-  private LocalDateTime updateTime;
+
+  public class TicketCollectionMetadata {
+   private final LocalDateTime creationTime;
+   private final String type;
+   private String name;
+   public TicketCollectionMetadata(String name) {
+      this.creationTime = LocalDateTime.now();
+      this.type =  Ticket.class.getSimpleName();
+      this.name = name;
+   }
+   public void setName(String name) {
+      this.name = name;
+   }
+   public LocalDateTime getCreationTime() {
+      return this.creationTime;
+   }
+   public String getName() {
+      return this.name;
+   }
+   public int getCount() {
+      return tickets.size();
+   }
+   public String getType() {
+      return this.type;
+   }
+   @Override
+   public String toString() {
+      String result = "";
+      result += "# # # Метаданные коллекции # # #\n";
+      result += String.format("НАЗВАНИЕ: %s\n", getName());
+      result += String.format("ТИП: %s\n", getType());
+      result += String.format("ДАТА ИНИЦИАЛИЗАЦИИ: %s\n", getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+      result += String.format("КОЛИЧЕСТВО ЭЛЕМЕНТОВ: %d", getCount());
+      return result;
+   }
+  }
 
   public TicketCollection() {
-    this(null, null);
+    this(null, null, null);
   }
   
-  public TicketCollection(IdGenerator ticketGen, IdGenerator eventGen) {
+  public TicketCollection(String name, IdGenerator ticketGen, IdGenerator eventGen) {
     this.tickets = new ArrayList<>();
+    this.meta = new TicketCollectionMetadata(name);
     this.ticketGenerator = ticketGen;
     this.eventGenerator = eventGen;
   }
@@ -143,6 +181,10 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
     ArrayList<Ticket> sortedList = new ArrayList<>(tickets);
     sortedList.sort(new TicketComparator(field, descending));
     return sortedList;
+  }
+
+  public TicketCollectionMetadata getMetadata() {
+   return this.meta;
   }
 
   @Override
