@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
+public class FileIO extends FileDescriptor {
   private String filePath;
   private InputStream inStream;
   private BufferedInputStream inReader;
@@ -18,19 +18,18 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   private OutputStreamWriter outWriter;
 
   @Override
-  public FileIO setPath(String filePath) {
+  public void setPath(String filePath) {
     this.filePath = new File(filePath).getAbsolutePath();
-    return this;
   }
 
   @Override
   public String getPath() {
-   return this.filePath;
+    return this.filePath;
   }
 
   @Override
   public String getName() {
-   return new File(getPath()).getName();
+    return new File(getPath()).getName();
   }
 
   @Override
@@ -99,7 +98,7 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
   }
 
   public String read(boolean byLine) {
-   try {
+    try {
       if (inReader == null) {
         return null;
       }
@@ -107,12 +106,12 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
       while (inReader.available() > 0) {
         int chr = inReader.read();
         if (byLine && chr == '\n') {
-         break;
+          break;
         }
         result += (char) chr;
       }
       if (result.equals("")) {
-         return null;
+        return null;
       }
       return result;
     } catch (IOException e) {
@@ -122,7 +121,7 @@ public class FileIO implements InputDevice, OutputDevice, FileDescriptor {
 
   @Override
   public String read() {
-   return read(true);
+    return read(true);
   }
 
   @Override

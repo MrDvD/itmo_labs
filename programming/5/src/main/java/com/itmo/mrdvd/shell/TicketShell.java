@@ -1,9 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
-
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfMaxCommand;
@@ -25,13 +21,21 @@ import com.itmo.mrdvd.command.SaveCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.Deserializer;
+import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 
-public class TicketShell extends Shell {
+public class TicketShell implements Shell {
+  private final InteractiveInputDevice in;
+  private final OutputDevice out;
   private final Map<String, Command> commands;
+  private final ArrayList<Command> preExecute;
   private boolean isOpen;
   private int stackSize;
 
@@ -40,12 +44,23 @@ public class TicketShell extends Shell {
       OutputDevice out,
       TicketCollection collection,
       Serializer<TicketCollection> serial,
-      Deserializer<TicketCollection> deserial,
-      FileIO fd) {
-    super(in, out);
+      Deserializer<TicketCollection> deserial) {
+    this.in = in;
+    this.out = out;
     this.commands = new TreeMap<>();
+    this.preExecute = new ArrayList<>();
     this.isOpen = false;
     this.stackSize = 256;
+    initCommands(in, out, collection, serial, deserial, "TICKET_TEST");
+  }
+
+  private void initCommands(
+      InteractiveInputDevice in,
+      OutputDevice out,
+      TicketCollection collection,
+      Serializer<TicketCollection> serial,
+      Deserializer<TicketCollection> deserial,
+      String envName) {
     Command add = new AddCommand(collection, in, out);
     commands.put(add.name(), add);
     Command help = new HelpCommand(this, out);
@@ -72,10 +87,10 @@ public class TicketShell extends Shell {
     commands.put(printFieldDescendingTypeCommand.name(), printFieldDescendingTypeCommand);
     Command countGreaterThanEventCommand = new CountGreaterThanEventCommand(collection, out);
     commands.put(countGreaterThanEventCommand.name(), countGreaterThanEventCommand);
+    FileDescriptor fd = createFd();
     Command loadCommand = new LoadCommand(fd, collection, deserial, out);
     commands.put(loadCommand.name(), loadCommand);
-    Command readEnvironmentFilepathCommand =
-        new ReadEnvironmentFilepathCommand("TICKET_TEST", fd, out);
+    Command readEnvironmentFilepathCommand = new ReadEnvironmentFilepathCommand(envName, fd, out);
     commands.put(readEnvironmentFilepathCommand.name(), readEnvironmentFilepathCommand);
     Command saveCommand = new SaveCommand(collection, serial, fd, out);
     commands.put(saveCommand.name(), saveCommand);
@@ -83,6 +98,9 @@ public class TicketShell extends Shell {
     commands.put(executeScriptCommand.name(), executeScriptCommand);
     Command infoCommand = new InfoCommand(collection, out);
     commands.put(infoCommand.name(), infoCommand);
+
+    preExecute.add(readEnvironmentFilepathCommand);
+    preExecute.add(loadCommand);
   }
 
   public static class RawCommand {
@@ -123,14 +141,25 @@ public class TicketShell extends Shell {
 
   @Override
   public void open() {
+    for (Command cmd : preExecute) {
+      cmd.execute(null);
+    }
     this.isOpen = true;
     while (this.isOpen) {
       String strCmd = getInput().read("> ");
       int code = processCommandLine(strCmd);
       if (code == -1) {
-        getOutput().writeln(String.format("[ERROR] Не существует команды \"%s\".", TShellParser.parseLine(strCmd).cmd));
+        getOutput()
+            .writeln(
+                String.format(
+                    "[ERROR] Не существует команды \"%s\".", TShellParser.parseLine(strCmd).cmd));
       }
     }
+  }
+
+  @Override
+  public FileDescriptor createFd() {
+    return new FileIO();
   }
 
   @Override
@@ -155,6 +184,16 @@ public class TicketShell extends Shell {
     } else {
       return -1;
     }
+  }
+
+  @Override
+  public InteractiveInputDevice getInput() {
+    return this.in;
+  }
+
+  @Override
+  public OutputDevice getOutput() {
+    return this.out;
   }
 
   @Override

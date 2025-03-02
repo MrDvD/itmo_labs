@@ -46,6 +46,7 @@ public class LoadCommand implements Command {
       for (Ticket t : loaded) {
         collection.addRaw(t);
       }
+      collection.setMetadata(loaded.getMetadata());
       out.writeln("[INFO] Коллекция успешно считана из файла.");
     } else {
       out.writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");

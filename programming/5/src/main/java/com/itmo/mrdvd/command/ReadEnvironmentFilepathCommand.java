@@ -1,14 +1,14 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.device.FileDescriptor;
+import com.itmo.mrdvd.device.FileMeta;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class ReadEnvironmentFilepathCommand implements Command {
   private final String envName;
   private final OutputDevice log;
-  private final FileDescriptor file;
+  private final FileMeta file;
 
-  public ReadEnvironmentFilepathCommand(String envName, FileDescriptor file, OutputDevice log) {
+  public ReadEnvironmentFilepathCommand(String envName, FileMeta file, OutputDevice log) {
     this.envName = envName;
     this.file = file;
     this.log = log;
@@ -19,7 +19,7 @@ public class ReadEnvironmentFilepathCommand implements Command {
     String filePath = System.getenv(envName);
     if (filePath != null) {
       file.setPath(filePath);
-      log.writeln("[INFO] Переменная окружения успешно прочитана.");
+      log.writeln(String.format("[INFO] Переменная окружения \"%s\" успешно прочитана.", envName));
     } else {
       log.writeln(String.format("[ERROR] Ошибка чтения переменной окружения '%s'.", envName));
     }

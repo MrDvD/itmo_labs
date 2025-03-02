@@ -9,9 +9,9 @@ public class Console implements InteractiveInputDevice, OutputDevice {
   private OutputStreamWriter out;
 
   public Console init() {
-   openIn();
-   openOut();
-   return this;
+    openIn();
+    openOut();
+    return this;
   }
 
   @Override

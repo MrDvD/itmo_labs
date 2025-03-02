@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
 import com.itmo.mrdvd.device.Console;
-import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.TicketXMLMapper;
 import com.itmo.mrdvd.shell.TicketShell;
 
@@ -19,9 +18,8 @@ public class Main {
     Console console = new Console().init();
     TicketCollection collection =
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
-    FileIO file = new FileIO();
     TicketXMLMapper mapper = new TicketXMLMapper();
-    TicketShell shell = new TicketShell(console, console, collection, mapper, mapper, file);
+    TicketShell shell = new TicketShell(console, console, collection, mapper, mapper);
     shell.open();
   }
 }

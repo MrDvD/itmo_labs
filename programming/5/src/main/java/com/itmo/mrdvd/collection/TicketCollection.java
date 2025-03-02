@@ -10,52 +10,63 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
 public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
-   private final TicketCollectionMetadata meta;
-   @JsonProperty
-  private ArrayList<Ticket> tickets;
+  @JsonProperty private ArrayList<Ticket> tickets;
   private final IdGenerator ticketGenerator;
   private final IdGenerator eventGenerator;
+  private TicketCollectionMetadata meta;
 
-  public class TicketCollectionMetadata {
-   private final LocalDateTime creationTime;
-   private final String type;
-   private String name;
-   public TicketCollectionMetadata(String name) {
+  static public class TicketCollectionMetadata {
+    @JsonProperty private LocalDateTime creationTime;
+    @JsonProperty private String type;
+    private String name;
+
+    public TicketCollectionMetadata() {}
+
+    public TicketCollectionMetadata(String name) {
       this.creationTime = LocalDateTime.now();
-      this.type =  Ticket.class.getSimpleName();
+      this.type = Ticket.class.getSimpleName();
       this.name = name;
-   }
-   public void setName(String name) {
+    }
+
+    public void setName(String name) {
       this.name = name;
-   }
-   public LocalDateTime getCreationTime() {
+    }
+
+    public LocalDateTime getCreationTime() {
       return this.creationTime;
-   }
-   public String getName() {
+    }
+
+    public String getName() {
       return this.name;
-   }
-   public int getCount() {
-      return tickets.size();
-   }
-   public String getType() {
+    }
+
+   //  public int getCount() {
+   //    return tickets.size();
+   //  }
+
+    public String getType() {
       return this.type;
-   }
-   @Override
-   public String toString() {
+    }
+
+    @Override
+    public String toString() {
       String result = "";
       result += "# # # Метаданные коллекции # # #\n";
       result += String.format("НАЗВАНИЕ: %s\n", getName());
       result += String.format("ТИП: %s\n", getType());
-      result += String.format("ДАТА ИНИЦИАЛИЗАЦИИ: %s\n", getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-      result += String.format("КОЛИЧЕСТВО ЭЛЕМЕНТОВ: %d", getCount());
+      result +=
+          String.format(
+              "ДАТА ИНИЦИАЛИЗАЦИИ: %s\n",
+              getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+      // result += String.format("КОЛИЧЕСТВО ЭЛЕМЕНТОВ: %d", getCount());
       return result;
-   }
+    }
   }
 
   public TicketCollection() {
     this(null, null, null);
   }
-  
+
   public TicketCollection(String name, IdGenerator ticketGen, IdGenerator eventGen) {
     this.tickets = new ArrayList<>();
     this.meta = new TicketCollectionMetadata(name);
@@ -184,7 +195,11 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
   }
 
   public TicketCollectionMetadata getMetadata() {
-   return this.meta;
+    return this.meta;
+  }
+
+  public void setMetadata(TicketCollectionMetadata meta) {
+    this.meta = meta;
   }
 
   @Override

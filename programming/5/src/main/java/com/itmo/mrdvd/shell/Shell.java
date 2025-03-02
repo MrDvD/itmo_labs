@@ -1,33 +1,23 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.Map;
-
 import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
+import java.util.Map;
 
-public abstract class Shell {
-  private final InteractiveInputDevice in;
-  private final OutputDevice out;
+public interface Shell {
+  public InteractiveInputDevice getInput();
 
-  public Shell(InteractiveInputDevice in, OutputDevice out) {
-    this.in = in;
-    this.out = out;
-  }
-
-  public InteractiveInputDevice getInput() {
-    return in;
-  }
-
-  public OutputDevice getOutput() {
-    return out;
-  }
+  public OutputDevice getOutput();
 
   public abstract Map<String, Command> getCommands();
 
   public abstract int getStackSize();
 
   public abstract void setStackSize(int size);
+
+  public abstract FileDescriptor createFd();
 
   public abstract int processCommandLine(String cmd);
 

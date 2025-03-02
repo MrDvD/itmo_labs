@@ -27,6 +27,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/Deserializer.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/FileDescriptor.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/FileIO.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/FileMeta.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/InputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/InteractiveInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/OutputDevice.java

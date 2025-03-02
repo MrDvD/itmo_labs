@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 
@@ -9,12 +9,12 @@ public class SaveCommand implements Command {
   private final TicketCollection collection;
   private final Serializer<TicketCollection> serial;
   private final OutputDevice log;
-  private final FileIO file;
+  private final FileDescriptor file;
 
   public SaveCommand(
       TicketCollection collect,
       Serializer<TicketCollection> serial,
-      FileIO file,
+      FileDescriptor file,
       OutputDevice log) {
     this.collection = collect;
     this.serial = serial;
