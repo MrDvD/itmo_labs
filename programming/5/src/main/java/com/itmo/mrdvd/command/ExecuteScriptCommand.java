@@ -6,13 +6,12 @@ import com.itmo.mrdvd.shell.Shell;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ExecuteScriptCommand implements Command {
-  private final Shell shell;
+public class ExecuteScriptCommand implements Command, ShellCommand {
+  private Shell shell;
   private final OutputDevice log;
   private final Set<String> stack;
 
-  public ExecuteScriptCommand(Shell shell, OutputDevice log) {
-    this.shell = shell;
+  public ExecuteScriptCommand(OutputDevice log) {
     this.log = log;
     this.stack = new HashSet<>();
   }
@@ -25,7 +24,15 @@ public class ExecuteScriptCommand implements Command {
   }
 
   @Override
+  public void setShell(Shell shell) {
+    this.shell = shell;
+  }
+
+  @Override
   public void execute(String[] params) {
+    if (shell == null) {
+      return;
+    }
     if (validateParams(params) != 0) {
       log.writeln("[ERROR] Неправильный формат ввода параметров команды.");
       return;

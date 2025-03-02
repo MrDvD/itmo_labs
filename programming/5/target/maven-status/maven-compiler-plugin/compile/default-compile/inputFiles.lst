@@ -21,6 +21,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/RemoveByIdCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/RemoveLastCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/SaveCommand.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ShellCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ShowCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/UpdateCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/Console.java

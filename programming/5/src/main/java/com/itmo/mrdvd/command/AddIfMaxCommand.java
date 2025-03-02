@@ -63,6 +63,7 @@ public class AddIfMaxCommand implements Command {
       ticketType = TicketParser.parseType(in.read(typeMessage));
     }
     Event event = new Event();
+    event.setId(collect.getEventIdGenerator().bookId(event));
     String eventName = in.read("Введите название мероприятия > ");
     while (event.setName(eventName) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
@@ -84,7 +85,7 @@ public class AddIfMaxCommand implements Command {
       out.writeln("[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.");
       eventType = EventParser.parseType(in.read(eventMessage));
     }
-    ticket.setEvent(event, false);
+    ticket.setEvent(event);
     ArrayList<Ticket> sorted = collect.sort(TicketField.ID);
     if (sorted.isEmpty() || sorted.get(sorted.size() - 1).getId().compareTo(ticket.getId()) < 0) {
       int exitCode = collect.add(ticket);

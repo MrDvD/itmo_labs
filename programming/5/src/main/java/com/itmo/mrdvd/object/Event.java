@@ -51,11 +51,7 @@ public class Event implements Validatable, Comparable<Event> {
   }
 
   public int setId(Long id) {
-    return setId(id, true);
-  }
-
-  public int setId(Long id, boolean validate) {
-    if (!validate || EventValidator.validateId(id)) {
+    if (EventValidator.validateId(id)) {
       this.id = id;
       return 0;
     }
@@ -63,11 +59,7 @@ public class Event implements Validatable, Comparable<Event> {
   }
 
   public int setName(String name) {
-    return setName(name, true);
-  }
-
-  public int setName(String name, boolean validate) {
-    if (!validate || EventValidator.validateName(name)) {
+    if (EventValidator.validateName(name)) {
       this.name = name;
       return 0;
     }
@@ -75,11 +67,7 @@ public class Event implements Validatable, Comparable<Event> {
   }
 
   public int setDescription(String desc) {
-    return setDescription(desc, true);
-  }
-
-  public int setDescription(String desc, boolean validate) {
-    if (!validate || EventValidator.validateDescription(desc)) {
+    if (EventValidator.validateDescription(desc)) {
       this.description = desc;
       return 0;
     }
@@ -87,11 +75,7 @@ public class Event implements Validatable, Comparable<Event> {
   }
 
   public int setEventType(EventType type) {
-    return setEventType(type, true);
-  }
-
-  public int setEventType(EventType type, boolean validate) {
-    if (!validate || EventValidator.validateEventType(type)) {
+    if (EventValidator.validateEventType(type)) {
       this.eventType = type;
       return 0;
     }

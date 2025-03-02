@@ -4,12 +4,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class TicketIdGenerator implements IdGenerator {
-  Set<Long> usedIds;
-  Set<Long> pendingIds;
+  private final Set<Long> usedIds;
+  private final Set<Long> pendingIds;
 
   public TicketIdGenerator() {
-    this.usedIds = new HashSet<Long>();
-    this.pendingIds = new HashSet<Long>();
+    this.usedIds = new HashSet<>();
+    this.pendingIds = new HashSet<>();
   }
 
   @Override

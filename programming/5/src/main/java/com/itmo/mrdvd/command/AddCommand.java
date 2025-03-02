@@ -61,6 +61,7 @@ public class AddCommand implements Command {
       ticketType = TicketParser.parseType(in.read(typeMessage));
     }
     Event event = new Event();
+    event.setId(collect.getEventIdGenerator().bookId(event));
     String eventName = in.read("Введите название мероприятия > ");
     while (event.setName(eventName) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
@@ -82,7 +83,7 @@ public class AddCommand implements Command {
       out.writeln("[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.");
       eventType = EventParser.parseType(in.read(eventMessage));
     }
-    ticket.setEvent(event, false);
+    ticket.setEvent(event);
     int exitCode = collect.add(ticket);
     if (exitCode == 0) {
       out.writeln("[INFO] Билет успешно добавлен в коллекцию.");

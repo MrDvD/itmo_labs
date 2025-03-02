@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.object.TicketField;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.TicketField;
 
 public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
   @JsonProperty private ArrayList<Ticket> tickets;
@@ -15,7 +14,7 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
   private final IdGenerator eventGenerator;
   private TicketCollectionMetadata meta;
 
-  static public class TicketCollectionMetadata {
+  public static class TicketCollectionMetadata {
     @JsonProperty private LocalDateTime creationTime;
     @JsonProperty private String type;
     private String name;
@@ -40,9 +39,9 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
       return this.name;
     }
 
-   //  public int getCount() {
-   //    return tickets.size();
-   //  }
+    //  public int getCount() {
+    //    return tickets.size();
+    //  }
 
     public String getType() {
       return this.type;

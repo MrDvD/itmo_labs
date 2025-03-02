@@ -11,17 +11,21 @@ public interface Shell {
 
   public OutputDevice getOutput();
 
-  public abstract Map<String, Command> getCommands();
+  public Map<String, Command> getCommands();
 
-  public abstract int getStackSize();
+  public int addCommand(Command cmd);
 
-  public abstract void setStackSize(int size);
+  public Command getCommand(String str);
 
-  public abstract FileDescriptor createFd();
+  public int getStackSize();
 
-  public abstract int processCommandLine(String cmd);
+  public void setStackSize(int size);
 
-  public abstract void open();
+  public FileDescriptor createFd();
 
-  public abstract void close();
+  public int processCommandLine(String cmd);
+
+  public void open();
+
+  public void close();
 }

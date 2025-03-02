@@ -37,11 +37,7 @@ public class Coordinates implements Validatable {
   }
 
   public int setX(Float x) {
-    return setX(x, true);
-  }
-
-  public int setX(Float x, boolean validate) {
-    if (!validate || CoordinatesValidator.validateX(x)) {
+    if (CoordinatesValidator.validateX(x)) {
       this.x = x;
       return 0;
     }
@@ -49,11 +45,7 @@ public class Coordinates implements Validatable {
   }
 
   public int setY(Float y) {
-    return setY(y, true);
-  }
-
-  public int setY(Float y, boolean validate) {
-    if (!validate || CoordinatesValidator.validateY(y)) {
+    if (CoordinatesValidator.validateY(y)) {
       this.y = y;
       return 0;
     }

@@ -75,11 +75,7 @@ public class Ticket implements Validatable {
   }
 
   public int setId(Long id) {
-    return setId(id, true);
-  }
-
-  public int setId(Long id, boolean validate) {
-    if (!validate || TicketValidator.validateId(id)) {
+    if (TicketValidator.validateId(id)) {
       this.id = id;
       return 0;
     }
@@ -95,11 +91,7 @@ public class Ticket implements Validatable {
   }
 
   public int setName(String name) {
-    return setName(name, true);
-  }
-
-  public int setName(String name, boolean validate) {
-    if (!validate || TicketValidator.validateName(name)) {
+    if (TicketValidator.validateName(name)) {
       this.name = name;
       return 0;
     }
@@ -107,11 +99,7 @@ public class Ticket implements Validatable {
   }
 
   public int setCoordinates(Coordinates coords) {
-    return setCoordinates(coords, true);
-  }
-
-  public int setCoordinates(Coordinates coords, boolean validate) {
-    if (!validate || TicketValidator.validateCoordinates(coords)) {
+    if (TicketValidator.validateCoordinates(coords)) {
       this.coordinates = coords;
       return 0;
     }
@@ -119,11 +107,7 @@ public class Ticket implements Validatable {
   }
 
   public int setPrice(int price) {
-    return setPrice(price, true);
-  }
-
-  public int setPrice(int price, boolean validate) {
-    if (!validate || TicketValidator.validatePrice(price)) {
+    if (TicketValidator.validatePrice(price)) {
       this.price = price;
       return 0;
     }
@@ -131,11 +115,7 @@ public class Ticket implements Validatable {
   }
 
   public int setType(TicketType type) {
-    return setType(type, true);
-  }
-
-  public int setType(TicketType type, boolean validate) {
-    if (!validate || TicketValidator.validateType(type)) {
+    if (TicketValidator.validateType(type)) {
       this.type = type;
       return 0;
     }
@@ -143,11 +123,7 @@ public class Ticket implements Validatable {
   }
 
   public int setEvent(Event event) {
-    return setEvent(event, true);
-  }
-
-  public int setEvent(Event event, boolean validate) {
-    if (!validate || TicketValidator.validateEvent(event)) {
+    if (TicketValidator.validateEvent(event)) {
       this.event = event;
       return 0;
     }

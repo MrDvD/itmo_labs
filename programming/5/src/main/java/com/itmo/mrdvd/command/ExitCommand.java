@@ -2,16 +2,19 @@ package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExitCommand implements Command {
-  private final Shell shell;
-
-  public ExitCommand(Shell shell) {
-    this.shell = shell;
-  }
+public class ExitCommand implements Command, ShellCommand {
+  private Shell shell;
 
   @Override
   public void execute(String[] params) {
-    shell.close();
+    if (shell != null) {
+      shell.close();
+    }
+  }
+
+  @Override
+  public void setShell(Shell shell) {
+    this.shell = shell;
   }
 
   @Override

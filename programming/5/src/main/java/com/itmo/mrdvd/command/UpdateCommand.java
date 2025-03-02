@@ -108,7 +108,7 @@ public class UpdateCommand implements Command {
         in.read(
             String.format(
                 "Введите небольшое описание мероприятия [%s] > ", event.getDescription()));
-    while (!eventDesc.isEmpty() && event.setName(eventDesc) != 0) {
+    while (!eventDesc.isEmpty() && event.setDescription(eventDesc) != 0) {
       out.writeln(
           "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.");
       eventDesc = in.read("Введите небольшое описание мероприятия > ");
@@ -125,7 +125,7 @@ public class UpdateCommand implements Command {
       eventTypeString = in.read(eventMessage);
       eventType = EventParser.parseType(eventTypeString);
     }
-    ticket.setEvent(event, false);
+    ticket.setEvent(event);
     collect.update(id, ticket);
     out.writeln("[INFO] Билет успешно обновлён в коллекции.");
   }
