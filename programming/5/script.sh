@@ -30,6 +30,31 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 # </plugin>
 # <plugin>
 
+# add Apache Commons Lang module
+
+# <dependency>
+#   <groupId>org.apache.commons</groupId>
+#   <artifactId>commons-lang3</artifactId>
+#   <version>3.17.0</version>
+# </dependency>
+
+# add JacksonXML module
+
+# <dependency>
+#    <groupId>com.fasterxml.jackson.dataformat</groupId>
+#    <artifactId>jackson-dataformat-xml</artifactId>
+#    <version>2.11.1</version>
+# </dependency>
+
+
+# Jackson module for LocalDateTimeFormatter
+
+# <dependency>
+#    <groupId>com.fasterxml.jackson.datatype</groupId>
+#    <artifactId>jackson-datatype-jsr310</artifactId>
+#    <version>2.6.0</version>
+# </dependency>
+
 # compile maven project to single JAR file
 # the result will be placed into the target/ dir
 mvn clean fmt:format compile assembly:single

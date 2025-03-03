@@ -1,0 +1,11 @@
+package com.itmo.mrdvd.device;
+
+public interface InputDevice {
+  public String read();
+
+  public String readAll();
+
+  public int openIn();
+
+  public int closeIn();
+}
