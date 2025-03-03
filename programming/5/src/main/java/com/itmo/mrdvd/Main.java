@@ -30,7 +30,6 @@ import com.itmo.mrdvd.shell.TicketShell;
  * TODO:
  * 1. In UpdateCommand set the max length of printed value of ticket fields;
  * 2. Print fixed length in command description
- * 3. Fix meta count of TicketCollection items
  */
 
 public class Main {

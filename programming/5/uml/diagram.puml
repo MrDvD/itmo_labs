@@ -1,22 +1,31 @@
 @startuml name
 
-Command <-- HelpCommand : implements
-Command <-- InfoCommand : implements
-Command <-- ShowCommand : implements
-Command <-- MinByPriceCommand : implements
-Command <-- CountGreaterThanEventCommand : implements
-Command <-- PrintFieldDescendingTypeCommand : implements
-Command <-- AddCommand : implements
-Command <-- AddIfMaxCommand : implements
-Command <-- UpdateCommand : implements
-Command <-- RemoveByIdCommand : implements
-Command <-- RemoveAtCommand : implements
-Command <-- RemoveLastCommand : implements
-Command <-- ClearCommand : implements
-Command <-- SaveCommand : implements
-Command <-- ExecuteScriptCommand : implements
-Command <-- ExitCommand : implements
+Command <.. HelpCommand : implements
+Command <.. InfoCommand : implements
+Command <.. ShowCommand : implements
+Command <.. MinByPriceCommand : implements
+Command <.. CountGreaterThanEventCommand : implements
+Command <.. PrintFieldDescendingTypeCommand : implements
+Command <.. AddCommand : implements
+Command <.. AddIfMaxCommand : implements
+Command <.. UpdateCommand : implements
+Command <.. RemoveByIdCommand : implements
+Command <.. RemoveAtCommand : implements
+Command <.. RemoveLastCommand : implements
+Command <.. ClearCommand : implements
+Command <.. SaveCommand : implements
+Command <.. ExecuteScriptCommand : implements
+Command <.. ExitCommand : implements
+Command <.. LoadCommand : implements
+Command <.. ReadEnvironmentFilepathCommand : implements
 
+InputDevice <-- InteractiveInputDevice
+
+interface InteractiveInputDevice {
+   +read(String message) : String
+}
+
+InteractiveInputDevice <.. Console : implements
 OutputDevice <.. Console : implements
 OutputDevice <.. XMLStorage : implements
 CollectionWorker <.. TicketCollection : implements
@@ -24,9 +33,194 @@ Shell <.. TicketShell : implements
 TicketShell +-- RawCommand
 TicketShell +-- TShellParser
 
-class Console
+class Console {
+   -in : Scanner
+   -out : OutputStreamWriter
+   +init() : Console
+}
+
+
+
 class TicketCollection
 class TicketShell
+
+interface Command {
+   +execute(String[] params) : void
+   +name() : String
+   +signature() : String
+   +description() : String
+}
+
+class AddCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +AddCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+}
+
+class AddIfMaxCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +AddIfMaxCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+}
+
+class UpdateCommand {
+   -collect : TicketCollection
+   -out : OutputDevice
+   +UpdateCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+class CountGreaterThanEventCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +CountGreaterThanEventCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+interface ShellCommand {
+   +setShell() : void
+}
+
+ShellCommand <.. ExecuteScriptCommand
+
+class ExecuteScriptCommand {
+   -shell : Shell
+   -log : OutputDevice
+   -stack : Set<String>
+   +ExecuteScriptCommand(OutputDevice log)
+   +validateParams() : int
+}
+
+ShellCommand <.. ExitCommand
+
+class ExitCommand {
+   -shell Shell
+}
+
+ShellCommand <.. HelpCommand
+
+class HelpCommand {
+   -shell : Shell
+   -out : OutputDevice
+   +HelpCommand()
+}
+
+class InfoCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +InfoCommand(TicketCollection collect, OutputDevice out)
+}
+
+interface Deserializer<T> {
+   +Deserialize(String str) : T
+}
+
+interface Serializer<T> {
+   +serialize(T obj) : String
+}
+
+Serializer <.. TicketXMLMapper : implements
+Deserializer <.. TicketXMLMapper : implements
+
+class TicketXMLMapper {
+   -mapper : XmlMapper
+   +TicketXMLMapper()
+}
+
+class LoadCommand {
+   -in : InputDevice
+   -collection : TicketCollection
+   -deserial : Deserializer<TicketCollection>
+   -out : OutputDevice
+   +LoadCommand(InputDevice in, TicketCollection collection, Deserializer<TicketCollection> deserial, OutputDevice out)
+}
+
+class MinByPriceCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +MinByPriceCommand(TicketCollection collect, OutputDevice out)
+}
+
+class PrintFieldDescendingTypeCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +PrintFieldDescendingTypeCommand(TicketCollection collect, OutputDevice out)
+}
+
+interface FileMeta {
+   +setPath(String filePath) : void
+   +getPath() : String
+   +getName() : String
+   +createFile() : int
+}
+
+class ReadEnvironmentFilepathCommand {
+   -envName : String
+   -log : OutputDevice
+   -file : FileMeta
+   +ReadEnvironmentFilepathCommand(String envName, FileMeta file, OutputDevice log)
+}
+
+class RemoveAtCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +RemoveAtCommand(TicketCollection collect, OutputDevice out)
+   +parseIndex(String idxString) : Integer
+   +validateParams(String[] params) : int
+}
+
+class RemoveByIdCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +RemoveByIdCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+class RemoveLastCommand {
+   -colection : TicketCollection
+   -out : OutputDevice
+   +RemoveLastCommand(TicketCollection collect, OutputDevice out)
+}
+
+class SaveCommand {
+   -collection : TicketCollection
+   -serial : Serializer<TicketCollection>
+   -log : OutputDevice
+   -file : FileDescriptor
+   +SaveCommand(TicketCollection collect, Serializer<TicketCollection> serial, FileDescriptor file, OutputDevice log)
+}
+
+InputDevice <.. FileDescriptor : implements
+OutputDevice <.. FileDescriptor : implements
+FileMeta <.. FileDescriptor : implements
+
+abstract class FileDescriptor
+
+FileDescriptor <-- FileIO
+
+class FileIO {
+   -filePath : String
+   -inStream : InputStream
+   -inReader : BufferedInputStream
+   -outStream : OutputStream
+   -outWriter : OutputStreamWriter
+}
+
+class ShowCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +ShowCommand(TicketCollection collect, OutputDevice out)
+}
+
+class UpdateCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +UpdateCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+   +validateParams(String[] params) : int
+}
 
 interface Shell {
    +getInput() : InteractiveInputDevice
@@ -60,58 +254,6 @@ static class RawCommand {
 
 static class TShellParser {
    +static parseLine(String line) : RawCommand
-}
-
-class HelpCommand {
-   +HelpCommand(out: OutputDevice)
-}
-
-class InfoCommand {
-   +InfoCommand(out: OutputDevice)
-}
-
-class ShowCommand {
-   +ShowCommand(collection: CollectionWorker, out: OutputDevice)
-}
-
-class MinByPriceCommand {
-   +MinByPriceCommand(collection: CollectionWorker, out: OutputDevice)
-}
-
-class CountGreaterThanEventCommand {
-   +CountGreaterThanEventCommand(collection: CollectionWorker, out: OutputDevice)
-}
-
-class PrintFieldDescendingTypeCommand {
-   +PrintFieldDescendingTypeCommand(collection: CollectionWorker, out: OutputDevice)
-}
-
-class AddCommand {
-   +AddCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class AddIfMaxCommand {
-   +AddIfMaxCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class UpdateCommand {
-   +UpdateCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class RemoveByIdCommand {
-   +RemoveByIdCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class RemoveAtCommand {
-   +RemoveAtCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class RemoveLastCommand {
-   +RemoveLastCommand(collection: CollectionWorker, log: OutputDevice)
-}
-
-class ClearCommand {
-   +ClearCommand(collection: CollectionWorker, log: OutputDevice)
 }
 
 TicketCollection +-- TicketCollectionMetadata
@@ -281,6 +423,8 @@ static class EventParser {
    +static parseId(String id) : Long
    +static parseType(String type) : EventType
 }
+
+
 
 enum TicketType {
    VIP
