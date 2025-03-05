@@ -3,3 +3,4 @@ computer\ science/annotations
 *.jar
 *.docx
 *.doc
+**/.vscode
