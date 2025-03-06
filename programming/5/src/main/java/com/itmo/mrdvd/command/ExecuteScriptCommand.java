@@ -1,19 +1,25 @@
 package com.itmo.mrdvd.command;
 
+import java.nio.file.Path;
+
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
+
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 public class ExecuteScriptCommand implements Command, ShellCommand {
   private Shell shell;
   private final OutputDevice log;
   private final Set<String> stack;
+  private final FileDescriptor fd;
 
-  public ExecuteScriptCommand(OutputDevice log) {
+  public ExecuteScriptCommand(OutputDevice log, FileDescriptor fd) {
     this.log = log;
     this.stack = new HashSet<>();
+    this.fd = fd;
   }
 
   public int validateParams(String[] params) {
@@ -41,7 +47,7 @@ public class ExecuteScriptCommand implements Command, ShellCommand {
       log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
       return;
     }
-    FileDescriptor file = shell.createFd();
+    FileDescriptor file = fd.create();
     file.setPath(params[0]);
     int code = file.openIn();
     if (code != 0) {
@@ -51,6 +57,8 @@ public class ExecuteScriptCommand implements Command, ShellCommand {
       }
       return;
     }
+    Optional<Path> path = file.getPath();
+
     if (stack.contains(file.getPath())) {
       log.writeln(
           String.format(

@@ -30,13 +30,13 @@ public class SaveCommand implements Command {
       return;
     }
     int code = file.openOut();
-    while (code == -1) {
-      if (file.createFile() != 0) {
-        log.writeln("[ERROR] Ошибка создания файла с коллекцией.");
-        return;
-      }
-      code = file.openOut();
-    }
+   //  while (code == -1) {
+   //    if (file.createFile() != 0) {
+   //      log.writeln("[ERROR] Ошибка создания файла с коллекцией.");
+   //      return;
+   //    }
+   //    code = file.openOut();
+   //  }
     if (code != 0) {
       switch (code) {
         case -3 -> log.writeln("[ERROR] Не указан путь к файлу для сохранения коллекции.");

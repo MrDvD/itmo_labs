@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.device;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,47 +8,48 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.nio.file.FileSystem;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.util.Optional;
 
 public class FileIO extends FileDescriptor {
-  private String filePath;
   private InputStream inStream;
   private BufferedInputStream inReader;
   private OutputStream outStream;
   private OutputStreamWriter outWriter;
 
-  @Override
-  public void setPath(String filePath) {
-    this.filePath = new File(filePath).getAbsolutePath();
+  public FileIO(Path path, FileSystem fs) {
+   super(path, fs);
   }
 
   @Override
-  public String getPath() {
-    return this.filePath;
+  public FileIO create() {
+   return new FileIO(path, fs);
   }
 
   @Override
-  public String getName() {
-    return new File(getPath()).getName();
+  public Optional<Path> setPath(String filePath) {
+   try {
+      this.path = getFs().getPath(filePath);
+      return Optional.of(this.path);
+   } catch (InvalidPathException e) {
+      return Optional.empty();
+   }
   }
 
   @Override
-  public int createFile() {
-    try {
-      return new File(filePath).createNewFile() ? 0 : -3;
-    } catch (IOException e) {
-      return -1;
-    } catch (SecurityException e) {
-      return -2;
-    }
+  public Optional<Path> getPath() {
+    return Optional.ofNullable(this.path);
   }
 
   @Override
   public int openIn() {
     try {
-      if (filePath == null) {
+      if (path == null) {
         return -3;
       }
-      this.inStream = new FileInputStream(filePath);
+      this.inStream = new FileInputStream(path.toString());
       this.inReader = new BufferedInputStream(inStream);
       return 0;
     } catch (FileNotFoundException e) {
@@ -62,10 +62,10 @@ public class FileIO extends FileDescriptor {
   @Override
   public int openOut() {
     try {
-      if (filePath == null) {
+      if (path == null) {
         return -3;
       }
-      this.outStream = new FileOutputStream(filePath);
+      this.outStream = new FileOutputStream(path.toString());
       this.outWriter = new OutputStreamWriter(outStream);
       return 0;
     } catch (FileNotFoundException e) {

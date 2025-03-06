@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.device;
 
+import java.nio.file.Path;
+import java.util.Optional;
+
 public interface FileMeta {
-  public void setPath(String filePath);
+  public Optional<Path> setPath(String filePath);
 
-  public String getPath();
-
-  public String getName();
-
-  public int createFile();
+  public Optional<Path> getPath();
 }

@@ -1,15 +1,14 @@
 package com.itmo.mrdvd.shell;
 
-import com.itmo.mrdvd.command.Command;
-import com.itmo.mrdvd.command.ShellCommand;
-import com.itmo.mrdvd.device.FileDescriptor;
-import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.device.InteractiveInputDevice;
-import com.itmo.mrdvd.device.OutputDevice;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.command.ShellCommand;
+import com.itmo.mrdvd.device.InteractiveInputDevice;
+import com.itmo.mrdvd.device.OutputDevice;
 
 public class TicketShell implements Shell {
   private final InteractiveInputDevice in;
@@ -99,11 +98,6 @@ public class TicketShell implements Shell {
                     "[ERROR] Не существует команды \"%s\".", TShellParser.parseLine(strCmd).cmd));
       }
     }
-  }
-
-  @Override
-  public FileDescriptor createFd() {
-    return new FileIO();
   }
 
   @Override
