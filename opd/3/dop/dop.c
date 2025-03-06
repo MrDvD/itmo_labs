@@ -6,7 +6,6 @@
 #define MAX_LEN 100
 
 // filler data
-int row_num = ROW_NUM;
 int size_arr[ROW_NUM] = {3, 2, 5, 1, 4};
 int matrix[ROW_NUM][MAX_LEN] = {{1024, 0, -32}, {5, 16}, {100, -234, 1, 21312, -13243}, {-342}, {-657, -62, -891, -5}};
 
@@ -19,7 +18,7 @@ struct input_t {
 
 struct input_t* init_input() {
    struct input_t *in = (struct input_t*) malloc(sizeof(struct input_t));
-   in->row_num = row_num;
+   in->row_num = ROW_NUM;
    in->size = (uint16_t*) malloc(sizeof(uint16_t) * in->row_num);
    in->matrix = (uint16_t**) malloc(sizeof(uint16_t*) * in->row_num);
    for (int i = 0; i < in->row_num; i++) {
