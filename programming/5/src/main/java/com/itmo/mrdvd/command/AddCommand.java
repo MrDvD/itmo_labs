@@ -1,5 +1,8 @@
 package com.itmo.mrdvd.command;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -11,7 +14,6 @@ import com.itmo.mrdvd.object.EventType;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.TicketType;
-import java.time.LocalDateTime;
 
 public class AddCommand implements Command {
   private final TicketCollection collect;
@@ -84,12 +86,11 @@ public class AddCommand implements Command {
       eventType = EventParser.parseType(in.read(eventMessage));
     }
     ticket.setEvent(event);
-    int exitCode = collect.add(ticket);
-    if (exitCode == 0) {
+    Optional<Ticket> result = collect.add(ticket);
+    if (result.isPresent()) {
       out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
     } else {
-      out.writeln(
-          String.format("[ERROR] Не удалось добавить билет в коллекцию. Код ошибки: %d", exitCode));
+      out.writeln("[ERROR] Не удалось добавить билет в коллекцию.");
     }
   }
 

@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -32,9 +34,6 @@ public class UpdateCommand implements Command {
     if (!TicketValidator.validateId(id)) {
       return -1;
     }
-    if (!collect.getTicketIdGenerator().isTaken(id)) {
-      return -2;
-    }
     return 0;
   }
 
@@ -44,13 +43,17 @@ public class UpdateCommand implements Command {
     if (validationResult != 0) {
       switch (validationResult) {
         case -1 -> out.writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
-        case -2 -> out.writeln("[ERROR] Указанный id не найден в коллекции.");
         default -> out.writeln("[ERROR] Неправильный формат ввода параметров команды.");
       }
       return;
     }
     Long id = TicketParser.parseId(params[0]);
-    Ticket ticket = collect.get(id);
+    Optional<Ticket> result = collect.get(id);
+    if (result.isEmpty()) {
+      out.writeln("[ERROR] Указанный id не найден в коллекции.");
+      return;
+    }
+    Ticket ticket = result.get();
     String name = in.read(String.format("Введите название билета [%s] > ", ticket.getName()));
     while (!name.isEmpty() && ticket.setName(name) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");

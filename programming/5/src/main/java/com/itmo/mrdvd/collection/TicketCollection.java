@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.object.Ticket;
@@ -72,26 +73,26 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
 
   //  0: success
   // -1: not valid obj
-  public int addRaw(Ticket obj) {
+  public Optional<Ticket> addRaw(Ticket obj) {
     if (obj.isValid()) {
       if (getTicketIdGenerator().isTaken(obj.getId())
           || getEventIdGenerator().isTaken(obj.getEvent().getId())) {
-        return -1;
+        return Optional.empty();
       }
       getTicketIdGenerator().takeId(obj.getId());
       getEventIdGenerator().takeId(obj.getEvent().getId());
       tickets.add(obj);
-      return 0;
+      return Optional.of(obj);
     }
-    return -1;
+    return Optional.empty();
   }
 
   //  0: success
   // -1: not valid obj
   @Override
-  public int add(Ticket obj) {
+  public Optional<Ticket> add(Ticket obj) {
     if (obj == null || obj.getEvent() == null) {
-      return -1;
+      return Optional.empty();
     }
     Long ticketId = null, eventId = null;
     if (obj.getId() == null) {
@@ -102,22 +103,22 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
       eventId = getEventIdGenerator().bookId(obj.getEvent());
       obj.getEvent().setId(eventId);
     }
-    int returnCode = addRaw(obj);
-    if (returnCode != 0) {
+    Optional<Ticket> ticket = addRaw(obj);
+    if (ticket.isEmpty()) {
       getTicketIdGenerator().freeId(ticketId);
       getEventIdGenerator().freeId(eventId);
     }
-    return returnCode;
+    return ticket;
   }
 
   @Override
-  public Ticket get(Long id) {
+  public Optional<Ticket> get(Long id) {
     for (Ticket ticket : tickets) {
       if (ticket.getId().equals(id)) {
-        return ticket;
+        return Optional.of(ticket);
       }
     }
-    return null;
+    return Optional.empty();
   }
 
   @Override
@@ -129,33 +130,27 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
   // -1: not valid obj
   // -2: not existing id object
   @Override
-  public int update(Long id, Ticket obj) {
+  public Optional<Ticket> update(Long id, Ticket obj) {
     if (obj.isValid()) {
       for (int i = 0; i < tickets.size(); i++) {
         Ticket ticket = tickets.get(i);
         if (ticket.getId().equals(id)) {
           tickets.set(i, obj);
-          return 0;
+          return Optional.of(obj);
         }
       }
-      return -2;
-    } else {
-      return -1;
-    }
+   }
+    return Optional.empty();
   }
 
-  //  0: success
-  // -2: not existing id object
   @Override
-  public int remove(Long id) {
+  public void remove(Long id) {
     for (int i = 0; i < tickets.size(); i++) {
       Ticket ticket = tickets.get(i);
       if (ticket.getId().equals(id)) {
         tickets.remove(i);
-        return 0;
       }
     }
-    return -2;
   }
 
   //  0: success

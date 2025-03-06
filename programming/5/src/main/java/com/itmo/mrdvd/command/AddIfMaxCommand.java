@@ -1,5 +1,9 @@
 package com.itmo.mrdvd.command;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -12,8 +16,6 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.object.TicketType;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class AddIfMaxCommand implements Command {
   private final TicketCollection collect;
@@ -88,13 +90,11 @@ public class AddIfMaxCommand implements Command {
     ticket.setEvent(event);
     ArrayList<Ticket> sorted = collect.sort(TicketField.ID);
     if (sorted.isEmpty() || sorted.get(sorted.size() - 1).getId().compareTo(ticket.getId()) < 0) {
-      int exitCode = collect.add(ticket);
-      if (exitCode == 0) {
+      Optional<Ticket> result = collect.add(ticket);
+      if (result.isPresent()) {
         out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
       } else {
-        out.writeln(
-            String.format(
-                "[ERROR] Не удалось добавить билет в коллекцию. Код ошибки: %d", exitCode));
+        out.writeln("[ERROR] Не удалось добавить билет в коллекцию.");
       }
     } else {
       out.writeln("[INFO] Билет не был добавлен в коллекцию: он не максимальный.");
