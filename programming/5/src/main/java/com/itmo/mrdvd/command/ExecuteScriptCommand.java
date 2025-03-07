@@ -1,14 +1,13 @@
 package com.itmo.mrdvd.command;
 
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
 
 public class ExecuteScriptCommand implements Command, ShellCommand {
   private Shell shell;
@@ -47,7 +46,7 @@ public class ExecuteScriptCommand implements Command, ShellCommand {
       log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
       return;
     }
-    FileDescriptor file = fd.create();
+    FileDescriptor file = fd.duplicate();
     file.setPath(params[0]);
     int code = file.openIn();
     if (code != 0) {
@@ -58,21 +57,24 @@ public class ExecuteScriptCommand implements Command, ShellCommand {
       return;
     }
     Optional<Path> path = file.getPath();
-
-    if (stack.contains(file.getPath())) {
+    if (path.isEmpty()) {
+      log.writeln("[ERROR] Неверный адрес к файлу со скриптом.");
+      return;
+    }
+    if (stack.contains(path.get().toAbsolutePath().toString())) {
       log.writeln(
           String.format(
               "[WARN] Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".",
-              file.getName()));
+              path.get().getFileName().toString()));
       return;
     }
-    stack.add(file.getPath());
+    stack.add(path.get().toAbsolutePath().toString());
     String currLine = file.read();
     while (currLine != null) {
       shell.processCommandLine(currLine);
       currLine = file.read();
     }
-    stack.remove(file.getPath());
+    stack.remove(path.get().toAbsolutePath().toString());
     file.closeIn();
   }
 

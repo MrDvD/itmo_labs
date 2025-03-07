@@ -1,5 +1,8 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
@@ -22,7 +25,7 @@ import com.itmo.mrdvd.command.SaveCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.Console;
-import com.itmo.mrdvd.device.FileDescriptor;
+import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.TicketXMLMapper;
 import com.itmo.mrdvd.shell.TicketShell;
 
@@ -39,7 +42,7 @@ public class Main {
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
     TicketXMLMapper mapper = new TicketXMLMapper();
     TicketShell shell = new TicketShell(console, console);
-    FileDescriptor fd = shell.createFd();
+    FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
     shell.addCommand(new AddCommand(collection, shell.getInput(), shell.getOutput()));
     shell.addCommand(new HelpCommand(shell.getOutput()));
     shell.addCommand(new ExitCommand());
@@ -57,7 +60,7 @@ public class Main {
         new ReadEnvironmentFilepathCommand("TICKET_PATH", fd, shell.getOutput()), true);
     shell.addCommand(new LoadCommand(fd, collection, mapper, shell.getOutput()), true);
     shell.addCommand(new SaveCommand(collection, mapper, fd, shell.getOutput()));
-    shell.addCommand(new ExecuteScriptCommand(shell.getOutput()));
+    shell.addCommand(new ExecuteScriptCommand(shell.getOutput(), fd));
     shell.addCommand(new InfoCommand(collection, shell.getOutput()));
     shell.open();
   }

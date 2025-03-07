@@ -9,9 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.FileSystem;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class FileIO extends FileDescriptor {
   private InputStream inStream;
@@ -24,23 +22,8 @@ public class FileIO extends FileDescriptor {
   }
 
   @Override
-  public FileIO create() {
+  public FileIO duplicate() {
    return new FileIO(path, fs);
-  }
-
-  @Override
-  public Optional<Path> setPath(String filePath) {
-   try {
-      this.path = getFs().getPath(filePath);
-      return Optional.of(this.path);
-   } catch (InvalidPathException e) {
-      return Optional.empty();
-   }
-  }
-
-  @Override
-  public Optional<Path> getPath() {
-    return Optional.ofNullable(this.path);
   }
 
   @Override
