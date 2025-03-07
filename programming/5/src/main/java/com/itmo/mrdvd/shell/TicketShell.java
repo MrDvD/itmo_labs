@@ -3,14 +3,15 @@ package com.itmo.mrdvd.shell;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 import com.itmo.mrdvd.command.Command;
-import com.itmo.mrdvd.command.ShellCommand;
+import com.itmo.mrdvd.command.ShellInfo;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class TicketShell implements Shell {
+public class TicketShell implements Shell<Map<String, Command>> {
   private final InteractiveInputDevice in;
   private final OutputDevice out;
   private final Map<String, Command> commands;
@@ -63,22 +64,22 @@ public class TicketShell implements Shell {
     }
   }
 
-  public int addCommand(Command cmd, boolean preExec) {
+  public Optional<Command> addCommand(Command cmd, boolean preExec) {
     if (commands.containsKey(cmd.name())) {
-      return -1;
+      return Optional.empty();
     }
-    if (cmd instanceof ShellCommand shellCmd) {
+    if (cmd instanceof ShellInfo shellCmd) {
       shellCmd.setShell(this);
     }
     commands.put(cmd.name(), cmd);
     if (preExec) {
       preExecute.add(cmd);
     }
-    return 0;
+    return Optional.of(cmd);
   }
 
   @Override
-  public int addCommand(Command cmd) {
+  public Optional<Command> addCommand(Command cmd) {
     return addCommand(cmd, false);
   }
 
@@ -111,8 +112,8 @@ public class TicketShell implements Shell {
   }
 
   @Override
-  public Command getCommand(String line) {
-    return getCommands().get(line);
+  public Optional<Command> getCommand(String line) {
+    return Optional.ofNullable(commands.get(line));
   }
 
   @Override
@@ -145,7 +146,7 @@ public class TicketShell implements Shell {
   }
 
   @Override
-  public Map<String, Command> getCommands() {
-    return commands;
+  public Iterable<Command> getCommands() {
+    return commands.values();
   }
 }

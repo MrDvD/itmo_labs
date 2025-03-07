@@ -1,9 +1,11 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExitCommand implements Command, ShellCommand {
-  private Shell shell;
+public class ExitCommand implements Command, ShellInfo {
+  private Shell<?> shell;
 
   @Override
   public void execute(String[] params) {
@@ -13,7 +15,12 @@ public class ExitCommand implements Command, ShellCommand {
   }
 
   @Override
-  public void setShell(Shell shell) {
+  public Optional<Shell<?>> getShell() {
+   return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void setShell(Shell<?> shell) {
     this.shell = shell;
   }
 

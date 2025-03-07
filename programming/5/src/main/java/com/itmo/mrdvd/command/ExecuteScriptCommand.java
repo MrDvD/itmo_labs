@@ -9,8 +9,8 @@ import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExecuteScriptCommand implements Command, ShellCommand {
-  private Shell shell;
+public class ExecuteScriptCommand implements Command, ShellInfo {
+  private Shell<?> shell;
   private final OutputDevice log;
   private final Set<String> stack;
   private final FileDescriptor fd;
@@ -29,8 +29,13 @@ public class ExecuteScriptCommand implements Command, ShellCommand {
   }
 
   @Override
-  public void setShell(Shell shell) {
+  public void setShell(Shell<?> shell) {
     this.shell = shell;
+  }
+
+  @Override
+  public Optional<Shell<?>> getShell() {
+   return Optional.ofNullable(this.shell);
   }
 
   @Override

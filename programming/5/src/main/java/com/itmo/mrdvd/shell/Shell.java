@@ -1,21 +1,21 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.Map;
+import java.util.Optional;
 
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public interface Shell {
+public interface Shell<T> {
   public InteractiveInputDevice getInput();
 
   public OutputDevice getOutput();
 
-  public Map<String, Command> getCommands();
+  public Iterable<Command> getCommands();
 
-  public int addCommand(Command cmd);
+  public Optional<Command> addCommand(Command cmd);
 
-  public Command getCommand(String str);
+  public Optional<Command> getCommand(String str);
 
   public int getStackSize();
 
