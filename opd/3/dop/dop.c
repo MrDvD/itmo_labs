@@ -9,7 +9,7 @@
 int size_arr[ROW_NUM] = {3, 2, 5, 1, 4};
 int matrix[ROW_NUM][MAX_LEN] = {{1024, 0, -32}, {5, 16}, {100, -234, 1, 21312, -13243}, {-342}, {-657, -62, -891, -5}};
 
-// Three-element input data
+// 3-element input data
 struct input_t {
    uint16_t row_num;
    uint16_t **matrix;
@@ -33,8 +33,17 @@ struct input_t* init_input() {
    return in;
 }
 
-uint16_t f(uint16_t x) {
-   return -x + 1;
+void free_input(struct input_t* in) {
+   free(in->size);
+   for (int i = 0; i < in->row_num; i++) {
+      free(in->matrix[i]);
+   }
+   free(in->matrix);
+   free(in);
+}
+
+void f(uint16_t* x) {
+   *x = -*x + 1;
 }
 
 int main() {
@@ -49,11 +58,11 @@ int main() {
    printf("\n##### 2D array after f(x):\n");
    for (int i = 0; i < in->row_num; i++) {
       for (int j = 0; j < in->size[i]; j++) {
-         uint16_t* ptr = &in->matrix[i][j];
-         *ptr = f(*ptr);
-         printf("%d\t", *ptr);
+         f(&in->matrix[i][j]);
+         printf("%d\t", in->matrix[i][j]);
       }
       printf("\n");
    }
+   free_input(in);
    return 0;
 }
