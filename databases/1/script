@@ -1,7 +1,20 @@
--- DROP TABLES CASCADE;
-DROP SCHEMA s466449 CASCADE;
-CREATE SCHEMA s466449;
+-- clear script
+DO $$
+DECLARE
+    t text;
+BEGIN
+    FOR t IN
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 's466449'
+    LOOP
+        EXECUTE 'DROP TABLE IF EXISTS ' || t || ' CASCADE';
+    END LOOP;
+END $$;
 
+DROP TYPE IF EXISTS gender;
+DROP TYPE IF EXISTS cover_type;
+-- init script
 CREATE TYPE gender AS ENUM('male', 'female');
 CREATE TYPE cover_type AS ENUM('skin', 'fur', 'feathers', 'scales');
 
