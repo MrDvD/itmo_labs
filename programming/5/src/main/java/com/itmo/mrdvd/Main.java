@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
 import com.itmo.mrdvd.command.AddCommand;
@@ -28,7 +29,7 @@ import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.Console;
 import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.device.TicketXMLMapper;
+import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.shell.TicketShell;
 
 /*
@@ -45,7 +46,7 @@ public class Main {
     Console console = new Console().init();
     TicketCollection collection =
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
-    TicketXMLMapper mapper = new TicketXMLMapper();
+    ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());
     TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
     shell.addCommand(new AddCommand(collection, shell.getInput(), shell.getOutput()));

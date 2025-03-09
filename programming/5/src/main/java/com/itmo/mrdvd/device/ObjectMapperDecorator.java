@@ -6,17 +6,17 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.itmo.mrdvd.collection.TicketCollection;
 
-public class TicketXMLMapper
+public class ObjectMapperDecorator
     implements Serializer<TicketCollection>, Deserializer<TicketCollection> {
-  private final XmlMapper mapper;
+  private final ObjectMapper mapper;
 
-  public TicketXMLMapper() {
-    this.mapper = new XmlMapper();
+  public ObjectMapperDecorator(ObjectMapper obj) {
+    this.mapper = obj;
     mapper.registerModule(new JavaTimeModule());
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
