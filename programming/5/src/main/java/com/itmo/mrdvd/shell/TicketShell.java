@@ -1,80 +1,56 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TreeMap;
 
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.ShellInfo;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class TicketShell implements Shell<Map<String, Command>> {
-  private final InteractiveInputDevice in;
-  private final OutputDevice out;
-  private final Map<String, Command> commands;
-  private final ArrayList<Command> preExecute;
+public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   private boolean isOpen;
-  private int stackSize;
 
-  public TicketShell(InteractiveInputDevice in, OutputDevice out) {
-    this.in = in;
-    this.out = out;
-    this.commands = new TreeMap<>();
-    this.preExecute = new ArrayList<>();
+  public TicketShell(InteractiveInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
+   this(in, out, commands, preExecute, new TShellParser()); 
+  }
+
+  public TicketShell(InteractiveInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute, ShellParser parser) {
+   super(in, out, commands, preExecute, parser); 
     this.isOpen = false;
-    this.stackSize = 256;
   }
 
-  public static class RawCommand {
-    String cmd;
-    String[] params;
-
-    public RawCommand(int paramsCount) {
-      params = new String[paramsCount];
-    }
-
-    @Override
-    public int hashCode() {
-      return cmd.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (other == null || !(other instanceof RawCommand)) {
-        return false;
+  public static class TShellParser implements ShellParser {
+   public static class TShellQuery extends ShellQuery {
+      public TShellQuery(String cmd, String[] params) {
+         super(cmd, params);
       }
-      RawCommand otherCmd = (RawCommand) other;
-      return this.cmd.equals(otherCmd.cmd);
-    }
-  }
-
-  public static class TShellParser {
-    public static RawCommand parseLine(String line) {
+     }
+   @Override
+    public Optional<ShellQuery> parse(String line) {
       if (line.isBlank()) {
-        return null;
+        return Optional.empty();
       }
       String[] keys = line.split(" ");
-      RawCommand rawCmd = new RawCommand(keys.length - 1);
-      rawCmd.cmd = keys[0];
-      rawCmd.params = Arrays.copyOfRange(keys, 1, keys.length);
-      return rawCmd;
+      ShellQuery rawCmd = new TShellQuery(keys[0], Arrays.copyOfRange(keys, 1, keys.length));
+      return Optional.of(rawCmd);
     }
   }
 
   public Optional<Command> addCommand(Command cmd, boolean preExec) {
-    if (commands.containsKey(cmd.name())) {
+    if (getCommands().containsKey(cmd.name())) {
       return Optional.empty();
     }
     if (cmd instanceof ShellInfo shellCmd) {
       shellCmd.setShell(this);
     }
-    commands.put(cmd.name(), cmd);
     if (preExec) {
-      preExecute.add(cmd);
+      getPreExecute().add(cmd);
     }
+    getCommands().put(cmd.name(), cmd);
     return Optional.of(cmd);
   }
 
@@ -85,59 +61,25 @@ public class TicketShell implements Shell<Map<String, Command>> {
 
   @Override
   public void open() {
-    for (Command cmd : preExecute) {
+    for (Command cmd : getPreExecute()) {
       cmd.execute(null);
     }
     this.isOpen = true;
     while (this.isOpen) {
       String strCmd = getInput().read("> ");
-      int code = processCommandLine(strCmd);
-      if (code == -1) {
+      ProcessingStatus status = processCommandLine(strCmd);
+      if (status.equals(ProcessingStatus.CMD_NOT_FOUND)) {
         getOutput()
             .writeln(
                 String.format(
-                    "[ERROR] Не существует команды \"%s\".", TShellParser.parseLine(strCmd).cmd));
+                    "[ERROR] Не существует команды \"%s\".", getParser().parse(strCmd).get().cmd()));
       }
     }
   }
 
   @Override
-  public void setStackSize(int size) {
-    this.stackSize = size;
-  }
-
-  @Override
-  public int getStackSize() {
-    return this.stackSize;
-  }
-
-  @Override
   public Optional<Command> getCommand(String line) {
-    return Optional.ofNullable(commands.get(line));
-  }
-
-  @Override
-  public int processCommandLine(String line) {
-    RawCommand rawCmd = TShellParser.parseLine(line);
-    if (rawCmd == null) {
-      return -2;
-    }
-    Command cmd = getCommand(rawCmd.cmd);
-    if (cmd != null) {
-      cmd.execute(rawCmd.params);
-      return 0;
-    }
-    return -1;
-  }
-
-  @Override
-  public InteractiveInputDevice getInput() {
-    return this.in;
-  }
-
-  @Override
-  public OutputDevice getOutput() {
-    return this.out;
+    return Optional.ofNullable(getCommands().get(line));
   }
 
   @Override
@@ -146,7 +88,7 @@ public class TicketShell implements Shell<Map<String, Command>> {
   }
 
   @Override
-  public Iterable<Command> getCommands() {
-    return commands.values();
+  public Iterator<Command> iterator() {
+   return getCommands().values().iterator();
   }
 }

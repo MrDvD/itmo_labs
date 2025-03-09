@@ -6,7 +6,7 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
 public class HelpCommand implements Command, ShellInfo {
-  private Shell<?> shell;
+  private Shell<?, ?> shell;
   private final OutputDevice out;
 
   public HelpCommand(OutputDevice out) {
@@ -14,19 +14,19 @@ public class HelpCommand implements Command, ShellInfo {
   }
 
   @Override
-  public void setShell(Shell<?> shell) {
+  public void setShell(Shell<?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
-  public Optional<Shell<?>> getShell() {
+  public Optional<Shell<?, ?>> getShell() {
    return Optional.ofNullable(this.shell);
   }
 
   @Override
   public void execute(String[] params) {
     if (shell != null) {
-      for (Command cmd : shell.getCommands()) {
+      for (Command cmd : shell) {
         out.write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
       }
     }

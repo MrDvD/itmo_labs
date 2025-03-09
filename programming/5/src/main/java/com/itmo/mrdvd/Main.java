@@ -2,6 +2,8 @@ package com.itmo.mrdvd;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.TreeMap;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itmo.mrdvd.collection.TicketCollection;
@@ -44,7 +46,7 @@ public class Main {
     TicketCollection collection =
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
     TicketXMLMapper mapper = new TicketXMLMapper();
-    TicketShell shell = new TicketShell(console, console);
+    TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
     shell.addCommand(new AddCommand(collection, shell.getInput(), shell.getOutput()));
     shell.addCommand(new HelpCommand(shell.getOutput()));
