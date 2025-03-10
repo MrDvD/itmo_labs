@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -26,20 +28,20 @@ public class ObjectMapperDecorator
   }
 
   @Override
-  public String serialize(TicketCollection obj) {
+  public Optional<String> serialize(TicketCollection obj) {
     try {
-      return mapper.writeValueAsString(obj);
+      return Optional.of(mapper.writeValueAsString(obj));
     } catch (JsonProcessingException e) {
-      return null;
+      return Optional.empty();
     }
   }
 
   @Override
-  public TicketCollection deserialize(String str) {
+  public Optional<TicketCollection> deserialize(String str) {
     try {
-      return mapper.readValue(str, TicketCollection.class);
+      return Optional.of(mapper.readValue(str, TicketCollection.class));
     } catch (JsonProcessingException e) {
-      return null;
+      return Optional.empty();
     }
   }
 }

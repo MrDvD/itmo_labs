@@ -31,7 +31,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
      }
    @Override
     public Optional<ShellQuery> parse(String line) {
-      if (line.isBlank()) {
+      if (line == null || line.isBlank()) {
         return Optional.empty();
       }
       String[] keys = line.split(" ");
@@ -66,13 +66,15 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     }
     this.isOpen = true;
     while (this.isOpen) {
-      String strCmd = getInput().read("> ");
-      ProcessingStatus status = processCommandLine(strCmd);
-      if (status.equals(ProcessingStatus.CMD_NOT_FOUND)) {
-        getOutput()
-            .writeln(
-                String.format(
-                    "[ERROR] Не существует команды \"%s\".", getParser().parse(strCmd).get().cmd()));
+      Optional<String> strCmd = getInput().read("> ");
+      if (strCmd.isPresent()) {
+         ProcessingStatus status = processCommandLine(strCmd.get());
+         if (status.equals(ProcessingStatus.CMD_NOT_FOUND)) {
+         getOutput()
+               .writeln(
+                  String.format(
+                     "[ERROR] Не существует команды \"%s\".", getParser().parse(strCmd.get()).get().cmd()));
+         }
       }
     }
   }

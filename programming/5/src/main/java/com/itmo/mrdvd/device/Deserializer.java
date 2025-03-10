@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 public interface Deserializer<T> {
-  public T deserialize(String str);
+  public Optional<T> deserialize(String str);
 }

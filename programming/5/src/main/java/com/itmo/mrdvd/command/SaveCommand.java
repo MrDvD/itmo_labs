@@ -1,7 +1,10 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileDescriptor;
+import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 
@@ -24,27 +27,17 @@ public class SaveCommand implements Command {
 
   @Override
   public void execute(String[] params) {
-    String result = serial.serialize(collection);
-    if (result == null) {
+    Optional<String> result = serial.serialize(collection);
+    if (result.isEmpty()) {
       log.writeln("[ERROR] Ошибка сериализации коллекции.");
       return;
     }
-    int code = file.openOut();
-   //  while (code == -1) {
-   //    if (file.createFile() != 0) {
-   //      log.writeln("[ERROR] Ошибка создания файла с коллекцией.");
-   //      return;
-   //    }
-   //    code = file.openOut();
-   //  }
-    if (code != 0) {
-      switch (code) {
-        case -3 -> log.writeln("[ERROR] Не указан путь к файлу для сохранения коллекции.");
-        default -> log.writeln("[ERROR] Ошибка доступа к файлу для сохранения коллекции.");
-      }
+    IOStatus code = file.openOut();
+    if (code.equals(IOStatus.FAILURE)) {
+      log.writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
       return;
     }
-    if (file.writeln(result) == 0) {
+    if (file.writeln(result.get()).equals(IOStatus.SUCCESS)) {
       log.writeln("[INFO] Коллекция успешно записана в файл.");
       file.closeOut();
     } else {

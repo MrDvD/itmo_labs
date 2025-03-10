@@ -1,7 +1,10 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.Deserializer;
+import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.InputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Ticket;
@@ -25,28 +28,24 @@ public class LoadCommand implements Command {
 
   @Override
   public void execute(String[] params) {
-    int code = in.openIn();
-    if (code != 0) {
-      switch (code) {
-        case -1 -> out.writeln("[WARN] Файла с коллекцией не существует, считывать нечего.");
-        case -3 -> out.writeln("[ERROR] Не указан путь к файлу с коллекцией.");
-        default -> out.writeln("[ERROR] Ошибка доступа к файлу с коллекцией.");
-      }
+    IOStatus code = in.openIn();
+    if (code.equals(IOStatus.FAILURE)) {
+      out.writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
       return;
     }
-    String fileContent = in.readAll();
+    Optional<String> fileContent = in.readAll();
     in.closeIn();
-    if (fileContent == null) {
+    if (fileContent.isEmpty()) {
       out.writeln("[ERROR] Ошибка чтения файла с коллекцией.");
       return;
     }
-    TicketCollection loaded = deserial.deserialize(fileContent);
-    if (loaded != null) {
+    Optional<TicketCollection> loaded = deserial.deserialize(fileContent.get());
+    if (loaded.isPresent()) {
       collection.clear();
-      for (Ticket t : loaded) {
+      for (Ticket t : loaded.get()) {
         collection.addRaw(t);
       }
-      collection.setMetadata(loaded.getMetadata());
+      collection.setMetadata(loaded.get().getMetadata());
       out.writeln("[INFO] Коллекция успешно считана из файла.");
     } else {
       out.writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");

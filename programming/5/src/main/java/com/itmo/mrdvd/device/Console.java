@@ -2,6 +2,7 @@ package com.itmo.mrdvd.device;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Console implements InteractiveInputDevice, OutputDevice {
@@ -15,47 +16,47 @@ public class Console implements InteractiveInputDevice, OutputDevice {
   }
 
   @Override
-  public int openIn() {
+  public IOStatus openIn() {
     this.in = new Scanner(System.in);
-    return 0;
+    return IOStatus.SUCCESS;
   }
 
   @Override
-  public int openOut() {
+  public IOStatus openOut() {
     this.out = new OutputStreamWriter(System.out);
-    return 0;
+    return IOStatus.SUCCESS;
   }
 
   //  0: success
   // -1: IOException
   @Override
-  public int write(String str) {
+  public IOStatus write(String str) {
     try {
       out.write(str);
       out.flush();
-      return 0;
+      return IOStatus.SUCCESS;
     } catch (IOException e) {
-      return -1;
+      return IOStatus.FAILURE;
     }
   }
 
   @Override
-  public int writeln(String str) {
+  public IOStatus writeln(String str) {
     return write(str + '\n');
   }
 
   @Override
-  public String read() {
+  public Optional<String> read() {
     if (in.hasNextLine()) {
-      return in.nextLine();
+      return Optional.of(in.nextLine());
     }
     writeln("");
     openIn();
-    return "\n";
+    return Optional.empty();
   }
 
   @Override
-  public String readAll() {
+  public Optional<String> readAll() {
     String result = "";
     while (in.hasNext()) {
       result += in.next();
@@ -63,33 +64,32 @@ public class Console implements InteractiveInputDevice, OutputDevice {
     writeln("");
     openIn();
     if (result.equals("")) {
-      return "\n";
+      return Optional.empty();
     }
-    return result;
+    return Optional.of(result);
   }
 
   @Override
-  public String read(String msg) {
+  public Optional<String> read(String msg) {
     write(msg);
     return read();
   }
 
-  //  0: success
   @Override
-  public int closeIn() {
+  public IOStatus closeIn() {
     this.in.close();
-    return 0;
+    return IOStatus.SUCCESS;
   }
 
   //  0: success
   // -1: IOException
   @Override
-  public int closeOut() {
+  public IOStatus closeOut() {
     try {
       this.out.close();
-      return 0;
+      return IOStatus.SUCCESS;
     } catch (IOException e) {
-      return -1;
+      return IOStatus.FAILURE;
     }
   }
 }

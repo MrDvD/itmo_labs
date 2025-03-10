@@ -1,11 +1,13 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 public interface InputDevice {
-  public String read();
+  public Optional<String> read() throws NullPointerException;
 
-  public String readAll();
+  public Optional<String> readAll();
 
-  public int openIn();
+  public IOStatus openIn() throws NullPointerException;
 
-  public int closeIn();
+  public IOStatus closeIn();
 }

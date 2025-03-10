@@ -1,11 +1,11 @@
 package com.itmo.mrdvd.device;
 
 public interface OutputDevice {
-  public int write(String str);
+  public IOStatus write(String str);
 
-  public int writeln(String str);
+  public IOStatus writeln(String str);
 
-  public int openOut();
+  public IOStatus openOut() throws NullPointerException;
 
-  public int closeOut();
+  public IOStatus closeOut();
 }

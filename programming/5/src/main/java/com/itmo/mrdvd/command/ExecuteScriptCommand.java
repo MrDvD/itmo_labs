@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.itmo.mrdvd.device.FileDescriptor;
+import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
@@ -53,12 +54,9 @@ public class ExecuteScriptCommand implements Command, ShellInfo {
     }
     FileDescriptor file = fd.duplicate();
     file.setPath(params[0]);
-    int code = file.openIn();
-    if (code != 0) {
-      switch (code) {
-        case -1 -> log.writeln("[ERROR] Файла со скриптом не существует, считывать нечего.");
-        default -> log.writeln("[ERROR] Ошибка доступа к файлу со скриптом.");
-      }
+    IOStatus code = file.openIn();
+    if (code.equals(IOStatus.FAILURE)) {
+      log.writeln("[ERROR] Не удалось обратиться к файлу со скриптом.");
       return;
     }
     Optional<Path> path = file.getPath();
@@ -74,9 +72,9 @@ public class ExecuteScriptCommand implements Command, ShellInfo {
       return;
     }
     stack.add(path.get().toAbsolutePath().toString());
-    String currLine = file.read();
-    while (currLine != null) {
-      shell.processCommandLine(currLine);
+    Optional<String> currLine = file.read();
+    while (currLine.isPresent()) {
+      shell.processCommandLine(currLine.get());
       currLine = file.read();
     }
     stack.remove(path.get().toAbsolutePath().toString());

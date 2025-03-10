@@ -37,8 +37,9 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 1. In UpdateCommand set the max length of printed value of ticket fields;
  * 2. Print fixed length in command description
  * 3. Add BuilderObject in AddCommand as passed param
- * 4. Remove Tight Coupling in TicketXMLMapper
- * 5. Raise Exceptions instead of returning an int.
+ * 
+ * 4. Raise Exceptions instead of returning an int.
+ * 5. Fix a bug for ctrl + d
  */
 
 public class Main {

@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 public interface InteractiveInputDevice extends InputDevice {
-  public String read(String message);
+  public Optional<String> read(String message);
 }

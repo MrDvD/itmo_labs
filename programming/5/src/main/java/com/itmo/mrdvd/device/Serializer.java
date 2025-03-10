@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 public interface Serializer<T> {
-  public String serialize(T obj);
+  public Optional<String> serialize(T obj);
 }
