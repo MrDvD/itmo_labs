@@ -95,7 +95,7 @@ public class UpdateCommand implements Command {
     typeMessage += String.format("Введите тип билета [%s] > ", ticket.getType().name());
     Optional<String> ticketTypeString = in.read(typeMessage);
     TicketType ticketType = TicketParser.parseType(ticketTypeString.get());
-    while (!ticketTypeString.isEmpty() && ticket.setType(ticketType) != 0) {
+    while (ticketTypeString.isPresent() && ticket.setType(ticketType) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: указанный тип билета не найден.");
       ticketTypeString = in.read(typeMessage);
       ticketType = TicketParser.parseType(ticketTypeString.get());
@@ -103,7 +103,7 @@ public class UpdateCommand implements Command {
     Event event = ticket.getEvent();
     Optional<String> eventName =
         in.read(String.format("Введите название мероприятия [%s] > ", event.getName()));
-    while (!eventName.isEmpty() && event.setName(eventName.get()) != 0) {
+    while (eventName.isPresent() && event.setName(eventName.get()) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: название не должно быть пустым.");
       eventName = in.read(String.format("Введите название мероприятия [%s] > ", event.getName()));
     }
@@ -111,7 +111,7 @@ public class UpdateCommand implements Command {
         in.read(
             String.format(
                 "Введите небольшое описание мероприятия [%s] > ", event.getDescription()));
-    while (!eventDesc.isEmpty() && event.setDescription(eventDesc.get()) != 0) {
+    while (eventDesc.isPresent() && event.setDescription(eventDesc.get()) != 0) {
       out.writeln(
           "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.");
       eventDesc = in.read("Введите небольшое описание мероприятия > ");

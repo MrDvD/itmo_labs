@@ -16,9 +16,9 @@ import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.TicketType;
 
 public class AddCommand implements Command {
-  private final TicketCollection collect;
-  private final InteractiveInputDevice in;
-  private final OutputDevice out;
+  protected final TicketCollection collect;
+  protected final InteractiveInputDevice in;
+  protected final OutputDevice out;
 
   public AddCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out) {
     this.collect = collect;
@@ -26,9 +26,8 @@ public class AddCommand implements Command {
     this.out = out;
   }
 
-  @Override
-  public void execute(String[] params) {
-    Ticket ticket = new Ticket();
+  protected Ticket createTicketInteractive() {
+   Ticket ticket = new Ticket();
     ticket.setCreationDate(LocalDateTime.now());
     Optional<String> name = in.read("Введите название билета > ");
     while (name.isPresent() && ticket.setName(name.get()) != 0) {
@@ -57,10 +56,10 @@ public class AddCommand implements Command {
       typeMessage += "* " + type.name() + "\n";
     }
     typeMessage += "Введите тип билета > ";
-    TicketType ticketType = TicketParser.parseType(in.read(typeMessage));
-    while (ticket.setType(ticketType.get()) != 0) {
+    Optional<String> ticketType = in.read(typeMessage);
+    while (ticketType.isPresent() && ticket.setType(TicketParser.parseType(ticketType.get())) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: указанный тип билета не найден.");
-      ticketType = TicketParser.parseType(in.read(typeMessage));
+      ticketType = in.read(typeMessage);
     }
     Event event = new Event();
     event.setId(collect.getEventIdGenerator().bookId(event));
@@ -80,13 +79,18 @@ public class AddCommand implements Command {
       eventMessage += "* " + type.name() + "\n";
     }
     eventMessage += "Введите вид мероприятия > ";
-    EventType eventType = EventParser.parseType(in.read(eventMessage));
+    Optional<String> eventType = in.read(eventMessage);
     while (eventType.isPresent() && event.setEventType(EventParser.parseType(eventType.get())) != 0) {
       out.writeln("[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.");
-      eventType = in.read(eventMessage));
+      eventType = in.read(eventMessage);
     }
     ticket.setEvent(event);
-    Optional<Ticket> result = collect.add(ticket);
+    return ticket;
+  }
+
+  @Override
+  public void execute(String[] params) {
+    Optional<Ticket> result = collect.add(createTicketInteractive());
     if (result.isPresent()) {
       out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
     } else {
