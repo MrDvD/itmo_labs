@@ -5,7 +5,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.TreeMap;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
@@ -34,16 +33,13 @@ import com.itmo.mrdvd.shell.TicketShell;
 
 /*
  * TODO:
- * 1. In UpdateCommand set the max length of printed value of ticket fields;
- * 2. Print fixed length in command description
- * 3. Add BuilderObject in AddCommand as passed param
- * 
- * 4. Raise Exceptions instead of returning an int.
- * 5. Fix a bug for ctrl + d
+ * 1. Add BuilderObject in AddCommand as passed param
+ * 2. Raise Exceptions instead of returning an int.
+ * 3. Update UpdateCommand (with Optionals)
  */
 
 public class Main {
-  public static void main(String[] args) throws JsonProcessingException {
+  public static void main(String[] args) {
     Console console = new Console().init();
     TicketCollection collection =
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());

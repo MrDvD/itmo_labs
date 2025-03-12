@@ -27,8 +27,6 @@ public class Console implements InteractiveInputDevice, OutputDevice {
     return IOStatus.SUCCESS;
   }
 
-  //  0: success
-  // -1: IOException
   @Override
   public IOStatus write(String str) {
     try {
@@ -81,8 +79,6 @@ public class Console implements InteractiveInputDevice, OutputDevice {
     return IOStatus.SUCCESS;
   }
 
-  //  0: success
-  // -1: IOException
   @Override
   public IOStatus closeOut() {
     try {
