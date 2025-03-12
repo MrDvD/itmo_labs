@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.object.Ticket;
 
-public interface CollectionWorker<T> {
+public interface CollectionWorker<T,V> {
   public Optional<Ticket> add(T obj);
 
   public Optional<Ticket> get(Long id);
@@ -14,4 +14,6 @@ public interface CollectionWorker<T> {
   public void remove(Long id);
 
   public void clear();
+
+  public V getCollection();
 }

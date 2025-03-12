@@ -4,14 +4,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.TicketField;
 
-public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Ticket> {
-  @JsonProperty private ArrayList<Ticket> tickets;
+public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>, Iterable<Ticket> {
+  @JsonProperty private List<Ticket> tickets;
   private final IdGenerator ticketGenerator;
   private final IdGenerator eventGenerator;
   private TicketCollectionMetadata meta;
@@ -71,8 +71,6 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
     this.eventGenerator = eventGen;
   }
 
-  //  0: success
-  // -1: not valid obj
   public Optional<Ticket> addRaw(Ticket obj) {
     if (obj.isValid()) {
       if (getTicketIdGenerator().isTaken(obj.getId())
@@ -87,8 +85,6 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
     return Optional.empty();
   }
 
-  //  0: success
-  // -1: not valid obj
   @Override
   public Optional<Ticket> add(Ticket obj) {
     if (obj == null || obj.getEvent() == null) {
@@ -126,9 +122,6 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
     return tickets.iterator();
   }
 
-  //  0: success
-  // -1: not valid obj
-  // -2: not existing id object
   @Override
   public Optional<Ticket> update(Long id, Ticket obj) {
     if (obj.isValid()) {
@@ -153,18 +146,9 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
     }
   }
 
-  //  0: success
-  // -2: not existing index
-  public int removeAt(int index) {
-    if (index >= 0 && index < tickets.size()) {
-      tickets.set(index, null);
-      return 0;
-    }
-    return -2;
-  }
-
-  public int removeLast() {
-    return removeAt(tickets.size() - 1);
+  @Override
+  public List<Ticket> getCollection() {
+   return tickets;
   }
 
   public IdGenerator getTicketIdGenerator() {
@@ -173,16 +157,6 @@ public class TicketCollection implements CollectionWorker<Ticket>, Iterable<Tick
 
   public IdGenerator getEventIdGenerator() {
     return eventGenerator;
-  }
-
-  public ArrayList<Ticket> sort(TicketField field) {
-    return sort(field, false);
-  }
-
-  public ArrayList<Ticket> sort(TicketField field, boolean descending) {
-    ArrayList<Ticket> sortedList = new ArrayList<>(tickets);
-    sortedList.sort(new TicketComparator(field, descending));
-    return sortedList;
   }
 
   public TicketCollectionMetadata getMetadata() {

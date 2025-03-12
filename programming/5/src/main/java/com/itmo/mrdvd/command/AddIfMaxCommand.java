@@ -1,24 +1,26 @@
 package com.itmo.mrdvd.command;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.TicketField;
 
 public class AddIfMaxCommand extends AddCommand {
-  public AddIfMaxCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out) {
+   private final Comparator<Ticket> comparator;
+
+  public AddIfMaxCommand(TicketCollection collect, Comparator<Ticket> comparator, InteractiveInputDevice in, OutputDevice out) {
     super(collect, in, out);
+    this.comparator = comparator;
   }
 
   @Override
   public void execute(String[] params) {
     Ticket ticket = createTicketInteractive();
-    ArrayList<Ticket> sorted = collect.sort(TicketField.ID);
-    if (sorted.isEmpty() || sorted.get(sorted.size() - 1).getId().compareTo(ticket.getId()) < 0) {
+    collect.getCollection().sort(comparator);
+    if (collect.getCollection().isEmpty() || collect.getCollection().get(collect.getCollection().size() - 1).getId().compareTo(ticket.getId()) < 0) {
       Optional<Ticket> result = collect.add(ticket);
       if (result.isPresent()) {
         out.writeln("[INFO] Билет успешно добавлен в коллекцию.");

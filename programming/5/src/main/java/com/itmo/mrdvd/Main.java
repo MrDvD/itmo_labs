@@ -28,7 +28,7 @@ public class Main {
     ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());
     TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    shell.initDefaultCommands(collection, fd, mapper, mapper);
+    shell.initDefaultCommands(collection, "TICKET_PATH", fd, mapper, mapper);
     shell.open();
   }
 }

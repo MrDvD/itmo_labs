@@ -14,9 +14,11 @@ public class RemoveLastCommand implements Command {
 
   @Override
   public void execute(String[] params) {
-    if (collection.removeLast() != 0) {
-      out.writeln("[ERROR] Коллекция пуста.");
-    }
+   try {
+      collection.getCollection().removeLast();   
+   } catch (IndexOutOfBoundsException e) {
+      out.writeln("[WARN] Коллекция пуста.");
+   }
   }
 
   @Override

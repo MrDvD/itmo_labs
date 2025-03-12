@@ -1,8 +1,9 @@
 package com.itmo.mrdvd.command;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.OutputDevice;
-import org.apache.commons.lang3.math.NumberUtils;
 
 public class RemoveAtCommand implements Command {
   private final TicketCollection collection;
@@ -41,9 +42,10 @@ public class RemoveAtCommand implements Command {
       return;
     }
     int idx = parseIndex(params[0]);
-    int returnCode = collection.removeAt(idx);
-    if (returnCode != 0) {
-      out.writeln("[ERROR] Невозможно удалить элемент с введённым параметром index.");
+    try {
+      collection.getCollection().remove(idx);
+    } catch (IndexOutOfBoundsException e) {
+      out.writeln("[WARN] В коллекции нет элемента с введённым параметром index.");
     }
   }
 

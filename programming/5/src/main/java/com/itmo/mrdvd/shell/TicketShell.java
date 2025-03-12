@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfMaxCommand;
 import com.itmo.mrdvd.command.ClearCommand;
@@ -32,6 +33,7 @@ import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
+import com.itmo.mrdvd.object.TicketField;
 
 public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   private boolean isOpen;
@@ -76,7 +78,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     return Optional.of(cmd);
   }
 
-  public void initDefaultCommands(TicketCollection collection, FileDescriptor fd, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial) {
+  public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial) {
     addCommand(new AddCommand(collection, getInput(), getOutput()));
     addCommand(new HelpCommand(getOutput()));
     addCommand(new ExitCommand());
@@ -86,12 +88,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     addCommand(new RemoveAtCommand(collection, getOutput()));
     addCommand(new RemoveLastCommand(collection, getOutput()));
     addCommand(new ShowCommand(collection, getOutput()));
-    addCommand(new AddIfMaxCommand(collection, getInput(), getOutput()));
-    addCommand(new MinByPriceCommand(collection, getOutput()));
-    addCommand(new PrintFieldDescendingTypeCommand(collection, getOutput()));
+    addCommand(new AddIfMaxCommand(collection, new TicketComparator(TicketField.ID), getInput(), getOutput()));
+    addCommand(new MinByPriceCommand(collection, new TicketComparator(TicketField.PRICE), getOutput()));
+    addCommand(new PrintFieldDescendingTypeCommand(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));
     addCommand(new CountGreaterThanEventCommand(collection, getOutput()));
     addCommand(
-        new ReadEnvironmentFilepathCommand("TICKET_PATH", fd, getOutput()), true);
+        new ReadEnvironmentFilepathCommand(envName, fd, getOutput()), true);
     addCommand(new LoadCommand(fd, collection, deserial, getOutput()), true);
     addCommand(new SaveCommand(collection, serial, fd, getOutput()));
     addCommand(new ExecuteScriptCommand(getOutput(), fd));
