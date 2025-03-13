@@ -12,8 +12,8 @@ import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>, Iterable<Ticket> {
   @JsonProperty private List<Ticket> tickets;
-  private final IdGenerator ticketGenerator;
-  private final IdGenerator eventGenerator;
+  private IdGenerator ticketGenerator;
+  private IdGenerator eventGenerator;
   private TicketCollectionMetadata meta;
 
   public static class TicketCollectionMetadata {
@@ -21,9 +21,9 @@ public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>,
     @JsonProperty private String type;
     private String name;
 
-    public TicketCollectionMetadata() {}
+    protected TicketCollectionMetadata() {}
 
-    public TicketCollectionMetadata(String name) {
+    protected TicketCollectionMetadata(String name) {
       this.creationTime = LocalDateTime.now();
       this.type = Ticket.class.getSimpleName();
       this.name = name;
@@ -60,9 +60,7 @@ public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>,
     }
   }
 
-  public TicketCollection() {
-    this(null, null, null);
-  }
+  protected TicketCollection() {}
 
   public TicketCollection(String name, IdGenerator ticketGen, IdGenerator eventGen) {
     this.tickets = new ArrayList<>();

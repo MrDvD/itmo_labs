@@ -17,6 +17,7 @@ import com.itmo.mrdvd.shell.TicketShell;
  * TODO:
  * 1. Add BuilderObject in AddCommand as passed param
  * 2. Raise Exceptions instead of returning an int.
+ * 2.5. Refactor IdGenerator logic
  * 3. Update UpdateCommand (with Optionals)
  */
 
