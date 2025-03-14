@@ -30,9 +30,9 @@ import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.FileDescriptor;
-import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.TicketField;
 
 public class TicketShell extends Shell<Map<String, Command>, List<Command>> {

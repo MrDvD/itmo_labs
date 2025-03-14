@@ -8,9 +8,9 @@ import java.util.TreeMap;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketIdGenerator;
-import com.itmo.mrdvd.device.Console;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
+import com.itmo.mrdvd.device.TicketConsole;
 import com.itmo.mrdvd.shell.TicketShell;
 
 /*
@@ -19,11 +19,13 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 2. Raise Exceptions instead of returning an int.
  * 2.5. Refactor IdGenerator logic
  * 3. Update UpdateCommand (with Optionals)
+ * 4. Where to put validation?
+ * 5. Where to put parsing? (possibly into consoleparser like readInt() -> maybe use inner scanners)
  */
 
 public class Main {
   public static void main(String[] args) {
-    Console console = new Console().init();
+    TicketConsole console = new TicketConsole().init();
     TicketCollection collection =
         new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
     ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());

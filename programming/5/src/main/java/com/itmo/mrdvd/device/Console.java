@@ -5,6 +5,8 @@ import java.io.OutputStreamWriter;
 import java.util.Optional;
 import java.util.Scanner;
 
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+
 public class Console implements InteractiveInputDevice, OutputDevice {
   private Scanner in;
   private OutputStreamWriter out;
@@ -54,6 +56,14 @@ public class Console implements InteractiveInputDevice, OutputDevice {
   }
 
   @Override
+  public Optional<String> readToken() {
+   if (in.hasNext()) {
+      return Optional.of(in.next());
+   }
+   return Optional.empty();
+  }
+
+  @Override
   public Optional<String> readAll() {
     String result = "";
     while (in.hasNext()) {
@@ -65,6 +75,18 @@ public class Console implements InteractiveInputDevice, OutputDevice {
       return Optional.empty();
     }
     return Optional.of(result);
+  }
+
+  @Override
+  public Optional<String> readAll(String msg) {
+   write(msg);
+   return readAll();
+  }
+
+  @Override
+  public Optional<String> readToken(String msg) {
+   write(msg);
+   return readToken();
   }
 
   @Override

@@ -3,8 +3,8 @@ package com.itmo.mrdvd.shell;
 import java.util.Optional;
 
 import com.itmo.mrdvd.command.Command;
-import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
 public abstract class Shell<T,S> implements Iterable<Command> {
    private final T commands;

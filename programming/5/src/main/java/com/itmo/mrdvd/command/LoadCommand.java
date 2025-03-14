@@ -5,8 +5,8 @@ import java.util.Optional;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.device.InputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
 public class LoadCommand implements Command {

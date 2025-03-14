@@ -1,0 +1,7 @@
+package com.itmo.mrdvd.device.input;
+
+import java.util.Optional;
+
+public interface EnumInputDevice extends InputDevice {
+   public <T extends Enum<T>> Optional<Enum<?>> readEnum(Class<T> cls);
+}

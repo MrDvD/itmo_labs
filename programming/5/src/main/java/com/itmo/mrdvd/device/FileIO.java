@@ -77,7 +77,7 @@ public class FileIO extends FileDescriptor {
     }
   }
 
-  public Optional<String> read(boolean byLine) {
+  public Optional<String> read(String delimiters) {
     if (inReader == null) {
       throw new NullPointerException("Не указан путь для открытия файла.");
     }
@@ -85,7 +85,7 @@ public class FileIO extends FileDescriptor {
       String result = "";
       while (inReader.available() > 0) {
         int chr = inReader.read();
-        if (byLine && chr == '\n') {
+        if (delimiters.indexOf(chr) != -1 && chr == '\n') {
           break;
         }
         result += (char) chr;
@@ -101,12 +101,17 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public Optional<String> read() {
-    return read(true);
+    return read("\n");
+  }
+
+  @Override
+  public Optional<String> readToken() {
+   return read(" ");
   }
 
   @Override
   public Optional<String> readAll() {
-    return read(false);
+    return read(null);
   }
 
   @Override

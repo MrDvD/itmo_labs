@@ -4,8 +4,8 @@ import java.util.Comparator;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.InteractiveInputDevice;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
 public class AddIfMaxCommand extends AddCommand {
