@@ -2,26 +2,28 @@ package com.itmo.mrdvd.builder;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
-public abstract class InteractiveBuilder<T> {
+public abstract class InteractiveBuilder<T> extends Builder<T> {
    private final InteractiveInputDevice in;
    private final OutputDevice out;
-   private final List<SetterWrapper<?>> setters;
-   private final T object;
 
-   public InteractiveBuilder(T rawObject, List<SetterWrapper<?>> setters, InteractiveInputDevice in, OutputDevice out) {
-      this.object = rawObject;
-      this.setters = setters;
+   public InteractiveBuilder(T rawObject, InteractiveInputDevice in, OutputDevice out, List<Function<Object, Void>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
+      super(rawObject, setters, objects, validators);
       this.in = in;
       this.out = out;
    }
 
-   public void addSetter(SetterWrapper<?> setter) {
-      setters.add(setter);
+   public Builder<T> addSetter(SetterWrapper<Object> setter) {
+      return super.addSetter(setter, null);
    }
+
+   // 1. Функция чтения
+   // 2. Функция валидации
+   // 3. Функция установки значения
 
    public T build() {
       for (SetterWrapper<?> f : setters) {

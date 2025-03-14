@@ -4,21 +4,21 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class SetterWrapper<T> {
-   private final Function<Void, T> setter;
+   private final Function<T, Void> setter;
    private final String name;
    private final Optional<String> comment;
 
-   public SetterWrapper(Function<Void, T> setter, String name) {
+   public SetterWrapper(Function<T, Void> setter, String name) {
       this(setter, name, null);
    }
 
-   public SetterWrapper(Function<Void, T> setter, String name, String comment) {
+   public SetterWrapper(Function<T, Void> setter, String name, String comment) {
       this.setter = setter;
       this.name = name;
       this.comment = Optional.ofNullable(comment);
    }
 
-   public Function<Void, T> setter() {
+   public Function<T, Void> setter() {
       return this.setter;
    }
 
@@ -29,6 +29,4 @@ public abstract class SetterWrapper<T> {
    public Optional<String> comment() {
       return this.comment;
    }
-
-   public abstract boolean validate(T obj);
 }
