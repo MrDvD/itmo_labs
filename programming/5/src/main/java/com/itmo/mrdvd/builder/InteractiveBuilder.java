@@ -4,25 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 
 public abstract class InteractiveBuilder<T> extends Builder<T> {
    private final List<UserInteractor<?>> interactors;
-   private final InteractiveInputDevice in;
+   private final InputDevice in;
+   private final OutputDevice out;
 
-   protected abstract class UserInteractor<U> {
+   protected class UserInteractor<U> {
       private final String attributeName;
-      private final BiFunction<InteractiveInputDevice,String,Optional<U>> inMethod;
+      private final Function<InputDevice,Optional<U>> inMethod;
+      
       private final Optional<String> comment;
    
-      public UserInteractor(String attributeName, BiFunction<InteractiveInputDevice,String,Optional<U>> inMethod) {
+      public UserInteractor(String attributeName, Function<InputDevice,Optional<U>> inMethod) {
          this(attributeName, inMethod, null);
       }
    
-      public UserInteractor(String attributeName, BiFunction<InteractiveInputDevice,String,Optional<U>> inMethod, String comment) {
+      public UserInteractor(String attributeName, Function<InputDevice,Optional<U>> inMethod, String comment) {
          this.attributeName = attributeName;
          this.inMethod = inMethod;
          this.comment = Optional.ofNullable(comment);
@@ -32,7 +34,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
          return this.attributeName;
       }
 
-      public BiFunction<InteractiveInputDevice,String,Optional<U>> inMethod() {
+      public Function<InputDevice,Optional<U>> inMethod() {
          return this.inMethod;
       }
    
@@ -41,21 +43,22 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       }
    }
 
-   public InteractiveBuilder(T rawObject, InteractiveInputDevice in) {
-      this(rawObject, in, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+   public InteractiveBuilder(T rawObject, InputDevice in, OutputDevice out) {
+      this(rawObject, in, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveBuilder(T rawObject, InteractiveInputDevice in, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
+   public InteractiveBuilder(T rawObject, InputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
       super(rawObject, setters, objects, validators);
       this.in = in;
+      this.out = out;
       this.interactors = interactors;
    }
 
-   public <U> Builder<T> addAttr(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter) throws IllegalArgumentException {
-      return addAttr(setter, valueCls, inter, null);
+   public <U> Builder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter) throws IllegalArgumentException {
+      return addInteractiveSetter(setter, valueCls, inter, null);
    }
 
-   public <U> Builder<T> addAttr(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter, Function<Object, Boolean> validator) throws IllegalArgumentException {
+   public <U> Builder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter, Function<Object, Boolean> validator) throws IllegalArgumentException {
       if (inter == null) {
          throw new IllegalArgumentException("Метаданные не могут быть null.");
       }
@@ -72,7 +75,8 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
             msg += String.format(" (%s)", inter.comment().get());
          }
          msg += ": ";
-         Optional<?> result = inter.inMethod().apply(in, msg);
+         out.write(msg);
+         Optional<?> result = inter.inMethod().apply(in);
          if (result.isPresent() && (validators.get(i) == null || !validators.get(i).apply(result.get()))) {
             setters.get(i).acceptRaw(rawObject, result.get());
          } else {
