@@ -23,9 +23,7 @@ public class Main {
   public static void main(String[] args) {
    Ticket raw = new Ticket();
    TicketBuilder builder = new TicketBuilder(raw);
-   TypedBiConsumer<Ticket,String> consumer = new TypedBiConsumer<>(String.class, Ticket::setName);
-   builder.attr(consumer, "My Ticket");
-   builder.build();
+   builder.attr(Ticket::setName, "My Ticket", String.class);
    //  TicketConsole console = new TicketConsole().init();
    //  TicketCollection collection =
    //      new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());

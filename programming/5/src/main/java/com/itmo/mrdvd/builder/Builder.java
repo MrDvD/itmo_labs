@@ -3,6 +3,7 @@ package com.itmo.mrdvd.builder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 public abstract class Builder<T> {
@@ -22,15 +23,15 @@ public abstract class Builder<T> {
       this.validators = validators;
    }
 
-   public Builder<T> attr(TypedBiConsumer<T,?> setter, Object value) {
-      return attr(setter, value, null);
+   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> cls) {
+      return attr(setter, value, cls, null);
    }
 
-   public Builder<T> attr(TypedBiConsumer<T,?> setter, Object value, Function<Object, Boolean> validator) {
+   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> cls, Function<Object, Boolean> validator) {
       if (setter == null) {
          throw new IllegalArgumentException("Setter не может быть null.");
       }
-      setters.add(setter);
+      setters.add(TypedBiConsumer.of(cls, setter));
       objects.add(value);
       validators.add(validator);
       return this;
@@ -41,7 +42,7 @@ public abstract class Builder<T> {
          if (validators.get(i) != null && !validators.get(i).apply(objects.get(i))) {
             return Optional.empty();
          }
-         setters.get(i).accept(object, objects.get(i));
+         setters.get(i).acceptRaw(object, objects.get(i));
       }
       return Optional.of(object);
    }
