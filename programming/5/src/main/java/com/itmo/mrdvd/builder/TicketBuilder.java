@@ -9,7 +9,7 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class TicketBuilder extends Builder<Ticket> {
+public class TicketBuilder extends InteractiveBuilder<Ticket> {
    public static class TicketValidator {
       public static boolean validateId(Long id) {
         return id != null && id > 0;

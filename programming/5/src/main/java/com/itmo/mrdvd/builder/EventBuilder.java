@@ -6,7 +6,7 @@ import java.util.function.Function;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
-public class EventBuilder extends Builder<Event> {
+public class EventBuilder extends InteractiveBuilder<Event> {
    public static class EventValidator {
     public static boolean validateId(Long id) {
       return id != null && id >= 0;

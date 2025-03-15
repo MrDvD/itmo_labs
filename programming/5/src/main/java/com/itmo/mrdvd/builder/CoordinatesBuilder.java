@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 import com.itmo.mrdvd.object.Coordinates;
 
-public class CoordinatesBuilder extends Builder<Coordinates> {
+public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
    public static class CoordinatesValidator {
       public static boolean validateX(Float x) {
         return x != null;
@@ -15,7 +15,7 @@ public class CoordinatesBuilder extends Builder<Coordinates> {
         return y != null;
       }
     }
-    
+
    public CoordinatesBuilder(Coordinates raw) {
     super(raw);
    }
