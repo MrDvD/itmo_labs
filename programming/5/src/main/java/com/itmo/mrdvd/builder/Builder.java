@@ -1,27 +1,32 @@
 package com.itmo.mrdvd.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 public abstract class Builder<T> {
-   private final List<Function<Object, Void>> setters;
+   private final List<TypedBiConsumer<T,?>> setters;
    private final List<Object> objects;
    private final List<Function<Object, Boolean>> validators;
    private final T object;
 
-   public Builder(T rawObject, List<Function<Object, Void>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
+   public Builder(T rawObject) {
+      this(rawObject, new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+   }
+
+   public Builder(T rawObject, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
       this.object = rawObject;
       this.setters = setters;
       this.objects = objects;
       this.validators = validators;
    }
 
-   public Builder<T> attr(Function<Object, Void> setter, Object value) {
+   public Builder<T> attr(TypedBiConsumer<T,?> setter, Object value) {
       return attr(setter, value, null);
    }
 
-   public Builder<T> attr(Function<Object, Void> setter, Object value, Function<Object, Boolean> validator) {
+   public Builder<T> attr(TypedBiConsumer<T,?> setter, Object value, Function<Object, Boolean> validator) {
       if (setter == null) {
          throw new IllegalArgumentException("Setter не может быть null.");
       }
@@ -36,7 +41,7 @@ public abstract class Builder<T> {
          if (validators.get(i) != null && !validators.get(i).apply(objects.get(i))) {
             return Optional.empty();
          }
-         setters.get(i).apply(objects.get(i));
+         setters.get(i).accept(object, objects.get(i));
       }
       return Optional.of(object);
    }

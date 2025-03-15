@@ -3,7 +3,6 @@ package com.itmo.mrdvd.command;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.Event.EventParser;
 import com.itmo.mrdvd.object.Ticket;
 
 public class CountGreaterThanEventCommand implements Command {

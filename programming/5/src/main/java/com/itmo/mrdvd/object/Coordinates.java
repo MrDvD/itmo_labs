@@ -1,55 +1,14 @@
 package com.itmo.mrdvd.object;
 
-import org.apache.commons.lang3.math.NumberUtils;
-
-public class Coordinates implements Validatable {
+public class Coordinates {
   private Float x, y;
 
-  public static class CoordinatesValidator {
-    public static boolean validateX(Float x) {
-      return x != null;
-    }
-
-    public static boolean validateY(Float y) {
-      return y != null;
-    }
-  }
-
-  public static class CoordinatesParser {
-    public static Float parseX(String x) {
-      if (NumberUtils.isParsable(x)) {
-        return NumberUtils.toFloat(x);
-      }
-      return null;
-    }
-
-    public static Float parseY(String y) {
-      if (y != null && !y.isBlank() && NumberUtils.isParsable(y)) {
-        return NumberUtils.toFloat(y);
-      }
-      return null;
-    }
-  }
-
-  @Override
-  public boolean isValid() {
-    return CoordinatesValidator.validateX(getX()) && CoordinatesValidator.validateY(getY());
-  }
-
-  public int setX(Float x) {
-    if (CoordinatesValidator.validateX(x)) {
+  public void setX(Float x) {
       this.x = x;
-      return 0;
-    }
-    return -1;
   }
 
-  public int setY(Float y) {
-    if (CoordinatesValidator.validateY(y)) {
-      this.y = y;
-      return 0;
-    }
-    return -1;
+  public void setY(Float y) {
+   this.y = y;
   }
 
   public Float getX() {

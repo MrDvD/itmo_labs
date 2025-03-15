@@ -7,12 +7,9 @@ import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
-import com.itmo.mrdvd.object.Coordinates.CoordinatesParser;
 import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.Event.EventParser;
 import com.itmo.mrdvd.object.EventType;
 import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.Ticket.TicketParser;
 import com.itmo.mrdvd.object.TicketType;
 
 public class AddCommand implements Command {

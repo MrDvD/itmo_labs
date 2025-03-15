@@ -2,8 +2,6 @@ package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.object.Ticket.TicketParser;
-import com.itmo.mrdvd.object.Ticket.TicketValidator;
 
 public class RemoveByIdCommand implements Command {
   private final TicketCollection collection;
