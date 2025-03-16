@@ -18,8 +18,8 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
     }
 
     private void initSetters(FloatInputDevice inFloat) {
-      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<>("X-координата", inFloat::readFloat), CoordinatesValidator::validateX);
-      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<>("Y-координата", inFloat::readFloat), CoordinatesValidator::validateY);
+      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", inFloat::readFloat), CoordinatesValidator::validateX);
+      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", inFloat::readFloat), CoordinatesValidator::validateY);
     }
 
    public CoordinatesBuilder(Coordinates rawObject, FloatInputDevice inFloat, OutputDevice out) {

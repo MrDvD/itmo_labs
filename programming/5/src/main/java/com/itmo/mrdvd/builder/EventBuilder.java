@@ -1,17 +1,15 @@
 package com.itmo.mrdvd.builder;
 
 import java.util.List;
-import java.util.function.Function;
 
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.EnumInputDevice;
+import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
 public class EventBuilder extends InteractiveBuilder<Event> {
    public static class EventValidator {
-    public static boolean validateId(Long id) {
-      return id != null && id >= 0;
-    }
-
     public static boolean validateName(String name) {
       return name != null && !name.isBlank();
     }
@@ -20,16 +18,28 @@ public class EventBuilder extends InteractiveBuilder<Event> {
       return description != null && !description.isBlank() && description.length() <= 1190;
     }
 
-    public static boolean validateEventType(EventType type) {
+    public static boolean validateType(EventType type) {
       return type != null;
     }
   }
 
-  public EventBuilder(Event raw) {
-    super(raw);
+  private void initSetters(FloatInputDevice inFloat, EnumInputDevice inEnum) {
+      addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", inFloat::read), EventValidator::validateName);
+      addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", inFloat::read), EventValidator::validateDescription);
+      String[] options = new String[EventType.values().length];
+      for (int i = 0; i < EventType.values().length; i++) {
+        options[i] = EventType.values()[i].toString();
+      }
+      addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> inEnum.readEnum(EventType.class), List.of(options)), EventValidator::validateType);
+    }
+
+  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
+    super(rawObject, out);
+    initSetters(inFloat, inEnum);
   }
 
-  public EventBuilder(Event raw, List<Function<Object, Void>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
-    super(raw, setters, objects, validators);
+  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators) {
+    super(rawObject, out, interactors, setters, objects, validators);
+    initSetters(inFloat, inEnum);
   }
 }

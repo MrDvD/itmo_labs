@@ -18,7 +18,7 @@ public class Event implements Comparable<Event> {
    this.description = desc;
   }
 
-  public void setEventType(EventType type) {
+  public void setType(EventType type) {
    this.eventType = type;
   }
 
@@ -34,7 +34,7 @@ public class Event implements Comparable<Event> {
     return description;
   }
 
-  public EventType getEventType() {
+  public EventType getType() {
     return eventType;
   }
 
@@ -44,7 +44,7 @@ public class Event implements Comparable<Event> {
     s += String.format("ID: %d\n", getId());
     s += String.format("НАЗВАНИЕ: %s\n", getName());
     s += String.format("ОПИСАНИЕ: %s\n", getDescription());
-    s += String.format("ТИП МЕРОПРИЯТИЯ: %s\n", getEventType());
+    s += String.format("ТИП МЕРОПРИЯТИЯ: %s\n", getType());
     return s;
   }
 

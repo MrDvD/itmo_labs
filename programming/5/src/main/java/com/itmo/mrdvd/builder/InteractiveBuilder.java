@@ -15,16 +15,26 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    protected class UserInteractor<U> {
       private final String attributeName;
       private final Supplier<Optional<U>> inMethod;
+      private final Optional<List<String>> options;
       
       private final Optional<String> comment;
-   
+
       public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod) {
-         this(attributeName, inMethod, null);
+         this(attributeName, inMethod, null, null);
+      }
+
+      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String comment) {
+         this(attributeName, inMethod, null, comment);
+      }
+
+      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, List<String> options) {
+         this(attributeName, inMethod, options, null);
       }
    
-      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String comment) {
+      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, List<String> options, String comment) {
          this.attributeName = attributeName;
          this.inMethod = inMethod;
+         this.options = Optional.ofNullable(options);
          this.comment = Optional.ofNullable(comment);
       }
    
@@ -67,7 +77,16 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    public Optional<T> interactiveBuild() {
       for (int i = 0; i < setters.size(); i++) {
          UserInteractor<?> inter = interactors.get(i);
-         String msg = String.format("Введите поле \"%s\"", inter.attributeName());
+         String msg = "";
+         if (inter.options.isPresent()) {
+            msg += String.format("Выберите поле %s из списка:\n", inter.attributeName());
+            for (int j = 0; j < inter.options.get().size(); j++) {
+               msg += String.format("* %s\n", inter.options.get().get(j));
+            }
+            msg += "Ваш выбор";
+         } else {
+            msg += String.format("Введите поле \"%s\"", inter.attributeName());
+         }
          if (inter.comment().isPresent()) {
             msg += String.format(" (%s)", inter.comment().get());
          }

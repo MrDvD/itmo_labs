@@ -47,7 +47,7 @@ public class TicketConsole extends Console implements IntInputDevice, LongInputD
    }
 
    @Override
-   public <T extends Enum<T>> Optional<Enum<?>> readEnum(Class<T> cls) {
+   public <T extends Enum<T>> Optional<Enum<T>> readEnum(Class<T> cls) {
       Optional<String> token = readToken();
       if (token.isEmpty()) {
          return Optional.empty();
