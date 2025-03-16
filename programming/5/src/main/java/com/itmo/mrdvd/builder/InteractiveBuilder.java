@@ -4,27 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 
 public abstract class InteractiveBuilder<T> extends Builder<T> {
    private final List<UserInteractor<?>> interactors;
-   private final InputDevice in;
    private final OutputDevice out;
 
    protected class UserInteractor<U> {
       private final String attributeName;
-      private final Function<InputDevice,Optional<U>> inMethod;
+      private final Supplier<Optional<U>> inMethod;
       
       private final Optional<String> comment;
    
-      public UserInteractor(String attributeName, Function<InputDevice,Optional<U>> inMethod) {
+      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod) {
          this(attributeName, inMethod, null);
       }
    
-      public UserInteractor(String attributeName, Function<InputDevice,Optional<U>> inMethod, String comment) {
+      public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String comment) {
          this.attributeName = attributeName;
          this.inMethod = inMethod;
          this.comment = Optional.ofNullable(comment);
@@ -34,7 +32,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
          return this.attributeName;
       }
 
-      public Function<InputDevice,Optional<U>> inMethod() {
+      public Supplier<Optional<U>> inMethod() {
          return this.inMethod;
       }
    
@@ -43,13 +41,12 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       }
    }
 
-   public InteractiveBuilder(T rawObject, InputDevice in, OutputDevice out) {
-      this(rawObject, in, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+   public InteractiveBuilder(T rawObject, OutputDevice out) {
+      this(rawObject, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveBuilder(T rawObject, InputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Function<Object, Boolean>> validators) {
+   public InteractiveBuilder(T rawObject, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators) {
       super(rawObject, setters, objects, validators);
-      this.in = in;
       this.out = out;
       this.interactors = interactors;
    }
@@ -58,7 +55,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       return addInteractiveSetter(setter, valueCls, inter, null);
    }
 
-   public <U> Builder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter, Function<Object, Boolean> validator) throws IllegalArgumentException {
+   public <U> Builder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter, TypedPredicate<U> validator) throws IllegalArgumentException {
       if (inter == null) {
          throw new IllegalArgumentException("Метаданные не могут быть null.");
       }
@@ -76,8 +73,8 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
          }
          msg += ": ";
          out.write(msg);
-         Optional<?> result = inter.inMethod().apply(in);
-         if (result.isPresent() && (validators.get(i) == null || !validators.get(i).apply(result.get()))) {
+         Optional<?> result = inter.inMethod().get();
+         if (result.isPresent() && (validators.get(i) == null || !validators.get(i).testRaw(result.get()))) {
             setters.get(i).acceptRaw(rawObject, result.get());
          } else {
             return Optional.empty();
