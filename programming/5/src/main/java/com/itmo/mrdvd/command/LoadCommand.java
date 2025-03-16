@@ -43,7 +43,7 @@ public class LoadCommand implements Command {
     if (loaded.isPresent()) {
       collection.clear();
       for (Ticket t : loaded.get()) {
-        collection.addRaw(t);
+        collection.add(t);
       }
       collection.setMetadata(loaded.get().getMetadata());
       out.writeln("[INFO] Коллекция успешно считана из файла.");

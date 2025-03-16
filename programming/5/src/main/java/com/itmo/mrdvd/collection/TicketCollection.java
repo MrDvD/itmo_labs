@@ -3,11 +3,14 @@ package com.itmo.mrdvd.collection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.builder.Builder;
 import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>, Iterable<Ticket> {
@@ -60,7 +63,54 @@ public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>,
     }
   }
 
-  protected TicketCollection() {}
+   protected static class TicketIdGenerator implements IdGenerator {
+      private final Set<Long> usedIds;
+
+      public TicketIdGenerator(Set<Long> usedIds) {
+         this.usedIds = usedIds;
+      }
+
+      @Override
+      public boolean isTaken(Long id) {
+         return usedIds.contains(id);
+      }
+
+      @Override
+      public void takeId(Long id) throws IllegalArgumentException {
+         if (id == null) {
+            throw new IllegalArgumentException("Id не может быть null.");
+         }
+         usedIds.add(id);
+      }
+
+      @Override
+      public void freeId(Long id) {
+         if (id != null) {
+            usedIds.remove(id);
+         }
+      }
+
+      @Override
+      public Optional<Long> getId(Object obj) {
+         if (obj == null) {
+            return Optional.empty();
+          }
+          Long newId = Math.abs(Long.valueOf(obj.hashCode()));
+          while (isTaken(newId) || newId == 0) {
+            newId = Math.abs(newId + Math.round(Math.random() * 100000000000L - 50000000000L));
+          }
+          takeId(newId);
+          return Optional.of(newId);
+      }
+   }
+
+   public TicketCollection() {
+      this("Безымянная коллекция билетов");
+   }
+
+  public TicketCollection(String name) {
+   this(name, new TicketIdGenerator(new HashSet<>()), new TicketIdGenerator(new HashSet<>()));
+  }
 
   public TicketCollection(String name, IdGenerator ticketGen, IdGenerator eventGen) {
     this.tickets = new ArrayList<>();
@@ -69,40 +119,27 @@ public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>,
     this.eventGenerator = eventGen;
   }
 
-  public Optional<Ticket> addRaw(Ticket obj) {
-    if (obj.isValid()) {
-      if (getTicketIdGenerator().isTaken(obj.getId())
-          || getEventIdGenerator().isTaken(obj.getEvent().getId())) {
-        return Optional.empty();
-      }
-      getTicketIdGenerator().takeId(obj.getId());
-      getEventIdGenerator().takeId(obj.getEvent().getId());
-      tickets.add(obj);
-      return Optional.of(obj);
-    }
-    return Optional.empty();
-  }
-
   @Override
-  public Optional<Ticket> add(Ticket obj) {
-    if (obj == null || obj.getEvent() == null) {
+  public Optional<Ticket> add(Builder<Ticket> obj) {
+   if (obj == null) {
       return Optional.empty();
-    }
-    Long ticketId = null, eventId = null;
-    if (obj.getId() == null) {
-      ticketId = getTicketIdGenerator().bookId(obj);
-      obj.setId(ticketId);
-    }
-    if (obj.getEvent().getId() == null) {
-      eventId = getEventIdGenerator().bookId(obj.getEvent());
-      obj.getEvent().setId(eventId);
-    }
-    Optional<Ticket> ticket = addRaw(obj);
-    if (ticket.isEmpty()) {
-      getTicketIdGenerator().freeId(ticketId);
-      getEventIdGenerator().freeId(eventId);
-    }
-    return ticket;
+   }
+   Optional<Ticket> ticket = obj.build();
+   if (ticket.isEmpty()) {
+      return Optional.empty();
+   }
+   Optional<Long> ticketId = getTicketIdGenerator().getId(ticket.get());
+   if (ticketId.isEmpty()) {
+      return Optional.empty();
+   }
+   Optional<Long> eventId = getEventIdGenerator().getId(ticket.get().getEvent());
+   if (eventId.isEmpty()) {
+      getTicketIdGenerator().freeId(ticketId.get());
+      return Optional.empty();
+   }
+   ticket.get().setId(ticketId.get());
+   ticket.get().getEvent().setId(eventId.get());
+   return ticket;
   }
 
   @Override

@@ -3,7 +3,9 @@ package com.itmo.mrdvd.object;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Ticket {
+import com.itmo.mrdvd.collection.HavingId;
+
+public class Ticket implements HavingId {
   private Long id;
   private String name;
   private Coordinates coordinates;
@@ -12,6 +14,7 @@ public class Ticket {
   private TicketType type;
   private Event event;
 
+  @Override
   public void setId(Long id) {
    this.id = id;
   }
@@ -40,6 +43,7 @@ public void setEvent(Event event) {
    this.event = event;
 }
 
+@Override
 public Long getId() {
     return id;
   }

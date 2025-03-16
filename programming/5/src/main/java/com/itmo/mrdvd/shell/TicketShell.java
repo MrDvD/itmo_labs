@@ -6,10 +6,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.CoordinatesBuilder;
+import com.itmo.mrdvd.builder.EventBuilder;
+import com.itmo.mrdvd.builder.TicketBuilder;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
-import com.itmo.mrdvd.command.AddIfMaxCommand;
 import com.itmo.mrdvd.command.ClearCommand;
 import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.CountGreaterThanEventCommand;
@@ -32,17 +34,17 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
 import com.itmo.mrdvd.object.TicketField;
 
-public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
+public class TicketShell extends Shell<Map<String, Command>, List<Command>, InteractiveDataInputDevice> {
   private boolean isOpen;
 
-  public TicketShell(InteractiveInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
+  public TicketShell(InteractiveDataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
    this(in, out, commands, preExecute, new TShellParser()); 
   }
 
-  public TicketShell(InteractiveInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute, ShellParser parser) {
+  public TicketShell(InteractiveDataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute, ShellParser parser) {
    super(in, out, commands, preExecute, parser); 
     this.isOpen = false;
   }
@@ -79,7 +81,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   }
 
   public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial) {
-    addCommand(new AddCommand(collection, getInput(), getOutput()));
+    addCommand(new AddCommand<>(collection, new TicketBuilder(new CoordinatesBuilder(getInput(), getOutput()), new EventBuilder(getInput(), getInput(), getOutput()), getInput(), getInput(), getInput(), getOutput()), getInput(), getOutput()) );
     addCommand(new HelpCommand(getOutput()));
     addCommand(new ExitCommand());
     addCommand(new UpdateCommand(collection, getInput(), getOutput()));
@@ -88,7 +90,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     addCommand(new RemoveAtCommand(collection, getOutput()));
     addCommand(new RemoveLastCommand(collection, getOutput()));
     addCommand(new ShowCommand(collection, getOutput()));
-    addCommand(new AddIfMaxCommand(collection, new TicketComparator(TicketField.ID), getInput(), getOutput()));
+   //  addCommand(new AddIfMaxCommand(collection, new TicketComparator(TicketField.ID), getInput(), getOutput()));
     addCommand(new MinByPriceCommand(collection, new TicketComparator(TicketField.PRICE), getOutput()));
     addCommand(new PrintFieldDescendingTypeCommand(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));
     addCommand(new CountGreaterThanEventCommand(collection, getOutput()));

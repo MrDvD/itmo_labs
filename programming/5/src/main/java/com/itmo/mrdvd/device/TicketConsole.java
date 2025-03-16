@@ -2,12 +2,7 @@ package com.itmo.mrdvd.device;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.FloatInputDevice;
-import com.itmo.mrdvd.device.input.IntInputDevice;
-import com.itmo.mrdvd.device.input.LongInputDevice;
-
-public class TicketConsole extends Console implements IntInputDevice, LongInputDevice, FloatInputDevice, EnumInputDevice {
+public class TicketConsole extends Console {
    @Override
    public TicketConsole init() {
       return (TicketConsole) super.init();

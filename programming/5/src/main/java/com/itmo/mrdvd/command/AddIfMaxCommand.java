@@ -1,25 +1,34 @@
 package com.itmo.mrdvd.command;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.builder.InteractiveBuilder;
+import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
-public class AddIfMaxCommand extends AddCommand {
-   private final Comparator<Ticket> comparator;
+public class AddIfMaxCommand<T> implements Command {
+   protected final CollectionWorker<T,List<T>> collect;
+   protected final InteractiveInputDevice in;
+   protected final InteractiveBuilder<T> builder;
+   protected final OutputDevice out;
+   private final Comparator<T> comparator;
 
-  public AddIfMaxCommand(TicketCollection collect, Comparator<Ticket> comparator, InteractiveInputDevice in, OutputDevice out) {
-    super(collect, in, out);
-    this.comparator = comparator;
+  public AddIfMaxCommand(CollectionWorker<T,List<T>> collection, InteractiveBuilder<T> builder, Comparator<T> comparator, InteractiveInputDevice in, OutputDevice out) {
+   this.collect = collection;
+   this.builder = builder;
+   this.in = in;
+   this.out = out; 
+   this.comparator = comparator;
   }
 
   @Override
   public void execute(String[] params) {
-    Ticket ticket = createTicketInteractive();
     collect.getCollection().sort(comparator);
+   //  comparator.compare(collect.getCollection().get(collect.getCollection().size() - 1), o2) > 0;
     if (collect.getCollection().isEmpty() || collect.getCollection().get(collect.getCollection().size() - 1).getId().compareTo(ticket.getId()) < 0) {
       Optional<Ticket> result = collect.add(ticket);
       if (result.isPresent()) {

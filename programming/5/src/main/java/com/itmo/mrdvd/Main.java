@@ -1,11 +1,16 @@
 package com.itmo.mrdvd;
 
-import java.time.LocalDateTime;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.TreeMap;
 
-import com.itmo.mrdvd.builder.CoordinatesBuilder;
-import com.itmo.mrdvd.builder.EventBuilder;
-import com.itmo.mrdvd.builder.TicketBuilder;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.device.TicketConsole;
+import com.itmo.mrdvd.shell.TicketShell;
 
 /*
  * TODO:
@@ -19,17 +24,12 @@ import com.itmo.mrdvd.device.TicketConsole;
 
 public class Main {
   public static void main(String[] args) {
-   TicketConsole console = new TicketConsole().init();
-   CoordinatesBuilder coordBuilder = new CoordinatesBuilder(console, console);
-   EventBuilder eventBuilder = new EventBuilder(console, console, console);
-   TicketBuilder ticketBuilder = new TicketBuilder(coordBuilder, eventBuilder, console, console, console, LocalDateTime.now(), console);
-   ticketBuilder.interactiveBuild();
-   //  TicketCollection collection =
-   //      new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
-   //  ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());
-   //  TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
-   //  FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-   //  shell.initDefaultCommands(collection, "TICKET_PATH", fd, mapper, mapper);
-   //  shell.open();
+    TicketConsole console = new TicketConsole().init();
+    TicketCollection collection = new TicketCollection("My Collection");
+    ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());
+    TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
+    FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
+    shell.initDefaultCommands(collection, "TICKET_PATH", fd, mapper, mapper);
+    shell.open();
   }
 }

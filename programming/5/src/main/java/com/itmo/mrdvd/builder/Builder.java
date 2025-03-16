@@ -43,7 +43,16 @@ public abstract class Builder<T> {
       }
       setters.get(index).acceptRaw(rawObject, objects.get(index));
       return ProcessStatus.SUCCESS;
-   } 
+   }
+
+   public boolean isValid() {
+      for (int i = 0; i < setters.size(); i++) {
+         if (validators.get(i) != null && !validators.get(i).testRaw(objects.get(i))) {
+            return false;
+         }
+      }
+      return true;
+   }
 
    public Optional<T> build() {
       for (int i = 0; i < setters.size(); i++) {

@@ -2,14 +2,14 @@ package com.itmo.mrdvd.collection;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.builder.Builder;
 
 public interface CollectionWorker<T,V> {
-  public Optional<Ticket> add(T obj);
+  public Optional<T> add(Builder<T> obj);
 
-  public Optional<Ticket> get(Long id);
+  public Optional<T> get(Long id);
 
-  public Optional<Ticket> update(Long id, T obj);
+  public Optional<T> update(Long id, Builder<T> obj);
 
   public void remove(Long id);
 

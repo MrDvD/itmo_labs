@@ -5,6 +5,6 @@ import java.util.Optional;
 import com.itmo.mrdvd.shell.Shell;
 
 public interface ShellInfo {
-  public void setShell(Shell<?, ?> shell);
-  public Optional<Shell<?, ?>> getShell();
+  public void setShell(Shell<?, ?, ?> shell);
+  public Optional<Shell<?, ?, ?>> getShell();
 }

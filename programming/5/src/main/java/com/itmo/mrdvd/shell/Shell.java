@@ -6,15 +6,15 @@ import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
-public abstract class Shell<T,S> implements Iterable<Command> {
+public abstract class Shell<T,S,U extends InteractiveInputDevice> implements Iterable<Command> {
    private final T commands;
    private final S preExecute;
-   private final InteractiveInputDevice in;
+   private final U in;
    private final OutputDevice out;
    private final ShellParser parser;
    private int stackSize;
 
-   public Shell(InteractiveInputDevice in, OutputDevice out, T commands, S preExecute, ShellParser parser) {
+   public Shell(U in, OutputDevice out, T commands, S preExecute, ShellParser parser) {
       this.in = in;
       this.out = out;
       this.commands = commands;
@@ -22,7 +22,7 @@ public abstract class Shell<T,S> implements Iterable<Command> {
       this.preExecute = preExecute;
       this.stackSize = 256;
    }
-  public InteractiveInputDevice getInput() {
+  public U getInput() {
    return this.in;
   }
 

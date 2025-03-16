@@ -2,6 +2,7 @@ package com.itmo.mrdvd.builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
@@ -11,6 +12,8 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
 public class TicketBuilder extends InteractiveBuilder<Ticket> {
+   private LocalDateTime creationDate = null;
+
    public static class TicketValidator {
        public static boolean validateCreationDate(LocalDateTime creationDate) {
         return creationDate != null;
@@ -29,7 +32,7 @@ public class TicketBuilder extends InteractiveBuilder<Ticket> {
       }
     }
 
-    private void initSetters(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, LocalDateTime creationDate) {
+    private void initSetters(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum) {
       addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", inFloat::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveBuilder(coordBuild);
       attr(Ticket::setCreationDate, creationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
@@ -42,13 +45,18 @@ public class TicketBuilder extends InteractiveBuilder<Ticket> {
       addInteractiveBuilder(eventBuild);
     }
 
-   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, LocalDateTime creationDate, OutputDevice out) {
+   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
       super(new Ticket(), out);
-      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum, creationDate);
+      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum);
    }
    
-   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, LocalDateTime creationDate, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
+   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
       super(new Ticket(), out, interactors, setters, objects, validators, builders, methods);
-      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum, creationDate);
+      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum);
+   }
+
+   public Optional<Ticket> build(LocalDateTime creationDate) {
+      this.creationDate = creationDate;
+      return super.build();
    }
 }

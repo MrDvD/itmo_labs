@@ -106,7 +106,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    }
 
    protected ProcessStatus processBuilder(int index) {
-      return builders.get(index).interactiveBuild().isPresent() ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
+      return builders.get(index).build().isPresent() ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
    }
 
    @Override
@@ -140,7 +140,8 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       return ProcessStatus.SUCCESS;
    }
    
-   public Optional<T> interactiveBuild() {
+   @Override
+   public Optional<T> build() {
       for (int i = 0; i < methods.size(); i++) {
          while (methods.get(i).apply(methods.get(i).index()).equals(ProcessStatus.FAILURE)) {}
       }
