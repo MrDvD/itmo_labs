@@ -1,16 +1,11 @@
 package com.itmo.mrdvd;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.time.LocalDateTime;
 
 import com.itmo.mrdvd.builder.CoordinatesBuilder;
+import com.itmo.mrdvd.builder.EventBuilder;
 import com.itmo.mrdvd.builder.TicketBuilder;
-import com.itmo.mrdvd.builder.TypedBiConsumer;
-import com.itmo.mrdvd.builder.TypedConsumer;
 import com.itmo.mrdvd.device.TicketConsole;
-import com.itmo.mrdvd.object.Coordinates;
-import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.Ticket;
 
 /*
  * TODO:
@@ -25,9 +20,10 @@ import com.itmo.mrdvd.object.Ticket;
 public class Main {
   public static void main(String[] args) {
    TicketConsole console = new TicketConsole().init();
-   Coordinates raw = new Coordinates();
-   CoordinatesBuilder builder = new CoordinatesBuilder(raw, console, console);
-   builder.interactiveBuild();
+   CoordinatesBuilder coordBuilder = new CoordinatesBuilder(console, console);
+   EventBuilder eventBuilder = new EventBuilder(console, console, console);
+   TicketBuilder ticketBuilder = new TicketBuilder(coordBuilder, eventBuilder, console, console, console, LocalDateTime.now(), console);
+   ticketBuilder.interactiveBuild();
    //  TicketCollection collection =
    //      new TicketCollection("My Collection", new TicketIdGenerator(), new TicketIdGenerator());
    //  ObjectMapperDecorator mapper = new ObjectMapperDecorator(new XmlMapper());

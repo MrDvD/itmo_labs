@@ -57,10 +57,15 @@ public class Console implements InteractiveInputDevice, OutputDevice {
 
   @Override
   public Optional<String> readToken() {
-   if (in.hasNext()) {
-      return Optional.of(in.next());
-   }
-   return Optional.empty();
+    if (in.hasNext()) {
+      String token = in.next();
+      if (in.hasNextLine()) {
+        in.nextLine();
+      }
+      return Optional.of(token);
+    }
+    openIn();
+    return Optional.empty();
   }
 
   @Override

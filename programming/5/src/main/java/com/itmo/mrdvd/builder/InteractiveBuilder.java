@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.itmo.mrdvd.device.OutputDevice;
@@ -80,7 +81,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
          throw new IllegalArgumentException("Метаданные не могут быть null.");
       }
       attr(setter, null, valueCls, validator);
-      methods.add(IndexedFunction.of(this::processSetter, interactors.size()));
+      methods.add(IndexedFunction.of(this::processSetter, interactors.size() - 1));
       interactors.set(interactors.size() - 1, inter);
       return this;
    }
@@ -93,7 +94,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    }
 
    @Override
-   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, TypedPredicate<U> validator) {
+   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
       super.attr(setter, value, valueCls, validator);
       interactors.add(null);
       return this;
@@ -111,7 +112,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       }
       String msg = "";
       if (inter.options.isPresent()) {
-         msg += String.format("Выберите поле %s из списка:\n", inter.attributeName());
+         msg += String.format("Выберите поле \"%s\" из списка:\n", inter.attributeName());
          for (int j = 0; j < inter.options.get().size(); j++) {
             msg += String.format("* %s\n", inter.options.get().get(j));
          }
@@ -125,7 +126,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       msg += ": ";
       out.write(msg);
       Optional<?> result = inter.inMethod().get();
-      if (result.isPresent() && (validators.get(index) == null || !validators.get(index).testRaw(result.get()))) {
+      if (result.isPresent() && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
          setters.get(index).acceptRaw(rawObject, result.get());
       } else {
          return false;
@@ -135,7 +136,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    
    public Optional<T> interactiveBuild() {
       for (int i = 0; i < methods.size(); i++) {
-         if (!methods.get(i).apply(i)) {
+         if (!methods.get(i).apply(methods.get(i).index())) {
             return Optional.empty();
          }
       }

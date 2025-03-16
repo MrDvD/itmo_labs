@@ -19,8 +19,11 @@ public class TicketConsole extends Console implements IntInputDevice, LongInputD
       if (token.isEmpty()) {
          return Optional.empty();
       }
-      Integer integer = Integer.getInteger(token.get());
-      return integer == null ? Optional.empty() : Optional.of(integer);
+      try {
+         return Optional.of(Integer.valueOf(token.get()));   
+      } catch (NumberFormatException e) {
+         return Optional.empty();
+      }
    }
 
    @Override
@@ -29,8 +32,11 @@ public class TicketConsole extends Console implements IntInputDevice, LongInputD
       if (token.isEmpty()) {
          return Optional.empty();
       }
-      Long integer = Long.getLong(token.get());
-      return integer == null ? Optional.empty() : Optional.of(integer);
+      try {
+         return Optional.of(Long.valueOf(token.get()));   
+      } catch (NumberFormatException e) {
+         return Optional.empty();
+      }
    }
 
    @Override

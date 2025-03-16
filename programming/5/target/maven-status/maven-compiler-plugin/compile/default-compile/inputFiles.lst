@@ -2,10 +2,11 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/Builder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/CoordinatesBuilder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/EventBuilder.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/IndexedFunction.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/InteractiveBuilder.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/SetterWrapper.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/TicketBuilder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/TypedBiConsumer.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/TypedPredicate.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/collection/CollectionWorker.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/collection/IdGenerator.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/collection/TicketCollection.java

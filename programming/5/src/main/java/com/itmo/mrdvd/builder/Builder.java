@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 
 public abstract class Builder<T> {
    protected final List<TypedBiConsumer<T,?>> setters;
@@ -26,13 +27,13 @@ public abstract class Builder<T> {
       return attr(setter, value, valueCls, null);
    }
 
-   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, TypedPredicate<U> validator) {
+   public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
       if (setter == null) {
          throw new IllegalArgumentException("Setter не может быть null.");
       }
       setters.add(TypedBiConsumer.of(valueCls, setter));
       objects.add(value);
-      validators.add(validator);
+      validators.add(TypedPredicate.of(valueCls, validator));
       return this;
    }
 

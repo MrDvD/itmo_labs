@@ -22,12 +22,12 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
       addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", inFloat::readFloat), CoordinatesValidator::validateY);
     }
 
-   public CoordinatesBuilder(Coordinates rawObject, FloatInputDevice inFloat, OutputDevice out) {
-    super(rawObject, out);
+   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out) {
+    super(new Coordinates(), out);
     initSetters(inFloat);
    }
-   public CoordinatesBuilder(Coordinates rawObject, FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
-    super(rawObject, out, interactors, setters, objects, validators, builders, methods);
+   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+    super(new Coordinates(), out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat);
    }
 }

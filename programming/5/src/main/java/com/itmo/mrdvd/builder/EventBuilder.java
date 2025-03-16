@@ -33,13 +33,13 @@ public class EventBuilder extends InteractiveBuilder<Event> {
       addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> inEnum.readEnum(EventType.class), List.of(options)), EventValidator::validateType);
     }
 
-  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
-    super(rawObject, out);
+  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
+    super(new Event(), out);
     initSetters(inFloat, inEnum);
   }
 
-  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
-    super(rawObject, out, interactors, setters, objects, validators, builders, methods);
+  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+    super(new Event(), out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat, inEnum);
   }
 }
