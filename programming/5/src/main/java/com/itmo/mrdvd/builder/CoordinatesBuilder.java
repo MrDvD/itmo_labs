@@ -26,8 +26,8 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
     super(rawObject, out);
     initSetters(inFloat);
    }
-   public CoordinatesBuilder(Coordinates rawObject, FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators) {
-    super(rawObject, out, interactors, setters, objects, validators);
+   public CoordinatesBuilder(Coordinates rawObject, FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+    super(rawObject, out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat);
    }
 }

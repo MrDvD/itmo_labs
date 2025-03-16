@@ -36,12 +36,19 @@ public abstract class Builder<T> {
       return this;
    }
 
+   protected boolean processSetter(int index) {
+      if (validators.get(index) != null && !validators.get(index).testRaw(objects.get(index))) {
+         return false;
+      }
+      setters.get(index).acceptRaw(rawObject, objects.get(index));
+      return true;
+   } 
+
    public Optional<T> build() {
       for (int i = 0; i < setters.size(); i++) {
-         if (validators.get(i) != null && !validators.get(i).testRaw(objects.get(i))) {
+         if (!processSetter(i)) {
             return Optional.empty();
          }
-         setters.get(i).acceptRaw(rawObject, objects.get(i));
       }
       return Optional.of(rawObject);
    }

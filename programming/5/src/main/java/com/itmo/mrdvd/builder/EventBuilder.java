@@ -38,8 +38,8 @@ public class EventBuilder extends InteractiveBuilder<Event> {
     initSetters(inFloat, inEnum);
   }
 
-  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators) {
-    super(rawObject, out, interactors, setters, objects, validators);
+  public EventBuilder(Event rawObject, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+    super(rawObject, out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat, inEnum);
   }
 }
