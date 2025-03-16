@@ -3,10 +3,11 @@ package com.itmo.mrdvd.shell;
 import java.util.Optional;
 
 import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
 
-public abstract class Shell<T,S,U extends InteractiveInputDevice> implements Iterable<Command> {
+public abstract class Shell<T,S,U extends InteractiveDataInputDevice> implements Iterable<Command> {
    private final T commands;
    private final S preExecute;
    private final U in;
@@ -54,17 +55,20 @@ public abstract class Shell<T,S,U extends InteractiveInputDevice> implements Ite
    return this.parser;
   }
 
-  public ProcessingStatus processCommandLine(String line) {
-   Optional<ShellQuery> rawCmd = getParser().parse(line);
-   if (rawCmd.isEmpty()) {
-     return ProcessingStatus.PARSE_FAILURE;
+  public Optional<Command> processCommandLine() {
+   Optional<String> cmdName = getInput().readToken();
+   if (cmdName.isEmpty()) {
+      return Optional.empty();
    }
-   Optional<Command> cmd = getCommand(rawCmd.get().cmd());
+   Optional<Command> cmd = getCommand(cmdName.get());
    if (cmd.isPresent()) {
-     cmd.get().execute(rawCmd.get().params());
-     return ProcessingStatus.SUCCESS;
+      if (!(cmd.get() instanceof CommandHasParams)) {
+         getInput().skipLine();
+      }
+     cmd.get().execute();
+     return cmd;
    }
-   return ProcessingStatus.CMD_NOT_FOUND;
+   return Optional.empty();
  }
 
   public abstract void open();

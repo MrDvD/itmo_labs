@@ -11,14 +11,15 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.itmo.mrdvd.collection.TicketCollection;
 
-public class ObjectMapperDecorator
-    implements Serializer<TicketCollection>, Deserializer<TicketCollection> {
+public class ObjectMapperDecorator<T>
+    implements Serializer<T>, Deserializer<T> {
   private final ObjectMapper mapper;
+  private final Class<? extends T> cls;
 
-  public ObjectMapperDecorator(ObjectMapper obj) {
+  public ObjectMapperDecorator(ObjectMapper obj, Class<? extends T> cls) {
     this.mapper = obj;
+    this.cls = cls;
     mapper.registerModule(new JavaTimeModule());
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -28,7 +29,7 @@ public class ObjectMapperDecorator
   }
 
   @Override
-  public Optional<String> serialize(TicketCollection obj) {
+  public Optional<String> serialize(T obj) {
     try {
       return Optional.of(mapper.writeValueAsString(obj));
     } catch (JsonProcessingException e) {
@@ -37,9 +38,9 @@ public class ObjectMapperDecorator
   }
 
   @Override
-  public Optional<TicketCollection> deserialize(String str) {
+  public Optional<T> deserialize(String str) {
     try {
-      return Optional.of(mapper.readValue(str, TicketCollection.class));
+      return Optional.of(mapper.readValue(str, cls));
     } catch (JsonProcessingException e) {
       return Optional.empty();
     }

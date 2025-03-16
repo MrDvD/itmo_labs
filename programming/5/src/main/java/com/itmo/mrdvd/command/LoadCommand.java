@@ -2,23 +2,22 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.object.Ticket;
 
-public class LoadCommand implements Command {
+public class LoadCommand<T, U> implements Command {
   private final InputDevice in;
-  private final TicketCollection collection;
-  private final Deserializer<TicketCollection> deserial;
+  private final Collection<T, U> collection;
+  private final Deserializer<Collection<T, U>> deserial;
   private final OutputDevice out;
 
   public LoadCommand(
       InputDevice in,
-      TicketCollection collection,
-      Deserializer<TicketCollection> deserial,
+      Collection<T, U> collection,
+      Deserializer<Collection<T, U>> deserial,
       OutputDevice out) {
     this.in = in;
     this.collection = collection;
@@ -27,7 +26,7 @@ public class LoadCommand implements Command {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     IOStatus code = in.openIn();
     if (code.equals(IOStatus.FAILURE)) {
       out.writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
@@ -39,10 +38,10 @@ public class LoadCommand implements Command {
       out.writeln("[ERROR] Ошибка чтения файла с коллекцией.");
       return;
     }
-    Optional<TicketCollection> loaded = deserial.deserialize(fileContent.get());
+    Optional<Collection<T, U>> loaded = deserial.deserialize(fileContent.get());
     if (loaded.isPresent()) {
       collection.clear();
-      for (Ticket t : loaded.get()) {
+      for (T t : loaded.get()) {
         collection.add(t);
       }
       collection.setMetadata(loaded.get().getMetadata());

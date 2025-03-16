@@ -2,10 +2,11 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
+import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
-public class HelpCommand implements Command, ShellInfo {
+public class HelpCommand implements ShellCommand {
   private Shell<?, ?, ?> shell;
   private final OutputDevice out;
 
@@ -24,7 +25,7 @@ public class HelpCommand implements Command, ShellInfo {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     if (shell != null) {
       for (Command cmd : shell) {
         out.write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));

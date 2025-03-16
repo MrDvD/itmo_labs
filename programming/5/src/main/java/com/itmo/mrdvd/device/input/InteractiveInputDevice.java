@@ -1,11 +1,7 @@
 package com.itmo.mrdvd.device.input;
 
-import java.util.Optional;
+import com.itmo.mrdvd.device.OutputDevice;
 
-public interface InteractiveInputDevice extends InputDevice {
-  public Optional<String> read(String message);
+public abstract class InteractiveInputDevice implements InputDevice, OutputDevice {
 
-  public Optional<String> readToken(String message);
-
-  public Optional<String> readAll(String message);
 }

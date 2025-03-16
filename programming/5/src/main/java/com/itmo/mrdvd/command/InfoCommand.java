@@ -1,19 +1,19 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class InfoCommand implements Command {
-  private final TicketCollection collection;
+  private final Collection<?, ?> collection;
   private final OutputDevice out;
 
-  public InfoCommand(TicketCollection collect, OutputDevice out) {
+  public InfoCommand(Collection<?, ?> collect, OutputDevice out) {
     this.collection = collect;
     this.out = out;
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     out.writeln(collection.getMetadata().toString());
   }
 

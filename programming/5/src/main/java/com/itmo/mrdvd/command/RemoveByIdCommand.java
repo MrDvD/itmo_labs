@@ -1,43 +1,37 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.OutputDevice;
+import java.util.Optional;
 
-public class RemoveByIdCommand implements Command {
-  private final TicketCollection collection;
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.command.marker.CommandHasParams;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.LongInputDevice;
+
+public class RemoveByIdCommand implements CommandHasParams {
+  private final CollectionWorker<?, ?> collection;
+  private final LongInputDevice in;
   private final OutputDevice out;
 
-  public RemoveByIdCommand(TicketCollection collect, OutputDevice out) {
-    this.collection = collect;
+  public RemoveByIdCommand(CollectionWorker<?, ?> collection, LongInputDevice in, OutputDevice out) {
+    this.collection = collection;
+    this.in = in;
     this.out = out;
   }
 
-  public int validateParams(String[] params) {
-    if (params.length != 1) {
-      return -3;
-    }
-    Long id = TicketParser.parseId(params[0]);
-    if (!TicketValidator.validateId(id)) {
-      return -1;
-    }
-    if (!collection.getTicketIdGenerator().isTaken(id)) {
-      return -2;
-    }
-    return 0;
+  @Override
+  public LongInputDevice getParamsInput() {
+   return this.in;
   }
 
   @Override
-  public void execute(String[] params) {
-    int validationResult = validateParams(params);
-    if (validationResult != 0) {
-      switch (validationResult) {
-        case -1 -> out.writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
-        case -2 -> out.writeln("[ERROR] Указанный id не найден в коллекции.");
-        default -> out.writeln("[ERROR] Неправильный формат ввода параметров команды.");
-      }
+  public void execute() {
+    Optional<Long> params = getParamsInput().readLong();
+    getParamsInput().skipLine();
+    if (params.isEmpty()) {
+      out.writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
       return;
     }
-    collection.remove(TicketParser.parseId(params[0]));
+    collection.remove(params.get());
   }
 
   @Override

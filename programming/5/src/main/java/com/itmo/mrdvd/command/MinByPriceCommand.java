@@ -1,24 +1,24 @@
 package com.itmo.mrdvd.command;
 
 import java.util.Comparator;
+import java.util.List;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.object.Ticket;
 
-public class MinByPriceCommand implements Command {
-  private final TicketCollection collection;
+public class MinByPriceCommand<T> implements Command {
+  private final CollectionWorker<T, List<T>> collection;
   private final OutputDevice out;
-  private final Comparator<Ticket> comparator;
+  private final Comparator<T> comparator;
 
-  public MinByPriceCommand(TicketCollection collect, Comparator<Ticket> comparator, OutputDevice out) {
+  public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
     this.collection = collect;
     this.out = out;
     this.comparator = comparator;
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     collection.getCollection().sort(comparator);
     if (collection.getCollection().isEmpty()) {
       out.writeln("[INFO] Коллекция пуста.");

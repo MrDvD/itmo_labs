@@ -1,10 +1,11 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.command.marker;
 
 import java.util.Optional;
 
+import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.shell.Shell;
 
-public interface ShellInfo {
+public interface ShellCommand extends Command {
   public void setShell(Shell<?, ?, ?> shell);
   public Optional<Shell<?, ?, ?>> getShell();
 }

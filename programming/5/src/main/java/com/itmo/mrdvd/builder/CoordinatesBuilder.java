@@ -1,6 +1,7 @@
 package com.itmo.mrdvd.builder;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;
@@ -18,8 +19,8 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
     }
 
     private void initSetters(FloatInputDevice inFloat) {
-      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", inFloat::readFloat, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
-      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", inFloat::readFloat, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
+      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", () -> { Optional<Float> in = inFloat.readFloat(); inFloat.skipLine(); return in; } , "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
+      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", () -> { Optional<Float> in = inFloat.readFloat(); inFloat.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
     }
 
    public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out) {

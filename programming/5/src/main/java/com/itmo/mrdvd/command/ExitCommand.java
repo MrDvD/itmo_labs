@@ -2,13 +2,14 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
+import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExitCommand implements Command, ShellInfo {
+public class ExitCommand implements ShellCommand {
   private Shell<?, ?, ?> shell;
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     if (shell != null) {
       shell.close();
     }

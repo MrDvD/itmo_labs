@@ -13,13 +13,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.builder.Builder;
 import com.itmo.mrdvd.object.Ticket;
 
-public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>, Iterable<Ticket> {
+public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
   private IdGenerator ticketGenerator;
   private IdGenerator eventGenerator;
   private TicketCollectionMetadata meta;
 
-  public static class TicketCollectionMetadata {
+  public static class TicketCollectionMetadata implements CollectionMetadata {
     @JsonProperty private LocalDateTime creationTime;
     @JsonProperty private String type;
     private String name;
@@ -194,6 +194,7 @@ public class TicketCollection implements CollectionWorker<Ticket, List<Ticket>>,
     return eventGenerator;
   }
 
+  @Override
   public TicketCollectionMetadata getMetadata() {
     return this.meta;
   }

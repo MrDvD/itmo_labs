@@ -7,13 +7,13 @@ import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
-public class AddCommand<T,V> implements Command {
-  protected final CollectionWorker<T,V> collect;
+public class AddCommand<T> implements Command {
+  protected final CollectionWorker<T,?> collect;
   protected final InteractiveInputDevice in;
   protected final InteractiveBuilder<T> builder;
   protected final OutputDevice out;
 
-  public AddCommand(CollectionWorker<T,V> collection, InteractiveBuilder<T> builder, InteractiveInputDevice in, OutputDevice out) {
+  public AddCommand(CollectionWorker<T,?> collection, InteractiveBuilder<T> builder, InteractiveInputDevice in, OutputDevice out) {
     this.collect = collection;
     this.builder = builder;
     this.in = in;
@@ -21,7 +21,7 @@ public class AddCommand<T,V> implements Command {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     Optional<T> result = collect.add(builder);
     if (result.isPresent()) {
       out.writeln("[INFO] Билет успешно добавлен в коллекцию.");

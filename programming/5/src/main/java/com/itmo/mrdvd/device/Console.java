@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
 
-public abstract class Console extends InteractiveDataInputDevice implements OutputDevice {
+public abstract class Console extends InteractiveDataInputDevice {
   private Scanner in;
   private OutputStreamWriter out;
 
@@ -57,15 +57,19 @@ public abstract class Console extends InteractiveDataInputDevice implements Outp
 
   @Override
   public Optional<String> readToken() {
-    if (in.hasNext()) {
-      String token = in.next();
-      if (in.hasNextLine()) {
-        in.nextLine();
-      }
-      return Optional.of(token);
+   if (in.hasNext()) {
+      return Optional.of(in.next());
     }
     openIn();
     return Optional.empty();
+  }
+
+  @Override
+  public void skipLine() {
+   if (in.hasNextLine()) {
+      in.nextLine();
+   }
+   openIn();
   }
 
   @Override
@@ -80,24 +84,6 @@ public abstract class Console extends InteractiveDataInputDevice implements Outp
       return Optional.empty();
     }
     return Optional.of(result);
-  }
-
-  @Override
-  public Optional<String> readAll(String msg) {
-   write(msg);
-   return readAll();
-  }
-
-  @Override
-  public Optional<String> readToken(String msg) {
-   write(msg);
-   return readToken();
-  }
-
-  @Override
-  public Optional<String> read(String msg) {
-    write(msg);
-    return read();
   }
 
   @Override

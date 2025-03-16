@@ -11,6 +11,8 @@ public interface InputDevice {
 
   public Optional<String> readAll() throws NullPointerException;
 
+  public void skipLine() throws NullPointerException;
+
   public IOStatus openIn() throws NullPointerException;
 
   public IOStatus closeIn();

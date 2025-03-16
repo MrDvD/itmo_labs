@@ -26,7 +26,7 @@ public class AddIfMaxCommand<T> implements Command {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     collect.getCollection().sort(comparator);
    //  comparator.compare(collect.getCollection().get(collect.getCollection().size() - 1), o2) > 0;
     if (collect.getCollection().isEmpty() || collect.getCollection().get(collect.getCollection().size() - 1).getId().compareTo(ticket.getId()) < 0) {

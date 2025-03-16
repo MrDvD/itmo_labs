@@ -1,16 +1,18 @@
 package com.itmo.mrdvd.command;
 
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExecuteScriptCommand implements Command, ShellInfo {
+public class ExecuteScriptCommand implements ShellCommand {
   private Shell<?, ?, ?> shell;
   private final OutputDevice log;
   private final Set<String> stack;
@@ -20,13 +22,6 @@ public class ExecuteScriptCommand implements Command, ShellInfo {
     this.log = log;
     this.stack = new HashSet<>();
     this.fd = fd;
-  }
-
-  public int validateParams(String[] params) {
-    if (params.length != 1) {
-      return -1;
-    }
-    return 0;
   }
 
   @Override
@@ -40,20 +35,24 @@ public class ExecuteScriptCommand implements Command, ShellInfo {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     if (shell == null) {
-      return;
+      throw new NullPointerException("Shell не может быть null.");
     }
-    if (validateParams(params) != 0) {
-      log.writeln("[ERROR] Неправильный формат ввода параметров команды.");
-      return;
-    }
+    Optional<String> params = shell.getInput().readToken();
+    shell.getInput().skipLine();
     if (shell.getStackSize() <= this.stack.size()) {
       log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
       return;
     }
     FileDescriptor file = fd.duplicate();
-    file.setPath(params[0]);
+    try {
+      file.setPath(params.get());
+    } catch (InvalidPathException e) {
+      log.writeln("[ERROR] Неправильный формат ввода параметров команды.");
+      return;
+    }
+    
     IOStatus code = file.openIn();
     if (code.equals(IOStatus.FAILURE)) {
       log.writeln("[ERROR] Не удалось обратиться к файлу со скриптом.");

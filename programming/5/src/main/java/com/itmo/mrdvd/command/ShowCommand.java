@@ -1,21 +1,20 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.object.Ticket;
 
-public class ShowCommand implements Command {
-  private final TicketCollection collection;
+public class ShowCommand<T> implements Command {
+  private final Collection<T, ?> collection;
   private final OutputDevice out;
 
-  public ShowCommand(TicketCollection collect, OutputDevice out) {
+  public ShowCommand(Collection<T, ?> collect, OutputDevice out) {
     this.collection = collect;
     this.out = out;
   }
 
   @Override
-  public void execute(String[] params) {
-    for (Ticket ticket : collection) {
+  public void execute() {
+    for (T ticket : collection) {
       out.writeln(ticket.toString());
     }
     out.writeln("[INFO] Конец коллекции.");

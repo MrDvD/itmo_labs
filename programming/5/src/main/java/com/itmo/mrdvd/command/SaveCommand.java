@@ -2,21 +2,21 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 
-public class SaveCommand implements Command {
-  private final TicketCollection collection;
-  private final Serializer<TicketCollection> serial;
+public class SaveCommand<T, U> implements Command {
+  private final Collection<T, U> collection;
+  private final Serializer<Collection<T, U>> serial;
   private final OutputDevice log;
   private final FileDescriptor file;
 
   public SaveCommand(
-      TicketCollection collect,
-      Serializer<TicketCollection> serial,
+      Collection<T, U> collect,
+      Serializer<Collection<T, U>> serial,
       FileDescriptor file,
       OutputDevice log) {
     this.collection = collect;
@@ -26,7 +26,7 @@ public class SaveCommand implements Command {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     Optional<String> result = serial.serialize(collection);
     if (result.isEmpty()) {
       log.writeln("[ERROR] Ошибка сериализации коллекции.");

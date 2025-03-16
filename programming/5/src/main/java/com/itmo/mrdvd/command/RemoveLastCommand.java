@@ -1,19 +1,21 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import java.util.List;
+
+import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class RemoveLastCommand implements Command {
-  private final TicketCollection collection;
+public class RemoveLastCommand<T> implements Command {
+  private final CollectionWorker<T, List<T>> collection;
   private final OutputDevice out;
 
-  public RemoveLastCommand(TicketCollection collect, OutputDevice out) {
+  public RemoveLastCommand(CollectionWorker<T, List<T>> collect, OutputDevice out) {
     this.collection = collect;
     this.out = out;
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
    try {
       collection.getCollection().remove(collection.getCollection().size() - 1);   
    } catch (IndexOutOfBoundsException e) {

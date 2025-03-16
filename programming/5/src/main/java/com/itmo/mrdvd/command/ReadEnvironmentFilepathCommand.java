@@ -15,7 +15,7 @@ public class ReadEnvironmentFilepathCommand implements Command {
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
     String filePath = System.getenv(envName);
     if (filePath != null) {
       file.setPath(filePath);

@@ -9,6 +9,7 @@ import java.util.Optional;
 import com.itmo.mrdvd.builder.CoordinatesBuilder;
 import com.itmo.mrdvd.builder.EventBuilder;
 import com.itmo.mrdvd.builder.TicketBuilder;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
@@ -19,7 +20,6 @@ import com.itmo.mrdvd.command.ExecuteScriptCommand;
 import com.itmo.mrdvd.command.ExitCommand;
 import com.itmo.mrdvd.command.HelpCommand;
 import com.itmo.mrdvd.command.InfoCommand;
-import com.itmo.mrdvd.command.LoadCommand;
 import com.itmo.mrdvd.command.MinByPriceCommand;
 import com.itmo.mrdvd.command.PrintFieldDescendingTypeCommand;
 import com.itmo.mrdvd.command.ReadEnvironmentFilepathCommand;
@@ -27,14 +27,15 @@ import com.itmo.mrdvd.command.RemoveAtCommand;
 import com.itmo.mrdvd.command.RemoveByIdCommand;
 import com.itmo.mrdvd.command.RemoveLastCommand;
 import com.itmo.mrdvd.command.SaveCommand;
-import com.itmo.mrdvd.command.ShellInfo;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
+import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
 public class TicketShell extends Shell<Map<String, Command>, List<Command>, InteractiveDataInputDevice> {
@@ -70,7 +71,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
     if (getCommands().containsKey(cmd.name())) {
       return Optional.empty();
     }
-    if (cmd instanceof ShellInfo shellCmd) {
+    if (cmd instanceof ShellCommand shellCmd) {
       shellCmd.setShell(this);
     }
     if (preExec) {
@@ -80,24 +81,24 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
     return Optional.of(cmd);
   }
 
-  public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<TicketCollection> serial, Deserializer<TicketCollection> deserial) {
+  public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<Collection<Ticket,List<Ticket>>> serial, Deserializer<Collection<Ticket,List<Ticket>>> deserial) {
     addCommand(new AddCommand<>(collection, new TicketBuilder(new CoordinatesBuilder(getInput(), getOutput()), new EventBuilder(getInput(), getInput(), getOutput()), getInput(), getInput(), getInput(), getOutput()), getInput(), getOutput()) );
     addCommand(new HelpCommand(getOutput()));
     addCommand(new ExitCommand());
     addCommand(new UpdateCommand(collection, getInput(), getOutput()));
     addCommand(new ClearCommand(collection, getOutput()));
-    addCommand(new RemoveByIdCommand(collection, getOutput()));
-    addCommand(new RemoveAtCommand(collection, getOutput()));
-    addCommand(new RemoveLastCommand(collection, getOutput()));
-    addCommand(new ShowCommand(collection, getOutput()));
+    addCommand(new RemoveByIdCommand(collection, getInput(), getOutput()));
+    addCommand(new RemoveAtCommand<>(collection, getInput(), getOutput()));
+    addCommand(new RemoveLastCommand<>(collection, getOutput()));
+    addCommand(new ShowCommand<>(collection, getOutput()));
    //  addCommand(new AddIfMaxCommand(collection, new TicketComparator(TicketField.ID), getInput(), getOutput()));
-    addCommand(new MinByPriceCommand(collection, new TicketComparator(TicketField.PRICE), getOutput()));
-    addCommand(new PrintFieldDescendingTypeCommand(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));
-    addCommand(new CountGreaterThanEventCommand(collection, getOutput()));
+    addCommand(new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE), getOutput()));
+    addCommand(new PrintFieldDescendingTypeCommand<>(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));
+    addCommand(new CountGreaterThanEventCommand(collection, getInput(), getOutput()));
     addCommand(
         new ReadEnvironmentFilepathCommand(envName, fd, getOutput()), true);
-    addCommand(new LoadCommand(fd, collection, deserial, getOutput()), true);
-    addCommand(new SaveCommand(collection, serial, fd, getOutput()));
+   //  addCommand(new LoadCommand<>(fd, collection, deserial, getOutput()), true);
+    addCommand(new SaveCommand<>(collection, serial, fd, getOutput()));
     addCommand(new ExecuteScriptCommand(getOutput(), fd));
     addCommand(new InfoCommand(collection, getOutput()));
   }
@@ -110,21 +111,16 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
   @Override
   public void open() {
     for (Command cmd : getPreExecute()) {
-      cmd.execute(null);
+      cmd.execute();
     }
     this.isOpen = true;
     while (this.isOpen) {
-      Optional<String> strCmd = getInput().read("> ");
-      if (strCmd.isPresent()) {
-         ProcessingStatus status = processCommandLine(strCmd.get());
-         if (status.equals(ProcessingStatus.CMD_NOT_FOUND)) {
-         getOutput()
-               .writeln(
-                  String.format(
-                     "[ERROR] Не существует команды \"%s\".", getParser().parse(strCmd.get()).get().cmd()));
+      getInput().write("> ");
+         Optional<Command> cmd = processCommandLine();
+         if (cmd.isEmpty()) {
+            getOutput().writeln("[ERROR] Команда не найдена: введите 'help' для просмотра списка доступных команд.");
          }
       }
-    }
   }
 
   @Override

@@ -1,30 +1,30 @@
 package com.itmo.mrdvd.command;
 
 import java.util.Comparator;
+import java.util.List;
 
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.object.Ticket;
 
-public class PrintFieldDescendingTypeCommand implements Command {
-  private final TicketCollection collection;
+public class PrintFieldDescendingTypeCommand<T> implements Command {
+  private final Collection<T, List<T>> collection;
   private final OutputDevice out;
-  private final Comparator<Ticket> comparator;
+  private final Comparator<T> comparator;
 
-  public PrintFieldDescendingTypeCommand(TicketCollection collect, Comparator<Ticket> comparator, OutputDevice out) {
+  public PrintFieldDescendingTypeCommand(Collection<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
     this.collection = collect;
     this.out = out;
     this.comparator = comparator;
   }
 
   @Override
-  public void execute(String[] params) {
+  public void execute() {
    collection.getCollection().sort(comparator);
     if (collection.getCollection().isEmpty()) {
       out.writeln("[INFO] Коллекция пуста.");
     } else {
-      for (Ticket ticket : collection) {
-        out.writeln(ticket.toString());
+      for (T obj : collection) {
+        out.writeln(obj.toString());
       }
     }
   }

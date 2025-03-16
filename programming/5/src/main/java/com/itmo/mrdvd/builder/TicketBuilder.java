@@ -36,12 +36,12 @@ public class TicketBuilder extends InteractiveBuilder<Ticket> {
       addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", inFloat::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveBuilder(coordBuild);
       attr(Ticket::setCreationDate, creationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
-      addInteractiveSetter(Ticket::setPrice, Integer.class, new UserInteractor<Integer>("Стоимость билета", inInt::readInt, "[ERROR] Неправильный формат ввода: введите натуральное число.", "в у.е."), TicketValidator::validatePrice);
+      addInteractiveSetter(Ticket::setPrice, Integer.class, new UserInteractor<Integer>("Стоимость билета", () -> { Optional<Integer> in = inInt.readInt(); inInt.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: введите натуральное число.", "в у.е."), TicketValidator::validatePrice);
       String[] options = new String[TicketType.values().length];
       for (int i = 0; i < TicketType.values().length; i++) {
         options[i] = TicketType.values()[i].toString();
       }
-      addInteractiveSetter(Ticket::setType, TicketType.class, new UserInteractor<Enum<TicketType>>("Тип билета", () -> inEnum.readEnum(TicketType.class), "[ERROR] Неправильный формат ввода: указанный тип билета не найден.", List.of(options)), TicketValidator::validateType);
+      addInteractiveSetter(Ticket::setType, TicketType.class, new UserInteractor<Enum<TicketType>>("Тип билета", () -> { Optional<Enum<TicketType>> in = inEnum.readEnum(TicketType.class); inEnum.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: указанный тип билета не найден.", List.of(options)), TicketValidator::validateType);
       addInteractiveBuilder(eventBuild);
     }
 

@@ -45,15 +45,6 @@ public abstract class Builder<T> {
       return ProcessStatus.SUCCESS;
    }
 
-   public boolean isValid() {
-      for (int i = 0; i < setters.size(); i++) {
-         if (validators.get(i) != null && !validators.get(i).testRaw(objects.get(i))) {
-            return false;
-         }
-      }
-      return true;
-   }
-
    public Optional<T> build() {
       for (int i = 0; i < setters.size(); i++) {
          if (processSetter(i).equals(ProcessStatus.FAILURE)) {
