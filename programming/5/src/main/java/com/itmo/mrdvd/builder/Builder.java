@@ -6,6 +6,9 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+
 public abstract class Builder<T> {
    protected final List<TypedBiConsumer<T,?>> setters;
    protected final List<Object> objects;

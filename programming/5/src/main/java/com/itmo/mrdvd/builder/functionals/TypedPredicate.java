@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.functionals;
 
 import java.util.function.Predicate;
 

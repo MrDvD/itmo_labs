@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.functionals.IndexedFunction;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;

@@ -7,6 +7,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.itmo.mrdvd.builder.functionals.IndexedFunction;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public abstract class InteractiveBuilder<T> extends Builder<T> {

@@ -17,9 +17,11 @@ import com.itmo.mrdvd.shell.TicketShell;
 
 /*
  * TODO:
- * 1. Update UpdateCommand (with Optionals)
+ * 1. Update UpdateCommand (with Builder) https://tinyurl.com/mvpjps93
  * 2. Check FileIO
  * 3. Check execution of scripts
+ * 4. Fix a bug with processBuilder function: add setter for builded object and treat it
+ * 5. Try to redirect commands from executeScript to shell's inputdevice
  */
 
 public class Main {
