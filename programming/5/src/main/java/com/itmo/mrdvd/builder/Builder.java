@@ -37,17 +37,17 @@ public abstract class Builder<T> {
       return this;
    }
 
-   protected boolean processSetter(int index) {
+   protected ProcessStatus processSetter(int index) {
       if (validators.get(index) != null && !validators.get(index).testRaw(objects.get(index))) {
-         return false;
+         return ProcessStatus.FAILURE;
       }
       setters.get(index).acceptRaw(rawObject, objects.get(index));
-      return true;
+      return ProcessStatus.SUCCESS;
    } 
 
    public Optional<T> build() {
       for (int i = 0; i < setters.size(); i++) {
-         if (!processSetter(i)) {
+         if (processSetter(i).equals(ProcessStatus.FAILURE)) {
             return Optional.empty();
          }
       }

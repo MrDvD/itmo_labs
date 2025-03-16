@@ -24,13 +24,13 @@ public class EventBuilder extends InteractiveBuilder<Event> {
   }
 
   private void initSetters(FloatInputDevice inFloat, EnumInputDevice inEnum) {
-      addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", inFloat::read), EventValidator::validateName);
-      addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", inFloat::read), EventValidator::validateDescription);
+      addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", inFloat::read, "[ERROR] Неправильный формат ввода: имя не должно быть пустым."), EventValidator::validateName);
+      addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", inFloat::read, "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."), EventValidator::validateDescription);
       String[] options = new String[EventType.values().length];
       for (int i = 0; i < EventType.values().length; i++) {
         options[i] = EventType.values()[i].toString();
       }
-      addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> inEnum.readEnum(EventType.class), List.of(options)), EventValidator::validateType);
+      addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> inEnum.readEnum(EventType.class), "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.", List.of(options)), EventValidator::validateType);
     }
 
   public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
@@ -38,7 +38,7 @@ public class EventBuilder extends InteractiveBuilder<Event> {
     initSetters(inFloat, inEnum);
   }
 
-  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
     super(new Event(), out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat, inEnum);
   }

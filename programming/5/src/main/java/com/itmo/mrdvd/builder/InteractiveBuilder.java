@@ -12,31 +12,32 @@ import com.itmo.mrdvd.device.OutputDevice;
 public abstract class InteractiveBuilder<T> extends Builder<T> {
    private final List<UserInteractor<?>> interactors;
    private final List<InteractiveBuilder<?>> builders;
-   private final List<IndexedFunction<Boolean>> methods;
+   private final List<IndexedFunction<ProcessStatus>> methods;
    private final OutputDevice out;
 
    protected class UserInteractor<U> {
       private final String attributeName;
       private final Supplier<Optional<U>> inMethod;
       private final Optional<List<String>> options;
-      
+      private final String error;
       private final Optional<String> comment;
 
-      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod) {
-         this(attributeName, inMethod, null, null);
+      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String error) {
+         this(attributeName, inMethod, error, null, null);
       }
 
-      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String comment) {
-         this(attributeName, inMethod, null, comment);
+      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String error, String comment) {
+         this(attributeName, inMethod, error, null, comment);
       }
 
-      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, List<String> options) {
-         this(attributeName, inMethod, options, null);
+      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String error, List<String> options) {
+         this(attributeName, inMethod, error, options, null);
       }
    
-      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, List<String> options, String comment) {
+      protected UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String error, List<String> options, String comment) {
          this.attributeName = attributeName;
          this.inMethod = inMethod;
+         this.error = error;
          this.options = Optional.ofNullable(options);
          this.comment = Optional.ofNullable(comment);
       }
@@ -52,13 +53,17 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       protected Optional<String> comment() {
          return this.comment;
       }
+
+      protected String error() {
+         return this.error;
+      }
    }
 
    public InteractiveBuilder(T rawObject, OutputDevice out) {
       this(rawObject, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveBuilder(T rawObject, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+   public InteractiveBuilder(T rawObject, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
       super(rawObject, setters, objects, validators);
       this.out = out;
       this.interactors = interactors;
@@ -100,12 +105,12 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       return this;
    }
 
-   protected boolean processBuilder(int index) {
-      return builders.get(index).interactiveBuild().isPresent();
+   protected ProcessStatus processBuilder(int index) {
+      return builders.get(index).interactiveBuild().isPresent() ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
    }
 
    @Override
-   protected boolean processSetter(int index) {
+   protected ProcessStatus processSetter(int index) {
       UserInteractor<?> inter = interactors.get(index);
       if (inter == null) {
          return super.processSetter(index);
@@ -129,16 +134,15 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       if (result.isPresent() && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
          setters.get(index).acceptRaw(rawObject, result.get());
       } else {
-         return false;
+         out.writeln(inter.error());
+         return ProcessStatus.FAILURE;
       }
-      return true;
+      return ProcessStatus.SUCCESS;
    }
    
    public Optional<T> interactiveBuild() {
       for (int i = 0; i < methods.size(); i++) {
-         if (!methods.get(i).apply(methods.get(i).index())) {
-            return Optional.empty();
-         }
+         while (methods.get(i).apply(methods.get(i).index()).equals(ProcessStatus.FAILURE)) {}
       }
       return Optional.of(rawObject);
    }

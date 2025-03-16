@@ -18,15 +18,15 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
     }
 
     private void initSetters(FloatInputDevice inFloat) {
-      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", inFloat::readFloat), CoordinatesValidator::validateX);
-      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", inFloat::readFloat), CoordinatesValidator::validateY);
+      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", inFloat::readFloat, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
+      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", inFloat::readFloat, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
     }
 
    public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out) {
     super(new Coordinates(), out);
     initSetters(inFloat);
    }
-   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<Boolean>> methods) {
+   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
     super(new Coordinates(), out, interactors, setters, objects, validators, builders, methods);
     initSetters(inFloat);
    }
