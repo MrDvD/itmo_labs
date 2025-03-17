@@ -1,0 +1,48 @@
+         ORG   0x2DD
+START:   CLA
+         ST    Ax
+         LD    Xx
+         PUSH
+         CALL  $FUNC
+         POP
+         ADD   Ax
+         ST    Ax
+         LD    Yx
+         DEC
+         PUSH
+         CALL  $FUNC
+         POP
+         INC
+         ADD   Ax
+         ST    Ax
+         LD    Zx
+         DEC
+         PUSH
+         CALL  0x685
+         POP
+         DEC
+         ADD   Ax
+         ST    Ax
+         HLT
+
+Zx:      WORD  0x5
+Yx:      WORD  0xFFD3
+Xx:      WORD  0xA6
+Ax:      WORD  0xF649
+
+         ORG   0x685
+FUNC:    LD    &1
+         BZS   FIR
+         BNC   SEC
+FIR:     SUB   Sx
+         BNS   TRD
+         JUMP  FFT
+TRD:     ADD   Sx
+SEC:     ADD   &0x1
+         ADD   Tx
+         JUMP  FTH
+FFT:     LD    Sx
+FTH:     ST    &1
+         RET
+Sx:      WORD  0xFCC3
+Tx:      WORD  0x0047
