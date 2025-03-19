@@ -3,13 +3,14 @@ package com.itmo.mrdvd.command;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 
-public class SaveCommand<T, U> implements Command {
+public class SaveCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;
   private final Serializer<Collection<T, U>> serial;
   private final OutputDevice log;

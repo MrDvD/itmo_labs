@@ -2,10 +2,12 @@ package com.itmo.mrdvd.builder.examples;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
+import com.itmo.mrdvd.builder.InteractiveUpdater;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
@@ -34,8 +36,8 @@ public class CoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
     super(out);
     init(in);
    }
-   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
-    super(out, interactors, setters, objects, methods, validators, builders);
+   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Coordinates,?>> getters, List<InteractiveUpdater<?>> updaters) {
+    super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
     init(in);
    }
 }

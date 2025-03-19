@@ -3,10 +3,11 @@ package com.itmo.mrdvd.command;
 import java.util.List;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class RemoveLastCommand<T> implements Command {
+public class RemoveLastCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
   private final OutputDevice out;
 

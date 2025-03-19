@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.IntInputDevice;
 
-public class RemoveAtCommand<T> implements CommandHasParams {
+public class RemoveAtCommand<T extends HavingId> implements CommandHasParams {
   private final CollectionWorker<T, List<T>> collection;
   private final IntInputDevice in;
   private final OutputDevice out;

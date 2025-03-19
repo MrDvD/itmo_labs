@@ -4,18 +4,18 @@ import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class ShowCommand<T> implements Command {
-  private final Collection<T, ?> collection;
+public class ShowCommand implements Command {
+  private final Collection<?, ?> collection;
   private final OutputDevice out;
 
-  public ShowCommand(Collection<T, ?> collect, OutputDevice out) {
+  public ShowCommand(Collection<?, ?> collect, OutputDevice out) {
     this.collection = collect;
     this.out = out;
   }
 
   @Override
   public void execute() {
-    for (T obj : collection) {
+    for (Object obj : collection) {
       out.writeln(obj.toString());
     }
     out.writeln("[INFO] Конец коллекции.");

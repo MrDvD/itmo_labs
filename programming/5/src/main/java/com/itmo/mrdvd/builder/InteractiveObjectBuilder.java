@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -11,9 +12,11 @@ import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveBuilder<T> {
+public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveUpdater<T> {
    private final List<Interactor<?>> interactors;
    private final List<InteractiveBuilder<?>> builders;
+   private final List<InteractiveUpdater<?>> updaters;
+   private final List<Function<T,?>> getters;
    private final OutputDevice out;
 
    public static class UserInteractor<U> implements Interactor<U> {
@@ -70,14 +73,16 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
    }
 
    public InteractiveObjectBuilder(OutputDevice out) {
-      this(out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+      this(out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveObjectBuilder(OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+   public InteractiveObjectBuilder(OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<T,?>> getters, List<InteractiveUpdater<?>> updaters) {
       super(setters, objects, methods, validators);
       this.out = out;
       this.interactors = interactors;
       this.builders = builders;
+      this.updaters = updaters;
+      this.getters = getters;
    }
 
    public <U> InteractiveObjectBuilder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?> inter) throws IllegalArgumentException {
@@ -97,43 +102,69 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       return this;
    }
 
+   public <U> InteractiveUpdater<T> addInteractiveSetter(BiConsumer<T, U> setter, Function<T,U> getter, Class<U> valueCls, Interactor<?> inter) throws IllegalArgumentException {
+      addInteractiveSetter(setter, valueCls, inter);
+      getters.set(getters.size() - 1, getter);
+      return this;
+   }
+
+   @Override
+   public <U> InteractiveUpdater<T> addInteractiveSetter(BiConsumer<T, U> setter, Function<T,U> getter, Class<U> valueCls, Interactor<?> inter, TypedPredicate<U> validator) throws IllegalArgumentException {
+      addInteractiveSetter(setter, valueCls, inter, validator);
+      getters.set(getters.size() - 1, getter);
+      return this;
+   }
+
    public <U> InteractiveObjectBuilder<T> addInteractiveBuilder(InteractiveBuilder<U> builder, BiConsumer<T, U> setter, Class<U> valueCls) throws IllegalArgumentException {
       return addInteractiveBuilder(builder, setter, valueCls, null);
    }
 
    @Override
    public <U> InteractiveObjectBuilder<T> addInteractiveBuilder(InteractiveBuilder<U> builder, BiConsumer<T, U> setter, Class<U> valueCls, TypedPredicate<U> validator) throws IllegalArgumentException {
-      if (setter == null) {
-         throw new IllegalArgumentException("Setter не может быть null.");
-      }
       attr(setter, null, valueCls, validator);
       builders.set(builders.size() - 1, builder);
       return this;
    }
 
-   @Override
-   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) {
-      return this.attrFromMethod(setter, method, valueCls, null);
+   public <U> InteractiveUpdater<T> addInteractiveUpdater(InteractiveUpdater<U> updater, BiConsumer<T, U> setter, Function<T,U> getter, Class<U> valueCls) throws IllegalArgumentException {
+      return addInteractiveUpdater(updater, setter, getter, valueCls, null);
    }
 
    @Override
-   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
-      super.attrFromMethod(setter, method, valueCls, validator);
-      interactors.add(null);
-      builders.add(null);
+   public <U> InteractiveUpdater<T> addInteractiveUpdater(InteractiveUpdater<U> updater, BiConsumer<T, U> setter, Function<T,U> getter, Class<U> valueCls, TypedPredicate<U> validator) throws IllegalArgumentException {
+      attr(setter, null, valueCls, validator);
+      getters.set(getters.size() - 1, getter);
+      updaters.set(updaters.size() - 1, updater);
       return this;
    }
 
    @Override
-   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
+   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) throws IllegalArgumentException {
+      return this.attrFromMethod(setter, method, valueCls, null);
+   }
+
+   @Override
+   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) throws IllegalArgumentException {
+      super.attrFromMethod(setter, method, valueCls, validator);
+      interactors.add(null);
+      builders.add(null);
+      getters.add(null);
+      updaters.add(null);
+      return this;
+   }
+
+   @Override
+   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) throws IllegalArgumentException {
       return this.attr(setter, value, valueCls, null);
    }
 
    @Override
-   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
+   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) throws IllegalArgumentException {
       super.attr(setter, value, valueCls, validator);
       interactors.add(null);
       builders.add(null);
+      getters.add(null);
+      updaters.add(null);
       return this;
    }
 
@@ -143,6 +174,8 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       Interactor<?> inter = null;
       if (builders.get(index) != null) {
          result = builders.get(index).build();
+      } else if (updaters.get(index) != null) {
+         result = updaters.get(index).update(getters.get(index).apply(rawObject));
       } else {
          inter = interactors.get(index);
          if (inter == null) {
@@ -161,6 +194,9 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
          if (inter.comment().isPresent()) {
             msg += String.format(" (%s)", inter.comment().get());
          }
+         if (getters.get(index) != null) {
+            msg += String.format(" [%s]", getters.get(index).apply(rawObject));
+         }
          msg += ": ";
          out.write(msg);
          result = inter.inMethod().get();
@@ -178,11 +214,7 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
    }
 
    @Override
-   public Optional<T> build() throws IllegalArgumentException {
-      if (newMethod == null) {
-         throw new IllegalArgumentException("Необходимо указать метод создания объекта.");
-      }
-      this.rawObject = newMethod.get();
+   protected Optional<T> getObject() {
       for (int i = 0; i < setters.size(); i++) {
          while (processSetter(i).equals(ProcessStatus.FAILURE)) {}
       }

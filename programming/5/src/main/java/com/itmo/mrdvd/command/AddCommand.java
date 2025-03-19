@@ -4,10 +4,11 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class AddCommand<T> implements Command {
+public class AddCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T,?> collect;
   protected final InteractiveBuilder<T> builder;
   protected final OutputDevice out;

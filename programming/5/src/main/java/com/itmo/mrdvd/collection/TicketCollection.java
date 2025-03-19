@@ -11,6 +11,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.builder.Builder;
+import com.itmo.mrdvd.builder.Updater;
 import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
@@ -159,14 +160,15 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> update(Long id, Ticket obj) {
-    if (obj.isValid()) {
-      for (int i = 0; i < tickets.size(); i++) {
-        Ticket ticket = tickets.get(i);
-        if (ticket.getId().equals(id)) {
-          tickets.set(i, obj);
-          return Optional.of(obj);
-        }
+  public Optional<Ticket> update(Long id, Updater<Ticket> updater) {
+   for (int i = 0; i < tickets.size(); i++) {
+      Ticket ticket = tickets.get(i);
+      if (ticket.getId().equals(id)) {
+         Optional<Ticket> obj = updater.update(ticket);
+         if (obj.isPresent()) {
+            tickets.set(i, obj.get());
+            return obj;  
+         }
       }
    }
     return Optional.empty();

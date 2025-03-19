@@ -6,8 +6,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.itmo.mrdvd.builder.examples.CoordinatesBuilder;
+import com.itmo.mrdvd.builder.examples.CoordinatesUpdater;
 import com.itmo.mrdvd.builder.examples.EventBuilder;
+import com.itmo.mrdvd.builder.examples.EventUpdater;
 import com.itmo.mrdvd.builder.examples.TicketBuilder;
+import com.itmo.mrdvd.builder.examples.TicketUpdater;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
@@ -63,12 +66,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
     addCommand(new AddCommand<>(collection, new TicketBuilder(new CoordinatesBuilder(getInput(), getOutput()), new EventBuilder(getInput(), getOutput()), getInput(), getOutput()), getOutput()));
     addCommand(new HelpCommand(getOutput()));
     addCommand(new ExitCommand());
-    addCommand(new UpdateCommand(collection, getInput(), getOutput()));
+    addCommand(new UpdateCommand<>(collection, new TicketUpdater(new CoordinatesUpdater(getInput(), getOutput()), new EventUpdater(getInput(), getOutput()), getInput(), getOutput()), getInput(), getOutput()));
     addCommand(new ClearCommand(collection, getOutput()));
     addCommand(new RemoveByIdCommand(collection, getInput(), getOutput()));
     addCommand(new RemoveAtCommand<>(collection, getInput(), getOutput()));
     addCommand(new RemoveLastCommand<>(collection, getOutput()));
-    addCommand(new ShowCommand<>(collection, getOutput()));
+    addCommand(new ShowCommand(collection, getOutput()));
    //  addCommand(new AddIfMaxCommand(collection, new TicketComparator(TicketField.ID), getInput(), getOutput()));
     addCommand(new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE), getOutput()));
     addCommand(new PrintFieldDescendingTypeCommand<>(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));

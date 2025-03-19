@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
-public class ObjectBuilder<T> implements Builder<T> {
+public class ObjectBuilder<T> implements Updater<T> {
    protected final List<TypedBiConsumer<T,?>> setters;
    protected final List<Object> objects;
    protected final List<Supplier<?>> methods;
@@ -78,17 +78,26 @@ public class ObjectBuilder<T> implements Builder<T> {
       return ProcessStatus.SUCCESS;
    }
 
-   @Override
-   public Optional<T> build() throws IllegalArgumentException {
-      if (newMethod == null) {
-         throw new IllegalArgumentException("Необходимо указать метод создания объекта.");
-      }
-      this.rawObject = newMethod.get();
+   protected Optional<T> getObject() {
       for (int i = 0; i < setters.size(); i++) {
          if (processSetter(i).equals(ProcessStatus.FAILURE)) {
             return Optional.empty();
          }
       }
       return Optional.of(rawObject);
+   }
+
+   @Override
+   public Optional<T> build() throws IllegalArgumentException {
+      return update(newMethod.get());
+   }
+
+   @Override
+   public Optional<T> update(T rawObject) throws IllegalArgumentException {
+      if (rawObject == null) {
+         throw new IllegalArgumentException("Объект не может быть null.");
+      }
+      this.rawObject = rawObject;
+      return getObject();
    }
 }

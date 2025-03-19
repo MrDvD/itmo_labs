@@ -6,11 +6,12 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
-public class AddIfMaxCommand<T> implements Command {
+public class AddIfMaxCommand<T extends HavingId> implements Command {
    protected final CollectionWorker<T,List<T>> collect;
    protected final InteractiveBuilder<T> builder;
    protected final OutputDevice out;

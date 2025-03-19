@@ -4,10 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class PrintFieldDescendingTypeCommand<T> implements Command {
+public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Command {
   private final Collection<T, List<T>> collection;
   private final OutputDevice out;
   private final Comparator<T> comparator;

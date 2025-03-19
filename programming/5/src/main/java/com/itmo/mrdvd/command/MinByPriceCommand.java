@@ -4,10 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
-public class MinByPriceCommand<T> implements Command {
+public class MinByPriceCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
   private final OutputDevice out;
   private final Comparator<T> comparator;

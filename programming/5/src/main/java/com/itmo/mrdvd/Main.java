@@ -20,15 +20,15 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 1. Update UpdateCommand (with Builder) https://tinyurl.com/mvpjps93:
  *    - update(Object obj): provides raw object with prefilled fields to update
  *    - check*(obj::getterMethod): which field to check
- *    - this all is inherited by UpdatableBuilder
- *    - make interfaces for updatablebuilder
  * 2. Check FileIO
  * 3. Check execution of scripts
  * 4. Try to redirect commands from executeScript to shell's inputdevice
  *    - check out System.setIn() method
  *    - check out Obsidian's notes and screenshots
- * 5. Ideally, TicketShell should be splitted from DataShell (create a new class)
- * 6. Ideallym rename unrelated classes without Ticket prefix
+ * 5. Add some kind of criteria param to the add() function in CollectionWorker
+ * 6. Ideally, TicketShell should be splitted from DataShell (create a new class)
+ * 7. Ideallym rename unrelated classes without Ticket prefix
+ * 8. Move validators to separate classes instead of inner classes (they are duplicated now)
  */
 
 public class Main {
