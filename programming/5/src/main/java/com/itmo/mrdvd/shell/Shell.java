@@ -2,7 +2,7 @@ package com.itmo.mrdvd.shell;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
@@ -12,14 +12,12 @@ public abstract class Shell<T,S,U extends InteractiveDataInputDevice> implements
    private final S preExecute;
    private final U in;
    private final OutputDevice out;
-   private final ShellParser parser;
    private int stackSize;
 
-   public Shell(U in, OutputDevice out, T commands, S preExecute, ShellParser parser) {
+   public Shell(U in, OutputDevice out, T commands, S preExecute) {
       this.in = in;
       this.out = out;
       this.commands = commands;
-      this.parser = parser;
       this.preExecute = preExecute;
       this.stackSize = 256;
    }
@@ -50,10 +48,6 @@ public abstract class Shell<T,S,U extends InteractiveDataInputDevice> implements
   public abstract Optional<Command> addCommand(Command cmd);
 
   public abstract Optional<Command> getCommand(String str);
-
-  public ShellParser getParser() {
-   return this.parser;
-  }
 
   public Optional<Command> processCommandLine() {
    Optional<String> cmdName = getInput().readToken();

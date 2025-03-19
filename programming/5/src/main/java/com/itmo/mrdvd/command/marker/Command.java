@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.command.marker;
 
 public interface Command {
   public void execute();

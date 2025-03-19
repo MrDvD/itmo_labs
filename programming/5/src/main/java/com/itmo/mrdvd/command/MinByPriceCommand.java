@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class MinByPriceCommand<T> implements Command {

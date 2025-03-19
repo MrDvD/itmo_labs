@@ -1,6 +1,7 @@
 package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class ShowCommand<T> implements Command {

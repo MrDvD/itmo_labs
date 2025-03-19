@@ -1,13 +1,13 @@
 package com.itmo.mrdvd.builder;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.itmo.mrdvd.builder.functionals.IndexedFunction;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
@@ -26,23 +26,23 @@ public class EventBuilder extends InteractiveBuilder<Event> {
     }
   }
 
-  private void initSetters(FloatInputDevice inFloat, EnumInputDevice inEnum) {
-      addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", inFloat::read, "[ERROR] Неправильный формат ввода: имя не должно быть пустым."), EventValidator::validateName);
-      addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", inFloat::read, "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."), EventValidator::validateDescription);
+  private void initSetters(EnumInputDevice in) {
+      addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", in::read, "[ERROR] Неправильный формат ввода: имя не должно быть пустым."), EventValidator::validateName);
+      addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", in::read, "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."), EventValidator::validateDescription);
       String[] options = new String[EventType.values().length];
       for (int i = 0; i < EventType.values().length; i++) {
         options[i] = EventType.values()[i].toString();
       }
-      addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> inEnum.readEnum(EventType.class), "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.", List.of(options)), EventValidator::validateType);
+      addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> { Optional<Enum<EventType>> result = in.readEnum(EventType.class); in.skipLine(); return result;}, "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.", List.of(options)), EventValidator::validateType);
     }
 
-  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
+  public EventBuilder(EnumInputDevice in, OutputDevice out) {
     super(new Event(), out);
-    initSetters(inFloat, inEnum);
+    initSetters(in);
   }
 
-  public EventBuilder(FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
+  public EventBuilder(EnumInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
     super(new Event(), out, interactors, setters, objects, validators, builders, methods);
-    initSetters(inFloat, inEnum);
+    initSetters(in);
   }
 }

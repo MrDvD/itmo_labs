@@ -21,17 +21,17 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
       }
     }
 
-    private void initSetters(FloatInputDevice inFloat) {
-      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", () -> { Optional<Float> in = inFloat.readFloat(); inFloat.skipLine(); return in; } , "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
-      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", () -> { Optional<Float> in = inFloat.readFloat(); inFloat.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
+    private void initSetters(FloatInputDevice in) {
+      addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; } , "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
+      addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
     }
 
-   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out) {
+   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out) {
     super(new Coordinates(), out);
-    initSetters(inFloat);
+    initSetters(in);
    }
-   public CoordinatesBuilder(FloatInputDevice inFloat, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
+   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
     super(new Coordinates(), out, interactors, setters, objects, validators, builders, methods);
-    initSetters(inFloat);
+    initSetters(in);
    }
 }

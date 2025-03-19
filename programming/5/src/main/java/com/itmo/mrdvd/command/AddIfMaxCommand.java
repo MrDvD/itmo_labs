@@ -6,21 +6,19 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 
 public class AddIfMaxCommand<T> implements Command {
    protected final CollectionWorker<T,List<T>> collect;
-   protected final InteractiveInputDevice in;
    protected final InteractiveBuilder<T> builder;
    protected final OutputDevice out;
    private final Comparator<T> comparator;
 
-  public AddIfMaxCommand(CollectionWorker<T,List<T>> collection, InteractiveBuilder<T> builder, Comparator<T> comparator, InteractiveInputDevice in, OutputDevice out) {
+  public AddIfMaxCommand(CollectionWorker<T,List<T>> collection, InteractiveBuilder<T> builder, Comparator<T> comparator, OutputDevice out) {
    this.collect = collection;
    this.builder = builder;
-   this.in = in;
    this.out = out; 
    this.comparator = comparator;
   }

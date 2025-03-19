@@ -9,7 +9,6 @@ import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.device.input.IntInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
@@ -35,27 +34,27 @@ public class TicketBuilder extends InteractiveBuilder<Ticket> {
       }
     }
 
-    private void initSetters(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum) {
-      addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", inFloat::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
+    private <T extends IntInputDevice & EnumInputDevice> void initSetters(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in) {
+      addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", in::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveBuilder(coordBuild);
       attr(Ticket::setCreationDate, creationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
-      addInteractiveSetter(Ticket::setPrice, Integer.class, new UserInteractor<Integer>("Стоимость билета", () -> { Optional<Integer> in = inInt.readInt(); inInt.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: введите натуральное число.", "в у.е."), TicketValidator::validatePrice);
+      addInteractiveSetter(Ticket::setPrice, Integer.class, new UserInteractor<Integer>("Стоимость билета", () -> { Optional<Integer> res = in.readInt(); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: введите натуральное число.", "в у.е."), TicketValidator::validatePrice);
       String[] options = new String[TicketType.values().length];
       for (int i = 0; i < TicketType.values().length; i++) {
         options[i] = TicketType.values()[i].toString();
       }
-      addInteractiveSetter(Ticket::setType, TicketType.class, new UserInteractor<Enum<TicketType>>("Тип билета", () -> { Optional<Enum<TicketType>> in = inEnum.readEnum(TicketType.class); inEnum.skipLine(); return in; }, "[ERROR] Неправильный формат ввода: указанный тип билета не найден.", List.of(options)), TicketValidator::validateType);
+      addInteractiveSetter(Ticket::setType, TicketType.class, new UserInteractor<Enum<TicketType>>("Тип билета", () -> { Optional<Enum<TicketType>> res = in.readEnum(TicketType.class); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: указанный тип билета не найден.", List.of(options)), TicketValidator::validateType);
       addInteractiveBuilder(eventBuild);
     }
 
-   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out) {
+   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out) {
       super(new Ticket(), out);
-      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum);
+      initSetters(coordBuild, eventBuild, in);
    }
    
-   public TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, IntInputDevice inInt, FloatInputDevice inFloat, EnumInputDevice inEnum, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
+   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
       super(new Ticket(), out, interactors, setters, objects, validators, builders, methods);
-      initSetters(coordBuild, eventBuild, inInt, inFloat, inEnum);
+      initSetters(coordBuild, eventBuild, in);
    }
 
    public Optional<Ticket> build(LocalDateTime creationDate) {

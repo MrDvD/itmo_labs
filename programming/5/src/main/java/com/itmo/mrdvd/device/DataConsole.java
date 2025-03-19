@@ -2,10 +2,12 @@ package com.itmo.mrdvd.device;
 
 import java.util.Optional;
 
-public class TicketConsole extends Console {
+import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+
+public class DataConsole extends Console implements InteractiveDataInputDevice {
    @Override
-   public TicketConsole init() {
-      return (TicketConsole) super.init();
+   public DataConsole init() {
+      return (DataConsole) super.init();
    }
    
    @Override

@@ -5,9 +5,9 @@ import java.io.OutputStreamWriter;
 import java.util.Optional;
 import java.util.Scanner;
 
-import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
-public abstract class Console extends InteractiveDataInputDevice {
+public abstract class Console implements InteractiveInputDevice {
   private Scanner in;
   private OutputStreamWriter out;
 

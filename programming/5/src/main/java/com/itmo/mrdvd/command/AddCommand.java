@@ -4,19 +4,17 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
 public class AddCommand<T> implements Command {
   protected final CollectionWorker<T,?> collect;
-  protected final InteractiveInputDevice in;
   protected final InteractiveBuilder<T> builder;
   protected final OutputDevice out;
 
-  public AddCommand(CollectionWorker<T,?> collection, InteractiveBuilder<T> builder, InteractiveInputDevice in, OutputDevice out) {
+  public AddCommand(CollectionWorker<T,?> collection, InteractiveBuilder<T> builder, OutputDevice out) {
     this.collect = collection;
     this.builder = builder;
-    this.in = in;
     this.out = out;
   }
 

@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.ClearCommand;
-import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.CountGreaterThanEventCommand;
 import com.itmo.mrdvd.command.ExecuteScriptCommand;
 import com.itmo.mrdvd.command.ExitCommand;
@@ -29,6 +27,7 @@ import com.itmo.mrdvd.command.RemoveLastCommand;
 import com.itmo.mrdvd.command.SaveCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.FileDescriptor;
@@ -42,29 +41,8 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
   private boolean isOpen;
 
   public TicketShell(InteractiveDataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
-   this(in, out, commands, preExecute, new TShellParser()); 
-  }
-
-  public TicketShell(InteractiveDataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute, ShellParser parser) {
-   super(in, out, commands, preExecute, parser); 
+    super(in, out, commands, preExecute); 
     this.isOpen = false;
-  }
-
-  public static class TShellParser implements ShellParser {
-   public static class TShellQuery extends ShellQuery {
-      public TShellQuery(String cmd, String[] params) {
-         super(cmd, params);
-      }
-     }
-   @Override
-    public Optional<ShellQuery> parse(String line) {
-      if (line == null || line.isBlank()) {
-        return Optional.empty();
-      }
-      String[] keys = line.split(" ");
-      ShellQuery rawCmd = new TShellQuery(keys[0], Arrays.copyOfRange(keys, 1, keys.length));
-      return Optional.of(rawCmd);
-    }
   }
 
   public Optional<Command> addCommand(Command cmd, boolean preExec) {
@@ -82,7 +60,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
   }
 
   public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<Collection<Ticket,List<Ticket>>> serial, Deserializer<Collection<Ticket,List<Ticket>>> deserial) {
-    addCommand(new AddCommand<>(collection, new TicketBuilder(new CoordinatesBuilder(getInput(), getOutput()), new EventBuilder(getInput(), getInput(), getOutput()), getInput(), getInput(), getInput(), getOutput()), getInput(), getOutput()) );
+    addCommand(new AddCommand<>(collection, new TicketBuilder(new CoordinatesBuilder(getInput(), getOutput()), new EventBuilder(getInput(), getOutput()), getInput(), getOutput()), getOutput()));
     addCommand(new HelpCommand(getOutput()));
     addCommand(new ExitCommand());
     addCommand(new UpdateCommand(collection, getInput(), getOutput()));

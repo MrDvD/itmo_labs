@@ -3,6 +3,7 @@ package com.itmo.mrdvd.command;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
