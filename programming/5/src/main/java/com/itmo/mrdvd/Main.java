@@ -21,9 +21,7 @@ import com.itmo.mrdvd.shell.TicketShell;
  *    - update(Object obj): provides raw object with prefilled fields to update
  *    - check*(obj::getterMethod): which field to check
  *    - this all is inherited by UpdatableBuilder
- *    - make interfaces for builder, updatablebuilder, interactivebuilder
- *    - remove rawobject in ordinary builder (pass ::new instead)
- *    - BUG: Builder should be reusable (bc it initialized once in main)
+ *    - make interfaces for updatablebuilder
  * 2. Check FileIO
  * 3. Check execution of scripts
  * 4. Try to redirect commands from executeScript to shell's inputdevice

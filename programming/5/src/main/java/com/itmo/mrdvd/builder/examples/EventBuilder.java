@@ -2,6 +2,7 @@ package com.itmo.mrdvd.builder.examples;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
@@ -28,7 +29,8 @@ public class EventBuilder extends InteractiveObjectBuilder<Event> {
     }
   }
 
-  private void initSetters(EnumInputDevice in) {
+  private void init(EnumInputDevice in) {
+      of(Event::new);
       addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", in::read, "[ERROR] Неправильный формат ввода: имя не должно быть пустым."), EventValidator::validateName);
       addInteractiveSetter(Event::setDescription, String.class, new UserInteractor<String>("Описание мероприятия", in::read, "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."), EventValidator::validateDescription);
       String[] options = new String[EventType.values().length];
@@ -39,12 +41,12 @@ public class EventBuilder extends InteractiveObjectBuilder<Event> {
     }
 
   public EventBuilder(EnumInputDevice in, OutputDevice out) {
-    super(new Event(), out);
-    initSetters(in);
+    super(out);
+    init(in);
   }
 
-  public EventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
-    super(new Event(), out, interactors, setters, objects, validators, builders);
-    initSetters(in);
+  public EventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+    super(out, interactors, setters, objects, methods, validators, builders);
+    init(in);
   }
 }

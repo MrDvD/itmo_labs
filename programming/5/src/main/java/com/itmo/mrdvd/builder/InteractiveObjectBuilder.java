@@ -69,12 +69,12 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       }
    }
 
-   public InteractiveObjectBuilder(T rawObject, OutputDevice out) {
-      this(rawObject, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+   public InteractiveObjectBuilder(OutputDevice out) {
+      this(out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveObjectBuilder(T rawObject, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
-      super(rawObject, setters, objects, validators);
+   public InteractiveObjectBuilder(OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+      super(setters, objects, methods, validators);
       this.out = out;
       this.interactors = interactors;
       this.builders = builders;
@@ -107,17 +107,26 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
          throw new IllegalArgumentException("Setter не может быть null.");
       }
       attr(setter, null, valueCls, validator);
-      validators.get(0);
       builders.set(builders.size() - 1, builder);
       return this;
    }
 
    @Override
-   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
-      super.attr(setter, value, valueCls);
+   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) {
+      return this.attrFromMethod(setter, method, valueCls, null);
+   }
+
+   @Override
+   public <U> InteractiveObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
+      super.attrFromMethod(setter, method, valueCls, validator);
       interactors.add(null);
       builders.add(null);
       return this;
+   }
+
+   @Override
+   public <U> InteractiveObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
+      return this.attr(setter, value, valueCls, null);
    }
 
    @Override
@@ -156,6 +165,9 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
          out.write(msg);
          result = inter.inMethod().get();
       }
+      if (methods.get(index) != null) {
+         objects.set(index, methods.get(index).get());
+      }
       if (result.isPresent() && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
          setters.get(index).acceptRaw(rawObject, result.get());
       } else {
@@ -164,9 +176,13 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       }
       return ProcessStatus.SUCCESS;
    }
-   
+
    @Override
-   public Optional<T> build() {
+   public Optional<T> build() throws IllegalArgumentException {
+      if (newMethod == null) {
+         throw new IllegalArgumentException("Необходимо указать метод создания объекта.");
+      }
+      this.rawObject = newMethod.get();
       for (int i = 0; i < setters.size(); i++) {
          while (processSetter(i).equals(ProcessStatus.FAILURE)) {}
       }

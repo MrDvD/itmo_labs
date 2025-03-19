@@ -3,10 +3,10 @@ package com.itmo.mrdvd.builder.examples;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
-import com.itmo.mrdvd.builder.InteractiveObjectBuilder.UserInteractor;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
@@ -38,7 +38,8 @@ public class TicketBuilder extends InteractiveObjectBuilder<Ticket> {
       }
     }
 
-    private <T extends IntInputDevice & EnumInputDevice> void initSetters(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in) {
+    private <T extends IntInputDevice & EnumInputDevice> void init(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in) {
+      of(Ticket::new);
       addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", in::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveBuilder(coordBuild, Ticket::setCoordinates, Coordinates.class);
       addInteractiveSetter(Ticket::setPrice, Integer.class, new UserInteractor<Integer>("Стоимость билета", () -> { Optional<Integer> res = in.readInt(); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: введите натуральное число.", "в у.е."), TicketValidator::validatePrice);
@@ -48,25 +49,16 @@ public class TicketBuilder extends InteractiveObjectBuilder<Ticket> {
       }
       addInteractiveSetter(Ticket::setType, TicketType.class, new UserInteractor<Enum<TicketType>>("Тип билета", () -> { Optional<Enum<TicketType>> res = in.readEnum(TicketType.class); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: указанный тип билета не найден.", List.of(options)), TicketValidator::validateType);
       addInteractiveBuilder(eventBuild, Ticket::setEvent, Event.class);
+      attrFromMethod(Ticket::setCreationDate, LocalDateTime::now, LocalDateTime.class, TicketValidator::validateCreationDate);
     }
 
    public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out) {
-      super(new Ticket(), out);
-      initSetters(coordBuild, eventBuild, in);
+      super(out);
+      init(coordBuild, eventBuild, in);
    }
    
-   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
-      super(new Ticket(), out, interactors, setters, objects, validators, builders);
-      initSetters(coordBuild, eventBuild, in);
-   }
-
-   @Override
-   public Optional<Ticket> build() {
-      return build(LocalDateTime.now());
-   }
-
-   public Optional<Ticket> build(LocalDateTime creationDate) {
-      attr(Ticket::setCreationDate, creationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
-      return super.build();
+   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+      super(out, interactors, setters, objects, methods, validators, builders);
+      init(coordBuild, eventBuild, in);
    }
 }

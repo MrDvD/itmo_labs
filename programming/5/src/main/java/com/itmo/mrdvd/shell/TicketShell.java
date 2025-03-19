@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.itmo.mrdvd.builder.CoordinatesBuilder;
-import com.itmo.mrdvd.builder.EventBuilder;
+import com.itmo.mrdvd.builder.examples.CoordinatesBuilder;
+import com.itmo.mrdvd.builder.examples.EventBuilder;
 import com.itmo.mrdvd.builder.examples.TicketBuilder;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;

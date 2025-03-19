@@ -2,6 +2,7 @@ package com.itmo.mrdvd.builder.examples;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
@@ -23,17 +24,18 @@ public class CoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
       }
     }
 
-    private void initSetters(FloatInputDevice in) {
+    private void init(FloatInputDevice in) {
+      of(Coordinates::new);
       addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; } , "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
       addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
     }
 
    public CoordinatesBuilder(FloatInputDevice in, OutputDevice out) {
-    super(new Coordinates(), out);
-    initSetters(in);
+    super(out);
+    init(in);
    }
-   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
-    super(new Coordinates(), out, interactors, setters, objects, validators, builders);
-    initSetters(in);
+   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+    super(out, interactors, setters, objects, methods, validators, builders);
+    init(in);
    }
 }
