@@ -9,11 +9,17 @@ public interface TypedBiConsumer<T, U> extends BiConsumer<T, U> {
    public static <T, U> TypedBiConsumer<T, U> of(Class<U> type, BiConsumer<T, U> consumer) {
       return new TypedBiConsumer<T, U>() {
          @Override
-         public void acceptRaw(T obj1, Object obj2) {
+         public void acceptRaw(T obj1, Object obj2) throws IllegalArgumentException {
+            if (consumer == null) {
+               throw new IllegalArgumentException("Consumer не может быть null.");
+            }
+            if (type == null) {
+               throw new IllegalArgumentException("Type не может быть null.");
+            }
             if (type.isInstance(obj2)) {
                consumer.accept(obj1, type.cast(obj2));
             } else {
-               throw new IllegalArgumentException("Invalid input type.");
+               throw new IllegalArgumentException("Объект не соответствует переданному типу.");
             }
          }
 

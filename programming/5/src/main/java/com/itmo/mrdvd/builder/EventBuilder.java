@@ -3,7 +3,6 @@ package com.itmo.mrdvd.builder;
 import java.util.List;
 import java.util.Optional;
 
-import com.itmo.mrdvd.builder.functionals.IndexedFunction;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -41,8 +40,8 @@ public class EventBuilder extends InteractiveBuilder<Event> {
     initSetters(in);
   }
 
-  public EventBuilder(EnumInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
-    super(new Event(), out, interactors, setters, objects, validators, builders, methods);
+  public EventBuilder(EnumInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+    super(new Event(), out, interactors, setters, objects, validators, builders);
     initSetters(in);
   }
 }

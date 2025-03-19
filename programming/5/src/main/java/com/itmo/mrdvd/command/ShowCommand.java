@@ -15,8 +15,8 @@ public class ShowCommand<T> implements Command {
 
   @Override
   public void execute() {
-    for (T ticket : collection) {
-      out.writeln(ticket.toString());
+    for (T obj : collection) {
+      out.writeln(obj.toString());
     }
     out.writeln("[INFO] Конец коллекции.");
   }

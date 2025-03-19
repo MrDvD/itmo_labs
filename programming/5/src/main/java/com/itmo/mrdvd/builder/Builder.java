@@ -36,7 +36,7 @@ public abstract class Builder<T> {
       }
       setters.add(TypedBiConsumer.of(valueCls, setter));
       objects.add(value);
-      validators.add(TypedPredicate.of(valueCls, validator));
+      validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
       return this;
    }
 

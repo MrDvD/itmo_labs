@@ -22,13 +22,15 @@ import com.itmo.mrdvd.shell.TicketShell;
  *    - check*(obj::getterMethod): which field to check
  *    - this all is inherited by UpdatableBuilder
  *    - make interfaces for builder, updatablebuilder, interactivebuilder
- *    - Fix a bug with processBuilder function: add setter for builded object and treat it
+ *    - remove rawobject in ordinary builder (pass ::new instead)
+ *    - BUG: Builder should be reusable (bc it initialized once in main)
  * 2. Check FileIO
  * 3. Check execution of scripts
  * 4. Try to redirect commands from executeScript to shell's inputdevice
  *    - check out System.setIn() method
  *    - check out Obsidian's notes and screenshots
  * 5. Ideally, TicketShell should be splitted from DataShell (create a new class)
+ * 6. Ideallym rename unrelated classes without Ticket prefix
  */
 
 public class Main {

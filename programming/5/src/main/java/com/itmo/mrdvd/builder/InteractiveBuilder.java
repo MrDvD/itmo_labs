@@ -7,7 +7,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.itmo.mrdvd.builder.functionals.IndexedFunction;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -15,7 +14,6 @@ import com.itmo.mrdvd.device.OutputDevice;
 public abstract class InteractiveBuilder<T> extends Builder<T> {
    private final List<UserInteractor<?>> interactors;
    private final List<InteractiveBuilder<?>> builders;
-   private final List<IndexedFunction<ProcessStatus>> methods;
    private final OutputDevice out;
 
    protected class UserInteractor<U> {
@@ -63,21 +61,14 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    }
 
    public InteractiveBuilder(T rawObject, OutputDevice out) {
-      this(rawObject, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+      this(rawObject, out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveBuilder(T rawObject, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<IndexedFunction<ProcessStatus>> methods) {
+   public InteractiveBuilder(T rawObject, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
       super(rawObject, setters, objects, validators);
       this.out = out;
       this.interactors = interactors;
       this.builders = builders;
-      this.methods = methods;
-   }
-
-   public <U> InteractiveBuilder<T> addInteractiveBuilder(InteractiveBuilder<U> builder) {
-      methods.add(IndexedFunction.of(this::processBuilder, builders.size()));
-      builders.add(builder);
-      return this;
    }
 
    public <U> InteractiveBuilder<T> addInteractiveSetter(BiConsumer<T, U> setter, Class<U> valueCls, UserInteractor<?> inter) throws IllegalArgumentException {
@@ -88,9 +79,25 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
       if (inter == null) {
          throw new IllegalArgumentException("Метаданные не могут быть null.");
       }
+      if (setter == null) {
+         throw new IllegalArgumentException("Setter не может быть null.");
+      }
       attr(setter, null, valueCls, validator);
-      methods.add(IndexedFunction.of(this::processSetter, interactors.size() - 1));
       interactors.set(interactors.size() - 1, inter);
+      return this;
+   }
+
+   public <U> InteractiveBuilder<T> addInteractiveBuilder(InteractiveBuilder<U> builder, BiConsumer<T, U> setter, Class<U> valueCls) throws IllegalArgumentException {
+      return addInteractiveBuilder(builder, setter, valueCls, null);
+   }
+
+   public <U> InteractiveBuilder<T> addInteractiveBuilder(InteractiveBuilder<U> builder, BiConsumer<T, U> setter, Class<U> valueCls, TypedPredicate<U> validator) throws IllegalArgumentException {
+      if (setter == null) {
+         throw new IllegalArgumentException("Setter не может быть null.");
+      }
+      attr(setter, null, valueCls, validator);
+      validators.get(0);
+      builders.set(builders.size() - 1, builder);
       return this;
    }
 
@@ -98,6 +105,7 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
       super.attr(setter, value, valueCls);
       interactors.add(null);
+      builders.add(null);
       return this;
    }
 
@@ -105,39 +113,42 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    public <U> Builder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
       super.attr(setter, value, valueCls, validator);
       interactors.add(null);
+      builders.add(null);
       return this;
-   }
-
-   protected ProcessStatus processBuilder(int index) {
-      return builders.get(index).build().isPresent() ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
    }
 
    @Override
    protected ProcessStatus processSetter(int index) {
-      UserInteractor<?> inter = interactors.get(index);
-      if (inter == null) {
-         return super.processSetter(index);
-      }
-      String msg = "";
-      if (inter.options.isPresent()) {
-         msg += String.format("Выберите поле \"%s\" из списка:\n", inter.attributeName());
-         for (int j = 0; j < inter.options.get().size(); j++) {
-            msg += String.format("* %s\n", inter.options.get().get(j));
-         }
-         msg += "Ваш выбор";
+      Optional<?> result;
+      UserInteractor<?> inter = null;
+      if (builders.get(index) != null) {
+         result = builders.get(index).build();
       } else {
-         msg += String.format("Введите поле \"%s\"", inter.attributeName());
+         inter = interactors.get(index);
+         if (inter == null) {
+            return super.processSetter(index);
+         }
+         String msg = "";
+         if (inter.options.isPresent()) {
+            msg += String.format("Выберите поле \"%s\" из списка:\n", inter.attributeName());
+            for (int j = 0; j < inter.options.get().size(); j++) {
+               msg += String.format("* %s\n", inter.options.get().get(j));
+            }
+            msg += "Ваш выбор";
+         } else {
+            msg += String.format("Введите поле \"%s\"", inter.attributeName());
+         }
+         if (inter.comment().isPresent()) {
+            msg += String.format(" (%s)", inter.comment().get());
+         }
+         msg += ": ";
+         out.write(msg);
+         result = inter.inMethod().get();
       }
-      if (inter.comment().isPresent()) {
-         msg += String.format(" (%s)", inter.comment().get());
-      }
-      msg += ": ";
-      out.write(msg);
-      Optional<?> result = inter.inMethod().get();
       if (result.isPresent() && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
          setters.get(index).acceptRaw(rawObject, result.get());
       } else {
-         out.writeln(inter.error());
+         out.writeln(inter != null ? inter.error() : "[ERROR]: Не удалось сформировать поле");
          return ProcessStatus.FAILURE;
       }
       return ProcessStatus.SUCCESS;
@@ -145,8 +156,8 @@ public abstract class InteractiveBuilder<T> extends Builder<T> {
    
    @Override
    public Optional<T> build() {
-      for (int i = 0; i < methods.size(); i++) {
-         while (methods.get(i).apply(methods.get(i).index()).equals(ProcessStatus.FAILURE)) {}
+      for (int i = 0; i < setters.size(); i++) {
+         while (processSetter(i).equals(ProcessStatus.FAILURE)) {}
       }
       return Optional.of(rawObject);
    }

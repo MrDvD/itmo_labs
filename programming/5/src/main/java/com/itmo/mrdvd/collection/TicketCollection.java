@@ -139,6 +139,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
    }
    ticket.get().setId(ticketId.get());
    ticket.get().getEvent().setId(eventId.get());
+   tickets.add(ticket.get());
    return ticket;
   }
 
