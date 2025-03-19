@@ -1,9 +1,13 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.examples;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.InteractiveBuilder;
+import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
+import com.itmo.mrdvd.builder.InteractiveObjectBuilder.UserInteractor;
+import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -14,7 +18,7 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class TicketBuilder extends InteractiveBuilder<Ticket> {
+public class TicketBuilder extends InteractiveObjectBuilder<Ticket> {
 
    public static class TicketValidator {
        public static boolean validateCreationDate(LocalDateTime creationDate) {
@@ -51,7 +55,7 @@ public class TicketBuilder extends InteractiveBuilder<Ticket> {
       initSetters(coordBuild, eventBuild, in);
    }
    
-   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
       super(new Ticket(), out, interactors, setters, objects, validators, builders);
       initSetters(coordBuild, eventBuild, in);
    }

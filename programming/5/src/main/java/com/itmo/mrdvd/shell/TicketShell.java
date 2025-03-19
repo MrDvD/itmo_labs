@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.builder.CoordinatesBuilder;
 import com.itmo.mrdvd.builder.EventBuilder;
-import com.itmo.mrdvd.builder.TicketBuilder;
+import com.itmo.mrdvd.builder.examples.TicketBuilder;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;

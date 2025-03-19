@@ -1,15 +1,18 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.examples;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.InteractiveBuilder;
+import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
+import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 
-public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
+public class CoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
    public static class CoordinatesValidator {
       public static boolean validateX(Float x) {
         return x != null;
@@ -29,7 +32,7 @@ public class CoordinatesBuilder extends InteractiveBuilder<Coordinates> {
     super(new Coordinates(), out);
     initSetters(in);
    }
-   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
     super(new Coordinates(), out, interactors, setters, objects, validators, builders);
     initSetters(in);
    }

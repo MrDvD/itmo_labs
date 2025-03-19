@@ -1,8 +1,11 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.examples;
 
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.InteractiveBuilder;
+import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
+import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -10,7 +13,7 @@ import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
-public class EventBuilder extends InteractiveBuilder<Event> {
+public class EventBuilder extends InteractiveObjectBuilder<Event> {
    public static class EventValidator {
     public static boolean validateName(String name) {
       return name != null && !name.isBlank();
@@ -40,7 +43,7 @@ public class EventBuilder extends InteractiveBuilder<Event> {
     initSetters(in);
   }
 
-  public EventBuilder(EnumInputDevice in, OutputDevice out, List<UserInteractor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+  public EventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
     super(new Event(), out, interactors, setters, objects, validators, builders);
     initSetters(in);
   }
