@@ -15,7 +15,7 @@ import com.itmo.mrdvd.device.OutputDevice;
 public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveUpdater<T> {
    private final List<Interactor<?>> interactors;
    private final List<InteractiveBuilder<?>> builders;
-   private final List<InteractiveUpdater<?>> updaters;
+   private final List<InteractiveUpdater> updaters;
    private final List<Function<T,?>> getters;
    private final OutputDevice out;
 
@@ -76,7 +76,7 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       this(out, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public InteractiveObjectBuilder(OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<T,?>> getters, List<InteractiveUpdater<?>> updaters) {
+   public InteractiveObjectBuilder(OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<T,?>> getters, List<InteractiveUpdater> updaters) {
       super(setters, objects, methods, validators);
       this.out = out;
       this.interactors = interactors;

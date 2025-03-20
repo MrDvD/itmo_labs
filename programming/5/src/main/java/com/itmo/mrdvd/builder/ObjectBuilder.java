@@ -89,7 +89,11 @@ public class ObjectBuilder<T> implements Updater<T> {
 
    @Override
    public Optional<T> build() throws IllegalArgumentException {
-      return update(newMethod.get());
+      if (newMethod == null) {
+         throw new IllegalArgumentException("Метод создания объекта не может быть null.");
+      }
+      this.rawObject = newMethod.get();
+      return getObject();
    }
 
    @Override
