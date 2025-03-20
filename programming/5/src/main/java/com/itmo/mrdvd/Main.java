@@ -22,10 +22,8 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 3. Try to redirect commands from executeScript to shell's inputdevice
  *    - check out System.setIn() method
  *    - check out Obsidian's notes and screenshots
- * 4. Add some kind of criteria param to the add() function in CollectionWorker
  * 5. Ideally, TicketShell should be splitted from DataShell (create a new class)
- * 6. Ideallym rename unrelated classes without Ticket prefix
- * 7. Move validators to separate classes instead of inner classes (they are duplicated now)
+ * 6. Ideally, remove Ticket- prefix from generic classes
  */
 
 public class Main {

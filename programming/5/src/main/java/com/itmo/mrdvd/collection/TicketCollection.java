@@ -3,6 +3,7 @@ package com.itmo.mrdvd.collection;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -120,29 +121,53 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     this.eventGenerator = eventGen;
   }
 
-  @Override
-  public Optional<Ticket> add(Builder<Ticket> obj) {
-   if (obj == null) {
-      return Optional.empty();
-   }
-   Optional<Ticket> ticket = obj.build();
-   if (ticket.isEmpty()) {
-      return Optional.empty();
-   }
-   Optional<Long> ticketId = getTicketIdGenerator().getId(ticket.get());
+  protected Optional<Ticket> acquireId(Ticket obj) {
+   Optional<Long> ticketId = getTicketIdGenerator().getId(obj);
    if (ticketId.isEmpty()) {
       return Optional.empty();
    }
-   Optional<Long> eventId = getEventIdGenerator().getId(ticket.get().getEvent());
+   Optional<Long> eventId = getEventIdGenerator().getId(obj.getEvent());
    if (eventId.isEmpty()) {
       getTicketIdGenerator().freeId(ticketId.get());
       return Optional.empty();
    }
-   ticket.get().setId(ticketId.get());
-   ticket.get().getEvent().setId(eventId.get());
-   tickets.add(ticket.get());
-   return ticket;
+   obj.setId(ticketId.get());
+   obj.getEvent().setId(eventId.get());
+   return Optional.of(obj);
   }
+
+  @Override
+  public Optional<Ticket> add(Builder<Ticket> obj) {
+   return add(obj, null, null);
+  }
+
+  @Override
+  public Optional<Ticket> add(Builder<Ticket> obj, Comparator<Ticket> cond, Set<Integer> values) throws IllegalArgumentException {
+      if (obj == null) {
+         return Optional.empty();
+      }
+      Optional<Ticket> ticket = obj.build();
+      if (ticket.isEmpty()) {
+         return Optional.empty();
+      }
+      Optional<Ticket> result = acquireId(ticket.get());
+      if (result.isEmpty()) {
+         return Optional.empty();
+      }
+      Ticket ticketWithId = result.get();
+      if (cond != null) {
+         if (values == null) {
+            throw new IllegalArgumentException("Набор значений для сравнения не может быть null.");
+         }
+         for (Ticket t : tickets) {
+            if (!values.contains(cond.compare(ticketWithId, t))) {
+               return Optional.empty();
+            }
+         }
+      }
+      tickets.add(ticketWithId);
+      return result;
+   }
 
   @Override
   public Optional<Ticket> get(Long id) {
@@ -161,13 +186,24 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
 
   @Override
   public Optional<Ticket> update(Long id, Updater<Ticket> updater) {
+   return update(id, updater, null, null);
+  }
+
+  @Override
+  public Optional<Ticket> update(Long id, Updater<Ticket> updater, Comparator<Ticket> cond, Set<Integer> values) throws IllegalArgumentException {
    for (int i = 0; i < tickets.size(); i++) {
       Ticket ticket = tickets.get(i);
       if (ticket.getId().equals(id)) {
          Optional<Ticket> obj = updater.update(ticket);
          if (obj.isPresent()) {
-            tickets.set(i, obj.get());
-            return obj;  
+            if (cond != null && values == null) {
+               throw new IllegalArgumentException("Набор значений для сравнения не может быть null.");
+            }
+            if (cond == null || values.contains(cond.compare(obj.get(), ticket))) {
+               tickets.set(i, obj.get());
+               return obj;
+            }
+            return Optional.empty();
          }
       }
    }

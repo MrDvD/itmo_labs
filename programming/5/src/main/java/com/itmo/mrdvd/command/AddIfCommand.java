@@ -3,41 +3,37 @@ package com.itmo.mrdvd.command;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.object.Ticket;
 
-public class AddIfMaxCommand<T extends HavingId> implements Command {
+public class AddIfCommand<T extends HavingId> implements Command {
    protected final CollectionWorker<T,List<T>> collect;
    protected final InteractiveBuilder<T> builder;
    protected final OutputDevice out;
-   private final Comparator<T> comparator;
+   protected final Comparator<T> comparator;
+   protected final Set<Integer> values;
 
-  public AddIfMaxCommand(CollectionWorker<T,List<T>> collection, InteractiveBuilder<T> builder, Comparator<T> comparator, OutputDevice out) {
+  public AddIfCommand(CollectionWorker<T,List<T>> collection, InteractiveBuilder<T> builder, Comparator<T> comparator, Set<Integer> values, OutputDevice out) {
    this.collect = collection;
    this.builder = builder;
    this.out = out; 
    this.comparator = comparator;
+   this.values = values;
   }
 
   @Override
   public void execute() {
-    collect.getCollection().sort(comparator);
-   //  comparator.compare(collect.getCollection().get(collect.getCollection().size() - 1), o2) > 0;
-    if (collect.getCollection().isEmpty() || collect.getCollection().get(collect.getCollection().size() - 1).getId().compareTo(ticket.getId()) < 0) {
-      Optional<Ticket> result = collect.add(ticket);
-      if (result.isPresent()) {
-        out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
-      } else {
-        out.writeln("[ERROR] Не удалось добавить билет в коллекцию.");
-      }
-    } else {
-      out.writeln("[INFO] Билет не был добавлен в коллекцию: он не максимальный.");
-    }
+   Optional<T> result = collect.add(builder, comparator, values);
+   if (result.isPresent()) {
+      out.writeln("[INFO] Билет успешно добавлен в коллекцию.");
+   } else {
+      out.writeln("[INFO] Билет не добавлен в коллекцию: он не удовлетворяет условию.");
+   }
   }
 
   @Override
