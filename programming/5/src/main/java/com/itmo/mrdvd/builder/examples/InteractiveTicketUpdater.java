@@ -21,8 +21,8 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class TicketUpdater extends InteractiveObjectBuilder<Ticket> {
-    private <T extends IntInputDevice & EnumInputDevice> void init(CoordinatesUpdater coordUpdate, EventUpdater eventUpdate, T in) {
+public class InteractiveTicketUpdater extends InteractiveObjectBuilder<Ticket> {
+    private <T extends IntInputDevice & EnumInputDevice> void init(InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, T in) {
       of(Ticket::new);
       addInteractiveSetter(Ticket::setName, Ticket::getName, String.class, new UserInteractor<String>("Название билета", in::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveUpdater(coordUpdate, Ticket::setCoordinates, Ticket::getCoordinates, Coordinates.class);
@@ -35,12 +35,12 @@ public class TicketUpdater extends InteractiveObjectBuilder<Ticket> {
       addInteractiveUpdater(eventUpdate, Ticket::setEvent, Ticket::getEvent, Event.class);
     }
 
-   public <T extends IntInputDevice & EnumInputDevice> TicketUpdater(CoordinatesUpdater coordUpdate, EventUpdater eventUpdate, T in, OutputDevice out) {
+   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, T in, OutputDevice out) {
       super(out);
       init(coordUpdate, eventUpdate, in);
    }
    
-   public <T extends IntInputDevice & EnumInputDevice> TicketUpdater(CoordinatesUpdater coordUpdate, EventUpdater eventUpdate, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Ticket,?>> getters, List<InteractiveUpdater> updaters) {
+   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Ticket,?>> getters, List<InteractiveUpdater> updaters) {
       super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
       init(coordUpdate, eventUpdate, in);
    }

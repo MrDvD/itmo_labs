@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.itmo.mrdvd.builder.Builder;
 import com.itmo.mrdvd.builder.InteractiveBuilder;
 import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
 import com.itmo.mrdvd.builder.InteractiveUpdater;
@@ -21,8 +22,8 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class TicketBuilder extends InteractiveObjectBuilder<Ticket> {
-    private <T extends IntInputDevice & EnumInputDevice> void init(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in) {
+public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
+    private <T extends IntInputDevice & EnumInputDevice> void init(InteractiveBuilder<Coordinates> coordBuild, InteractiveBuilder<Event> eventBuild, T in) {
       of(Ticket::new);
       addInteractiveSetter(Ticket::setName, String.class, new UserInteractor<String>("Название билета", in::read, "[ERROR] Неправильный формат ввода: название не должно быть пустым."), TicketValidator::validateName);
       addInteractiveBuilder(coordBuild, Ticket::setCoordinates, Coordinates.class);
@@ -36,12 +37,12 @@ public class TicketBuilder extends InteractiveObjectBuilder<Ticket> {
       attrFromMethod(Ticket::setCreationDate, LocalDateTime::now, LocalDateTime.class, TicketValidator::validateCreationDate);
     }
 
-   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out) {
+   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketBuilder(InteractiveBuilder<Coordinates> coordBuild, InteractiveBuilder<Event> eventBuild, T in, OutputDevice out) {
       super(out);
       init(coordBuild, eventBuild, in);
    }
    
-   public <T extends IntInputDevice & EnumInputDevice> TicketBuilder(CoordinatesBuilder coordBuild, EventBuilder eventBuild, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Ticket,?>> getters, List<InteractiveUpdater> updaters) {
+   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketBuilder(InteractiveBuilder<Coordinates> coordBuild, InteractiveBuilder<Event> eventBuild, T in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Ticket,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Ticket,?>> getters, List<InteractiveUpdater> updaters) {
       super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
       init(coordBuild, eventBuild, in);
    }

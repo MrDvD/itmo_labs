@@ -16,18 +16,18 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 
-public class CoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
+public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
     private void init(FloatInputDevice in) {
       of(Coordinates::new);
       addInteractiveSetter(Coordinates::setX, Float.class, new UserInteractor<Float>("X-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; } , "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateX);
       addInteractiveSetter(Coordinates::setY, Float.class, new UserInteractor<Float>("Y-координата", () -> { Optional<Float> res = in.readFloat(); in.skipLine(); return res; }, "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).", "разделитель - точка"), CoordinatesValidator::validateY);
     }
 
-   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out) {
+   public InteractiveCoordinatesBuilder(FloatInputDevice in, OutputDevice out) {
     super(out);
     init(in);
    }
-   public CoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Coordinates,?>> getters, List<InteractiveUpdater> updaters) {
+   public InteractiveCoordinatesBuilder(FloatInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Coordinates,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Coordinates,?>> getters, List<InteractiveUpdater> updaters) {
     super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
     init(in);
    }

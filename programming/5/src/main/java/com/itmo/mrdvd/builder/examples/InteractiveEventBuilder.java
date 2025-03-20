@@ -17,7 +17,7 @@ import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
-public class EventBuilder extends InteractiveObjectBuilder<Event> {
+public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
   private void init(EnumInputDevice in) {
       of(Event::new);
       addInteractiveSetter(Event::setName, String.class, new UserInteractor<String>("Имя мероприятия", in::read, "[ERROR] Неправильный формат ввода: имя не должно быть пустым."), EventValidator::validateName);
@@ -29,12 +29,12 @@ public class EventBuilder extends InteractiveObjectBuilder<Event> {
       addInteractiveSetter(Event::setType, EventType.class, new UserInteractor<Enum<EventType>>("Тип мероприятия", () -> { Optional<Enum<EventType>> result = in.readEnum(EventType.class); in.skipLine(); return result;}, "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.", List.of(options)), EventValidator::validateType);
     }
 
-  public EventBuilder(EnumInputDevice in, OutputDevice out) {
+  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out) {
     super(out);
     init(in);
   }
 
-  public EventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Event,?>> getters, List<InteractiveUpdater> updaters) {
+  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Event,?>> getters, List<InteractiveUpdater> updaters) {
     super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
     init(in);
   }

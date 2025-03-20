@@ -3,13 +3,14 @@ package com.itmo.mrdvd.command;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public class LoadCommand<T, U> implements Command {
+public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
   private final Collection<T, U> collection;
   private final Deserializer<Collection<T, U>> deserial;
@@ -43,6 +44,7 @@ public class LoadCommand<T, U> implements Command {
     if (loaded.isPresent()) {
       collection.clear();
       for (T t : loaded.get()) {
+         // maybe add empty updater which just passes info from getters to setters (using methods signature which was added specially for DateTime.now())
         collection.add(t);
       }
       collection.setMetadata(loaded.get().getMetadata());

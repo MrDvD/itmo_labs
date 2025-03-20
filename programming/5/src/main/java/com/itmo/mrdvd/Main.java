@@ -22,6 +22,10 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 3. Try to redirect commands from executeScript to shell's inputdevice
  *    - check out System.setIn() method
  *    - check out Obsidian's notes and screenshots
+ * 3.5. For example, keep in InputDevice various readers (System.in and File)
+ *    If I want to read something from File, I switch object from which I get input
+ *    - setIn(Input obj) : for switching contexts
+ *    - getIn() : for backing up the previous Input
  * 5. Ideally, TicketShell should be splitted from DataShell (create a new class)
  * 6. Ideally, remove Ticket- prefix from generic classes
  */
@@ -33,7 +37,7 @@ public class Main {
     ObjectMapperDecorator<Collection<Ticket,List<Ticket>>> mapper = new ObjectMapperDecorator<>(new XmlMapper(), TicketCollection.class);
     TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    shell.initDefaultCommands(collection, "TICKET_PATH", fd, mapper, mapper);
+    shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper);
     shell.open();
   }
 }
