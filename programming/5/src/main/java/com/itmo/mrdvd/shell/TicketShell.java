@@ -80,7 +80,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
     addCommand(new CountGreaterThanEventCommand(collection, getInput(), getOutput()));
     addCommand(
         new ReadEnvironmentFilepathCommand(envName, fd, getOutput()), true);
-   //  addCommand(new LoadCommand<>(fd, collection, deserial, getOutput()), true);
+   //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOutput()), true);
     addCommand(new SaveCommand<>(collection, serial, fd, getOutput()));
     addCommand(new ExecuteScriptCommand(getOutput(), fd));
     addCommand(new InfoCommand(collection, getOutput()));

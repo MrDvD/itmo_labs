@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.itmo.mrdvd.builder.builders.Builder;
 import com.itmo.mrdvd.builder.updaters.Updater;
@@ -237,6 +238,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     }
   }
 
+  @JsonIgnore
   @Override
   public List<Ticket> getCollection() {
    return tickets;

@@ -2,6 +2,8 @@ package com.itmo.mrdvd.builder.validators;
 
 import java.time.LocalDateTime;
 
+import com.itmo.mrdvd.object.Coordinates;
+import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
@@ -26,18 +28,18 @@ public class TicketValidator extends ObjectValidator<Ticket> {
     return type != null;
   }
 
-  private void init() {
+  private void init(Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
    check(Ticket::getId, Long.class, TicketValidator::validateId);
    check(Ticket::getName, String.class, TicketValidator::validateName);
-   check(Ticket::getCoordinates, new CoordinatesValidator());
+   check(Ticket::getCoordinates, coordinatesValidator);
    check(Ticket::getPrice, Integer.class, TicketValidator::validatePrice);
    check(Ticket::getType, TicketType.class, TicketValidator::validateType);
-   check(Ticket::getEvent, new EventValidator());
+   check(Ticket::getEvent, eventValidator);
    check(Ticket::getCreationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
   }
 
-  public TicketValidator() {
+  public TicketValidator(Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
    super();
-   init();
+   init(coordinatesValidator, eventValidator);
   }
 }

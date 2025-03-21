@@ -17,7 +17,7 @@ import com.itmo.mrdvd.shell.TicketShell;
 
 /*
  * TODO:
- * 1. Check FileIO
+ * 1. Check FileIO --- написать в комментариях к FileIO, почему он вообще нужен (по условию лабы)
  * 2. Check execution of scripts
  * 3. Try to redirect commands from executeScript to shell's inputdevice
  *    - check out System.setIn() method
@@ -28,6 +28,8 @@ import com.itmo.mrdvd.shell.TicketShell;
  *    - getIn() : for backing up the previous Input
  * 5. Ideally, TicketShell should be splitted from DataShell (create a new class)
  * 6. Ideally, remove Ticket- prefix from generic classes
+ * 7.1. Fix a bug with loading collection from file
+ * 7.2. Move LoadCommand to the shell
  */
 
 public class Main {
