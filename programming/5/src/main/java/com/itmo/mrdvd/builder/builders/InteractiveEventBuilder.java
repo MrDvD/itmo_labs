@@ -1,16 +1,14 @@
-package com.itmo.mrdvd.builder.examples;
+package com.itmo.mrdvd.builder.builders;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.itmo.mrdvd.builder.InteractiveBuilder;
-import com.itmo.mrdvd.builder.InteractiveObjectBuilder;
-import com.itmo.mrdvd.builder.InteractiveUpdater;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.builder.validators.EventValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
@@ -34,8 +32,8 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
     init(in);
   }
 
-  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders, List<Function<Event,?>> getters, List<InteractiveUpdater> updaters) {
-    super(out, interactors, setters, objects, methods, validators, builders, getters, updaters);
+  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out, List<Interactor<?>> interactors, List<TypedBiConsumer<Event,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators, List<InteractiveBuilder<?>> builders) {
+    super(out, interactors, setters, objects, methods, validators, builders);
     init(in);
   }
 }

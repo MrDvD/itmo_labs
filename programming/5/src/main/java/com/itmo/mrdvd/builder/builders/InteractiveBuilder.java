@@ -1,7 +1,8 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.builders;
 
 import java.util.function.BiConsumer;
 
+import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
 public interface InteractiveBuilder<T> extends Builder<T> {

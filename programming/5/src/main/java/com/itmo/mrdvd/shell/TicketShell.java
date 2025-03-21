@@ -6,12 +6,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.itmo.mrdvd.builder.examples.InteractiveCoordinatesBuilder;
-import com.itmo.mrdvd.builder.examples.InteractiveCoordinatesUpdater;
-import com.itmo.mrdvd.builder.examples.InteractiveEventBuilder;
-import com.itmo.mrdvd.builder.examples.InteractiveEventUpdater;
-import com.itmo.mrdvd.builder.examples.InteractiveTicketBuilder;
-import com.itmo.mrdvd.builder.examples.InteractiveTicketUpdater;
+import com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder;
+import com.itmo.mrdvd.builder.builders.InteractiveEventBuilder;
+import com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder;
+import com.itmo.mrdvd.builder.updaters.InteractiveCoordinatesUpdater;
+import com.itmo.mrdvd.builder.updaters.InteractiveEventUpdater;
+import com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;

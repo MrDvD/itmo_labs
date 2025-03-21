@@ -2,7 +2,7 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
-import com.itmo.mrdvd.builder.InteractiveUpdater;
+import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.CommandHasParams;

@@ -2,6 +2,7 @@ package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
+import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
@@ -13,16 +14,19 @@ import com.itmo.mrdvd.device.input.InputDevice;
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
   private final Collection<T, U> collection;
+  private final Validator<T> validator;
   private final Deserializer<Collection<T, U>> deserial;
   private final OutputDevice out;
 
   public LoadCommand(
       InputDevice in,
       Collection<T, U> collection,
+      Validator<T> validator,
       Deserializer<Collection<T, U>> deserial,
       OutputDevice out) {
     this.in = in;
     this.collection = collection;
+    this.validator = validator;
     this.deserial = deserial;
     this.out = out;
   }
@@ -44,8 +48,9 @@ public class LoadCommand<T extends HavingId, U> implements Command {
     if (loaded.isPresent()) {
       collection.clear();
       for (T t : loaded.get()) {
-         // maybe add empty updater which just passes info from getters to setters (using methods signature which was added specially for DateTime.now())
-        collection.add(t);
+         if (collection.add(t, validator).isEmpty()) {
+          out.writeln(String.format("[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.", t.getId()));
+        }
       }
       collection.setMetadata(loaded.get().getMetadata());
       out.writeln("[INFO] Коллекция успешно считана из файла.");

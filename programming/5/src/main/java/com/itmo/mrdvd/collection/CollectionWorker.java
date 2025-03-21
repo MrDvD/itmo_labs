@@ -4,13 +4,16 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
 
-import com.itmo.mrdvd.builder.Builder;
-import com.itmo.mrdvd.builder.Updater;
+import com.itmo.mrdvd.builder.builders.Builder;
+import com.itmo.mrdvd.builder.updaters.Updater;
+import com.itmo.mrdvd.builder.validators.Validator;
 
 public interface CollectionWorker<T extends HavingId,V> {
-  public Optional<T> add(Builder<T> obj);
+  public Optional<T> add(Builder<T> obj) throws IllegalArgumentException;
 
   public Optional<T> add(Builder<T> obj, Comparator<T> cond, Set<Integer> values) throws IllegalArgumentException;
+
+  public Optional<T> add(T rawObject, Validator<T> validator) throws IllegalArgumentException;
 
   public Optional<T> get(Long id);
 

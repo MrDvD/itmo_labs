@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd.builder.updaters;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
-public class ObjectBuilder<T> implements Updater<T> {
+public class ObjectUpdater<T> implements Updater<T> {
    protected final List<TypedBiConsumer<T,?>> setters;
    protected final List<Object> objects;
    protected final List<Supplier<?>> methods;
@@ -18,29 +19,23 @@ public class ObjectBuilder<T> implements Updater<T> {
    protected Supplier<T> newMethod;
    protected T rawObject;
 
-   public ObjectBuilder() {
+   public ObjectUpdater() {
       this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
    }
 
-   public ObjectBuilder(List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators) {
+   public ObjectUpdater(List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators) {
       this.setters = setters;
       this.objects = objects;
       this.methods = methods;
       this.validators = validators;
    }
 
-   @Override
-   public ObjectBuilder<T> of(Supplier<T> newMethod) {
-      this.newMethod = newMethod;
-      return this;
-   }
-
-   public <U> ObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
-      return attr(setter, value, valueCls, null);
+   public <U> ObjectUpdater<T> change(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
+      return change(setter, value, valueCls, null);
    }
 
    @Override
-   public <U> ObjectBuilder<T> attr(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
+   public <U> ObjectUpdater<T> change(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
       if (setter == null) {
          throw new IllegalArgumentException("Setter не может быть null.");
       }
@@ -51,12 +46,12 @@ public class ObjectBuilder<T> implements Updater<T> {
       return this;
    }
 
-   public <U> ObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) {
-      return attr(setter, method, valueCls, null);
+   public <U> ObjectUpdater<T> changeFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) {
+      return changeFromMethod(setter, method, valueCls, null);
    }
 
    @Override
-   public <U> ObjectBuilder<T> attrFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
+   public <U> ObjectUpdater<T> changeFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
       if (setter == null) {
          throw new IllegalArgumentException("Setter не может быть null.");
       }
@@ -67,7 +62,7 @@ public class ObjectBuilder<T> implements Updater<T> {
       return this;
    }
 
-   protected ProcessStatus processSetter(int index) {
+   protected ProcessStatus processChange(int index) {
       if (methods.get(index) != null) {
          objects.set(index, methods.get(index).get());
       }
@@ -80,20 +75,11 @@ public class ObjectBuilder<T> implements Updater<T> {
 
    protected Optional<T> getObject() {
       for (int i = 0; i < setters.size(); i++) {
-         if (processSetter(i).equals(ProcessStatus.FAILURE)) {
+         if (processChange(i).equals(ProcessStatus.FAILURE)) {
             return Optional.empty();
          }
       }
       return Optional.of(rawObject);
-   }
-
-   @Override
-   public Optional<T> build() throws IllegalArgumentException {
-      if (newMethod == null) {
-         throw new IllegalArgumentException("Метод создания объекта не может быть null.");
-      }
-      this.rawObject = newMethod.get();
-      return getObject();
    }
 
    @Override

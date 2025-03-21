@@ -11,15 +11,16 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.builder.Builder;
-import com.itmo.mrdvd.builder.Updater;
+import com.itmo.mrdvd.builder.builders.Builder;
+import com.itmo.mrdvd.builder.updaters.Updater;
+import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
   private IdGenerator ticketGenerator;
   private IdGenerator eventGenerator;
-  private TicketCollectionMetadata meta;
+  private CollectionMetadata meta;
 
   public static class TicketCollectionMetadata implements CollectionMetadata {
     @JsonProperty private LocalDateTime creationTime;
@@ -137,14 +138,14 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> add(Builder<Ticket> obj) {
+  public Optional<Ticket> add(Builder<Ticket> obj) throws IllegalArgumentException {
    return add(obj, null, null);
   }
 
   @Override
   public Optional<Ticket> add(Builder<Ticket> obj, Comparator<Ticket> cond, Set<Integer> values) throws IllegalArgumentException {
       if (obj == null) {
-         return Optional.empty();
+         throw new IllegalArgumentException("Builder не может быть null.");
       }
       Optional<Ticket> ticket = obj.build();
       if (ticket.isEmpty()) {
@@ -166,6 +167,22 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
          }
       }
       tickets.add(ticketWithId);
+      return result;
+   }
+
+   @Override
+   public Optional<Ticket> add(Ticket rawObject, Validator<Ticket> validator) throws IllegalArgumentException {
+      if (rawObject == null) {
+         throw new IllegalArgumentException("Объект не может быть null.");
+      }
+      if (validator != null && !validator.validate(rawObject)) {
+         return Optional.empty();
+      }
+      Optional<Ticket> result = acquireId(rawObject);
+      if (result.isEmpty()) {
+         return Optional.empty();
+      }
+      tickets.add(result.get());
       return result;
    }
 
@@ -235,10 +252,11 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
 
   @Override
   public TicketCollectionMetadata getMetadata() {
-    return this.meta;
+    return (TicketCollectionMetadata) this.meta;
   }
 
-  public void setMetadata(TicketCollectionMetadata meta) {
+  @Override
+  public void setMetadata(CollectionMetadata meta) {
     this.meta = meta;
   }
 
