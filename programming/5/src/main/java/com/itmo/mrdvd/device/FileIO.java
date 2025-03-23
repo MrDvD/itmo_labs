@@ -86,8 +86,10 @@ public class FileIO extends FileDescriptor {
       while (inReader.available() > 0) {
         inReader.mark(1);
         int chr = inReader.read();
-        if (delimiters.indexOf(chr) != -1) {
-          inReader.reset();
+        if (delimiters.indexOf(chr) != -1) { // change logic
+          if (chr == '\n') {
+            inReader.reset();
+          }
           break;
         }
         result += (char) chr;

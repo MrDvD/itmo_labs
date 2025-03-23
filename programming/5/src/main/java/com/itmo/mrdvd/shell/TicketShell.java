@@ -90,7 +90,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
    //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
     addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
-    addCommand(new ExecuteScriptCommand(getIn(), getOut(), fd, usedPaths));
+    addCommand(new ExecuteScriptCommand(fd, usedPaths));
     addCommand(new InfoCommand(collection, getOut()));
   }
 
@@ -143,6 +143,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
 
   @Override
   public TicketShell forkSubshell() {
-    return new TicketShell(getIn(), getOut(), getCommands(), getPreExecute());
+    TicketShell subshell = new TicketShell(getIn(), getOut(), getCommands(), getPreExecute());
+    for (Command cmd : subshell) {
+      if (cmd instanceof ShellCommand shellCmd) {
+        shellCmd.setShell(subshell);
+      }
+    }
+    return subshell;
   }
 }

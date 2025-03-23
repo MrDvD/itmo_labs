@@ -23,9 +23,7 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 5. Move LoadCommand to the shell
  * 6. Replace Scanner with BufferedInputStream (hasNext is shish)
  * 7. Check adding items from file
- * 8. Redo the stack logic in Shell (ExecuteScriptCommand)
- *    - the idea is to create a new subshell in executescript command.
- *    - now i should add indirect atomicreference to inputdevice
+ * 8. FIX: shell won't close after launching scr.t
  */
 
 public class Main {
