@@ -10,6 +10,8 @@ import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
 public class ExecuteScriptCommand implements ShellCommand {
@@ -39,8 +41,8 @@ public class ExecuteScriptCommand implements ShellCommand {
     if (shell == null) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    Optional<String> params = shell.getInput().readToken();
-    shell.getInput().skipLine();
+    Optional<String> params = shell.getIn().readToken();
+    shell.getIn().skipLine();
     if (shell.getStackSize() <= this.stack.size()) {
       log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
       return;
@@ -71,11 +73,7 @@ public class ExecuteScriptCommand implements ShellCommand {
       return;
     }
     stack.add(path.get().toAbsolutePath().toString());
-    Optional<String> currLine = file.read();
-    while (currLine.isPresent()) {
-      shell.processCommandLine(currLine.get());
-      currLine = file.read();
-    }
+    shell.setIn(file);
     stack.remove(path.get().toAbsolutePath().toString());
     file.closeIn();
   }

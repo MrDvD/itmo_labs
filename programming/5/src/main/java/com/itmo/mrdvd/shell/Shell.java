@@ -5,27 +5,38 @@ import java.util.Optional;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 
-public abstract class Shell<T,S,U extends InteractiveDataInputDevice> implements Iterable<Command> {
-   private final T commands;
-   private final S preExecute;
-   private final U in;
-   private final OutputDevice out;
-   private int stackSize;
+public abstract class Shell<T,S,U extends DataInputDevice> implements Iterable<Command> {
+   protected final T commands;
+   protected final S preExecute;
+   protected LinkedInput<U> linkedIn;
+   protected final OutputDevice out;
+   protected int stackSize;
 
-   public Shell(U in, OutputDevice out, T commands, S preExecute) {
-      this.in = in;
+   public Shell(OutputDevice out, LinkedInput<U> linkedIn, T commands, S preExecute) {
+      this.linkedIn = linkedIn;
       this.out = out;
       this.commands = commands;
       this.preExecute = preExecute;
       this.stackSize = 256;
    }
-  public U getInput() {
-   return this.in;
+  public InputDevice getIn() {
+   return this.linkedIn.input();
   }
 
-  public OutputDevice getOutput() {
+  public void setIn(U in) {
+   this.linkedIn = this.linkedIn.update(in);
+  }
+
+  public void revertIn() {
+   if (this.linkedIn.prev().isPresent()) {
+      this.linkedIn = this.linkedIn.prev().get();
+   } 
+  }
+
+  public OutputDevice getOut() {
    return this.out;
   }
 
@@ -50,14 +61,14 @@ public abstract class Shell<T,S,U extends InteractiveDataInputDevice> implements
   public abstract Optional<Command> getCommand(String str);
 
   public Optional<Command> processCommandLine() {
-   Optional<String> cmdName = getInput().readToken();
+   Optional<String> cmdName = getIn().readToken();
    if (cmdName.isEmpty()) {
       return Optional.empty();
    }
    Optional<Command> cmd = getCommand(cmdName.get());
    if (cmd.isPresent()) {
       if (!(cmd.get() instanceof CommandHasParams)) {
-         getInput().skipLine();
+         getIn().skipLine();
       }
      cmd.get().execute();
      return cmd;

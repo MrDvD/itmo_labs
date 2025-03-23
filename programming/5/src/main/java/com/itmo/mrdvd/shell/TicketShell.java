@@ -38,15 +38,16 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
-import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
-public class TicketShell extends Shell<Map<String, Command>, List<Command>, InteractiveDataInputDevice> {
+public class TicketShell extends Shell<Map<String, Command>, List<Command>, DataInputDevice> {
   private boolean isOpen;
 
-  public TicketShell(InteractiveDataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
-    super(in, out, commands, preExecute); 
+  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn, Map<String, Command> commands, List<Command> preExecute) {
+    super(out, linkedIn, commands, preExecute);
     this.isOpen = false;
   }
 
@@ -65,25 +66,25 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
   }
 
   public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<Collection<Ticket,List<Ticket>>> serial, Deserializer<Collection<Ticket,List<Ticket>>> deserial) {
-    addCommand(new AddCommand<>(collection, new InteractiveTicketBuilder(new InteractiveCoordinatesBuilder(getInput(), getOutput()), new InteractiveEventBuilder(getInput(), getOutput()), getInput(), getOutput()), getOutput()));
-    addCommand(new HelpCommand(getOutput()));
+    addCommand(new AddCommand<>(collection, new InteractiveTicketBuilder(new InteractiveCoordinatesBuilder(getIn(), getOut()), new InteractiveEventBuilder(getIn(), getOut()), getIn(), getOut()), getOut()));
+    addCommand(new HelpCommand(getOut()));
     addCommand(new ExitCommand());
-    addCommand(new UpdateCommand<>(collection, new InteractiveTicketUpdater(new InteractiveCoordinatesUpdater(getInput(), getOutput()), new InteractiveEventUpdater(getInput(), getOutput()), getInput(), getOutput()), getInput(), getOutput()));
-    addCommand(new ClearCommand(collection, getOutput()));
-    addCommand(new RemoveByIdCommand(collection, getInput(), getOutput()));
-    addCommand(new RemoveAtCommand<>(collection, getInput(), getOutput()));
-    addCommand(new RemoveLastCommand<>(collection, getOutput()));
-    addCommand(new ShowCommand(collection, getOutput()));
-    addCommand(new AddIfCommand<>(collection, new InteractiveTicketBuilder(new InteractiveCoordinatesBuilder(getInput(), getOutput()), new InteractiveEventBuilder(getInput(), getOutput()), getInput(), getOutput()), new TicketComparator(TicketField.ID), Set.of(1), getOutput()));
-    addCommand(new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE), getOutput()));
-    addCommand(new PrintFieldDescendingTypeCommand<>(collection, new TicketComparator(TicketField.TYPE, true), getOutput()));
-    addCommand(new CountGreaterThanEventCommand(collection, getInput(), getOutput()));
+    addCommand(new UpdateCommand<>(collection, new InteractiveTicketUpdater(new InteractiveCoordinatesUpdater(getIn(), getOut()), new InteractiveEventUpdater(getIn(), getOut()), getIn(), getOut()), getIn(), getOut()));
+    addCommand(new ClearCommand(collection, getOut()));
+    addCommand(new RemoveByIdCommand(collection, getIn(), getOut()));
+    addCommand(new RemoveAtCommand<>(collection, getIn(), getOut()));
+    addCommand(new RemoveLastCommand<>(collection, getOut()));
+    addCommand(new ShowCommand(collection, getOut()));
+    addCommand(new AddIfCommand<>(collection, new InteractiveTicketBuilder(new InteractiveCoordinatesBuilder(getIn(), getOut()), new InteractiveEventBuilder(getIn(), getOut()), getIn(), getOut()), new TicketComparator(TicketField.ID), Set.of(1), getOut()));
+    addCommand(new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE), getOut()));
+    addCommand(new PrintFieldDescendingTypeCommand<>(collection, new TicketComparator(TicketField.TYPE, true), getOut()));
+    addCommand(new CountGreaterThanEventCommand(collection, getIn(), getOut()));
     addCommand(
-        new ReadEnvironmentFilepathCommand(envName, fd, getOutput()), true);
-   //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOutput()), true);
-    addCommand(new SaveCommand<>(collection, serial, fd, getOutput()));
-    addCommand(new ExecuteScriptCommand(getOutput(), fd));
-    addCommand(new InfoCommand(collection, getOutput()));
+        new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
+   //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
+    addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
+    addCommand(new ExecuteScriptCommand(getOut(), fd));
+    addCommand(new InfoCommand(collection, getOut()));
   }
 
   @Override
@@ -98,12 +99,14 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
     }
     this.isOpen = true;
     while (this.isOpen) {
-      getInput().write("> ");
-         Optional<Command> cmd = processCommandLine();
-         if (cmd.isEmpty()) {
-            getOutput().writeln("[ERROR] Команда не найдена: введите 'help' для просмотра списка доступных команд.");
-         }
+      if (InteractiveInputDevice.class.isInstance(getIn())) {
+         ((InteractiveInputDevice) getIn()).write("> ");
       }
+      Optional<Command> cmd = processCommandLine();
+      if (cmd.isEmpty()) {
+         getOut().writeln("[ERROR] Команда не найдена: введите 'help' для просмотра списка доступных команд.");
+      }
+    }
   }
 
   @Override
@@ -119,5 +122,10 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Inte
   @Override
   public Iterator<Command> iterator() {
    return getCommands().values().iterator();
+  }
+
+  @Override
+  public DataInputDevice getIn() {
+   return (DataInputDevice) this.linkedIn.input();
   }
 }

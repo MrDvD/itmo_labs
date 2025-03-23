@@ -252,6 +252,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     return eventGenerator;
   }
 
+  // looks bad, but idk how to code this better
   @Override
   public TicketCollectionMetadata getMetadata() {
     return (TicketCollectionMetadata) this.meta;

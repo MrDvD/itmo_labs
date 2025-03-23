@@ -13,6 +13,7 @@ import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.shell.BasicLinkedInput;
 import com.itmo.mrdvd.shell.TicketShell;
 
 /*
@@ -37,7 +38,7 @@ public class Main {
     DataConsole console = new DataConsole().init();
     TicketCollection collection = new TicketCollection("My Collection");
     ObjectMapperDecorator<Collection<Ticket,List<Ticket>>> mapper = new ObjectMapperDecorator<>(new XmlMapper(), TicketCollection.class);
-    TicketShell shell = new TicketShell(console, console, new TreeMap<>(), new ArrayList<>());
+    TicketShell shell = new TicketShell(console, new BasicLinkedInput<>(console), new TreeMap<>(), new ArrayList<>());
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
     shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper);
     shell.open();

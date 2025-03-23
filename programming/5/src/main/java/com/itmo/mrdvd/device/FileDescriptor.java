@@ -5,9 +5,9 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
 
-public abstract class FileDescriptor implements InputDevice, OutputDevice, FileMeta {
+public abstract class FileDescriptor implements DataInputDevice, OutputDevice, FileMeta {
    protected Path path;
    protected FileSystem fs;
 
