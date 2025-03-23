@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import com.itmo.mrdvd.command.marker.Command;
@@ -14,13 +16,19 @@ public abstract class Shell<T,S,U extends DataInputDevice> implements Iterable<C
    protected LinkedInput<U> linkedIn;
    protected final OutputDevice out;
    protected int stackSize;
+   protected final List<StackRecord<?, ?>> stack;
 
    public Shell(OutputDevice out, LinkedInput<U> linkedIn, T commands, S preExecute) {
+      this(out, linkedIn, commands, preExecute, new ArrayList<>(), 256);
+   }
+
+   public Shell(OutputDevice out, LinkedInput<U> linkedIn, T commands, S preExecute, List<StackRecord<?, ?>> stack, int stackSize) {
       this.linkedIn = linkedIn;
       this.out = out;
       this.commands = commands;
       this.preExecute = preExecute;
-      this.stackSize = 256;
+      this.stackSize = stackSize;
+      this.stack = stack;
    }
   public InputDevice getIn() {
    return this.linkedIn.input();
@@ -40,11 +48,19 @@ public abstract class Shell<T,S,U extends DataInputDevice> implements Iterable<C
    return this.out;
   }
 
-  public void setStackSize(int size) {
+  public V getStack() {
+    return this.stack;
+  }
+
+  public void getStackCapacity(int size) {
     this.stackSize = size;
   }
 
-  public int getStackSize() {
+  public abstract int getStackSize();
+
+  public abstract void push(Object obj);
+
+  public int getStackCapacity() {
     return this.stackSize;
   }
 

@@ -1,10 +1,13 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 
 import com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveEventBuilder;
@@ -43,11 +46,16 @@ import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
-public class TicketShell extends Shell<Map<String, Command>, List<Command>, DataInputDevice> {
+public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<Object>, DataInputDevice> {
   private boolean isOpen;
 
-  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn, Map<String, Command> commands, List<Command> preExecute) {
-    super(out, linkedIn, commands, preExecute);
+  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn) {
+   super(out, linkedIn, new TreeMap<>(), new HashSet<>(), new ArrayList<>());
+   this.isOpen = false;
+  }
+
+  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn, Map<String, Command> commands, Set<Object> stack, List<Command> preExecute) {
+    super(out, linkedIn, commands, stack, preExecute);
     this.isOpen = false;
   }
 

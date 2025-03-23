@@ -2,9 +2,7 @@ package com.itmo.mrdvd.command;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.command.marker.ShellCommand;
@@ -18,13 +16,11 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   private Shell shell;
   private final InputDevice in;
   private final OutputDevice log;
-  private final Set<String> stack;
   private final FileDescriptor fd;
 
   public ExecuteScriptCommand(InputDevice in, OutputDevice log, FileDescriptor fd) {
    this.in = in; 
    this.log = log;
-    this.stack = new HashSet<>();
     this.fd = fd;
   }
 
@@ -34,12 +30,12 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   }
 
   @Override
-  public void setShell(Shell<?, ?, ?> shell) {
+  public void setShell(Shell<?, ?, ?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
-  public Optional<Shell<?, ?, ?>> getShell() {
+  public Optional<Shell<?, ?, ?, ?>> getShell() {
    return Optional.ofNullable(this.shell);
   }
 
@@ -50,7 +46,7 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
     }
     Optional<String> params = shell.getIn().readToken();
     shell.getIn().skipLine();
-    if (shell.getStackSize() <= this.stack.size()) {
+    if (shell.getStackCapacity() <= shell.getStack().size()) {
       log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
       return;
     }

@@ -8,7 +8,7 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
 public class HelpCommand implements ShellCommand {
-  private Shell<?, ?, ?> shell;
+  private Shell<?, ?, ?, ?> shell;
   private final OutputDevice out;
 
   public HelpCommand(OutputDevice out) {
@@ -16,12 +16,12 @@ public class HelpCommand implements ShellCommand {
   }
 
   @Override
-  public void setShell(Shell<?, ?, ?> shell) {
+  public void setShell(Shell<?, ?, ?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
-  public Optional<Shell<?, ?, ?>> getShell() {
+  public Optional<Shell<?, ?, ?, ?>> getShell() {
    return Optional.ofNullable(this.shell);
   }
 
