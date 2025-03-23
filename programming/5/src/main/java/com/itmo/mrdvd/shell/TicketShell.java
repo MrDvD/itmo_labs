@@ -1,13 +1,13 @@
 package com.itmo.mrdvd.shell;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeMap;
 
 import com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveEventBuilder;
@@ -46,16 +46,15 @@ import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 
-public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<Object>, DataInputDevice> {
+public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   private boolean isOpen;
 
-  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn) {
-   super(out, linkedIn, new TreeMap<>(), new HashSet<>(), new ArrayList<>());
-   this.isOpen = false;
+  public TicketShell(DataInputDevice in, OutputDevice out) {
+    this(in, out, new HashMap<>(), new ArrayList<>());
   }
 
-  public TicketShell(OutputDevice out, BasicLinkedInput<DataInputDevice> linkedIn, Map<String, Command> commands, Set<Object> stack, List<Command> preExecute) {
-    super(out, linkedIn, commands, stack, preExecute);
+  public TicketShell(DataInputDevice in, OutputDevice out, Map<String, Command> commands, List<Command> preExecute) {
+    super(in, out, commands, preExecute);
     this.isOpen = false;
   }
 
@@ -73,7 +72,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<
     return Optional.of(cmd);
   }
 
-  public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<Collection<Ticket,List<Ticket>>> serial, Deserializer<Collection<Ticket,List<Ticket>>> deserial) {
+  public void initDefaultCommands(TicketCollection collection, String envName, FileDescriptor fd, Serializer<Collection<Ticket,List<Ticket>>> serial, Deserializer<Collection<Ticket,List<Ticket>>> deserial, Set<Path> usedPaths) {
     addCommand(new AddCommand<>(collection, new InteractiveTicketBuilder(new InteractiveCoordinatesBuilder(getIn(), getOut()), new InteractiveEventBuilder(getIn(), getOut()), getIn(), getOut()), getOut()));
     addCommand(new HelpCommand(getOut()));
     addCommand(new ExitCommand());
@@ -91,7 +90,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<
         new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
    //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
     addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
-    addCommand(new ExecuteScriptCommand(getIn(), getOut(), fd));
+    addCommand(new ExecuteScriptCommand(getIn(), getOut(), fd, usedPaths));
     addCommand(new InfoCommand(collection, getOut()));
   }
 
@@ -110,17 +109,10 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<
       if (InteractiveInputDevice.class.isInstance(getIn())) {
          ((InteractiveInputDevice) getIn()).write("> ");
       }
-      // check if input is closed
-      while (!this.linkedIn.input().hasNext()) {
-         if (this.linkedIn.prev().isEmpty()) {
-            this.isOpen = false;
-            return;
-         }
-         this.linkedIn.input().closeIn();
-         this.linkedIn = this.linkedIn.prev().get();
-         if (InteractiveInputDevice.class.isInstance(getIn())) {
-            ((InteractiveInputDevice) getIn()).write("> ");
-         }
+      while (!this.in.hasNext()) {
+        this.in.closeIn();
+        this.isOpen = false;
+        return;
       }
       Optional<Command> cmd = processCommandLine();
       if (cmd.isEmpty()) {
@@ -146,6 +138,11 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Set<
 
   @Override
   public DataInputDevice getIn() {
-   return (DataInputDevice) this.linkedIn.input();
+   return (DataInputDevice) this.in;
+  }
+
+  @Override
+  public TicketShell forkSubshell() {
+    return new TicketShell(getIn(), getOut(), getCommands(), getPreExecute());
   }
 }

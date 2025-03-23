@@ -1,7 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import com.itmo.mrdvd.command.marker.Command;
@@ -10,58 +8,30 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public abstract class Shell<T,S,U extends DataInputDevice> implements Iterable<Command> {
-   protected final T commands;
-   protected final S preExecute;
-   protected LinkedInput<U> linkedIn;
-   protected final OutputDevice out;
-   protected int stackSize;
-   protected final List<StackRecord<?, ?>> stack;
+public abstract class Shell<T,S> implements Iterable<Command> {
+  protected final T commands;
+  protected final S preExecute;
+  protected DataInputDevice in;
+  protected final OutputDevice out;
 
-   public Shell(OutputDevice out, LinkedInput<U> linkedIn, T commands, S preExecute) {
-      this(out, linkedIn, commands, preExecute, new ArrayList<>(), 256);
-   }
+  public Shell(DataInputDevice in, OutputDevice out, T commands, S preExecute) {
+    this.in = in;
+    this.out = out;
+    this.commands = commands;
+    this.preExecute = preExecute;
+  }
 
-   public Shell(OutputDevice out, LinkedInput<U> linkedIn, T commands, S preExecute, List<StackRecord<?, ?>> stack, int stackSize) {
-      this.linkedIn = linkedIn;
-      this.out = out;
-      this.commands = commands;
-      this.preExecute = preExecute;
-      this.stackSize = stackSize;
-      this.stack = stack;
-   }
   public InputDevice getIn() {
-   return this.linkedIn.input();
+   return this.in;
   }
 
-  public void setIn(U in) {
-   this.linkedIn = this.linkedIn.update(in);
-  }
-
-  public void revertIn() {
-   if (this.linkedIn.prev().isPresent()) {
-      this.linkedIn = this.linkedIn.prev().get();
-   } 
+  public Shell<T,S> setIn(DataInputDevice in) {
+    this.in = in;
+    return this;
   }
 
   public OutputDevice getOut() {
    return this.out;
-  }
-
-  public V getStack() {
-    return this.stack;
-  }
-
-  public void getStackCapacity(int size) {
-    this.stackSize = size;
-  }
-
-  public abstract int getStackSize();
-
-  public abstract void push(Object obj);
-
-  public int getStackCapacity() {
-    return this.stackSize;
   }
 
   public T getCommands() {
@@ -88,9 +58,11 @@ public abstract class Shell<T,S,U extends DataInputDevice> implements Iterable<C
       }
      cmd.get().execute();
      return cmd;
-   }
-   return Optional.empty();
- }
+    }
+    return Optional.empty();
+  }
+
+  public abstract Shell<T,S> forkSubshell();
 
   public abstract void open();
 

@@ -3,6 +3,7 @@ package com.itmo.mrdvd.command;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
+import java.util.Set;
 
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.command.marker.ShellCommand;
@@ -14,14 +15,16 @@ import com.itmo.mrdvd.shell.Shell;
 
 public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   private Shell shell;
-  private final InputDevice in;
+  private InputDevice in;
   private final OutputDevice log;
   private final FileDescriptor fd;
+  private final Set<Path> usedPaths;
 
-  public ExecuteScriptCommand(InputDevice in, OutputDevice log, FileDescriptor fd) {
-   this.in = in; 
-   this.log = log;
+  public ExecuteScriptCommand(InputDevice in, OutputDevice log, FileDescriptor fd, Set<Path> usedPaths) {
+    this.in = in; 
+    this.log = log;
     this.fd = fd;
+    this.usedPaths = usedPaths;
   }
 
   @Override
@@ -30,12 +33,12 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   }
 
   @Override
-  public void setShell(Shell<?, ?, ?, ?> shell) {
+  public void setShell(Shell<?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
-  public Optional<Shell<?, ?, ?, ?>> getShell() {
+  public Optional<Shell<?, ?>> getShell() {
    return Optional.ofNullable(this.shell);
   }
 
@@ -46,10 +49,6 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
     }
     Optional<String> params = shell.getIn().readToken();
     shell.getIn().skipLine();
-    if (shell.getStackCapacity() <= shell.getStack().size()) {
-      log.writeln("[ERROR] Превышен размер стека: слишком большой уровень вложенности.");
-      return;
-    }
     FileDescriptor file = fd.duplicate();
     try {
       file.setPath(params.get());
@@ -68,17 +67,17 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
       log.writeln("[ERROR] Неверный адрес к файлу со скриптом.");
       return;
     }
-    if (stack.contains(path.get().toAbsolutePath().toString())) {
+    if (usedPaths.contains(path.get())) {
       log.writeln(
           String.format(
               "[WARN] Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".",
               path.get().getFileName().toString()));
       return;
     }
-    stack.add(path.get().toAbsolutePath().toString());
+    usedPaths.add(path.get());
     file.openIn();
-    shell.setIn(file);
-    stack.remove(path.get().toAbsolutePath().toString()); // to fix
+    shell.forkSubshell().setIn(file).open();
+    usedPaths.remove(path.get());
   }
 
   @Override

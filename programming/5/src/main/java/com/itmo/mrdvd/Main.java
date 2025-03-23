@@ -2,6 +2,7 @@ package com.itmo.mrdvd;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.List;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -11,7 +12,6 @@ import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.shell.BasicLinkedInput;
 import com.itmo.mrdvd.shell.TicketShell;
 
 /*
@@ -24,12 +24,8 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 6. Replace Scanner with BufferedInputStream (hasNext is shish)
  * 7. Check adding items from file
  * 8. Redo the stack logic in Shell (ExecuteScriptCommand)
- *    - each command has its own stack record in shell for pseudo-async execution
- *    - if the command is done executing, its record should be deleted
- *    - but it moves the logic of script execution to ticketshell (SRP violation)
- *    ===
  *    - the idea is to create a new subshell in executescript command.
- *    - if i do this, i will have to remove the linkedinput logic from shell
+ *    - now i should add indirect atomicreference to inputdevice
  */
 
 public class Main {
@@ -37,9 +33,9 @@ public class Main {
     DataConsole console = new DataConsole().init();
     TicketCollection collection = new TicketCollection("My Collection");
     ObjectMapperDecorator<Collection<Ticket,List<Ticket>>> mapper = new ObjectMapperDecorator<>(new XmlMapper(), TicketCollection.class);
-    TicketShell shell = new TicketShell(console, new BasicLinkedInput<>(console));
+    TicketShell shell = new TicketShell(console, console);
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper);
+    shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper, new HashSet<>());
     shell.open();
   }
 }
