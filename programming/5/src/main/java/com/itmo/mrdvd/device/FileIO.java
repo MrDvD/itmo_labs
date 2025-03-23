@@ -84,8 +84,10 @@ public class FileIO extends FileDescriptor {
     try {
       String result = "";
       while (inReader.available() > 0) {
+        inReader.mark(1);
         int chr = inReader.read();
-        if (delimiters.indexOf(chr) != -1 && chr == '\n') {
+        if (delimiters.indexOf(chr) != -1) {
+          inReader.reset();
           break;
         }
         result += (char) chr;
@@ -106,7 +108,7 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public Optional<String> readToken() {
-   return read(" ");
+   return read(" \n");
   }
 
   @Override
@@ -130,5 +132,27 @@ public class FileIO extends FileDescriptor {
   @Override
   public IOStatus writeln(String str) {
     return write(str + "\n");
+  }
+
+  @Override
+  public boolean hasNext() {
+   try {
+      return inReader.available() > 0;   
+   } catch (IOException e) {
+      return false;
+   }
+  }
+
+  @Override
+  public void skipLine() {
+   try {
+       while (inReader.available() > 0) {
+         int chr = inReader.read();
+         inReader.available();
+         if (chr == '\n') {
+            break;
+         }
+       }
+   } catch (IOException e) {}
   }
 }

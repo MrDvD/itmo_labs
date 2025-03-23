@@ -83,7 +83,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Data
         new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
    //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
     addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
-    addCommand(new ExecuteScriptCommand(getOut(), fd));
+    addCommand(new ExecuteScriptCommand(getIn(), getOut(), fd));
     addCommand(new InfoCommand(collection, getOut()));
   }
 
@@ -101,6 +101,18 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>, Data
     while (this.isOpen) {
       if (InteractiveInputDevice.class.isInstance(getIn())) {
          ((InteractiveInputDevice) getIn()).write("> ");
+      }
+      // check if input is closed
+      while (!this.linkedIn.input().hasNext()) {
+         if (this.linkedIn.prev().isEmpty()) {
+            this.isOpen = false;
+            return;
+         }
+         this.linkedIn.input().closeIn();
+         this.linkedIn = this.linkedIn.prev().get();
+         if (InteractiveInputDevice.class.isInstance(getIn())) {
+            ((InteractiveInputDevice) getIn()).write("> ");
+         }
       }
       Optional<Command> cmd = processCommandLine();
       if (cmd.isEmpty()) {

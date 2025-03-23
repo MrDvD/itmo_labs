@@ -6,24 +6,31 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
-public class ExecuteScriptCommand implements ShellCommand {
-  private Shell<?, ?, ?> shell;
+public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
+  private Shell shell;
+  private final InputDevice in;
   private final OutputDevice log;
   private final Set<String> stack;
   private final FileDescriptor fd;
 
-  public ExecuteScriptCommand(OutputDevice log, FileDescriptor fd) {
-    this.log = log;
+  public ExecuteScriptCommand(InputDevice in, OutputDevice log, FileDescriptor fd) {
+   this.in = in; 
+   this.log = log;
     this.stack = new HashSet<>();
     this.fd = fd;
+  }
+
+  @Override
+  public InputDevice getParamsInput() {
+   return this.in;
   }
 
   @Override
@@ -73,9 +80,9 @@ public class ExecuteScriptCommand implements ShellCommand {
       return;
     }
     stack.add(path.get().toAbsolutePath().toString());
+    file.openIn();
     shell.setIn(file);
-    stack.remove(path.get().toAbsolutePath().toString());
-    file.closeIn();
+    stack.remove(path.get().toAbsolutePath().toString()); // to fix
   }
 
   @Override

@@ -30,6 +30,11 @@ public abstract class Console implements InteractiveInputDevice {
   }
 
   @Override
+  public boolean hasNext() {
+    return in.hasNext();
+  }
+
+  @Override
   public IOStatus write(String str) {
     try {
       out.write(str);
