@@ -5,6 +5,6 @@ import java.util.Optional;
 import com.itmo.mrdvd.shell.Shell;
 
 public interface ShellCommand extends Command {
-  public void setShell(Shell<?, ?> shell);
+  public ShellCommand setShell(Shell<?, ?> shell);
   public Optional<Shell<?, ?>> getShell();
 }

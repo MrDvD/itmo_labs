@@ -6,7 +6,15 @@ import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.shell.Shell;
 
 public class ExitCommand implements ShellCommand {
-  private Shell<?, ?> shell;
+  private final Shell<?, ?> shell;
+
+  public ExitCommand() {
+    this(null);
+  }
+
+  public ExitCommand(Shell<?, ?> shell) {
+    this.shell = shell;
+  }
 
   @Override
   public void execute() {
@@ -21,8 +29,8 @@ public class ExitCommand implements ShellCommand {
   }
 
   @Override
-  public void setShell(Shell<?, ?> shell) {
-    this.shell = shell;
+  public ExitCommand setShell(Shell<?, ?> shell) {
+    return new ExitCommand(shell);
   }
 
   @Override

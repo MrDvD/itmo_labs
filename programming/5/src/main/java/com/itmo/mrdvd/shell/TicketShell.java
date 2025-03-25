@@ -63,10 +63,10 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
       return Optional.empty();
     }
     if (cmd instanceof ShellCommand shellCmd) {
-      shellCmd.setShell(this);
+      cmd = shellCmd.setShell(this);
     }
-    if (preExec) {
-      getPreExecute().add(cmd);
+    if (getPreExecute().isPresent() && preExec) {
+      getPreExecute().get().add(cmd);
     }
     getCommands().put(cmd.name(), cmd);
     return Optional.of(cmd);
@@ -101,8 +101,10 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
 
   @Override
   public void open() {
-    for (Command cmd : getPreExecute()) {
-      cmd.execute();
+    if (getPreExecute().isPresent()) {
+      for (Command cmd : getPreExecute().get()) {
+        cmd.execute();
+      }
     }
     this.isOpen = true;
     while (this.isOpen) {
@@ -143,10 +145,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
 
   @Override
   public TicketShell forkSubshell() {
-    TicketShell subshell = new TicketShell(getIn(), getOut(), getCommands(), getPreExecute());
-    for (Command cmd : subshell) {
+    TicketShell subshell = new TicketShell(getIn(), getOut());
+    for (Command cmd : this) {
       if (cmd instanceof ShellCommand shellCmd) {
-        shellCmd.setShell(subshell);
+        subshell.addCommand(shellCmd.setShell(subshell));
+      } else {
+        subshell.addCommand(cmd);
       }
     }
     return subshell;

@@ -10,7 +10,7 @@ import com.itmo.mrdvd.device.input.InputDevice;
 
 public abstract class Shell<T,S> implements Iterable<Command> {
   protected final T commands;
-  protected final S preExecute;
+  protected final Optional<S> preExecute;
   protected DataInputDevice in;
   protected final OutputDevice out;
 
@@ -18,7 +18,7 @@ public abstract class Shell<T,S> implements Iterable<Command> {
     this.in = in;
     this.out = out;
     this.commands = commands;
-    this.preExecute = preExecute;
+    this.preExecute = Optional.ofNullable(preExecute);
   }
 
   public InputDevice getIn() {
@@ -38,7 +38,7 @@ public abstract class Shell<T,S> implements Iterable<Command> {
    return this.commands;
   }
 
-  public S getPreExecute() {
+  public Optional<S> getPreExecute() {
    return this.preExecute;
   }
 

@@ -14,13 +14,18 @@ import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.shell.Shell;
 
 public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
-  private Shell shell;
+  private final Shell shell;
   private final FileDescriptor fd;
   private final Set<Path> usedPaths;
 
   public ExecuteScriptCommand(FileDescriptor fd, Set<Path> usedPaths) {
+    this(fd, usedPaths, null);
+  }
+
+  public ExecuteScriptCommand(FileDescriptor fd, Set<Path> usedPaths, Shell shell) {
     this.fd = fd;
     this.usedPaths = usedPaths;
+    this.shell = shell;
   }
 
   @Override
@@ -29,8 +34,8 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   }
 
   @Override
-  public void setShell(Shell<?, ?> shell) {
-    this.shell = shell;
+  public ExecuteScriptCommand setShell(Shell<?, ?> shell) {
+    return new ExecuteScriptCommand(fd, usedPaths, shell);
   }
 
   @Override

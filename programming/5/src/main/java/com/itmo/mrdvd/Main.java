@@ -23,7 +23,6 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 5. Move LoadCommand to the shell
  * 6. Replace Scanner with BufferedInputStream (hasNext is shish)
  * 7. Check adding items from file
- * 8. FIX: shell won't close after launching scr.t
  */
 
 public class Main {
