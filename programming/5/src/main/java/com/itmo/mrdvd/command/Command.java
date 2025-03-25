@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.command.marker;
+package com.itmo.mrdvd.command;
 
 import java.util.Optional;
 
@@ -16,4 +16,8 @@ public interface Command {
   public Command setShell(Shell<?, ?> shell);
 
   public Optional<Shell<?, ?>> getShell();
+
+  public default boolean hasParams() {
+    return false;
+  }
 }

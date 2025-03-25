@@ -1,46 +1,63 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.Shell;
 
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
   private final Collection<T, U> collection;
   private final Validator<T> validator;
   private final Deserializer<Collection<T, U>> deserial;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
+
+  public LoadCommand(InputDevice in, Collection<T, U> collection, Validator<T> validator, Deserializer<Collection<T, U>> deserial) {
+    this(in, collection, validator, deserial, null);
+  }
 
   public LoadCommand(
       InputDevice in,
       Collection<T, U> collection,
       Validator<T> validator,
       Deserializer<Collection<T, U>> deserial,
-      OutputDevice out) {
+      Shell<?, ?> shell) {
     this.in = in;
     this.collection = collection;
     this.validator = validator;
     this.deserial = deserial;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public void execute() {
+  public LoadCommand<T, U> setShell(Shell<?, ?> shell) {
+    return new LoadCommand<>(in, collection, validator, deserial, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
     IOStatus code = in.openIn();
     if (code.equals(IOStatus.FAILURE)) {
-      out.writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
+      getShell().get().getOut().writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
       return;
     }
     Optional<String> fileContent = in.readAll();
     in.closeIn();
     if (fileContent.isEmpty()) {
-      out.writeln("[ERROR] Ошибка чтения файла с коллекцией.");
+      getShell().get().getOut().writeln("[ERROR] Ошибка чтения файла с коллекцией.");
       return;
     }
     Optional<Collection<T, U>> loaded = deserial.deserialize(fileContent.get());
@@ -48,16 +65,16 @@ public class LoadCommand<T extends HavingId, U> implements Command {
       collection.clear();
       for (T t : loaded.get()) {
         if (collection.add(t, validator).isEmpty()) {
-          out.writeln(
+          getShell().get().getOut().writeln(
               String.format(
                   "[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.",
                   t.getId()));
         }
       }
       collection.setMetadata(loaded.get().getMetadata());
-      out.writeln("[INFO] Коллекция успешно считана из файла.");
+      getShell().get().getOut().writeln("[INFO] Коллекция успешно считана из файла.");
     } else {
-      out.writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");
+      getShell().get().getOut().writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");
     }
   }
 

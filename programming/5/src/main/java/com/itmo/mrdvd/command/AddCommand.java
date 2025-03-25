@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.shell.Shell;
 
 public class AddCommand<T extends HavingId> implements Command {

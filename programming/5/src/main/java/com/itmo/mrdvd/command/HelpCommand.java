@@ -1,27 +1,23 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.command.marker.ShellCommand;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class HelpCommand implements ShellCommand {
-  private final Shell<?, ?> shell;
-  private final OutputDevice out;
+import com.itmo.mrdvd.shell.Shell;
 
-  public HelpCommand(OutputDevice out) {
-    this(out, null);
+public class HelpCommand implements Command {
+  private final Shell<?, ?> shell;
+
+  public HelpCommand() {
+    this(null);
   }
 
-  public HelpCommand(OutputDevice out, Shell<?, ?> shell) {
-    this.out = out;
+  public HelpCommand(Shell<?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
   public HelpCommand setShell(Shell<?, ?> shell) {
-    return new HelpCommand(out, shell);
+    return new HelpCommand(shell);
   }
 
   @Override
@@ -31,10 +27,11 @@ public class HelpCommand implements ShellCommand {
 
   @Override
   public void execute() {
-    if (shell != null) {
-      for (Command cmd : shell) {
-        out.write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
-      }
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    for (Command cmd : shell) {
+      getShell().get().getOut().write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
     }
   }
 

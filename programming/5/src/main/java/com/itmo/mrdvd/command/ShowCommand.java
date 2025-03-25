@@ -1,24 +1,42 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.shell.Shell;
 
 public class ShowCommand implements Command {
   private final Collection<?, ?> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
 
-  public ShowCommand(Collection<?, ?> collect, OutputDevice out) {
+  public ShowCommand(Collection<?, ?> collect) {
+    this(collect, null);
+  }
+
+  public ShowCommand(Collection<?, ?> collect, Shell<?, ?> shell) {
     this.collection = collect;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public void execute() {
-    for (Object obj : collection) {
-      out.writeln(obj.toString());
+  public ShowCommand setShell(Shell<?, ?> shell) {
+    return new ShowCommand(collection, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
     }
-    out.writeln("[INFO] Конец коллекции.");
+    for (Object obj : collection) {
+      getShell().get().getOut().writeln(obj.toString());
+    }
+    getShell().get().getOut().writeln("[INFO] Конец коллекции.");
   }
 
   @Override

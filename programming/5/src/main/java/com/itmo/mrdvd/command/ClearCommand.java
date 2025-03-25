@@ -3,7 +3,6 @@ package com.itmo.mrdvd.command;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.shell.Shell;
 
 public class ClearCommand implements Command {

@@ -2,7 +2,6 @@ package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import java.util.List;
 

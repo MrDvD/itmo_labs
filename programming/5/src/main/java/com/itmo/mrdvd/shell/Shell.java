@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.shell;
 
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.command.marker.CommandHasParams;
+import java.util.Optional;
+
+import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
-import java.util.Optional;
 
 public abstract class Shell<T, S> implements Iterable<Command> {
   protected final T commands;
@@ -20,7 +19,7 @@ public abstract class Shell<T, S> implements Iterable<Command> {
     this.preExecute = Optional.ofNullable(preExecute);
   }
 
-  public InputDevice getIn() {
+  public DataInputDevice getIn() {
     return this.in;
   }
 
@@ -52,7 +51,7 @@ public abstract class Shell<T, S> implements Iterable<Command> {
     }
     Optional<Command> cmd = getCommand(cmdName.get());
     if (cmd.isPresent()) {
-      if (!(cmd.get() instanceof CommandHasParams)) {
+      if (!cmd.get().hasParams()) {
         getIn().skipLine();
       }
       cmd.get().execute();

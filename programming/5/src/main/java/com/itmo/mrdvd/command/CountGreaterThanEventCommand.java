@@ -1,35 +1,44 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.command.marker.CommandHasParams;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.LongInputDevice;
-import com.itmo.mrdvd.object.Ticket;
 import java.util.Optional;
 
-public class CountGreaterThanEventCommand implements CommandHasParams {
+import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.shell.Shell;
+
+public class CountGreaterThanEventCommand implements Command {
   private final Collection<Ticket, ?> collection;
-  private final LongInputDevice in;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
+
+  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect) {
+    this(collect, null);
+  }
 
   public CountGreaterThanEventCommand(
-      Collection<Ticket, ?> collect, LongInputDevice in, OutputDevice out) {
+      Collection<Ticket, ?> collect, Shell<?, ?> shell) {
     this.collection = collect;
-    this.in = in;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public LongInputDevice getParamsInput() {
-    return this.in;
+  public CountGreaterThanEventCommand setShell(Shell<?, ?> shell) {
+    return new CountGreaterThanEventCommand(collection, shell);
   }
 
   @Override
-  public void execute() {
-    Optional<Long> params = getParamsInput().readLong();
-    getParamsInput().skipLine();
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    Optional<Long> params = getShell().get().getIn().readLong();
+    getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      out.writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");
+      getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");
       return;
     }
     Long eventId = params.get();
@@ -39,7 +48,7 @@ public class CountGreaterThanEventCommand implements CommandHasParams {
         count++;
       }
     }
-    out.writeln(String.format("Количество элементов с большим event_id: %d.", count));
+    getShell().get().getOut().writeln(String.format("Количество элементов с большим event_id: %d.", count));
   }
 
   @Override
@@ -55,5 +64,10 @@ public class CountGreaterThanEventCommand implements CommandHasParams {
   @Override
   public String description() {
     return "вывести количество элементов, значение поля event_id которых больше заданного";
+  }
+
+  @Override
+  public boolean hasParams() {
+    return true;
   }
 }

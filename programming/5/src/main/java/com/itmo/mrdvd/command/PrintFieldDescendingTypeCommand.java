@@ -1,32 +1,47 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.device.OutputDevice;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+
+import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.Shell;
 
 public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Command {
   private final Collection<T, List<T>> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
   private final Comparator<T> comparator;
 
+  public PrintFieldDescendingTypeCommand(Collection<T, List<T>> collect, Comparator<T> comparator) {
+    this(collect, comparator, null);
+  }
+
   public PrintFieldDescendingTypeCommand(
-      Collection<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
+      Collection<T, List<T>> collect, Comparator<T> comparator, Shell<?, ?> shell) {
     this.collection = collect;
-    this.out = out;
+    this.shell = shell;
     this.comparator = comparator;
+  }
+
+  @Override
+  public PrintFieldDescendingTypeCommand<T> setShell(Shell<?, ?> shell) {
+    return new PrintFieldDescendingTypeCommand<>(collection, comparator, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
   }
 
   @Override
   public void execute() {
     collection.getCollection().sort(comparator);
     if (collection.getCollection().isEmpty()) {
-      out.writeln("[INFO] Коллекция пуста.");
+      getShell().get().getOut().writeln("[INFO] Коллекция пуста.");
     } else {
       for (T obj : collection) {
-        out.writeln(obj.toString());
+        getShell().get().getOut().writeln(obj.toString());
       }
     }
   }

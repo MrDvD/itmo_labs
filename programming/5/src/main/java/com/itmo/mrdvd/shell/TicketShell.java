@@ -24,6 +24,7 @@ import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfCommand;
 import com.itmo.mrdvd.command.ClearCommand;
+import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.command.CountGreaterThanEventCommand;
 import com.itmo.mrdvd.command.ExecuteScriptCommand;
 import com.itmo.mrdvd.command.ExitCommand;
@@ -39,8 +40,6 @@ import com.itmo.mrdvd.command.RemoveLastCommand;
 import com.itmo.mrdvd.command.SaveCommand;
 import com.itmo.mrdvd.command.ShowCommand;
 import com.itmo.mrdvd.command.UpdateCommand;
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.OutputDevice;
@@ -92,9 +91,8 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
                 new InteractiveCoordinatesBuilder(this::getIn, getOut()),
                 new InteractiveEventBuilder(this::getIn, getOut()),
                 this::getIn,
-                getOut()),
-            getOut()));
-    addCommand(new HelpCommand(getOut()));
+                getOut())));
+    addCommand(new HelpCommand());
     addCommand(new ExitCommand());
     addCommand(
         new UpdateCommand<>(
@@ -103,14 +101,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
                 new InteractiveCoordinatesUpdater(this::getIn, getOut()),
                 new InteractiveEventUpdater(this::getIn, getOut()),
                 this::getIn,
-                getOut()),
-            getIn(),
-            getOut()));
-    addCommand(new ClearCommand(collection, getOut()));
+                getOut())));
+    addCommand(new ClearCommand(collection));
     addCommand(new RemoveByIdCommand(collection, getIn(), getOut()));
     addCommand(new RemoveAtCommand<>(collection, getIn(), getOut()));
     addCommand(new RemoveLastCommand<>(collection, getOut()));
-    addCommand(new ShowCommand(collection, getOut()));
+    addCommand(new ShowCommand(collection));
     addCommand(
         new AddIfCommand<>(
             collection,
@@ -120,26 +116,24 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
                 () -> this.getIn(),
                 getOut()),
             new TicketComparator(TicketField.ID),
-            Set.of(1),
-            getOut()));
+            Set.of(1)));
     addCommand(
-        new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE), getOut()));
+        new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE)));
     addCommand(
         new PrintFieldDescendingTypeCommand<>(
-            collection, new TicketComparator(TicketField.TYPE, true), getOut()));
-    addCommand(new CountGreaterThanEventCommand(collection, getIn(), getOut()));
-    addCommand(new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
+            collection, new TicketComparator(TicketField.TYPE, true)));
+    addCommand(new CountGreaterThanEventCommand(collection));
+    addCommand(new ReadEnvironmentFilepathCommand(envName, fd), true);
     addCommand(
         new LoadCommand<>(
             fd,
             collection,
             new TicketValidator(new CoordinatesValidator(), new EventValidator()),
-            deserial,
-            getOut()),
+            deserial),
         true);
-    addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
+    addCommand(new SaveCommand<>(collection, serial, fd));
     addCommand(new ExecuteScriptCommand(fd, usedPaths));
-    addCommand(new InfoCommand(collection, getOut()));
+    addCommand(new InfoCommand(collection));
   }
 
   @Override

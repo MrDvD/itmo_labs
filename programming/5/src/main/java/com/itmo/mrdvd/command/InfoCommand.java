@@ -1,21 +1,39 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.shell.Shell;
 
 public class InfoCommand implements Command {
   private final Collection<?, ?> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
 
-  public InfoCommand(Collection<?, ?> collect, OutputDevice out) {
+  public InfoCommand(Collection<?, ?> collect) {
+    this(collect, null);
+  }
+
+  public InfoCommand(Collection<?, ?> collect, Shell<?, ?> shell) {
     this.collection = collect;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public void execute() {
-    out.writeln(collection.getMetadata().toString());
+  public InfoCommand setShell(Shell<?, ?> shell) {
+    return new InfoCommand(collection, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    getShell().get().getOut().writeln(collection.getMetadata().toString());
   }
 
   @Override

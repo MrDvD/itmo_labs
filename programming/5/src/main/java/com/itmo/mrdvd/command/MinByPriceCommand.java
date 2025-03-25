@@ -1,31 +1,49 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.device.OutputDevice;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.Shell;
 
 public class MinByPriceCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
   private final Comparator<T> comparator;
 
+  public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator) {
+    this(collect, comparator, null);
+  }
+
   public MinByPriceCommand(
-      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
+      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, Shell<?, ?> shell) {
     this.collection = collect;
-    this.out = out;
+    this.shell = shell;
     this.comparator = comparator;
   }
 
   @Override
-  public void execute() {
+  public MinByPriceCommand<T> setShell(Shell<?, ?> shell) {
+    return new MinByPriceCommand<>(collection, comparator, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
     collection.getCollection().sort(comparator);
     if (collection.getCollection().isEmpty()) {
-      out.writeln("[INFO] Коллекция пуста.");
+      getShell().get().getOut().writeln("[INFO] Коллекция пуста.");
     } else {
-      out.writeln(collection.getCollection().get(0).toString());
+      getShell().get().getOut().writeln(collection.getCollection().get(0).toString());
     }
   }
 

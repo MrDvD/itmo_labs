@@ -1,10 +1,10 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.command.marker.ShellCommand;
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class ExitCommand implements ShellCommand {
+import com.itmo.mrdvd.shell.Shell;
+
+public class ExitCommand implements Command {
   private final Shell<?, ?> shell;
 
   public ExitCommand() {
@@ -16,10 +16,11 @@ public class ExitCommand implements ShellCommand {
   }
 
   @Override
-  public void execute() {
-    if (shell != null) {
-      shell.close();
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
     }
+    getShell().get().close();
   }
 
   @Override
