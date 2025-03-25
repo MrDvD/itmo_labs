@@ -1,31 +1,35 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-import com.itmo.mrdvd.builder.validators.TicketValidator;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.IntInputDevice;
-import com.itmo.mrdvd.object.Coordinates;
-import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.object.TicketType;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.UserInteractor;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.builder.validators.TicketValidator;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.EnumInputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.device.input.IntInputDevice;
+import com.itmo.mrdvd.object.Coordinates;
+import com.itmo.mrdvd.object.Event;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.object.TicketType;
+
 public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
   private <T extends IntInputDevice & EnumInputDevice> void init(
-      InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, T in) {
+      InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, Supplier<T> in) {
     addInteractiveChange(
         Ticket::setName,
         Ticket::getName,
         String.class,
-        new UserInteractor<String>(
+        new UserInteractor<>(
             "Название билета",
-            in::read,
+            in,
+            InputDevice::read,
             "[ERROR] Неправильный формат ввода: название не должно быть пустым."),
         TicketValidator::validateName);
     addInteractiveUpdater(
@@ -34,11 +38,12 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
         Ticket::setPrice,
         Ticket::getPrice,
         Integer.class,
-        new UserInteractor<Integer>(
+        new UserInteractor<>(
             "Стоимость билета",
-            () -> {
-              Optional<Integer> res = in.readInt();
-              in.skipLine();
+            () -> in.get(),
+            (IntInputDevice x) -> {
+              Optional<Integer> res = x.readInt();
+              x.skipLine();
               return res;
             },
             "[ERROR] Неправильный формат ввода: введите натуральное число.",
@@ -52,11 +57,12 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
         Ticket::setType,
         Ticket::getType,
         TicketType.class,
-        new UserInteractor<Enum<TicketType>>(
+        new UserInteractor<>(
             "Тип билета",
-            () -> {
-              Optional<Enum<TicketType>> res = in.readEnum(TicketType.class);
-              in.skipLine();
+            () -> in.get(),
+            (EnumInputDevice x) -> {
+              Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
+              x.skipLine();
               return res;
             },
             "[ERROR] Неправильный формат ввода: указанный тип билета не найден.",
@@ -68,7 +74,7 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(
       InteractiveUpdater<Coordinates> coordUpdate,
       InteractiveUpdater<Event> eventUpdate,
-      T in,
+      Supplier<T> in,
       OutputDevice out) {
     super(out);
     init(coordUpdate, eventUpdate, in);
@@ -77,7 +83,7 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(
       InteractiveUpdater<Coordinates> coordUpdate,
       InteractiveUpdater<Event> eventUpdate,
-      T in,
+      Supplier<T> in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Ticket, ?>> setters,

@@ -70,9 +70,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     if (getCommands().containsKey(cmd.name())) {
       return Optional.empty();
     }
-    if (cmd instanceof ShellCommand shellCmd) {
-      cmd = shellCmd.setShell(this);
-    }
+    cmd = cmd.setShell(this);
     if (getPreExecute().isPresent() && preExec) {
       getPreExecute().get().add(cmd);
     }
@@ -91,9 +89,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new AddCommand<>(
             collection,
             new InteractiveTicketBuilder(
-                new InteractiveCoordinatesBuilder(getIn(), getOut()),
-                new InteractiveEventBuilder(getIn(), getOut()),
-                getIn(),
+                new InteractiveCoordinatesBuilder(this::getIn, getOut()),
+                new InteractiveEventBuilder(this::getIn, getOut()),
+                this::getIn,
                 getOut()),
             getOut()));
     addCommand(new HelpCommand(getOut()));
@@ -102,9 +100,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new UpdateCommand<>(
             collection,
             new InteractiveTicketUpdater(
-                new InteractiveCoordinatesUpdater(getIn(), getOut()),
-                new InteractiveEventUpdater(getIn(), getOut()),
-                getIn(),
+                new InteractiveCoordinatesUpdater(this::getIn, getOut()),
+                new InteractiveEventUpdater(this::getIn, getOut()),
+                this::getIn,
                 getOut()),
             getIn(),
             getOut()));
@@ -117,9 +115,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new AddIfCommand<>(
             collection,
             new InteractiveTicketBuilder(
-                new InteractiveCoordinatesBuilder(getIn(), getOut()),
-                new InteractiveEventBuilder(getIn(), getOut()),
-                getIn(),
+                new InteractiveCoordinatesBuilder(() -> this.getIn(), getOut()),
+                new InteractiveEventBuilder(() -> this.getIn(), getOut()),
+                () -> this.getIn(),
                 getOut()),
             new TicketComparator(TicketField.ID),
             Set.of(1),
@@ -199,11 +197,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   public TicketShell forkSubshell() {
     TicketShell subshell = new TicketShell(getIn(), getOut());
     for (Command cmd : this) {
-      if (cmd instanceof ShellCommand shellCmd) {
-        subshell.addCommand(shellCmd.setShell(subshell));
-      } else {
-        subshell.addCommand(cmd);
-      }
+      subshell.addCommand(cmd.setShell(subshell));
     }
     return subshell;
   }

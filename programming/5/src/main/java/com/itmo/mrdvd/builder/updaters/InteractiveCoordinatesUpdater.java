@@ -1,28 +1,31 @@
 package com.itmo.mrdvd.builder.updaters;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.CoordinatesValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coordinates> {
-  private void init(FloatInputDevice in) {
+  private void init(Supplier<FloatInputDevice> in) {
     addInteractiveChange(
         Coordinates::setX,
         Coordinates::getX,
         Float.class,
-        new UserInteractor<Float>(
+        new UserInteractor<>(
             "X-координата",
-            () -> {
-              Optional<Float> res = in.readFloat();
-              in.skipLine();
+            in,
+            (FloatInputDevice x) -> {
+              Optional<Float> res = x.readFloat();
+              x.skipLine();
               return res;
             },
             "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).",
@@ -32,11 +35,12 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
         Coordinates::setY,
         Coordinates::getY,
         Float.class,
-        new UserInteractor<Float>(
+        new UserInteractor<>(
             "Y-координата",
-            () -> {
-              Optional<Float> res = in.readFloat();
-              in.skipLine();
+            in,
+            (FloatInputDevice x) -> {
+              Optional<Float> res = x.readFloat();
+              x.skipLine();
               return res;
             },
             "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).",
@@ -44,13 +48,13 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
         CoordinatesValidator::validateY);
   }
 
-  public InteractiveCoordinatesUpdater(FloatInputDevice in, OutputDevice out) {
+  public InteractiveCoordinatesUpdater(Supplier<FloatInputDevice> in, OutputDevice out) {
     super(out);
     init(in);
   }
 
   public InteractiveCoordinatesUpdater(
-      FloatInputDevice in,
+      Supplier<FloatInputDevice> in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Coordinates, ?>> setters,

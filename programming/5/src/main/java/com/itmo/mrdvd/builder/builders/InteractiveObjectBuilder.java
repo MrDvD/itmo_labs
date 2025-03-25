@@ -1,10 +1,5 @@
 package com.itmo.mrdvd.builder.builders;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-import com.itmo.mrdvd.device.OutputDevice;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,70 +7,16 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.device.OutputDevice;
+
 public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveBuilder<T> {
   private final List<Interactor<?>> interactors;
   private final List<InteractiveBuilder<?>> builders;
   private final OutputDevice out;
-
-  public static class UserInteractor<U> implements Interactor<U> {
-    private final String attributeName;
-    private final Supplier<Optional<U>> inMethod;
-    private final Optional<List<String>> options;
-    private final String error;
-    private final Optional<String> comment;
-
-    public UserInteractor(String attributeName, Supplier<Optional<U>> inMethod, String error) {
-      this(attributeName, inMethod, error, null, null);
-    }
-
-    public UserInteractor(
-        String attributeName, Supplier<Optional<U>> inMethod, String error, String comment) {
-      this(attributeName, inMethod, error, null, comment);
-    }
-
-    public UserInteractor(
-        String attributeName, Supplier<Optional<U>> inMethod, String error, List<String> options) {
-      this(attributeName, inMethod, error, options, null);
-    }
-
-    public UserInteractor(
-        String attributeName,
-        Supplier<Optional<U>> inMethod,
-        String error,
-        List<String> options,
-        String comment) {
-      this.attributeName = attributeName;
-      this.inMethod = inMethod;
-      this.error = error;
-      this.options = Optional.ofNullable(options);
-      this.comment = Optional.ofNullable(comment);
-    }
-
-    @Override
-    public String attributeName() {
-      return this.attributeName;
-    }
-
-    @Override
-    public Supplier<Optional<U>> inMethod() {
-      return this.inMethod;
-    }
-
-    @Override
-    public Optional<List<String>> options() {
-      return this.options;
-    }
-
-    @Override
-    public Optional<String> comment() {
-      return this.comment;
-    }
-
-    @Override
-    public String error() {
-      return this.error;
-    }
-  }
 
   public InteractiveObjectBuilder(OutputDevice out) {
     this(
@@ -200,7 +141,7 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       }
       msg += ": ";
       out.write(msg);
-      result = inter.inMethod().get();
+      result = inter.get();
     }
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());

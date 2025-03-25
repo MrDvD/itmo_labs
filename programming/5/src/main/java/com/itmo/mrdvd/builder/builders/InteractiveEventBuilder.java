@@ -1,34 +1,39 @@
 package com.itmo.mrdvd.builder.builders;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.EventValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
-  private void init(EnumInputDevice in) {
+  private void init(Supplier<EnumInputDevice> in) {
     of(Event::new);
     addInteractiveSetter(
         Event::setName,
         String.class,
-        new UserInteractor<String>(
+        new UserInteractor<>(
             "Имя мероприятия",
-            in::read,
+            in,
+            InputDevice::read,
             "[ERROR] Неправильный формат ввода: имя не должно быть пустым."),
         EventValidator::validateName);
     addInteractiveSetter(
         Event::setDescription,
         String.class,
-        new UserInteractor<String>(
+        new UserInteractor<>(
             "Описание мероприятия",
-            in::read,
+            in,
+            InputDevice::read,
             "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."),
         EventValidator::validateDescription);
     String[] options = new String[EventType.values().length];
@@ -38,11 +43,12 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
     addInteractiveSetter(
         Event::setType,
         EventType.class,
-        new UserInteractor<Enum<EventType>>(
+        new UserInteractor<>(
             "Тип мероприятия",
-            () -> {
-              Optional<Enum<EventType>> result = in.readEnum(EventType.class);
-              in.skipLine();
+            in,
+            (EnumInputDevice x) -> {
+              Optional<Enum<EventType>> result = x.readEnum(EventType.class);
+              x.skipLine();
               return result;
             },
             "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.",
@@ -50,13 +56,13 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
         EventValidator::validateType);
   }
 
-  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out) {
+  public InteractiveEventBuilder(Supplier<EnumInputDevice> in, OutputDevice out) {
     super(out);
     init(in);
   }
 
   public InteractiveEventBuilder(
-      EnumInputDevice in,
+      Supplier<EnumInputDevice> in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Event, ?>> setters,

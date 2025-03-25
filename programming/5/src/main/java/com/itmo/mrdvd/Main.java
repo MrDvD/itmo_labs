@@ -1,5 +1,10 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
@@ -8,10 +13,6 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.shell.TicketShell;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
 
 /*
  * TODO:
@@ -23,7 +24,7 @@ import java.util.List;
  * 7. Check ADD-ing items from file
  * 8. FEATURE: support of Unicode.
  * 9. Попытаться полиморфно обработать комманды -> что, если команда реализует несколько интерфейсов?
- * мб вообще сделать Base интерфейс (isBase метод)
+ * 10. BUGFIX: add the possibility to get the input in builders from method
  * Existance of BeanDeserializer
  */
 

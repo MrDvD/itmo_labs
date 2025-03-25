@@ -1,22 +1,41 @@
 package com.itmo.mrdvd.command;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.command.marker.Command;
-import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.shell.Shell;
 
 public class ClearCommand implements Command {
   private final CollectionWorker<?, ?> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
 
-  public ClearCommand(CollectionWorker<?, ?> collect, OutputDevice out) {
+  public ClearCommand(CollectionWorker<?, ?> collect) {
+    this(collect, null);
+  }
+
+  public ClearCommand(CollectionWorker<?, ?> collect, Shell<?, ?> shell) {
     this.collection = collect;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public void execute() {
+  public ClearCommand setShell(Shell<?, ?> shell) {
+    return new ClearCommand(collection, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
     collection.clear();
-    out.writeln("[INFO] Коллекция очищена.");
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    getShell().get().getOut().writeln("[INFO] Коллекция очищена.");
   }
 
   @Override

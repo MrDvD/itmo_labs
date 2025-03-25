@@ -1,7 +1,11 @@
 package com.itmo.mrdvd.command.marker;
 
+import java.util.Optional;
+
+import com.itmo.mrdvd.shell.Shell;
+
 public interface Command {
-  public void execute();
+  public void execute() throws NullPointerException;
 
   public String name();
 
@@ -9,7 +13,7 @@ public interface Command {
 
   public String description();
 
-  public default boolean isPrimitive() {
-    return true;
-  }
+  public Command setShell(Shell<?, ?> shell);
+
+  public Optional<Shell<?, ?>> getShell();
 }
