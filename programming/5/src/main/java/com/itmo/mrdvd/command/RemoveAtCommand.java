@@ -1,43 +1,52 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.marker.CommandHasParams;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.IntInputDevice;
 import java.util.List;
 import java.util.Optional;
 
-public class RemoveAtCommand<T extends HavingId> implements CommandHasParams {
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.Shell;
+
+public class RemoveAtCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final IntInputDevice in;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
+
+  public RemoveAtCommand(CollectionWorker<T, List<T>> collection) {
+    this(collection, null);
+  }
 
   public RemoveAtCommand(
-      CollectionWorker<T, List<T>> collection, IntInputDevice in, OutputDevice out) {
+      CollectionWorker<T, List<T>> collection, Shell<?, ?> shell) {
     this.collection = collection;
-    this.in = in;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public IntInputDevice getParamsInput() {
-    return this.in;
+  public RemoveAtCommand<T> setShell(Shell<?, ?> shell) {
+    return new RemoveAtCommand<>(collection, shell);
   }
 
   @Override
-  public void execute() {
-    Optional<Integer> params = getParamsInput().readInt();
-    getParamsInput().skipLine();
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    Optional<Integer> params = getShell().get().getIn().readInt();
+    getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      out.writeln(
+      getShell().get().getOut().writeln(
           "[ERROR] Неправильный формат ввода: index должен быть целым неотрицательным числом.");
       return;
     }
     try {
       collection.getCollection().remove(params.get().intValue());
     } catch (IndexOutOfBoundsException e) {
-      out.writeln("[WARN] В коллекции нет элемента с введённым параметром index.");
+      getShell().get().getOut().writeln("[WARN] В коллекции нет элемента с введённым параметром index.");
     }
   }
 
@@ -54,5 +63,10 @@ public class RemoveAtCommand<T extends HavingId> implements CommandHasParams {
   @Override
   public String description() {
     return "удалить элемент, находящийся в заданной позиции коллекции (index)";
+  }
+
+  @Override
+  public boolean hasParams() {
+    return true;
   }
 }

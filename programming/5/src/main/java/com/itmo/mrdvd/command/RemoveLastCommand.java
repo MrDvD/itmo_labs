@@ -1,25 +1,44 @@
 package com.itmo.mrdvd.command;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.device.OutputDevice;
-import java.util.List;
+import com.itmo.mrdvd.shell.Shell;
 
 public class RemoveLastCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
 
-  public RemoveLastCommand(CollectionWorker<T, List<T>> collect, OutputDevice out) {
-    this.collection = collect;
-    this.out = out;
+  public RemoveLastCommand(CollectionWorker<T, List<T>> collection) {
+    this(collection, null);
+  }
+
+  public RemoveLastCommand(CollectionWorker<T, List<T>> collection, Shell<?, ?> shell) {
+    this.collection = collection;
+    this.shell = shell;
   }
 
   @Override
-  public void execute() {
+  public RemoveLastCommand<T> setShell(Shell<?, ?> shell) {
+    return new RemoveLastCommand<>(collection, shell);
+  }
+
+  @Override
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
     try {
       collection.getCollection().remove(collection.getCollection().size() - 1);
     } catch (IndexOutOfBoundsException e) {
-      out.writeln("[WARN] Коллекция пуста.");
+      getShell().get().getOut().writeln("[WARN] Коллекция пуста.");
     }
   }
 

@@ -1,34 +1,43 @@
 package com.itmo.mrdvd.command;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.command.marker.CommandHasParams;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.LongInputDevice;
 import java.util.Optional;
 
-public class RemoveByIdCommand implements CommandHasParams {
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.shell.Shell;
+
+public class RemoveByIdCommand implements Command {
   private final CollectionWorker<?, ?> collection;
-  private final LongInputDevice in;
-  private final OutputDevice out;
+  private final Shell<?, ?> shell;
+
+  public RemoveByIdCommand(CollectionWorker<?, ?> collection) {
+    this(collection, null);
+  }
 
   public RemoveByIdCommand(
-      CollectionWorker<?, ?> collection, LongInputDevice in, OutputDevice out) {
+      CollectionWorker<?, ?> collection, Shell<?, ?> shell) {
     this.collection = collection;
-    this.in = in;
-    this.out = out;
+    this.shell = shell;
   }
 
   @Override
-  public LongInputDevice getParamsInput() {
-    return this.in;
+  public RemoveByIdCommand setShell(Shell<?, ?> shell) {
+    return new RemoveByIdCommand(collection, shell);
   }
 
   @Override
-  public void execute() {
-    Optional<Long> params = getParamsInput().readLong();
-    getParamsInput().skipLine();
+  public Optional<Shell<?, ?>> getShell() {
+    return Optional.ofNullable(this.shell);
+  }
+
+  @Override
+  public void execute() throws NullPointerException {
+    if (getShell().isEmpty()) {
+      throw new NullPointerException("Shell не может быть null.");
+    }
+    Optional<Long> params = getShell().get().getIn().readLong();
+    getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      out.writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
+      getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
       return;
     }
     collection.remove(params.get());
@@ -47,5 +56,10 @@ public class RemoveByIdCommand implements CommandHasParams {
   @Override
   public String description() {
     return "удалить элемент из коллекции по его id";
+  }
+
+  @Override
+  public boolean hasParams() {
+    return true;
   }
 }

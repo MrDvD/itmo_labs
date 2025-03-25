@@ -103,9 +103,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
                 this::getIn,
                 getOut())));
     addCommand(new ClearCommand(collection));
-    addCommand(new RemoveByIdCommand(collection, getIn(), getOut()));
-    addCommand(new RemoveAtCommand<>(collection, getIn(), getOut()));
-    addCommand(new RemoveLastCommand<>(collection, getOut()));
+    addCommand(new RemoveByIdCommand(collection));
+    addCommand(new RemoveAtCommand<>(collection));
+    addCommand(new RemoveLastCommand<>(collection));
     addCommand(new ShowCommand(collection));
     addCommand(
         new AddIfCommand<>(
