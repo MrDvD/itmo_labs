@@ -5,13 +5,13 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 public interface Interactor<T> {
-   public String attributeName();
+  public String attributeName();
 
-   public Supplier<Optional<T>> inMethod();
+  public Supplier<Optional<T>> inMethod();
 
-   public Optional<String> comment();
+  public Optional<String> comment();
 
-   public Optional<List<String>> options();
+  public Optional<List<String>> options();
 
-   public String error();
+  public String error();
 }

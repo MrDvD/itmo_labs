@@ -1,21 +1,24 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.LongInputDevice;
+import java.util.Optional;
 
 public class UpdateCommand<T extends HavingId> implements CommandHasParams {
-  private final CollectionWorker<T,?> collect;
+  private final CollectionWorker<T, ?> collect;
   private final InteractiveUpdater<T> updater;
   private final LongInputDevice in;
   private final OutputDevice out;
 
-  public UpdateCommand(CollectionWorker<T,?> collection, InteractiveUpdater<T> updater, LongInputDevice in, OutputDevice out) {
+  public UpdateCommand(
+      CollectionWorker<T, ?> collection,
+      InteractiveUpdater<T> updater,
+      LongInputDevice in,
+      OutputDevice out) {
     this.collect = collection;
     this.updater = updater;
     this.in = in;
@@ -41,7 +44,6 @@ public class UpdateCommand<T extends HavingId> implements CommandHasParams {
     } else {
       out.writeln("[INFO] Объект успешно обновлён в коллекции.");
     }
-    
   }
 
   @Override

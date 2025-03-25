@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.object;
 
+import com.itmo.mrdvd.collection.HavingId;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
-import com.itmo.mrdvd.collection.HavingId;
 
 public class Ticket implements HavingId {
   private Long id;
@@ -16,35 +15,35 @@ public class Ticket implements HavingId {
 
   @Override
   public void setId(Long id) {
-   this.id = id;
+    this.id = id;
   }
 
   public void setCreationDate(LocalDateTime date) {
-   this.creationDate = date;
-}
+    this.creationDate = date;
+  }
 
-public void setName(String name) {
-   this.name = name;
-}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-public void setCoordinates(Coordinates coords) {
-   this.coordinates = coords;
-}
+  public void setCoordinates(Coordinates coords) {
+    this.coordinates = coords;
+  }
 
-public void setPrice(int price) {
-   this.price = price;
-}
+  public void setPrice(int price) {
+    this.price = price;
+  }
 
-public void setType(TicketType type) {
-   this.type = type;
-}
+  public void setType(TicketType type) {
+    this.type = type;
+  }
 
-public void setEvent(Event event) {
-   this.event = event;
-}
+  public void setEvent(Event event) {
+    this.event = event;
+  }
 
-@Override
-public Long getId() {
+  @Override
+  public Long getId() {
     return id;
   }
 

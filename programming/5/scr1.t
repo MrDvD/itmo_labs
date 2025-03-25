@@ -1,3 +1,9 @@
-show
-info
-execute_script scr.t
+add
+Name
+5
+4
+3
+VIP
+ajskf
+adsf asdf asdf
+OPERA

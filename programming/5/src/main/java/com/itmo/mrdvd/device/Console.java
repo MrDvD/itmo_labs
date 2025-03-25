@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Optional;
 import java.util.Scanner;
-
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
 public abstract class Console implements InteractiveInputDevice {
   private Scanner in;
@@ -62,7 +61,7 @@ public abstract class Console implements InteractiveInputDevice {
 
   @Override
   public Optional<String> readToken() {
-   if (in.hasNext()) {
+    if (in.hasNext()) {
       return Optional.of(in.next());
     }
     openIn();
@@ -71,10 +70,10 @@ public abstract class Console implements InteractiveInputDevice {
 
   @Override
   public void skipLine() {
-   if (in.hasNextLine()) {
+    if (in.hasNextLine()) {
       in.nextLine();
-   }
-   openIn();
+    }
+    openIn();
   }
 
   @Override

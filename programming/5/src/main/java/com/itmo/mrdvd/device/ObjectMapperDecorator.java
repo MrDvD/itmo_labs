@@ -1,7 +1,5 @@
 package com.itmo.mrdvd.device;
 
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -11,9 +9,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Optional;
 
-public class ObjectMapperDecorator<T>
-    implements Serializer<T>, Deserializer<T> {
+public class ObjectMapperDecorator<T> implements Serializer<T>, Deserializer<T> {
   private final ObjectMapper mapper;
   private final Class<? extends T> cls;
 

@@ -1,19 +1,19 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.LongInputDevice;
 import com.itmo.mrdvd.object.Ticket;
+import java.util.Optional;
 
 public class CountGreaterThanEventCommand implements CommandHasParams {
-  private final Collection<Ticket,?> collection;
+  private final Collection<Ticket, ?> collection;
   private final LongInputDevice in;
   private final OutputDevice out;
 
-  public CountGreaterThanEventCommand(Collection<Ticket,?> collect, LongInputDevice in, OutputDevice out) {
+  public CountGreaterThanEventCommand(
+      Collection<Ticket, ?> collect, LongInputDevice in, OutputDevice out) {
     this.collection = collect;
     this.in = in;
     this.out = out;
@@ -21,12 +21,12 @@ public class CountGreaterThanEventCommand implements CommandHasParams {
 
   @Override
   public LongInputDevice getParamsInput() {
-   return this.in;
+    return this.in;
   }
 
   @Override
   public void execute() {
-    Optional<Long> params = getParamsInput().readLong(); 
+    Optional<Long> params = getParamsInput().readLong();
     getParamsInput().skipLine();
     if (params.isEmpty()) {
       out.writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");

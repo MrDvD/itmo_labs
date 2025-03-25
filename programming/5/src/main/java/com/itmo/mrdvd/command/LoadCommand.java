@@ -1,7 +1,5 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
@@ -10,6 +8,7 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
+import java.util.Optional;
 
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
@@ -48,8 +47,11 @@ public class LoadCommand<T extends HavingId, U> implements Command {
     if (loaded.isPresent()) {
       collection.clear();
       for (T t : loaded.get()) {
-         if (collection.add(t, validator).isEmpty()) {
-          out.writeln(String.format("[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.", t.getId()));
+        if (collection.add(t, validator).isEmpty()) {
+          out.writeln(
+              String.format(
+                  "[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.",
+                  t.getId()));
         }
       }
       collection.setMetadata(loaded.get().getMetadata());

@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.command.marker.ShellCommand;
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class ExitCommand implements ShellCommand {
   private final Shell<?, ?> shell;
@@ -25,7 +24,7 @@ public class ExitCommand implements ShellCommand {
 
   @Override
   public Optional<Shell<?, ?>> getShell() {
-   return Optional.ofNullable(this.shell);
+    return Optional.ofNullable(this.shell);
   }
 
   @Override

@@ -8,4 +8,8 @@ public interface Command {
   public String signature();
 
   public String description();
+
+  public default boolean isPrimitive() {
+    return true;
+  }
 }

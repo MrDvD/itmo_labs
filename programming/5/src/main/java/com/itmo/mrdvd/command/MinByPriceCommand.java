@@ -1,19 +1,19 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Comparator;
-import java.util.List;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.Command;
 import com.itmo.mrdvd.device.OutputDevice;
+import java.util.Comparator;
+import java.util.List;
 
 public class MinByPriceCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
   private final OutputDevice out;
   private final Comparator<T> comparator;
 
-  public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
+  public MinByPriceCommand(
+      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, OutputDevice out) {
     this.collection = collect;
     this.out = out;
     this.comparator = comparator;

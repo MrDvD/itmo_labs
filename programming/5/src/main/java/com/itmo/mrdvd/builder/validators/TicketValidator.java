@@ -1,18 +1,17 @@
 package com.itmo.mrdvd.builder.validators;
 
-import java.time.LocalDateTime;
-
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
+import java.time.LocalDateTime;
 
 public class TicketValidator extends ObjectValidator<Ticket> {
-   public static boolean validateId(Long id) {
-      return id != null && id > 0;
-   }
+  public static boolean validateId(Long id) {
+    return id != null && id > 0;
+  }
 
-   public static boolean validateCreationDate(LocalDateTime creationDate) {
+  public static boolean validateCreationDate(LocalDateTime creationDate) {
     return creationDate != null;
   }
 
@@ -29,17 +28,18 @@ public class TicketValidator extends ObjectValidator<Ticket> {
   }
 
   private void init(Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
-   check(Ticket::getId, Long.class, TicketValidator::validateId);
-   check(Ticket::getName, String.class, TicketValidator::validateName);
-   check(Ticket::getCoordinates, coordinatesValidator);
-   check(Ticket::getPrice, Integer.class, TicketValidator::validatePrice);
-   check(Ticket::getType, TicketType.class, TicketValidator::validateType);
-   check(Ticket::getEvent, eventValidator);
-   check(Ticket::getCreationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
+    check(Ticket::getId, Long.class, TicketValidator::validateId);
+    check(Ticket::getName, String.class, TicketValidator::validateName);
+    check(Ticket::getCoordinates, coordinatesValidator);
+    check(Ticket::getPrice, Integer.class, TicketValidator::validatePrice);
+    check(Ticket::getType, TicketType.class, TicketValidator::validateType);
+    check(Ticket::getEvent, eventValidator);
+    check(Ticket::getCreationDate, LocalDateTime.class, TicketValidator::validateCreationDate);
   }
 
-  public TicketValidator(Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
-   super();
-   init(coordinatesValidator, eventValidator);
+  public TicketValidator(
+      Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
+    super();
+    init(coordinatesValidator, eventValidator);
   }
 }

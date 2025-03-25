@@ -1,28 +1,27 @@
 package com.itmo.mrdvd.command;
 
+import com.itmo.mrdvd.command.marker.CommandHasParams;
+import com.itmo.mrdvd.command.marker.ShellCommand;
+import com.itmo.mrdvd.device.DataFileDescriptor;
+import com.itmo.mrdvd.device.IOStatus;
+import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.shell.Shell;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-import com.itmo.mrdvd.command.marker.CommandHasParams;
-import com.itmo.mrdvd.command.marker.ShellCommand;
-import com.itmo.mrdvd.device.FileDescriptor;
-import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.shell.Shell;
-
 public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
   private final Shell shell;
-  private final FileDescriptor fd;
+  private final DataFileDescriptor fd;
   private final Set<Path> usedPaths;
 
-  public ExecuteScriptCommand(FileDescriptor fd, Set<Path> usedPaths) {
+  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths) {
     this(fd, usedPaths, null);
   }
 
-  public ExecuteScriptCommand(FileDescriptor fd, Set<Path> usedPaths, Shell shell) {
+  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths, Shell shell) {
     this.fd = fd;
     this.usedPaths = usedPaths;
     this.shell = shell;
@@ -30,7 +29,7 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
 
   @Override
   public InputDevice getParamsInput() {
-   return this.shell.getIn();
+    return this.shell.getIn();
   }
 
   @Override
@@ -40,7 +39,7 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
 
   @Override
   public Optional<Shell<?, ?>> getShell() {
-   return Optional.ofNullable(this.shell);
+    return Optional.ofNullable(this.shell);
   }
 
   @Override
@@ -50,14 +49,14 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
     }
     Optional<String> params = shell.getIn().readToken();
     shell.getIn().skipLine();
-    FileDescriptor file = fd.duplicate();
+    DataFileDescriptor file = fd.duplicate();
     try {
       file.setPath(params.get());
-    } catch (InvalidPathException|NoSuchElementException e) {
+    } catch (InvalidPathException | NoSuchElementException e) {
       shell.getOut().writeln("[ERROR] Неправильный формат ввода параметров команды.");
       return;
     }
-    
+
     IOStatus code = file.openIn();
     if (code.equals(IOStatus.FAILURE)) {
       shell.getOut().writeln("[ERROR] Не удалось обратиться к файлу со скриптом.");
@@ -69,10 +68,12 @@ public class ExecuteScriptCommand implements ShellCommand, CommandHasParams {
       return;
     }
     if (usedPaths.contains(path.get())) {
-      shell.getOut().writeln(
-          String.format(
-              "[WARN] Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".",
-              path.get().getFileName().toString()));
+      shell
+          .getOut()
+          .writeln(
+              String.format(
+                  "[WARN] Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".",
+                  path.get().getFileName().toString()));
       return;
     }
     usedPaths.add(path.get());

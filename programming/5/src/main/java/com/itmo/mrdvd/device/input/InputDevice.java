@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.device.input;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.device.IOStatus;
+import java.util.Optional;
 
 public interface InputDevice {
   public boolean hasNext();

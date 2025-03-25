@@ -1,16 +1,15 @@
 package com.itmo.mrdvd.collection;
 
-import java.util.Comparator;
-
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
+import java.util.Comparator;
 
 public class TicketComparator implements Comparator<Ticket> {
   private final TicketField field;
   private final boolean descending;
 
   public TicketComparator(TicketField field) {
-   this(field, false);
+    this(field, false);
   }
 
   public TicketComparator(TicketField field, boolean descending) {

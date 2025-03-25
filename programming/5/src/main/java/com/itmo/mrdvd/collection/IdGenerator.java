@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.collection;
 
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import java.util.Optional;
 
 @JsonIgnoreType
 public interface IdGenerator {

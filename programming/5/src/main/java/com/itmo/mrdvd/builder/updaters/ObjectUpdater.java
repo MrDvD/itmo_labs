@@ -1,5 +1,8 @@
 package com.itmo.mrdvd.builder.updaters;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,87 +10,90 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-
 public class ObjectUpdater<T> implements Updater<T> {
-   protected final List<TypedBiConsumer<T,?>> setters;
-   protected final List<Object> objects;
-   protected final List<Supplier<?>> methods;
-   protected final List<TypedPredicate<?>> validators;
-   protected Supplier<T> newMethod;
-   protected T rawObject;
+  protected final List<TypedBiConsumer<T, ?>> setters;
+  protected final List<Object> objects;
+  protected final List<Supplier<?>> methods;
+  protected final List<TypedPredicate<?>> validators;
+  protected Supplier<T> newMethod;
+  protected T rawObject;
 
-   public ObjectUpdater() {
-      this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-   }
+  public ObjectUpdater() {
+    this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+  }
 
-   public ObjectUpdater(List<TypedBiConsumer<T,?>> setters, List<Object> objects, List<Supplier<?>> methods, List<TypedPredicate<?>> validators) {
-      this.setters = setters;
-      this.objects = objects;
-      this.methods = methods;
-      this.validators = validators;
-   }
+  public ObjectUpdater(
+      List<TypedBiConsumer<T, ?>> setters,
+      List<Object> objects,
+      List<Supplier<?>> methods,
+      List<TypedPredicate<?>> validators) {
+    this.setters = setters;
+    this.objects = objects;
+    this.methods = methods;
+    this.validators = validators;
+  }
 
-   public <U> ObjectUpdater<T> change(BiConsumer<T,U> setter, Object value, Class<U> valueCls) {
-      return change(setter, value, valueCls, null);
-   }
+  public <U> ObjectUpdater<T> change(BiConsumer<T, U> setter, Object value, Class<U> valueCls) {
+    return change(setter, value, valueCls, null);
+  }
 
-   @Override
-   public <U> ObjectUpdater<T> change(BiConsumer<T,U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
-      if (setter == null) {
-         throw new IllegalArgumentException("Setter не может быть null.");
+  @Override
+  public <U> ObjectUpdater<T> change(
+      BiConsumer<T, U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
+    if (setter == null) {
+      throw new IllegalArgumentException("Setter не может быть null.");
+    }
+    setters.add(TypedBiConsumer.of(valueCls, setter));
+    objects.add(value);
+    methods.add(null);
+    validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
+    return this;
+  }
+
+  public <U> ObjectUpdater<T> changeFromMethod(
+      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls) {
+    return changeFromMethod(setter, method, valueCls, null);
+  }
+
+  @Override
+  public <U> ObjectUpdater<T> changeFromMethod(
+      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
+    if (setter == null) {
+      throw new IllegalArgumentException("Setter не может быть null.");
+    }
+    setters.add(TypedBiConsumer.of(valueCls, setter));
+    objects.add(null);
+    methods.add(method);
+    validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
+    return this;
+  }
+
+  protected ProcessStatus processChange(int index) {
+    if (methods.get(index) != null) {
+      objects.set(index, methods.get(index).get());
+    }
+    if (validators.get(index) != null && !validators.get(index).testRaw(objects.get(index))) {
+      return ProcessStatus.FAILURE;
+    }
+    setters.get(index).acceptRaw(rawObject, objects.get(index));
+    return ProcessStatus.SUCCESS;
+  }
+
+  protected Optional<T> getObject() {
+    for (int i = 0; i < setters.size(); i++) {
+      if (processChange(i).equals(ProcessStatus.FAILURE)) {
+        return Optional.empty();
       }
-      setters.add(TypedBiConsumer.of(valueCls, setter));
-      objects.add(value);
-      methods.add(null);
-      validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
-      return this;
-   }
+    }
+    return Optional.of(rawObject);
+  }
 
-   public <U> ObjectUpdater<T> changeFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls) {
-      return changeFromMethod(setter, method, valueCls, null);
-   }
-
-   @Override
-   public <U> ObjectUpdater<T> changeFromMethod(BiConsumer<T,U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
-      if (setter == null) {
-         throw new IllegalArgumentException("Setter не может быть null.");
-      }
-      setters.add(TypedBiConsumer.of(valueCls, setter));
-      objects.add(null);
-      methods.add(method);
-      validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
-      return this;
-   }
-
-   protected ProcessStatus processChange(int index) {
-      if (methods.get(index) != null) {
-         objects.set(index, methods.get(index).get());
-      }
-      if (validators.get(index) != null && !validators.get(index).testRaw(objects.get(index))) {
-         return ProcessStatus.FAILURE;
-      }
-      setters.get(index).acceptRaw(rawObject, objects.get(index));
-      return ProcessStatus.SUCCESS;
-   }
-
-   protected Optional<T> getObject() {
-      for (int i = 0; i < setters.size(); i++) {
-         if (processChange(i).equals(ProcessStatus.FAILURE)) {
-            return Optional.empty();
-         }
-      }
-      return Optional.of(rawObject);
-   }
-
-   @Override
-   public Optional<T> update(T rawObject) throws IllegalArgumentException {
-      if (rawObject == null) {
-         throw new IllegalArgumentException("Объект не может быть null.");
-      }
-      this.rawObject = rawObject;
-      return getObject();
-   }
+  @Override
+  public Optional<T> update(T rawObject) throws IllegalArgumentException {
+    if (rawObject == null) {
+      throw new IllegalArgumentException("Объект не может быть null.");
+    }
+    this.rawObject = rawObject;
+    return getObject();
+  }
 }

@@ -1,18 +1,18 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.LongInputDevice;
+import java.util.Optional;
 
 public class RemoveByIdCommand implements CommandHasParams {
   private final CollectionWorker<?, ?> collection;
   private final LongInputDevice in;
   private final OutputDevice out;
 
-  public RemoveByIdCommand(CollectionWorker<?, ?> collection, LongInputDevice in, OutputDevice out) {
+  public RemoveByIdCommand(
+      CollectionWorker<?, ?> collection, LongInputDevice in, OutputDevice out) {
     this.collection = collection;
     this.in = in;
     this.out = out;
@@ -20,7 +20,7 @@ public class RemoveByIdCommand implements CommandHasParams {
 
   @Override
   public LongInputDevice getParamsInput() {
-   return this.in;
+    return this.in;
   }
 
   @Override

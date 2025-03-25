@@ -10,19 +10,19 @@ public class Event implements HavingId, Comparable<Event> {
 
   @Override
   public void setId(Long id) {
-   this.id = id;
+    this.id = id;
   }
 
   public void setName(String name) {
-   this.name = name;
+    this.name = name;
   }
 
   public void setDescription(String desc) {
-   this.description = desc;
+    this.description = desc;
   }
 
   public void setType(EventType type) {
-   this.eventType = type;
+    this.eventType = type;
   }
 
   @Override

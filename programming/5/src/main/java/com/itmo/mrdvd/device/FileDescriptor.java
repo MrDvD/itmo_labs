@@ -1,35 +1,34 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.nio.file.FileSystem;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
 
-import com.itmo.mrdvd.device.input.DataInputDevice;
-
-public abstract class FileDescriptor implements DataInputDevice, OutputDevice, FileMeta {
-   protected Path path;
-   protected FileSystem fs;
+public abstract class FileDescriptor implements InputDevice, OutputDevice, FileMeta {
+  protected Path path;
+  protected FileSystem fs;
 
   public FileDescriptor(Path path, FileSystem fs) {
-   this.path = path;
-   this.fs = fs;
+    this.path = path;
+    this.fs = fs;
   }
 
   public abstract FileDescriptor duplicate();
 
   public FileSystem getFs() {
-   return this.fs;
+    return this.fs;
   }
 
   @Override
   public Optional<Path> setPath(String filePath) {
-   try {
+    try {
       this.path = getFs().getPath(filePath);
       return Optional.of(this.path);
-   } catch (InvalidPathException e) {
+    } catch (InvalidPathException e) {
       return Optional.empty();
-   }
+    }
   }
 
   @Override

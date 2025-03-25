@@ -49,9 +49,12 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/UpdateCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/Command.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/CommandHasParams.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/InputCommand.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/OutputCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/ShellCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/Console.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/DataConsole.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/DataFileDescriptor.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/Deserializer.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/FileDescriptor.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/FileIO.java

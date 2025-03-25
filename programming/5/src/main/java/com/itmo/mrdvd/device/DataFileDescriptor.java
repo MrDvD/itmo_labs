@@ -1,13 +1,17 @@
 package com.itmo.mrdvd.device;
 
-import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import java.nio.file.FileSystem;
+import java.nio.file.Path;
 import java.util.Optional;
 
-public class DataConsole extends Console implements InteractiveDataInputDevice {
-  @Override
-  public DataConsole init() {
-    return (DataConsole) super.init();
+public abstract class DataFileDescriptor extends FileDescriptor implements DataInputDevice {
+  public DataFileDescriptor(Path path, FileSystem fs) {
+    super(path, fs);
   }
+
+  @Override
+  public abstract DataFileDescriptor duplicate();
 
   @Override
   public Optional<Integer> readInt() {

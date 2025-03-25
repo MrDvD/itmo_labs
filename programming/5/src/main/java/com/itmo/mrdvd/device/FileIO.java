@@ -12,31 +12,31 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
 
-public class FileIO extends FileDescriptor {
+public class FileIO extends DataFileDescriptor {
   private InputStream inStream;
   private BufferedInputStream inReader;
   private OutputStream outStream;
   private OutputStreamWriter outWriter;
 
   public FileIO(Path path, FileSystem fs) {
-   super(path, fs);
+    super(path, fs);
   }
 
   @Override
   public FileIO duplicate() {
-   return new FileIO(path, fs);
+    return new FileIO(path, fs);
   }
 
   @Override
   public IOStatus openIn() {
-   if (path == null) {
+    if (path == null) {
       throw new NullPointerException("Не указан путь для открытия файла.");
-    } 
-   try {
+    }
+    try {
       this.inStream = new FileInputStream(path.toString());
       this.inReader = new BufferedInputStream(inStream);
       return IOStatus.SUCCESS;
-    } catch (FileNotFoundException|SecurityException e) {
+    } catch (FileNotFoundException | SecurityException e) {
       return IOStatus.FAILURE;
     }
   }
@@ -50,7 +50,7 @@ public class FileIO extends FileDescriptor {
       this.outStream = new FileOutputStream(path.toString());
       this.outWriter = new OutputStreamWriter(outStream);
       return IOStatus.SUCCESS;
-    } catch (FileNotFoundException|SecurityException e) {
+    } catch (FileNotFoundException | SecurityException e) {
       return IOStatus.FAILURE;
     }
   }
@@ -110,7 +110,7 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public Optional<String> readToken() {
-   return read(" \n");
+    return read(" \n");
   }
 
   @Override
@@ -120,9 +120,9 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public IOStatus write(String str) {
-   if (outWriter == null) {
+    if (outWriter == null) {
       throw new NullPointerException("Не указан путь для открытия файла.");
-   }
+    }
     try {
       outWriter.write(str);
       return IOStatus.SUCCESS;
@@ -138,23 +138,24 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public boolean hasNext() {
-   try {
-      return inReader.available() > 0;   
-   } catch (IOException e) {
+    try {
+      return inReader.available() > 0;
+    } catch (IOException e) {
       return false;
-   }
+    }
   }
 
   @Override
   public void skipLine() {
-   try {
-       while (inReader.available() > 0) {
-         int chr = inReader.read();
-         inReader.available();
-         if (chr == '\n') {
-            break;
-         }
-       }
-   } catch (IOException e) {}
+    try {
+      while (inReader.available() > 0) {
+        int chr = inReader.read();
+        inReader.available();
+        if (chr == '\n') {
+          break;
+        }
+      }
+    } catch (IOException e) {
+    }
   }
 }

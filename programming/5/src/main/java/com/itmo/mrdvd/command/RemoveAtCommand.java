@@ -1,20 +1,20 @@
 package com.itmo.mrdvd.command;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.command.marker.CommandHasParams;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.IntInputDevice;
+import java.util.List;
+import java.util.Optional;
 
 public class RemoveAtCommand<T extends HavingId> implements CommandHasParams {
   private final CollectionWorker<T, List<T>> collection;
   private final IntInputDevice in;
   private final OutputDevice out;
 
-  public RemoveAtCommand(CollectionWorker<T, List<T>> collection, IntInputDevice in, OutputDevice out) {
+  public RemoveAtCommand(
+      CollectionWorker<T, List<T>> collection, IntInputDevice in, OutputDevice out) {
     this.collection = collection;
     this.in = in;
     this.out = out;
@@ -30,7 +30,8 @@ public class RemoveAtCommand<T extends HavingId> implements CommandHasParams {
     Optional<Integer> params = getParamsInput().readInt();
     getParamsInput().skipLine();
     if (params.isEmpty()) {
-      out.writeln("[ERROR] Неправильный формат ввода: index должен быть целым неотрицательным числом.");
+      out.writeln(
+          "[ERROR] Неправильный формат ввода: index должен быть целым неотрицательным числом.");
       return;
     }
     try {
