@@ -15,6 +15,9 @@ import com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder;
 import com.itmo.mrdvd.builder.updaters.InteractiveCoordinatesUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveEventUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater;
+import com.itmo.mrdvd.builder.validators.CoordinatesValidator;
+import com.itmo.mrdvd.builder.validators.EventValidator;
+import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
@@ -26,6 +29,7 @@ import com.itmo.mrdvd.command.ExecuteScriptCommand;
 import com.itmo.mrdvd.command.ExitCommand;
 import com.itmo.mrdvd.command.HelpCommand;
 import com.itmo.mrdvd.command.InfoCommand;
+import com.itmo.mrdvd.command.LoadCommand;
 import com.itmo.mrdvd.command.MinByPriceCommand;
 import com.itmo.mrdvd.command.PrintFieldDescendingTypeCommand;
 import com.itmo.mrdvd.command.ReadEnvironmentFilepathCommand;
@@ -88,7 +92,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     addCommand(new CountGreaterThanEventCommand(collection, getIn(), getOut()));
     addCommand(
         new ReadEnvironmentFilepathCommand(envName, fd, getOut()), true);
-   //  addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
+    addCommand(new LoadCommand<>(fd, collection, new TicketValidator(new CoordinatesValidator(), new EventValidator()), deserial, getOut()), true);
     addCommand(new SaveCommand<>(collection, serial, fd, getOut()));
     addCommand(new ExecuteScriptCommand(fd, usedPaths));
     addCommand(new InfoCommand(collection, getOut()));

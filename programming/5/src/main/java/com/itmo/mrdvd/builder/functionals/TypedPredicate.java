@@ -21,7 +21,7 @@ public interface TypedPredicate<T> extends Predicate<T> {
             if (type.isInstance(obj)) {
                return consumer.test(type.cast(obj));
             } else {
-               throw new IllegalArgumentException("Объект не соответствует переданному типу.");
+              throw new IllegalArgumentException(String.format("Объект %s не соответствует переданному классу.", obj.getClass().getCanonicalName()));
             }
          }
 

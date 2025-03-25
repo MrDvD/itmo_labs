@@ -115,7 +115,7 @@ public class FileIO extends FileDescriptor {
 
   @Override
   public Optional<String> readAll() {
-    return read(null);
+    return read("");
   }
 
   @Override

@@ -19,7 +19,7 @@ public interface TypedBiConsumer<T, U> extends BiConsumer<T, U> {
             if (type.isInstance(obj2)) {
                consumer.accept(obj1, type.cast(obj2));
             } else {
-               throw new IllegalArgumentException("Объект не соответствует переданному типу.");
+              throw new IllegalArgumentException(String.format("Объект %s не соответствует переданному классу.", obj2.getClass().getCanonicalName()));
             }
          }
 

@@ -30,6 +30,7 @@ public class ObjectValidator<T> implements Validator<T> {
          throw new IllegalArgumentException("Getter не может быть null.");
       }
       this.getters.add(getter);
+      this.validators.add(null);
       this.methods.add(TypedPredicate.of(valueCls, validator));
       return this;
    }
@@ -43,6 +44,7 @@ public class ObjectValidator<T> implements Validator<T> {
          throw new IllegalArgumentException("Validator не может быть null.");
       }
       this.getters.add(getter);
+      this.methods.add(null);
       this.validators.add(validator);
       return this;
    }
@@ -52,7 +54,7 @@ public class ObjectValidator<T> implements Validator<T> {
    }
 
    protected ProcessStatus processCheck(int index) {
-      return methods.get(index).testRaw(object) ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
+      return methods.get(index).testRaw(getters.get(index).apply(object)) ? ProcessStatus.SUCCESS : ProcessStatus.FAILURE;
    }
 
    protected boolean checkObject() {

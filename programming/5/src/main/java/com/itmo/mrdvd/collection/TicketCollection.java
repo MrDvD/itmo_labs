@@ -21,7 +21,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
   private IdGenerator ticketGenerator;
   private IdGenerator eventGenerator;
-  private CollectionMetadata meta;
+  @JsonProperty private TicketCollectionMetadata meta;
 
   public static class TicketCollectionMetadata implements CollectionMetadata {
     @JsonProperty private LocalDateTime creationTime;
@@ -252,15 +252,17 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     return eventGenerator;
   }
 
-  // looks bad, but idk how to code this better
   @Override
   public TicketCollectionMetadata getMetadata() {
-    return (TicketCollectionMetadata) this.meta;
+    return this.meta;
   }
 
+  // looks bad, but idk how to code this better
+  @JsonIgnore
   @Override
   public void setMetadata(CollectionMetadata meta) {
-    this.meta = meta;
+    // ofc i can add 'instanceof' check, but it would be bad anyways
+    this.meta = (TicketCollectionMetadata) meta;
   }
 
    public int getCount() {
