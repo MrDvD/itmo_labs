@@ -8,24 +8,24 @@ import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public interface InteractiveUpdater<T> extends Updater<T> {
-  public <U> InteractiveUpdater<T> addInteractiveUpdater(
-      InteractiveUpdater<U> updater,
+public interface InteractiveUpdater<T, K extends InputDevice> extends Updater<T> {
+  public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
+      InteractiveUpdater<U, ?> updater,
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
       TypedPredicate<U> validator)
       throws IllegalArgumentException;
 
-  public <U> InteractiveUpdater<T> addInteractiveChange(
+  public <U> InteractiveUpdater<T, K> addInteractiveChange(
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
-      Interactor<?> inter,
+      Interactor<?, K> inter,
       TypedPredicate<U> validator)
       throws IllegalArgumentException;
   
-  public InteractiveUpdater<T> setIn(InputDevice in);
+  public InteractiveUpdater<T, K> setIn(K in);
 
-  public Optional<InputDevice> getIn();
+  public Optional<K> getIn();
 }

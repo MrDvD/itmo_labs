@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.builder.updaters;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,14 +16,14 @@ import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements InteractiveUpdater<T> {
-  private final List<Interactor<?>> interactors;
+public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUpdater<T> implements InteractiveUpdater<T, K> {
+  private final List<Interactor<?, K>> interactors;
   private final List<InteractiveUpdater> updaters;
   private final List<Function<T, ?>> getters;
-  private final InputDevice in;
+  private final K in;
   private final OutputDevice out;
 
-  public InteractiveObjectUpdater(InputDevice in, OutputDevice out) {
+  public InteractiveObjectUpdater(K in, OutputDevice out) {
     this(
         in,
         out,
@@ -36,9 +37,9 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   public InteractiveObjectUpdater(
-      InputDevice in,
+      K in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, K>> interactors,
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
@@ -53,8 +54,8 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
     this.getters = getters;
   }
 
-  public <U> InteractiveObjectUpdater<T> addInteractiveChange(
-      BiConsumer<T, U> setter, Function<T, U> getter, Class<U> valueCls, Interactor<?> inter)
+  public <U> InteractiveObjectUpdater<T, K> addInteractiveChange(
+      BiConsumer<T, U> setter, Function<T, U> getter, Class<U> valueCls, Interactor<?, K> inter)
       throws IllegalArgumentException {
     addInteractiveChange(setter, getter, valueCls, inter, null);
     getters.set(getters.size() - 1, getter);
@@ -62,11 +63,11 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T> addInteractiveChange(
+  public <U> InteractiveObjectUpdater<T, K> addInteractiveChange(
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
-      Interactor<?> inter,
+      Interactor<?, K> inter,
       TypedPredicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
@@ -81,8 +82,8 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
     return this;
   }
 
-  public <U> InteractiveUpdater<T> addInteractiveUpdater(
-      InteractiveUpdater<U> updater,
+  public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
+      InteractiveUpdater<U, ?> updater,
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls)
@@ -91,8 +92,8 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   @Override
-  public <U> InteractiveUpdater<T> addInteractiveUpdater(
-      InteractiveUpdater<U> updater,
+  public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
+      InteractiveUpdater<U, ?> updater,
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
@@ -105,14 +106,14 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T> changeFromMethod(
+  public <U> InteractiveObjectUpdater<T, K> changeFromMethod(
       BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls)
       throws IllegalArgumentException {
     return this.changeFromMethod(setter, method, valueCls, null);
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T> changeFromMethod(
+  public <U> InteractiveObjectUpdater<T, K> changeFromMethod(
       BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator)
       throws IllegalArgumentException {
     super.changeFromMethod(setter, method, valueCls, validator);
@@ -123,13 +124,13 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T> change(
+  public <U> InteractiveObjectUpdater<T, K> change(
       BiConsumer<T, U> setter, Object value, Class<U> valueCls) throws IllegalArgumentException {
     return this.change(setter, value, valueCls, null);
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T> change(
+  public <U> InteractiveObjectUpdater<T, K> change(
       BiConsumer<T, U> setter, Object value, Class<U> valueCls, Predicate<U> validator)
       throws IllegalArgumentException {
     super.change(setter, value, valueCls, validator);
@@ -145,7 +146,7 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
       throw new NullPointerException("InputDevice не может быть null.");
     }
     Optional<?> result;
-    Interactor<?> inter = null;
+    Interactor<?, K> inter = null;
     if (updaters.get(index) != null) {
       result = updaters.get(index).update(getters.get(index).apply(rawObject));
     } else {
@@ -171,7 +172,11 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
       }
       msg += ": ";
       out.write(msg);
-      result = inter.get(getIn().get());
+      try {
+        result = inter.get(getIn().get());
+      } catch (IOException e) {
+        return ProcessStatus.IOEXCEPT;
+      }
     }
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());
@@ -189,18 +194,24 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   @Override
   protected Optional<T> getObject() {
     for (int i = 0; i < setters.size(); i++) {
-      while (processChange(i).equals(ProcessStatus.FAILURE)) {}
+      ProcessStatus status = processChange(i);
+      while (status.equals(ProcessStatus.FAILURE)) {
+        status = processChange(i);
+      }
+      if (status.equals(ProcessStatus.IOEXCEPT)) {
+        return Optional.empty();
+      }
     }
     return Optional.of(rawObject);
   }
 
   @Override
-  public InteractiveObjectUpdater<T> setIn(InputDevice in) {
+  public InteractiveObjectUpdater<T, K> setIn(K in) {
     return new InteractiveObjectUpdater<>(in, out);
   }
 
   @Override
-  public Optional<InputDevice> getIn() {
+  public Optional<K> getIn() {
     return Optional.ofNullable(in);
   }
 }

@@ -11,17 +11,18 @@ import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.device.input.IntInputDevice;
+import com.itmo.mrdvd.device.input.IntEnumInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
-  private <T extends IntInputDevice & EnumInputDevice> void init(
-      InteractiveBuilder<Coordinates> coordBuild, InteractiveBuilder<Event> eventBuild, Supplier<T> in) {
+public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket, IntEnumInputDevice> {
+  private final InteractiveBuilder<Coordinates, ?> coordBuild;
+  private final InteractiveBuilder<Event, ?> eventBuild;
+  
+  private InteractiveTicketBuilder init() {
     of(Ticket::new);
     addInteractiveSetter(
         Ticket::setName,
@@ -37,7 +38,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         Integer.class,
         new UserInteractor<>(
             "Стоимость билета",
-            (IntInputDevice x) -> {
+            (IntEnumInputDevice x) -> {
               Optional<Integer> res = x.readInt();
               x.skipLine();
               return res;
@@ -54,7 +55,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         TicketType.class,
         new UserInteractor<>(
             "Тип билета",
-            (EnumInputDevice x) -> {
+            (IntEnumInputDevice x) -> {
               Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
               x.skipLine();
               return res;
@@ -68,29 +69,39 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         LocalDateTime::now,
         LocalDateTime.class,
         TicketValidator::validateCreationDate);
+    return this;
   }
 
-  public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketBuilder(
-      InteractiveBuilder<Coordinates> coordBuild,
-      InteractiveBuilder<Event> eventBuild,
-      Supplier<T> in,
+  public InteractiveTicketBuilder(
+      InteractiveBuilder<Coordinates, ?> coordBuild,
+      InteractiveBuilder<Event, ?> eventBuild,
+      IntEnumInputDevice in,
       OutputDevice out) {
-    super(out);
-    init(coordBuild, eventBuild, in);
+    super(in, out);
+    this.coordBuild = coordBuild;
+    this.eventBuild = eventBuild;
+    init();
   }
 
-  public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketBuilder(
-      InteractiveBuilder<Coordinates> coordBuild,
-      InteractiveBuilder<Event> eventBuild,
-      Supplier<T> in,
+  public InteractiveTicketBuilder(
+      InteractiveBuilder<Coordinates, ?> coordBuild,
+      InteractiveBuilder<Event, ?> eventBuild,
+      IntEnumInputDevice in,
       OutputDevice out,
-      List<Interactor<?, ?>> interactors,
+      List<Interactor<?, IntEnumInputDevice>> interactors,
       List<TypedBiConsumer<Ticket, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<TypedPredicate<?>> validators,
-      List<InteractiveBuilder<?>> builders) {
-    super(out, interactors, setters, objects, methods, validators, builders);
-    init(coordBuild, eventBuild, in);
+      List<InteractiveBuilder<?, ?>> builders) {
+    super(in, out, interactors, setters, objects, methods, validators, builders);
+    this.coordBuild = coordBuild;
+    this.eventBuild = eventBuild;
+    init();
+  }
+
+  @Override
+  public InteractiveTicketBuilder setIn(IntEnumInputDevice in) {
+    return new InteractiveTicketBuilder(coordBuild, eventBuild, in, out).init();
   }
 }

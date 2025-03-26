@@ -1,35 +1,36 @@
 package com.itmo.mrdvd.builder;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
+import com.itmo.mrdvd.builder.functionals.ExFunction;
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public class UserInteractor<U> implements Interactor<U> {
+public class UserInteractor<U, K extends InputDevice> implements Interactor<U, K> {
   private final String attributeName;
-  private final Function<InputDevice, Optional<U>> inMethod;
+  private final ExFunction<K, Optional<U>, IOException> inMethod;
   private final Optional<List<String>> options;
   private final String error;
   private final Optional<String> comment;
 
-  public UserInteractor(String attributeName, Function<InputDevice, Optional<U>> inMethod, String error) {
+  public UserInteractor(String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error) {
     this(attributeName, inMethod, error, null, null);
   }
 
   public UserInteractor(
-      String attributeName, Function<InputDevice, Optional<U>> inMethod, String error, String comment) {
+      String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error, String comment) {
     this(attributeName, inMethod, error, null, comment);
   }
 
   public UserInteractor(
-      String attributeName, Function<InputDevice, Optional<U>> inMethod, String error, List<String> options) {
+      String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error, List<String> options) {
     this(attributeName, inMethod, error, options, null);
   }
 
-  public <X extends InputDevice> UserInteractor(
+  public UserInteractor(
       String attributeName,
-      Function<InputDevice, Optional<U>> inMethod,
+      ExFunction<K, Optional<U>, IOException> inMethod,
       String error,
       List<String> options,
       String comment) {
@@ -46,7 +47,7 @@ public class UserInteractor<U> implements Interactor<U> {
   }
 
   @Override
-  public <T extends InputDevice> Optional<U> get(T in) {
+  public Optional<U> get(K in) throws IOException {
     return this.inMethod.apply(in);
   }
 

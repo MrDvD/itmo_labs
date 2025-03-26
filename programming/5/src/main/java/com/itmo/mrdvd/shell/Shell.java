@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.shell;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.itmo.mrdvd.command.Command;
@@ -44,7 +45,7 @@ public abstract class Shell<T, S> implements Iterable<Command> {
 
   public abstract Optional<Command> getCommand(String str);
 
-  public Optional<Command> processCommandLine() {
+  public Optional<Command> processCommandLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
     if (cmdName.isEmpty()) {
       return Optional.empty();

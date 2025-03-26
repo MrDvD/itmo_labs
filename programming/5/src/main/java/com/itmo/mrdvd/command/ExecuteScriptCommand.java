@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.command;
 
+import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
@@ -40,8 +41,11 @@ public class ExecuteScriptCommand implements Command {
     if (getShell().isEmpty()) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    Optional<String> params = getShell().get().getIn().readToken();
-    getShell().get().getIn().skipLine();
+    Optional<String> params = Optional.empty();
+    try {
+      params = getShell().get().getIn().readToken();
+      getShell().get().getIn().skipLine();
+    } catch (IOException e) {}
     DataFileDescriptor file = fd.duplicate();
     try {
       file.setPath(params.get());

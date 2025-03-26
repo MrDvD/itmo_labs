@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.command;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +37,10 @@ public class RemoveAtCommand<T extends HavingId> implements Command {
     if (getShell().isEmpty()) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    Optional<Integer> params = getShell().get().getIn().readInt();
+    Optional<Integer> params = Optional.empty();
+    try {
+      params = getShell().get().getIn().readInt();
+    } catch (IOException e) {}
     getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
       getShell().get().getOut().writeln(

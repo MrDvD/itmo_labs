@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.command;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.itmo.mrdvd.builder.validators.Validator;
@@ -54,7 +55,10 @@ public class LoadCommand<T extends HavingId, U> implements Command {
       getShell().get().getOut().writeln("[ERROR] Не удалось обратиться к файлу с коллекцией.");
       return;
     }
-    Optional<String> fileContent = in.readAll();
+    Optional<String> fileContent = Optional.empty();
+    try {
+      fileContent = in.readAll();
+    } catch (IOException e) {}
     in.closeIn();
     if (fileContent.isEmpty()) {
       getShell().get().getOut().writeln("[ERROR] Ошибка чтения файла с коллекцией.");

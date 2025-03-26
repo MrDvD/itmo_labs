@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.command;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
@@ -34,7 +35,10 @@ public class RemoveByIdCommand implements Command {
     if (getShell().isEmpty()) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    Optional<Long> params = getShell().get().getIn().readLong();
+    Optional<Long> params = Optional.empty();
+    try {
+      params = getShell().get().getIn().readLong();
+    } catch (IOException e) {}
     getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
       getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");

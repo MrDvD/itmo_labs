@@ -1,9 +1,11 @@
 package com.itmo.mrdvd.device;
 
-import com.itmo.mrdvd.device.input.DataInputDevice;
+import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
+
+import com.itmo.mrdvd.device.input.DataInputDevice;
 
 public abstract class DataFileDescriptor extends FileDescriptor implements DataInputDevice {
   public DataFileDescriptor(Path path, FileSystem fs) {
@@ -14,10 +16,10 @@ public abstract class DataFileDescriptor extends FileDescriptor implements DataI
   public abstract DataFileDescriptor duplicate();
 
   @Override
-  public Optional<Integer> readInt() {
+  public Optional<Integer> readInt() throws IOException {
     Optional<String> token = readToken();
     if (token.isEmpty()) {
-      return Optional.empty();
+      throw new IOException();
     }
     try {
       return Optional.of(Integer.valueOf(token.get()));
@@ -27,10 +29,10 @@ public abstract class DataFileDescriptor extends FileDescriptor implements DataI
   }
 
   @Override
-  public Optional<Long> readLong() {
+  public Optional<Long> readLong() throws IOException {
     Optional<String> token = readToken();
     if (token.isEmpty()) {
-      return Optional.empty();
+      throw new IOException();
     }
     try {
       return Optional.of(Long.valueOf(token.get()));
@@ -40,10 +42,10 @@ public abstract class DataFileDescriptor extends FileDescriptor implements DataI
   }
 
   @Override
-  public Optional<Float> readFloat() {
+  public Optional<Float> readFloat() throws IOException {
     Optional<String> token = readToken();
     if (token.isEmpty()) {
-      return Optional.empty();
+      throw new IOException();
     }
     try {
       return Optional.of(Float.valueOf(token.get()));
@@ -53,10 +55,10 @@ public abstract class DataFileDescriptor extends FileDescriptor implements DataI
   }
 
   @Override
-  public <T extends Enum<T>> Optional<Enum<T>> readEnum(Class<T> cls) {
+  public <T extends Enum<T>> Optional<Enum<T>> readEnum(Class<T> cls) throws IOException {
     Optional<String> token = readToken();
     if (token.isEmpty()) {
-      return Optional.empty();
+      throw new IOException();
     }
     try {
       return Optional.of(Enum.valueOf(cls, token.get()));

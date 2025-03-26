@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.command;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import com.itmo.mrdvd.collection.Collection;
@@ -35,8 +36,11 @@ public class CountGreaterThanEventCommand implements Command {
     if (getShell().isEmpty()) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    Optional<Long> params = getShell().get().getIn().readLong();
-    getShell().get().getIn().skipLine();
+    Optional<Long> params = Optional.empty();
+    try {
+      params = getShell().get().getIn().readLong();
+      getShell().get().getIn().skipLine();
+    } catch (IOException e) {}
     if (params.isEmpty()) {
       getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");
       return;

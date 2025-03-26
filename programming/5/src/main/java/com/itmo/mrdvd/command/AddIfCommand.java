@@ -12,14 +12,14 @@ import com.itmo.mrdvd.shell.Shell;
 
 public class AddIfCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, List<T>> collect;
-  protected final InteractiveBuilder<T> builder;
+  protected final InteractiveBuilder builder;
   protected final Shell<?, ?> shell;
   protected final Comparator<T> comparator;
   protected final Set<Integer> values;
 
   public AddIfCommand(
       CollectionWorker<T, List<T>> collection,
-      InteractiveBuilder<T> builder,
+      InteractiveBuilder<T, ?> builder,
       Comparator<T> comparator,
       Set<Integer> values) {
     this(collection, builder, comparator, values, null);
@@ -27,12 +27,12 @@ public class AddIfCommand<T extends HavingId> implements Command {
 
   public AddIfCommand(
       CollectionWorker<T, List<T>> collection,
-      InteractiveBuilder<T> builder,
+      InteractiveBuilder builder,
       Comparator<T> comparator,
       Set<Integer> values,
       Shell<?, ?> shell) {
     this.collect = collection;
-    this.builder = builder;
+    this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
     this.comparator = comparator;
     this.values = values;

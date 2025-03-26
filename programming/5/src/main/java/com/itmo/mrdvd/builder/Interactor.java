@@ -1,14 +1,15 @@
 package com.itmo.mrdvd.builder;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import com.itmo.mrdvd.device.input.InputDevice;
 
-public interface Interactor<T> {
+public interface Interactor<T, K extends InputDevice> {
   public String attributeName();
 
-  public <U extends InputDevice> Optional<T> get(U in);
+  public Optional<T> get(K in) throws IOException;
 
   public Optional<String> comment();
 

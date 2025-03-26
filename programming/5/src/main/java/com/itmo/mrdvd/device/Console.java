@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.device;
 
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Optional;
 import java.util.Scanner;
+
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
 public abstract class Console implements InteractiveInputDevice {
   private Scanner in;
@@ -50,22 +51,19 @@ public abstract class Console implements InteractiveInputDevice {
   }
 
   @Override
-  public Optional<String> read() {
+  public Optional<String> read() throws IOException {
     if (in.hasNextLine()) {
       return Optional.of(in.nextLine());
     }
-    writeln("");
-    openIn();
-    return Optional.empty();
+    throw new IOException();
   }
 
   @Override
-  public Optional<String> readToken() {
+  public Optional<String> readToken() throws IOException {
     if (in.hasNext()) {
       return Optional.of(in.next());
     }
-    openIn();
-    return Optional.empty();
+    throw new IOException();
   }
 
   @Override
@@ -77,7 +75,7 @@ public abstract class Console implements InteractiveInputDevice {
   }
 
   @Override
-  public Optional<String> readAll() {
+  public Optional<String> readAll() throws IOException {
     String result = "";
     while (in.hasNext()) {
       result += in.next();
@@ -85,7 +83,7 @@ public abstract class Console implements InteractiveInputDevice {
     writeln("");
     openIn();
     if (result.equals("")) {
-      return Optional.empty();
+      throw new IOException();
     }
     return Optional.of(result);
   }

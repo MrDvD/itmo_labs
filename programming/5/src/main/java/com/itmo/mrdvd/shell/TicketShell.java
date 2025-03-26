@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.shell;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +46,7 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.IntEnumInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
@@ -88,9 +90,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new AddCommand<>(
             collection,
             new InteractiveTicketBuilder(
-                new InteractiveCoordinatesBuilder(this::getIn, getOut()),
-                new InteractiveEventBuilder(this::getIn, getOut()),
-                this::getIn,
+                new InteractiveCoordinatesBuilder(getIn(), getOut()),
+                new InteractiveEventBuilder(getIn(), getOut()),
+                (IntEnumInputDevice) getIn(),
                 getOut())));
     addCommand(new HelpCommand());
     addCommand(new ExitCommand());
@@ -98,9 +100,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new UpdateCommand<>(
             collection,
             new InteractiveTicketUpdater(
-                new InteractiveCoordinatesUpdater(this::getIn, getOut()),
-                new InteractiveEventUpdater(this::getIn, getOut()),
-                this::getIn,
+                new InteractiveCoordinatesUpdater(getIn(), getOut()),
+                new InteractiveEventUpdater(getIn(), getOut()),
+                (IntEnumInputDevice) getIn(),
                 getOut())));
     addCommand(new ClearCommand(collection));
     addCommand(new RemoveByIdCommand(collection));
@@ -111,9 +113,9 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         new AddIfCommand<>(
             collection,
             new InteractiveTicketBuilder(
-                new InteractiveCoordinatesBuilder(() -> this.getIn(), getOut()),
-                new InteractiveEventBuilder(() -> this.getIn(), getOut()),
-                () -> this.getIn(),
+                new InteractiveCoordinatesBuilder(getIn(), getOut()),
+                new InteractiveEventBuilder(getIn(), getOut()),
+                (IntEnumInputDevice) getIn(),
                 getOut()),
             new TicketComparator(TicketField.ID),
             Set.of(1)));
@@ -158,7 +160,12 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
         this.isOpen = false;
         return;
       }
-      Optional<Command> cmd = processCommandLine();
+      Optional<Command> cmd = Optional.empty();
+      try {
+        cmd = processCommandLine();
+      } catch (IOException e) {
+        close();
+      }
       if (cmd.isEmpty()) {
         getOut()
             .writeln(

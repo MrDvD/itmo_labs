@@ -77,44 +77,40 @@ public class FileIO extends DataFileDescriptor {
     }
   }
 
-  public Optional<String> read(String delimiters) {
+  public Optional<String> read(String delimiters) throws IOException {
     if (inReader == null) {
       throw new NullPointerException("Не указан путь для открытия файла.");
     }
-    try {
-      String result = "";
-      while (inReader.available() > 0) {
-        inReader.mark(1);
-        int chr = inReader.read();
-        if (delimiters.indexOf(chr) != -1) { // change logic
-          if (chr == '\n') {
-            inReader.reset();
-          }
-          break;
+    String result = "";
+    while (inReader.available() > 0) {
+      inReader.mark(1);
+      int chr = inReader.read();
+      if (delimiters.indexOf(chr) != -1) {
+        if (chr == '\n') {
+          inReader.reset();
         }
-        result += (char) chr;
+        break;
       }
-      if (result.equals("")) {
-        return Optional.empty();
-      }
-      return Optional.of(result);
-    } catch (IOException e) {
+      result += (char) chr;
+    }
+    if (result.equals("")) {
       return Optional.empty();
     }
+    return Optional.of(result);
   }
 
   @Override
-  public Optional<String> read() {
+  public Optional<String> read() throws IOException {
     return read("\n");
   }
 
   @Override
-  public Optional<String> readToken() {
+  public Optional<String> readToken() throws IOException {
     return read(" \n");
   }
 
   @Override
-  public Optional<String> readAll() {
+  public Optional<String> readAll() throws IOException {
     return read("");
   }
 
@@ -146,7 +142,7 @@ public class FileIO extends DataFileDescriptor {
   }
 
   @Override
-  public void skipLine() {
+  public void skipLine()  {
     try {
       while (inReader.available() > 0) {
         int chr = inReader.read();

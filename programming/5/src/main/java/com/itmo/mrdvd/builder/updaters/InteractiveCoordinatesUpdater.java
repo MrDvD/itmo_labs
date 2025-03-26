@@ -14,7 +14,7 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 
-public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coordinates> {
+public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coordinates, FloatInputDevice> {
 
   private void init() {
     addInteractiveChange(
@@ -55,7 +55,7 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
   public InteractiveCoordinatesUpdater(
       FloatInputDevice in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, FloatInputDevice>> interactors,
       List<TypedBiConsumer<Coordinates, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,

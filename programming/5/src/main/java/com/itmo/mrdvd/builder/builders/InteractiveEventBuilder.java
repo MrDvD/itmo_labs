@@ -15,8 +15,8 @@ import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
-public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
-  private void init(Supplier<EnumInputDevice> in) {
+public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event, EnumInputDevice> {
+  private InteractiveEventBuilder init() {
     of(Event::new);
     addInteractiveSetter(
         Event::setName,
@@ -31,7 +31,7 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
         String.class,
         new UserInteractor<>(
             "Описание мероприятия",
-            InputDevice::read,
+            (x) -> x.read(),
             "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."),
         EventValidator::validateDescription);
     String[] options = new String[EventType.values().length];
@@ -51,23 +51,29 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
             "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.",
             List.of(options)),
         EventValidator::validateType);
+    return this;
   }
 
-  public InteractiveEventBuilder(Supplier<EnumInputDevice> in, OutputDevice out) {
-    super(out);
-    init(in);
+  public InteractiveEventBuilder(EnumInputDevice in, OutputDevice out) {
+    super(in, out);
+    init();
   }
 
   public InteractiveEventBuilder(
-      Supplier<EnumInputDevice> in,
+      EnumInputDevice in,
       OutputDevice out,
-      List<Interactor<?, ?>> interactors,
+      List<Interactor<?, EnumInputDevice>> interactors,
       List<TypedBiConsumer<Event, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<TypedPredicate<?>> validators,
-      List<InteractiveBuilder<?>> builders) {
-    super(out, interactors, setters, objects, methods, validators, builders);
-    init(in);
+      List<InteractiveBuilder<?, ?>> builders) {
+    super(in, out, interactors, setters, objects, methods, validators, builders);
+    init();
+  }
+
+  @Override
+  public InteractiveEventBuilder setIn(EnumInputDevice in) {
+    return ((InteractiveEventBuilder) super.setIn(in)).init();
   }
 }

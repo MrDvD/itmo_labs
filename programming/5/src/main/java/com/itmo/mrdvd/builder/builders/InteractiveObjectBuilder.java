@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.builder.builders;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,14 +13,17 @@ import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 
-public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveBuilder<T> {
-  private final List<Interactor<?, ?>> interactors;
-  private final List<InteractiveBuilder<?>> builders;
-  private final OutputDevice out;
+public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBuilder<T> implements InteractiveBuilder<T, K> {
+  protected final List<Interactor<?, K>> interactors;
+  protected final List<InteractiveBuilder<?, ?>> builders;
+  protected final K in;
+  protected final OutputDevice out;
 
-  public InteractiveObjectBuilder(OutputDevice out) {
+  public InteractiveObjectBuilder(K in, OutputDevice out) {
     this(
+        in,
         out,
         new ArrayList<>(),
         new ArrayList<>(),
@@ -30,28 +34,30 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   }
 
   public InteractiveObjectBuilder(
+      K in,
       OutputDevice out,
-      List<Interactor<?, ?>> interactors,
+      List<Interactor<?, K>> interactors,
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<TypedPredicate<?>> validators,
-      List<InteractiveBuilder<?>> builders) {
+      List<InteractiveBuilder<?, ?>> builders) {
     super(setters, objects, methods, validators);
+    this.in = in;
     this.out = out;
     this.interactors = interactors;
     this.builders = builders;
   }
 
-  public <U> InteractiveObjectBuilder<T> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, ?> inter)
+  public <U> InteractiveObjectBuilder<T, K> addInteractiveSetter(
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, K> inter)
       throws IllegalArgumentException {
     return addInteractiveSetter(setter, valueCls, inter, null);
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, ?> inter, TypedPredicate<U> validator)
+  public <U> InteractiveObjectBuilder<T, K> addInteractiveSetter(
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, K> inter, TypedPredicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");
@@ -64,15 +70,15 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
     return this;
   }
 
-  public <U> InteractiveObjectBuilder<T> addInteractiveBuilder(
-      InteractiveBuilder<U> builder, BiConsumer<T, U> setter, Class<U> valueCls)
+  public <U> InteractiveObjectBuilder<T, K> addInteractiveBuilder(
+      InteractiveBuilder<U, ?> builder, BiConsumer<T, U> setter, Class<U> valueCls)
       throws IllegalArgumentException {
     return addInteractiveBuilder(builder, setter, valueCls, null);
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> addInteractiveBuilder(
-      InteractiveBuilder<U> builder,
+  public <U> InteractiveObjectBuilder<T, K> addInteractiveBuilder(
+      InteractiveBuilder<U, ?> builder,
       BiConsumer<T, U> setter,
       Class<U> valueCls,
       TypedPredicate<U> validator)
@@ -83,14 +89,14 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> setFromMethod(
+  public <U> InteractiveObjectBuilder<T, K> setFromMethod(
       BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls)
       throws IllegalArgumentException {
     return this.setFromMethod(setter, method, valueCls, null);
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> setFromMethod(
+  public <U> InteractiveObjectBuilder<T, K> setFromMethod(
       BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator)
       throws IllegalArgumentException {
     super.setFromMethod(setter, method, valueCls, validator);
@@ -100,13 +106,13 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> set(
+  public <U> InteractiveObjectBuilder<T, K> set(
       BiConsumer<T, U> setter, Object value, Class<U> valueCls) throws IllegalArgumentException {
     return this.set(setter, value, valueCls, null);
   }
 
   @Override
-  public <U> InteractiveObjectBuilder<T> set(
+  public <U> InteractiveObjectBuilder<T, K> set(
       BiConsumer<T, U> setter, Object value, Class<U> valueCls, Predicate<U> validator)
       throws IllegalArgumentException {
     super.set(setter, value, valueCls, validator);
@@ -117,8 +123,11 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
 
   @Override
   protected ProcessStatus processSetter(int index) {
+    if (getIn().isEmpty()) {
+      throw new NullPointerException("InputDevice не может быть null.");
+    }
     Optional<?> result;
-    Interactor<?, ?> inter = null;
+    Interactor<?, K> inter = null;
     if (builders.get(index) != null) {
       result = builders.get(index).build();
     } else {
@@ -141,7 +150,11 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
       }
       msg += ": ";
       out.write(msg);
-      result = inter.get();
+      try {
+        result = inter.get(getIn().get());
+      } catch (IOException e) {
+        return ProcessStatus.IOEXCEPT;
+      }
     }
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());
@@ -159,8 +172,31 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   @Override
   protected Optional<T> getObject() {
     for (int i = 0; i < setters.size(); i++) {
-      while (processSetter(i).equals(ProcessStatus.FAILURE)) {}
+      ProcessStatus status = processSetter(i);
+      
+      while (status.equals(ProcessStatus.FAILURE)) {
+        status = processSetter(i);
+      }
+      if (status.equals(ProcessStatus.IOEXCEPT)) {
+        return Optional.empty();
+      }
     }
     return Optional.of(rawObject);
+  }
+
+  @Override
+  public InteractiveObjectBuilder<T, K> setIn(K in) {
+    return (new InteractiveObjectBuilder<T, K>(in, out)).of(newMethod);
+  }
+
+  @Override
+  public Optional<K> getIn() {
+    return Optional.ofNullable(in);
+  }
+
+  @Override
+  public InteractiveObjectBuilder<T, K> of(Supplier<T> newMethod) {
+    this.newMethod = newMethod;
+    return this;
   }
 }

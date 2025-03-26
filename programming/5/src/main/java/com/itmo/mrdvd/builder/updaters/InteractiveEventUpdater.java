@@ -16,7 +16,7 @@ import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
-public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
+public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, EnumInputDevice> {
   private void init() {
     addInteractiveChange(
         Event::setName,
@@ -64,7 +64,7 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
   public InteractiveEventUpdater(
       EnumInputDevice in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, EnumInputDevice>> interactors,
       List<TypedBiConsumer<Event, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,

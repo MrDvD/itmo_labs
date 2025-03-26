@@ -9,17 +9,17 @@ import com.itmo.mrdvd.shell.Shell;
 
 public class AddCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, ?> collect;
-  protected final InteractiveBuilder<T> builder;
+  protected final InteractiveBuilder builder;
   protected final Shell<?, ?> shell;
 
-  public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder<T> builder) {
+  public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder<T, ?> builder) {
     this(collection, builder, null);
   }
 
   public AddCommand(
-      CollectionWorker<T, ?> collection, InteractiveBuilder<T> builder, Shell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveBuilder builder, Shell<?, ?> shell) {
     this.collect = collection;
-    this.builder = builder;
+    this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
   }
 
