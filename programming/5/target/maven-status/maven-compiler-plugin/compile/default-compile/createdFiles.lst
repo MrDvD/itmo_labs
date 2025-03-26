@@ -24,11 +24,9 @@ com/itmo/mrdvd/builder/updaters/InteractiveUpdater.class
 com/itmo/mrdvd/device/input/InteractiveDataInputDevice.class
 com/itmo/mrdvd/command/UpdateCommand.class
 com/itmo/mrdvd/builder/validators/ObjectValidator.class
-com/itmo/mrdvd/builder/updaters/InteractiveObjectUpdater$UserInteractor.class
 com/itmo/mrdvd/command/ReadEnvironmentFilepathCommand.class
 com/itmo/mrdvd/builder/builders/InteractiveCoordinatesBuilder.class
 com/itmo/mrdvd/device/input/LongInputDevice.class
-com/itmo/mrdvd/command/marker/OutputCommand.class
 com/itmo/mrdvd/command/RemoveAtCommand.class
 com/itmo/mrdvd/device/Deserializer.class
 com/itmo/mrdvd/collection/CollectionMetadata.class
@@ -46,7 +44,6 @@ com/itmo/mrdvd/builder/updaters/InteractiveEventUpdater.class
 com/itmo/mrdvd/collection/CollectionWorker.class
 com/itmo/mrdvd/collection/TicketCollection$TicketCollectionMetadata.class
 com/itmo/mrdvd/object/Ticket.class
-com/itmo/mrdvd/builder/builders/InteractiveObjectBuilder$UserInteractor.class
 com/itmo/mrdvd/builder/ProcessStatus.class
 com/itmo/mrdvd/device/IOStatus.class
 com/itmo/mrdvd/builder/updaters/ObjectUpdater.class
@@ -57,9 +54,7 @@ com/itmo/mrdvd/builder/validators/TicketValidator.class
 com/itmo/mrdvd/device/FileMeta.class
 com/itmo/mrdvd/device/input/IntInputDevice.class
 com/itmo/mrdvd/device/Serializer.class
-com/itmo/mrdvd/command/marker/ShellCommand.class
 com/itmo/mrdvd/builder/validators/EventValidator.class
-com/itmo/mrdvd/command/marker/CommandHasParams.class
 com/itmo/mrdvd/collection/TicketComparator$1.class
 com/itmo/mrdvd/builder/functionals/TypedBiConsumer$1.class
 com/itmo/mrdvd/collection/TicketCollection.class
@@ -70,12 +65,10 @@ com/itmo/mrdvd/builder/updaters/InteractiveObjectUpdater.class
 com/itmo/mrdvd/collection/HavingId.class
 com/itmo/mrdvd/command/HelpCommand.class
 com/itmo/mrdvd/device/input/InteractiveInputDevice.class
-com/itmo/mrdvd/command/marker/InputCommand.class
 com/itmo/mrdvd/command/AddIfCommand.class
 com/itmo/mrdvd/builder/builders/ObjectBuilder.class
 com/itmo/mrdvd/command/LoadCommand.class
 com/itmo/mrdvd/object/TicketField.class
-com/itmo/mrdvd/command/marker/Command.class
 com/itmo/mrdvd/shell/Shell.class
 com/itmo/mrdvd/device/DataFileDescriptor.class
 com/itmo/mrdvd/command/InfoCommand.class

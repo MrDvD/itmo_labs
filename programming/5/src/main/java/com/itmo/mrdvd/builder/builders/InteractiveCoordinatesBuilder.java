@@ -65,6 +65,6 @@ public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coor
 
   @Override
   public InteractiveCoordinatesBuilder setIn(FloatInputDevice in) {
-    return ((InteractiveCoordinatesBuilder) super.setIn(in)).init();
+    return new InteractiveCoordinatesBuilder(in, out).init();
   }
 }

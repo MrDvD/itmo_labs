@@ -24,11 +24,6 @@ public abstract class Shell<T, S> implements Iterable<Command> {
     return this.in;
   }
 
-  public Shell<T, S> setIn(DataInputDevice in) {
-    this.in = in;
-    return this;
-  }
-
   public OutputDevice getOut() {
     return this.out;
   }
@@ -61,7 +56,7 @@ public abstract class Shell<T, S> implements Iterable<Command> {
     return Optional.empty();
   }
 
-  public abstract Shell<T, S> forkSubshell();
+  public abstract Shell<T, S> forkSubshell(DataInputDevice in, OutputDevice out);
 
   public abstract void open();
 

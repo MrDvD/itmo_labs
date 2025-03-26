@@ -1,6 +1,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/Main.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/Interactor.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/ProcessStatus.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/UserInteractor.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/Builder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/InteractiveBuilder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/InteractiveCoordinatesBuilder.java
@@ -8,6 +9,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/InteractiveObjectBuilder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/InteractiveTicketBuilder.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/builders/ObjectBuilder.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/functionals/ExFunction.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/functionals/TypedBiConsumer.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/functionals/TypedPredicate.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/builder/updaters/InteractiveCoordinatesUpdater.java
@@ -32,6 +34,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/AddCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/AddIfCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ClearCommand.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/Command.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/CountGreaterThanEventCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ExecuteScriptCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ExitCommand.java
@@ -47,11 +50,6 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/SaveCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/ShowCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/UpdateCommand.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/Command.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/CommandHasParams.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/InputCommand.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/OutputCommand.java
-/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/command/marker/ShellCommand.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/Console.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/DataConsole.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/DataFileDescriptor.java
@@ -67,6 +65,7 @@
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/EnumInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/FloatInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/InputDevice.java
+/home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/IntEnumInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/IntInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/InteractiveDataInputDevice.java
 /home/userml/Documents/labs/itmo/programming/5/src/main/java/com/itmo/mrdvd/device/input/InteractiveInputDevice.java

@@ -163,7 +163,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
         && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
       setters.get(index).acceptRaw(rawObject, result.get());
     } else {
-      out.writeln(inter != null ? inter.error() : "[ERROR]: Не удалось сформировать поле");
+      out.writeln(inter != null ? inter.error() : "\n[ERROR]: Не удалось сформировать поле");
       return ProcessStatus.FAILURE;
     }
     return ProcessStatus.SUCCESS;

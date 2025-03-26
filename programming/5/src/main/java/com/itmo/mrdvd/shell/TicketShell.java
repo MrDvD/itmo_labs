@@ -92,7 +92,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
             new InteractiveTicketBuilder(
                 new InteractiveCoordinatesBuilder(getIn(), getOut()),
                 new InteractiveEventBuilder(getIn(), getOut()),
-                (IntEnumInputDevice) getIn(),
+                getIn(),
                 getOut())));
     addCommand(new HelpCommand());
     addCommand(new ExitCommand());
@@ -115,7 +115,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
             new InteractiveTicketBuilder(
                 new InteractiveCoordinatesBuilder(getIn(), getOut()),
                 new InteractiveEventBuilder(getIn(), getOut()),
-                (IntEnumInputDevice) getIn(),
+                getIn(),
                 getOut()),
             new TicketComparator(TicketField.ID),
             Set.of(1)));
@@ -195,8 +195,8 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   }
 
   @Override
-  public TicketShell forkSubshell() {
-    TicketShell subshell = new TicketShell(getIn(), getOut());
+  public TicketShell forkSubshell(DataInputDevice in, OutputDevice out) {
+    TicketShell subshell = new TicketShell(in, out);
     for (Command cmd : this) {
       subshell.addCommand(cmd.setShell(subshell));
     }

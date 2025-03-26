@@ -74,6 +74,6 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event, Enu
 
   @Override
   public InteractiveEventBuilder setIn(EnumInputDevice in) {
-    return ((InteractiveEventBuilder) super.setIn(in)).init();
+    return new InteractiveEventBuilder(in, out).init();
   }
 }

@@ -75,7 +75,7 @@ public class ExecuteScriptCommand implements Command {
     }
     usedPaths.add(path.get());
     file.openIn();
-    getShell().get().forkSubshell().setIn(file).open();
+    getShell().get().forkSubshell(file, getShell().get().getOut()).open();
     usedPaths.remove(path.get());
   }
 

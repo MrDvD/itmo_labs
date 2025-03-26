@@ -42,7 +42,7 @@ public class AddCommand<T extends HavingId> implements Command {
     if (result.isPresent()) {
       getShell().get().getOut().writeln("[INFO] Билет успешно добавлен в коллекцию.");
     } else {
-      shell.getOut().writeln("[ERROR] Не удалось добавить билет в коллекцию.");
+      shell.getOut().writeln("\n[ERROR] Не удалось добавить билет в коллекцию.");
     }
   }
 
