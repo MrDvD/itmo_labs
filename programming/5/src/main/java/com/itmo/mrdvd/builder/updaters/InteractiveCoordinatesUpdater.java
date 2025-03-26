@@ -15,14 +15,14 @@ import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 
 public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coordinates> {
-  private void init(Supplier<FloatInputDevice> in) {
+
+  private void init() {
     addInteractiveChange(
         Coordinates::setX,
         Coordinates::getX,
         Float.class,
         new UserInteractor<>(
             "X-координата",
-            in,
             (FloatInputDevice x) -> {
               Optional<Float> res = x.readFloat();
               x.skipLine();
@@ -37,7 +37,6 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
         Float.class,
         new UserInteractor<>(
             "Y-координата",
-            in,
             (FloatInputDevice x) -> {
               Optional<Float> res = x.readFloat();
               x.skipLine();
@@ -48,13 +47,13 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
         CoordinatesValidator::validateY);
   }
 
-  public InteractiveCoordinatesUpdater(Supplier<FloatInputDevice> in, OutputDevice out) {
-    super(out);
-    init(in);
+  public InteractiveCoordinatesUpdater(FloatInputDevice in, OutputDevice out) {
+    super(in, out);
+    init();
   }
 
   public InteractiveCoordinatesUpdater(
-      Supplier<FloatInputDevice> in,
+      FloatInputDevice in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Coordinates, ?>> setters,
@@ -63,7 +62,7 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
       List<TypedPredicate<?>> validators,
       List<Function<Coordinates, ?>> getters,
       List<InteractiveUpdater> updaters) {
-    super(out, interactors, setters, objects, methods, validators, getters, updaters);
-    init(in);
+    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
+    init();
   }
 }

@@ -13,15 +13,18 @@ import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 
 public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements InteractiveUpdater<T> {
   private final List<Interactor<?>> interactors;
   private final List<InteractiveUpdater> updaters;
   private final List<Function<T, ?>> getters;
+  private final InputDevice in;
   private final OutputDevice out;
 
-  public InteractiveObjectUpdater(OutputDevice out) {
+  public InteractiveObjectUpdater(InputDevice in, OutputDevice out) {
     this(
+        in,
         out,
         new ArrayList<>(),
         new ArrayList<>(),
@@ -33,6 +36,7 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   public InteractiveObjectUpdater(
+      InputDevice in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<T, ?>> setters,
@@ -42,6 +46,7 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
       List<Function<T, ?>> getters,
       List<InteractiveUpdater> updaters) {
     super(setters, objects, methods, validators);
+    this.in = in;
     this.out = out;
     this.interactors = interactors;
     this.updaters = updaters;
@@ -135,7 +140,10 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
   }
 
   @Override
-  protected ProcessStatus processChange(int index) {
+  protected ProcessStatus processChange(int index) throws NullPointerException {
+    if (getIn().isEmpty()) {
+      throw new NullPointerException("InputDevice не может быть null.");
+    }
     Optional<?> result;
     Interactor<?> inter = null;
     if (updaters.get(index) != null) {
@@ -163,7 +171,7 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
       }
       msg += ": ";
       out.write(msg);
-      result = inter.get();
+      result = inter.get(getIn().get());
     }
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());
@@ -184,5 +192,15 @@ public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements Int
       while (processChange(i).equals(ProcessStatus.FAILURE)) {}
     }
     return Optional.of(rawObject);
+  }
+
+  @Override
+  public InteractiveObjectUpdater<T> setIn(InputDevice in) {
+    return new InteractiveObjectUpdater<>(in, out);
+  }
+
+  @Override
+  public Optional<InputDevice> getIn() {
+    return Optional.ofNullable(in);
   }
 }

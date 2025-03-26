@@ -14,7 +14,7 @@ import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 
 public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements InteractiveBuilder<T> {
-  private final List<Interactor<?>> interactors;
+  private final List<Interactor<?, ?>> interactors;
   private final List<InteractiveBuilder<?>> builders;
   private final OutputDevice out;
 
@@ -31,7 +31,7 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
 
   public InteractiveObjectBuilder(
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, ?>> interactors,
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
@@ -44,14 +44,14 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   }
 
   public <U> InteractiveObjectBuilder<T> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?> inter)
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, ?> inter)
       throws IllegalArgumentException {
     return addInteractiveSetter(setter, valueCls, inter, null);
   }
 
   @Override
   public <U> InteractiveObjectBuilder<T> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?> inter, TypedPredicate<U> validator)
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, ?> inter, TypedPredicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");
@@ -118,7 +118,7 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
   @Override
   protected ProcessStatus processSetter(int index) {
     Optional<?> result;
-    Interactor<?> inter = null;
+    Interactor<?, ?> inter = null;
     if (builders.get(index) != null) {
       result = builders.get(index).build();
     } else {

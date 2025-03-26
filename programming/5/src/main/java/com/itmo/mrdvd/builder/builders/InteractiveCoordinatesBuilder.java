@@ -21,7 +21,6 @@ public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coor
         Float.class,
         new UserInteractor<>(
             "X-координата",
-            in,
             (FloatInputDevice x) -> {
               Optional<Float> res = x.readFloat();
               x.skipLine();
@@ -35,7 +34,6 @@ public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coor
         Float.class,
         new UserInteractor<>(
             "Y-координата",
-            in,
             (FloatInputDevice x) -> {
               Optional<Float> res = x.readFloat();
               x.skipLine();
@@ -54,7 +52,7 @@ public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coor
   public InteractiveCoordinatesBuilder(
       Supplier<FloatInputDevice> in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, ?>> interactors,
       List<TypedBiConsumer<Coordinates, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,

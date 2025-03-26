@@ -23,7 +23,6 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
         String.class,
         new UserInteractor<>(
             "Имя мероприятия",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: имя не должно быть пустым."),
         EventValidator::validateName);
@@ -32,7 +31,6 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
         String.class,
         new UserInteractor<>(
             "Описание мероприятия",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."),
         EventValidator::validateDescription);
@@ -45,7 +43,6 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
         EventType.class,
         new UserInteractor<>(
             "Тип мероприятия",
-            in,
             (EnumInputDevice x) -> {
               Optional<Enum<EventType>> result = x.readEnum(EventType.class);
               x.skipLine();
@@ -64,7 +61,7 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
   public InteractiveEventBuilder(
       Supplier<EnumInputDevice> in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, ?>> interactors,
       List<TypedBiConsumer<Event, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,

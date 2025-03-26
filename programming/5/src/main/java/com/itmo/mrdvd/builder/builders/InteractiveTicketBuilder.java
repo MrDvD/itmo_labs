@@ -28,7 +28,6 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         String.class,
         new UserInteractor<>(
             "Название билета",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: название не должно быть пустым."),
         TicketValidator::validateName);
@@ -38,7 +37,6 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         Integer.class,
         new UserInteractor<>(
             "Стоимость билета",
-            () -> in.get(),
             (IntInputDevice x) -> {
               Optional<Integer> res = x.readInt();
               x.skipLine();
@@ -56,7 +54,6 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
         TicketType.class,
         new UserInteractor<>(
             "Тип билета",
-            () -> in.get(),
             (EnumInputDevice x) -> {
               Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
               x.skipLine();
@@ -87,7 +84,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
       InteractiveBuilder<Event> eventBuild,
       Supplier<T> in,
       OutputDevice out,
-      List<Interactor<?>> interactors,
+      List<Interactor<?, ?>> interactors,
       List<TypedBiConsumer<Ticket, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,

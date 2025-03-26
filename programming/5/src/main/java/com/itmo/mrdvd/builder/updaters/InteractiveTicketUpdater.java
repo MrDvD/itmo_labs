@@ -21,14 +21,13 @@ import com.itmo.mrdvd.object.TicketType;
 
 public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
   private <T extends IntInputDevice & EnumInputDevice> void init(
-      InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate, Supplier<T> in) {
+      InteractiveUpdater<Coordinates> coordUpdate, InteractiveUpdater<Event> eventUpdate) {
     addInteractiveChange(
         Ticket::setName,
         Ticket::getName,
         String.class,
         new UserInteractor<>(
             "Название билета",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: название не должно быть пустым."),
         TicketValidator::validateName);
@@ -40,7 +39,6 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
         Integer.class,
         new UserInteractor<>(
             "Стоимость билета",
-            () -> in.get(),
             (IntInputDevice x) -> {
               Optional<Integer> res = x.readInt();
               x.skipLine();
@@ -59,7 +57,6 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
         TicketType.class,
         new UserInteractor<>(
             "Тип билета",
-            () -> in.get(),
             (EnumInputDevice x) -> {
               Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
               x.skipLine();
@@ -74,16 +71,16 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(
       InteractiveUpdater<Coordinates> coordUpdate,
       InteractiveUpdater<Event> eventUpdate,
-      Supplier<T> in,
+      T in,
       OutputDevice out) {
-    super(out);
-    init(coordUpdate, eventUpdate, in);
+    super(in, out);
+    init(coordUpdate, eventUpdate);
   }
 
   public <T extends IntInputDevice & EnumInputDevice> InteractiveTicketUpdater(
       InteractiveUpdater<Coordinates> coordUpdate,
       InteractiveUpdater<Event> eventUpdate,
-      Supplier<T> in,
+      T in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Ticket, ?>> setters,
@@ -92,7 +89,7 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
       List<TypedPredicate<?>> validators,
       List<Function<Ticket, ?>> getters,
       List<InteractiveUpdater> updaters) {
-    super(out, interactors, setters, objects, methods, validators, getters, updaters);
-    init(coordUpdate, eventUpdate, in);
+    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
+    init(coordUpdate, eventUpdate);
   }
 }

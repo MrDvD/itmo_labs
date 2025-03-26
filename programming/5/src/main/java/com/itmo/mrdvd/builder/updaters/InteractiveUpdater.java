@@ -1,9 +1,12 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.device.input.InputDevice;
 
 public interface InteractiveUpdater<T> extends Updater<T> {
   public <U> InteractiveUpdater<T> addInteractiveUpdater(
@@ -21,4 +24,8 @@ public interface InteractiveUpdater<T> extends Updater<T> {
       Interactor<?> inter,
       TypedPredicate<U> validator)
       throws IllegalArgumentException;
+  
+  public InteractiveUpdater<T> setIn(InputDevice in);
+
+  public Optional<InputDevice> getIn();
 }

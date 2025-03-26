@@ -17,14 +17,13 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 
 public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
-  private void init(Supplier<EnumInputDevice> in) {
+  private void init() {
     addInteractiveChange(
         Event::setName,
         Event::getName,
         String.class,
         new UserInteractor<>(
             "Имя мероприятия",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: имя не должно быть пустым."),
         EventValidator::validateName);
@@ -34,7 +33,6 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
         String.class,
         new UserInteractor<>(
             "Описание мероприятия",
-            in,
             InputDevice::read,
             "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."),
         EventValidator::validateDescription);
@@ -48,7 +46,6 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
         EventType.class,
         new UserInteractor<>(
             "Тип мероприятия",
-            in,
             (EnumInputDevice x) -> {
               Optional<Enum<EventType>> result = x.readEnum(EventType.class);
               x.skipLine();
@@ -59,13 +56,13 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
         EventValidator::validateType);
   }
 
-  public InteractiveEventUpdater(Supplier<EnumInputDevice> in, OutputDevice out) {
-    super(out);
-    init(in);
+  public InteractiveEventUpdater(EnumInputDevice in, OutputDevice out) {
+    super(in, out);
+    init();
   }
 
   public InteractiveEventUpdater(
-      Supplier<EnumInputDevice> in,
+      EnumInputDevice in,
       OutputDevice out,
       List<Interactor<?>> interactors,
       List<TypedBiConsumer<Event, ?>> setters,
@@ -74,7 +71,7 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
       List<TypedPredicate<?>> validators,
       List<Function<Event, ?>> getters,
       List<InteractiveUpdater> updaters) {
-    super(out, interactors, setters, objects, methods, validators, getters, updaters);
-    init(in);
+    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
+    init();
   }
 }

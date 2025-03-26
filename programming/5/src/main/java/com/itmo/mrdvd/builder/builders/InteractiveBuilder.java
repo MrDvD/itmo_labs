@@ -14,6 +14,6 @@ public interface InteractiveBuilder<T> extends Builder<T> {
       throws IllegalArgumentException;
 
   public <U> InteractiveObjectBuilder<T> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?> inter, TypedPredicate<U> validator)
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, ?> inter, TypedPredicate<U> validator)
       throws IllegalArgumentException;
 }
