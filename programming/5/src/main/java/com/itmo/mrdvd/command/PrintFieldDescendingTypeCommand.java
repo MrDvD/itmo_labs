@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Command {
   private final Collection<T, List<T>> collection;

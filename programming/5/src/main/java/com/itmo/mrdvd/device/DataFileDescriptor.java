@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.DataInputDevice;
 import java.io.IOException;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import com.itmo.mrdvd.device.input.DataInputDevice;
 
 public abstract class DataFileDescriptor extends FileDescriptor implements DataInputDevice {
   public DataFileDescriptor(Path path, FileSystem fs) {

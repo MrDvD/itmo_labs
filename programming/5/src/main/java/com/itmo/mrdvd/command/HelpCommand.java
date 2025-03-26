@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class HelpCommand implements Command {
   private final Shell<?, ?> shell;
@@ -31,7 +30,10 @@ public class HelpCommand implements Command {
       throw new NullPointerException("Shell не может быть null.");
     }
     for (Command cmd : shell) {
-      getShell().get().getOut().write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
+      getShell()
+          .get()
+          .getOut()
+          .write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
     }
   }
 

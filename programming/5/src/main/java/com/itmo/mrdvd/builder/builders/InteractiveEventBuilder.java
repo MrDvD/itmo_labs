@@ -1,9 +1,5 @@
 package com.itmo.mrdvd.builder.builders;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
@@ -14,6 +10,9 @@ import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
 public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event, EnumInputDevice> {
   private InteractiveEventBuilder init() {

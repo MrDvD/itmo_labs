@@ -3,3 +3,6 @@ kulibin3
 *.class
 *.jar
 *.doc*
+*.vscode
+*.mvn
+*target/

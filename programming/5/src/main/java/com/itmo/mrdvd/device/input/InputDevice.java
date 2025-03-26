@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.device.input;
 
+import com.itmo.mrdvd.device.IOStatus;
 import java.io.IOException;
 import java.util.Optional;
-
-import com.itmo.mrdvd.device.IOStatus;
 
 public interface InputDevice {
   public boolean hasNext();

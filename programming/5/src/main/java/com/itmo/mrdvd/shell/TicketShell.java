@@ -1,15 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveEventBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder;
@@ -49,6 +39,15 @@ import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
   private boolean isOpen;
@@ -118,8 +117,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
                 getOut()),
             new TicketComparator(TicketField.ID),
             Set.of(1)));
-    addCommand(
-        new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE)));
+    addCommand(new MinByPriceCommand<>(collection, new TicketComparator(TicketField.PRICE)));
     addCommand(
         new PrintFieldDescendingTypeCommand<>(
             collection, new TicketComparator(TicketField.TYPE, true)));

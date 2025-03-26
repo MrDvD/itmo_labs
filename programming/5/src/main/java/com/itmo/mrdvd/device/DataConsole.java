@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
 import java.io.IOException;
 import java.util.Optional;
-
-import com.itmo.mrdvd.device.input.InteractiveDataInputDevice;
 
 public class DataConsole extends Console implements InteractiveDataInputDevice {
   @Override

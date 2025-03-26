@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.builder;
 
+import com.itmo.mrdvd.builder.functionals.ExFunction;
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-
-import com.itmo.mrdvd.builder.functionals.ExFunction;
-import com.itmo.mrdvd.device.input.InputDevice;
 
 public class UserInteractor<U, K extends InputDevice> implements Interactor<U, K> {
   private final String attributeName;
@@ -14,17 +13,24 @@ public class UserInteractor<U, K extends InputDevice> implements Interactor<U, K
   private final String error;
   private final Optional<String> comment;
 
-  public UserInteractor(String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error) {
+  public UserInteractor(
+      String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error) {
     this(attributeName, inMethod, error, null, null);
   }
 
   public UserInteractor(
-      String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error, String comment) {
+      String attributeName,
+      ExFunction<K, Optional<U>, IOException> inMethod,
+      String error,
+      String comment) {
     this(attributeName, inMethod, error, null, comment);
   }
 
   public UserInteractor(
-      String attributeName, ExFunction<K, Optional<U>, IOException> inMethod, String error, List<String> options) {
+      String attributeName,
+      ExFunction<K, Optional<U>, IOException> inMethod,
+      String error,
+      List<String> options) {
     this(attributeName, inMethod, error, options, null);
   }
 

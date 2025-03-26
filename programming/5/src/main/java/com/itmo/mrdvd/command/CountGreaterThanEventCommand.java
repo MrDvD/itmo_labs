@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.shell.Shell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class CountGreaterThanEventCommand implements Command {
   private final Collection<Ticket, ?> collection;
@@ -15,8 +14,7 @@ public class CountGreaterThanEventCommand implements Command {
     this(collect, null);
   }
 
-  public CountGreaterThanEventCommand(
-      Collection<Ticket, ?> collect, Shell<?, ?> shell) {
+  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect, Shell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
@@ -40,9 +38,13 @@ public class CountGreaterThanEventCommand implements Command {
     try {
       params = getShell().get().getIn().readLong();
       getShell().get().getIn().skipLine();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
     if (params.isEmpty()) {
-      getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln("[ERROR] Неправильный формат ввода: event_id должен быть целым числом.");
       return;
     }
     Long eventId = params.get();
@@ -52,7 +54,10 @@ public class CountGreaterThanEventCommand implements Command {
         count++;
       }
     }
-    getShell().get().getOut().writeln(String.format("Количество элементов с большим event_id: %d.", count));
+    getShell()
+        .get()
+        .getOut()
+        .writeln(String.format("Количество элементов с большим event_id: %d.", count));
   }
 
   @Override

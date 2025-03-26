@@ -1,8 +1,5 @@
 package com.itmo.mrdvd.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
@@ -10,6 +7,8 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.shell.Shell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
@@ -18,7 +17,11 @@ public class LoadCommand<T extends HavingId, U> implements Command {
   private final Deserializer<Collection<T, U>> deserial;
   private final Shell<?, ?> shell;
 
-  public LoadCommand(InputDevice in, Collection<T, U> collection, Validator<T> validator, Deserializer<Collection<T, U>> deserial) {
+  public LoadCommand(
+      InputDevice in,
+      Collection<T, U> collection,
+      Validator<T> validator,
+      Deserializer<Collection<T, U>> deserial) {
     this(in, collection, validator, deserial, null);
   }
 
@@ -58,7 +61,8 @@ public class LoadCommand<T extends HavingId, U> implements Command {
     Optional<String> fileContent = Optional.empty();
     try {
       fileContent = in.readAll();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
     in.closeIn();
     if (fileContent.isEmpty()) {
       getShell().get().getOut().writeln("[ERROR] Ошибка чтения файла с коллекцией.");
@@ -69,16 +73,22 @@ public class LoadCommand<T extends HavingId, U> implements Command {
       collection.clear();
       for (T t : loaded.get()) {
         if (collection.add(t, validator).isEmpty()) {
-          getShell().get().getOut().writeln(
-              String.format(
-                  "[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.",
-                  t.getId()));
+          getShell()
+              .get()
+              .getOut()
+              .writeln(
+                  String.format(
+                      "[ERROR] Невозможно добавить элемент № %d в коллекцию: не прошел валидацию.",
+                      t.getId()));
         }
       }
       collection.setMetadata(loaded.get().getMetadata());
       getShell().get().getOut().writeln("[INFO] Коллекция успешно считана из файла.");
     } else {
-      getShell().get().getOut().writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln("[ERROR] Невозможно конвертировать структуру файла с коллекцией.");
     }
   }
 

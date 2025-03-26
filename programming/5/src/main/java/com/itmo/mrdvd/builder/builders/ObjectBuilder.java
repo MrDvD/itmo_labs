@@ -1,15 +1,14 @@
 package com.itmo.mrdvd.builder.builders;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
 public class ObjectBuilder<T> implements Builder<T> {
   protected final List<TypedBiConsumer<T, ?>> setters;

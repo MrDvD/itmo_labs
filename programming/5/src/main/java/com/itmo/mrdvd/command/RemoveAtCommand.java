@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.command;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.shell.Shell;
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
 
 public class RemoveAtCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
@@ -16,8 +15,7 @@ public class RemoveAtCommand<T extends HavingId> implements Command {
     this(collection, null);
   }
 
-  public RemoveAtCommand(
-      CollectionWorker<T, List<T>> collection, Shell<?, ?> shell) {
+  public RemoveAtCommand(CollectionWorker<T, List<T>> collection, Shell<?, ?> shell) {
     this.collection = collection;
     this.shell = shell;
   }
@@ -40,17 +38,24 @@ public class RemoveAtCommand<T extends HavingId> implements Command {
     Optional<Integer> params = Optional.empty();
     try {
       params = getShell().get().getIn().readInt();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
     getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      getShell().get().getOut().writeln(
-          "[ERROR] Неправильный формат ввода: index должен быть целым неотрицательным числом.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln(
+              "[ERROR] Неправильный формат ввода: index должен быть целым неотрицательным числом.");
       return;
     }
     try {
       collection.getCollection().remove(params.get().intValue());
     } catch (IndexOutOfBoundsException e) {
-      getShell().get().getOut().writeln("[WARN] В коллекции нет элемента с введённым параметром index.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln("[WARN] В коллекции нет элемента с введённым параметром index.");
     }
   }
 

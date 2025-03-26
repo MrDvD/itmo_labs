@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.shell.Shell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class RemoveByIdCommand implements Command {
   private final CollectionWorker<?, ?> collection;
@@ -14,8 +13,7 @@ public class RemoveByIdCommand implements Command {
     this(collection, null);
   }
 
-  public RemoveByIdCommand(
-      CollectionWorker<?, ?> collection, Shell<?, ?> shell) {
+  public RemoveByIdCommand(CollectionWorker<?, ?> collection, Shell<?, ?> shell) {
     this.collection = collection;
     this.shell = shell;
   }
@@ -38,10 +36,14 @@ public class RemoveByIdCommand implements Command {
     Optional<Long> params = Optional.empty();
     try {
       params = getShell().get().getIn().readLong();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
     getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
       return;
     }
     collection.remove(params.get());

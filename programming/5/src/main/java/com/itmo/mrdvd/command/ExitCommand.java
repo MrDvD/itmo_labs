@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class ExitCommand implements Command {
   private final Shell<?, ?> shell;

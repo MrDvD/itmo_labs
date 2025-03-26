@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.shell.Shell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class UpdateCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, ?> collect;
@@ -18,9 +17,7 @@ public class UpdateCommand<T extends HavingId> implements Command {
   }
 
   public UpdateCommand(
-      CollectionWorker<T, ?> collection,
-      InteractiveUpdater updater,
-      Shell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveUpdater updater, Shell<?, ?> shell) {
     this.collect = collection;
     this.updater = shell == null ? updater : updater.setIn(shell.getIn());
     this.shell = shell;
@@ -44,10 +41,14 @@ public class UpdateCommand<T extends HavingId> implements Command {
     Optional<Long> params = Optional.empty();
     try {
       params = getShell().get().getIn().readLong();
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
     getShell().get().getIn().skipLine();
     if (params.isEmpty()) {
-      getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
+      getShell()
+          .get()
+          .getOut()
+          .writeln("[ERROR] Неправильный формат ввода: id должен быть целым числом.");
       return;
     }
     Optional<?> result = collect.update(params.get(), updater);

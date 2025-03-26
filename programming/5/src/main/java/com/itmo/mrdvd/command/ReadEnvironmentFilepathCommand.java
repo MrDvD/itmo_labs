@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.device.FileMeta;
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class ReadEnvironmentFilepathCommand implements Command {
   private final String envName;
@@ -38,9 +37,15 @@ public class ReadEnvironmentFilepathCommand implements Command {
     String filePath = System.getenv(envName);
     if (filePath != null) {
       file.setPath(filePath);
-      getShell().get().getOut().writeln(String.format("[INFO] Переменная окружения \"%s\" успешно прочитана.", envName));
+      getShell()
+          .get()
+          .getOut()
+          .writeln(String.format("[INFO] Переменная окружения \"%s\" успешно прочитана.", envName));
     } else {
-      getShell().get().getOut().writeln(String.format("[ERROR] Ошибка чтения переменной окружения '%s'.", envName));
+      getShell()
+          .get()
+          .getOut()
+          .writeln(String.format("[ERROR] Ошибка чтения переменной окружения '%s'.", envName));
     }
   }
 

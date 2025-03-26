@@ -1,5 +1,11 @@
 package com.itmo.mrdvd.builder.builders;
 
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,14 +14,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
-
-public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBuilder<T> implements InteractiveBuilder<T, K> {
+public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBuilder<T>
+    implements InteractiveBuilder<T, K> {
   protected final List<Interactor<?, K>> interactors;
   protected final List<InteractiveBuilder<?, ?>> builders;
   protected final K in;
@@ -57,7 +57,10 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
 
   @Override
   public <U> InteractiveObjectBuilder<T, K> addInteractiveSetter(
-      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, K> inter, TypedPredicate<U> validator)
+      BiConsumer<T, U> setter,
+      Class<U> valueCls,
+      Interactor<?, K> inter,
+      TypedPredicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");
@@ -173,7 +176,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
   protected Optional<T> getObject() {
     for (int i = 0; i < setters.size(); i++) {
       ProcessStatus status = processSetter(i);
-      
+
       while (status.equals(ProcessStatus.FAILURE)) {
         status = processSetter(i);
       }

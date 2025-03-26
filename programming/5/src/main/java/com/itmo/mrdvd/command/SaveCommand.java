@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class SaveCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;
@@ -15,7 +14,8 @@ public class SaveCommand<T extends HavingId, U> implements Command {
   private final Shell<?, ?> shell;
   private final FileDescriptor file;
 
-  public SaveCommand(Collection<T, U> collect, Serializer<Collection<T, U>> serial, FileDescriptor file) {
+  public SaveCommand(
+      Collection<T, U> collect, Serializer<Collection<T, U>> serial, FileDescriptor file) {
     this(collect, serial, file, null);
   }
 

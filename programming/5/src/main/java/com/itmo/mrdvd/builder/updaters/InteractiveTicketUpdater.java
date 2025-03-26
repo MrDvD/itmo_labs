@@ -1,10 +1,5 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
@@ -19,11 +14,15 @@ import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, DataInputDevice> {
   private final InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate;
   private final InteractiveUpdater<Event, EnumInputDevice> eventUpdate;
-  
+
   private void init() {
     addInteractiveChange(
         Ticket::setName,

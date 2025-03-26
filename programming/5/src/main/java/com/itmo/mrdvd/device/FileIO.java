@@ -12,6 +12,11 @@ import java.nio.file.FileSystem;
 import java.nio.file.Path;
 import java.util.Optional;
 
+/**
+ * Класс FileIO — реализация InputDevice и OutputDevice для работы с файлами. Отчасти является
+ * обёрткой FileInputStream & BufferedInputStream (FileOutputStream & OutputStreamWriter), поскольку
+ * они требуются в варианте лабораторной.
+ */
 public class FileIO extends DataFileDescriptor {
   private InputStream inStream;
   private BufferedInputStream inReader;
@@ -142,7 +147,7 @@ public class FileIO extends DataFileDescriptor {
   }
 
   @Override
-  public void skipLine()  {
+  public void skipLine() {
     try {
       while (inReader.available() > 0) {
         inReader.mark(1);

@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Optional;
 import java.util.Scanner;
-
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 
 public abstract class Console implements InteractiveInputDevice {
   private Scanner in;
