@@ -74,4 +74,9 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, Enu
     super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
     init();
   }
+
+  @Override
+  public InteractiveEventUpdater setIn(EnumInputDevice in) {
+    return new InteractiveEventUpdater(in, out);
+  }
 }

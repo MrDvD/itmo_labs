@@ -65,4 +65,9 @@ public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coor
     super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
     init();
   }
+
+  @Override
+  public InteractiveCoordinatesUpdater setIn(FloatInputDevice in) {
+    return new InteractiveCoordinatesUpdater(in, out);
+  }
 }

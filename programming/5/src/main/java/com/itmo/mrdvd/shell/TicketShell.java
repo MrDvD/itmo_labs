@@ -46,7 +46,6 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.IntEnumInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
@@ -102,7 +101,7 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
             new InteractiveTicketUpdater(
                 new InteractiveCoordinatesUpdater(getIn(), getOut()),
                 new InteractiveEventUpdater(getIn(), getOut()),
-                (IntEnumInputDevice) getIn(),
+                getIn(),
                 getOut())));
     addCommand(new ClearCommand(collection));
     addCommand(new RemoveByIdCommand(collection));

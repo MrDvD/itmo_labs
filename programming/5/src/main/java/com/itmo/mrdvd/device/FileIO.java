@@ -145,8 +145,13 @@ public class FileIO extends DataFileDescriptor {
   public void skipLine()  {
     try {
       while (inReader.available() > 0) {
+        inReader.mark(1);
         int chr = inReader.read();
         if (chr == '\n') {
+          break;
+        }
+        if (chr != ' ') {
+          inReader.reset();
           break;
         }
       }

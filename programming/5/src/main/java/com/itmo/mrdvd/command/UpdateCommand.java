@@ -10,7 +10,7 @@ import com.itmo.mrdvd.shell.Shell;
 
 public class UpdateCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, ?> collect;
-  private final InteractiveUpdater<T, ?> updater;
+  private final InteractiveUpdater updater;
   private final Shell<?, ?> shell;
 
   public UpdateCommand(CollectionWorker<T, ?> collection, InteractiveUpdater<T, ?> updater) {
@@ -19,10 +19,10 @@ public class UpdateCommand<T extends HavingId> implements Command {
 
   public UpdateCommand(
       CollectionWorker<T, ?> collection,
-      InteractiveUpdater<T, ?> updater,
+      InteractiveUpdater updater,
       Shell<?, ?> shell) {
     this.collect = collection;
-    this.updater = updater;
+    this.updater = shell == null ? updater : updater.setIn(shell.getIn());
     this.shell = shell;
   }
 

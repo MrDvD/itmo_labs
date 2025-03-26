@@ -17,11 +17,11 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
 public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUpdater<T> implements InteractiveUpdater<T, K> {
-  private final List<Interactor<?, K>> interactors;
-  private final List<InteractiveUpdater> updaters;
-  private final List<Function<T, ?>> getters;
-  private final K in;
-  private final OutputDevice out;
+  protected final List<Interactor<?, K>> interactors;
+  protected final List<InteractiveUpdater> updaters;
+  protected final List<Function<T, ?>> getters;
+  protected final K in;
+  protected final OutputDevice out;
 
   public InteractiveObjectUpdater(K in, OutputDevice out) {
     this(

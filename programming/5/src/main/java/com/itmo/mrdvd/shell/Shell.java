@@ -43,6 +43,7 @@ public abstract class Shell<T, S> implements Iterable<Command> {
   public Optional<Command> processCommandLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
     if (cmdName.isEmpty()) {
+      getIn().skipLine();
       return Optional.empty();
     }
     Optional<Command> cmd = getCommand(cmdName.get());

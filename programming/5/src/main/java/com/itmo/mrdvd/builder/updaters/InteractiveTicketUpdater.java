@@ -11,16 +11,20 @@ import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.EnumInputDevice;
+import com.itmo.mrdvd.device.input.FloatInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.device.input.IntEnumInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 
-public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, IntEnumInputDevice> {
-  private void init(
-      InteractiveUpdater<Coordinates, ?> coordUpdate, InteractiveUpdater<Event, ?> eventUpdate) {
+public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, DataInputDevice> {
+  private final InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate;
+  private final InteractiveUpdater<Event, EnumInputDevice> eventUpdate;
+  
+  private void init() {
     addInteractiveChange(
         Ticket::setName,
         Ticket::getName,
@@ -56,7 +60,7 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, I
         TicketType.class,
         new UserInteractor<>(
             "Тип билета",
-            (IntEnumInputDevice x) -> {
+            (x) -> {
               Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
               x.skipLine();
               return res;
@@ -68,20 +72,22 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, I
   }
 
   public InteractiveTicketUpdater(
-      InteractiveUpdater<Coordinates, ?> coordUpdate,
-      InteractiveUpdater<Event, ?> eventUpdate,
-      IntEnumInputDevice in,
+      InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate,
+      InteractiveUpdater<Event, EnumInputDevice> eventUpdate,
+      DataInputDevice in,
       OutputDevice out) {
     super(in, out);
-    init(coordUpdate, eventUpdate);
+    this.coordUpdate = coordUpdate;
+    this.eventUpdate = eventUpdate;
+    init();
   }
 
   public InteractiveTicketUpdater(
-      InteractiveUpdater<Coordinates,?> coordUpdate,
-      InteractiveUpdater<Event,?> eventUpdate,
-      IntEnumInputDevice in,
+      InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate,
+      InteractiveUpdater<Event, EnumInputDevice> eventUpdate,
+      DataInputDevice in,
       OutputDevice out,
-      List<Interactor<?, IntEnumInputDevice>> interactors,
+      List<Interactor<?, DataInputDevice>> interactors,
       List<TypedBiConsumer<Ticket, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
@@ -89,6 +95,15 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, I
       List<Function<Ticket, ?>> getters,
       List<InteractiveUpdater> updaters) {
     super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
-    init(coordUpdate, eventUpdate);
+    this.coordUpdate = coordUpdate;
+    this.eventUpdate = eventUpdate;
+    init();
+  }
+
+  @Override
+  public InteractiveTicketUpdater setIn(DataInputDevice in) {
+    InteractiveUpdater newCoords = this.coordUpdate.setIn(in);
+    InteractiveUpdater newEvent = this.eventUpdate.setIn(in);
+    return new InteractiveTicketUpdater(newCoords, newEvent, in, out);
   }
 }
