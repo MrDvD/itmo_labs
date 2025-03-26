@@ -57,7 +57,7 @@ public class AddIfCommand<T extends HavingId> implements Command {
     if (result.isPresent()) {
       getShell().get().getOut().writeln("[INFO] Билет успешно добавлен в коллекцию.");
     } else {
-      getShell().get().getOut().writeln("[INFO] Билет не добавлен в коллекцию: он не удовлетворяет условию.");
+      getShell().get().getOut().writeln("\n[INFO] Билет не добавлен в коллекцию.");
     }
   }
 

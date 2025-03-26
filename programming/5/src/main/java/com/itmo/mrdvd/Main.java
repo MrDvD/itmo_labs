@@ -21,15 +21,8 @@ import com.itmo.mrdvd.shell.TicketShell;
  * 3. Ideally, remove Ticket- prefix from generic classes
  * 5. Move LoadCommand to the shell
  * 6. Replace Scanner with BufferedInputStream (hasNext has strange consequences in shell's interactive behaviour)
- * 7. Check ADD-ing items from file
- * 8. FEATURE: support of Unicode.
- * 9. BUGFIX: add the possibility to get the input in builders from method
- *     - fix the reading of params from file in addcommand!!
- *     - reason is that subshell won't update in builders
- *     - solution: fork builders too on shellFork
- *     - move away 'in-object' from interactor to builder (or just add separately, which would be better)
- *     - add setIn to InteractiveBuilder (it would depend only on one thing from now)
- * Existance of BeanDeserializer
+ * 7. FEATURE: support of Unicode.
+ * 8. Existance of BeanDeserializer?
  */
 
 public class Main {
