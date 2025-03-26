@@ -86,7 +86,7 @@ public class FileIO extends DataFileDescriptor {
       inReader.mark(1);
       int chr = inReader.read();
       if (delimiters.indexOf(chr) != -1) {
-        if (chr == '\n') {
+        if (chr == '\n' && !delimiters.equals("\n")) {
           inReader.reset();
         }
         break;
@@ -146,7 +146,6 @@ public class FileIO extends DataFileDescriptor {
     try {
       while (inReader.available() > 0) {
         int chr = inReader.read();
-        inReader.available();
         if (chr == '\n') {
           break;
         }

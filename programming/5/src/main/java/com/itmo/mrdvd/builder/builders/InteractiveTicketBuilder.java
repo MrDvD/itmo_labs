@@ -106,6 +106,6 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket, D
   public InteractiveTicketBuilder setIn(DataInputDevice in) {
     InteractiveBuilder newCoords = coordBuild.setIn(in);
     InteractiveBuilder newEvent = eventBuild.setIn(in);
-    return new InteractiveTicketBuilder(newCoords, newEvent, in, out).init();
+    return new InteractiveTicketBuilder(newCoords, newEvent, in, out);
   }
 }
