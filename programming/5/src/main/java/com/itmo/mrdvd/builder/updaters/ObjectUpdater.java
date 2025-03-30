@@ -9,13 +9,12 @@ import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
 public class ObjectUpdater<T> implements Updater<T> {
   protected final List<TypedBiConsumer<T, ?>> setters;
   protected final List<Object> objects;
   protected final List<Supplier<?>> methods;
-  protected final List<TypedPredicate<?>> validators;
+  protected final List<Predicate> validators;
   protected Supplier<T> newMethod;
   protected T rawObject;
 
@@ -27,7 +26,7 @@ public class ObjectUpdater<T> implements Updater<T> {
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators) {
+      List<Predicate> validators) {
     this.setters = setters;
     this.objects = objects;
     this.methods = methods;
@@ -47,7 +46,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     setters.add(TypedBiConsumer.of(valueCls, setter));
     objects.add(value);
     methods.add(null);
-    validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
+    validators.add(validator);
     return this;
   }
 
@@ -65,7 +64,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     setters.add(TypedBiConsumer.of(valueCls, setter));
     objects.add(null);
     methods.add(method);
-    validators.add(validator != null ? TypedPredicate.of(valueCls, validator) : null);
+    validators.add(validator);
     return this;
   }
 
@@ -73,7 +72,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());
     }
-    if (validators.get(index) != null && !validators.get(index).testRaw(objects.get(index))) {
+    if (validators.get(index) != null && !validators.get(index).test(objects.get(index))) {
       return ProcessStatus.FAILURE;
     }
     setters.get(index).acceptRaw(rawObject, objects.get(index));

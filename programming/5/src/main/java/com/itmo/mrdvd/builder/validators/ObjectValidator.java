@@ -1,15 +1,15 @@
 package com.itmo.mrdvd.builder.validators;
 
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
+
 public class ObjectValidator<T> implements Validator<T> {
   protected List<Function<T, ?>> getters;
-  protected List<TypedPredicate<?>> methods;
+  protected List<Predicate> methods;
   protected List<Validator> validators;
   protected T object;
 
@@ -18,7 +18,7 @@ public class ObjectValidator<T> implements Validator<T> {
   }
 
   public ObjectValidator(
-      List<Function<T, ?>> getters, List<TypedPredicate<?>> methods, List<Validator> validators) {
+      List<Function<T, ?>> getters, List<Predicate> methods, List<Validator> validators) {
     this.getters = getters;
     this.methods = methods;
     this.validators = validators;
@@ -33,7 +33,7 @@ public class ObjectValidator<T> implements Validator<T> {
     }
     this.getters.add(getter);
     this.validators.add(null);
-    this.methods.add(TypedPredicate.of(valueCls, validator));
+    this.methods.add(validator);
     return this;
   }
 
@@ -59,7 +59,7 @@ public class ObjectValidator<T> implements Validator<T> {
   }
 
   protected ProcessStatus processCheck(int index) {
-    return methods.get(index).testRaw(getters.get(index).apply(object))
+    return methods.get(index).test(getters.get(index).apply(object))
         ? ProcessStatus.SUCCESS
         : ProcessStatus.FAILURE;
   }

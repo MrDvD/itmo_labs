@@ -12,7 +12,6 @@ import java.util.function.Supplier;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
@@ -44,7 +43,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators,
+      List<Predicate> validators,
       List<Function<T, ?>> getters,
       List<InteractiveUpdater> updaters) {
     super(setters, objects, methods, validators);
@@ -69,7 +68,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       Function<T, U> getter,
       Class<U> valueCls,
       Interactor<?, K> inter,
-      TypedPredicate<U> validator)
+      Predicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");
@@ -98,7 +97,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
-      TypedPredicate<U> validator)
+      Predicate<U> validator)
       throws IllegalArgumentException {
     change(setter, null, valueCls, validator);
     getters.set(getters.size() - 1, getter);
@@ -183,7 +182,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       objects.set(index, methods.get(index).get());
     }
     if (result.isPresent()
-        && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
+        && (validators.get(index) == null || validators.get(index).test(result.get()))) {
       setters.get(index).acceptRaw(rawObject, result.get());
     } else {
       out.writeln(inter != null ? inter.error() : "[ERROR]: Не удалось сформировать поле");

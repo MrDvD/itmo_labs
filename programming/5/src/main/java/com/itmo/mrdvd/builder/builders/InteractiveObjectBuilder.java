@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
@@ -41,7 +40,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
       List<TypedBiConsumer<T, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators,
+      List<Predicate> validators,
       List<InteractiveBuilder<?, ?>> builders) {
     super(setters, objects, methods, validators);
     this.in = in;
@@ -61,7 +60,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
       BiConsumer<T, U> setter,
       Class<U> valueCls,
       Interactor<?, K> inter,
-      TypedPredicate<U> validator)
+      Predicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");
@@ -85,7 +84,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
       InteractiveBuilder<U, ?> builder,
       BiConsumer<T, U> setter,
       Class<U> valueCls,
-      TypedPredicate<U> validator)
+      Predicate<U> validator)
       throws IllegalArgumentException {
     set(setter, null, valueCls, validator);
     builders.set(builders.size() - 1, builder);
@@ -164,7 +163,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
       objects.set(index, methods.get(index).get());
     }
     if (result.isPresent()
-        && (validators.get(index) == null || validators.get(index).testRaw(result.get()))) {
+        && (validators.get(index) == null || validators.get(index).test(result.get()))) {
       setters.get(index).acceptRaw(rawObject, result.get());
     } else {
       out.writeln(inter != null ? inter.error() : "\n[ERROR]: Не удалось сформировать поле");

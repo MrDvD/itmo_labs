@@ -1,18 +1,19 @@
 package com.itmo.mrdvd.builder.builders;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.EventValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event, EnumInputDevice> {
   private InteractiveEventBuilder init() {
@@ -65,7 +66,7 @@ public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event, Enu
       List<TypedBiConsumer<Event, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators,
+      List<Predicate> validators,
       List<InteractiveBuilder<?, ?>> builders) {
     super(in, out, interactors, setters, objects, methods, validators, builders);
     init();

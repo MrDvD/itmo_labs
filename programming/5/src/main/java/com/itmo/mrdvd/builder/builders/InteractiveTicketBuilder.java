@@ -1,9 +1,14 @@
 package com.itmo.mrdvd.builder.builders;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
@@ -14,10 +19,6 @@ import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.Supplier;
 
 public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket, DataInputDevice> {
   private final InteractiveBuilder<Coordinates, FloatInputDevice> coordBuild;
@@ -93,7 +94,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket, D
       List<TypedBiConsumer<Ticket, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators,
+      List<Predicate> validators,
       List<InteractiveBuilder<?, ?>> builders) {
     super(in, out, interactors, setters, objects, methods, validators, builders);
     this.coordBuild = coordBuild;

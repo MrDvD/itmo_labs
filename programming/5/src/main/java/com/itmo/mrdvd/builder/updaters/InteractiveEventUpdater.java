@@ -3,16 +3,17 @@ package com.itmo.mrdvd.builder.updaters;
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import com.itmo.mrdvd.builder.validators.EventValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.EnumInputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, EnumInputDevice> {
@@ -67,7 +68,7 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, Enu
       List<TypedBiConsumer<Event, ?>> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
-      List<TypedPredicate<?>> validators,
+      List<Predicate> validators,
       List<Function<Event, ?>> getters,
       List<InteractiveUpdater> updaters) {
     super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
