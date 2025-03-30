@@ -1,14 +1,15 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
 
 public class ObjectUpdater<T> implements Updater<T> {
   protected final List<TypedBiConsumer<T, ?>> setters;
@@ -68,7 +69,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     return this;
   }
 
-  protected ProcessStatus processChange(int index) {
+  protected ProcessStatus processChange(int index) throws RuntimeException {
     if (methods.get(index) != null) {
       objects.set(index, methods.get(index).get());
     }
@@ -79,7 +80,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     return ProcessStatus.SUCCESS;
   }
 
-  protected Optional<T> getObject() {
+  protected Optional<T> getObject() throws RuntimeException {
     for (int i = 0; i < setters.size(); i++) {
       if (processChange(i).equals(ProcessStatus.FAILURE)) {
         return Optional.empty();
@@ -89,7 +90,7 @@ public class ObjectUpdater<T> implements Updater<T> {
   }
 
   @Override
-  public Optional<T> update(T rawObject) throws IllegalArgumentException {
+  public Optional<T> update(T rawObject) throws IllegalArgumentException, RuntimeException {
     if (rawObject == null) {
       throw new IllegalArgumentException("Объект не может быть null.");
     }

@@ -1,11 +1,5 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +8,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 
 public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUpdater<T>
     implements InteractiveUpdater<T, K> {
@@ -141,7 +142,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
   }
 
   @Override
-  protected ProcessStatus processChange(int index) throws NullPointerException {
+  protected ProcessStatus processChange(int index) throws NullPointerException, RuntimeException {
     if (getIn().isEmpty()) {
       throw new NullPointerException("InputDevice не может быть null.");
     }
@@ -175,7 +176,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       try {
         result = inter.get(getIn().get());
       } catch (IOException e) {
-        return ProcessStatus.IOEXCEPT;
+        throw new RuntimeException(e);
       }
     }
     if (methods.get(index) != null) {
@@ -194,11 +195,12 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
   @Override
   protected Optional<T> getObject() {
     for (int i = 0; i < setters.size(); i++) {
-      ProcessStatus status = processChange(i);
-      while (status.equals(ProcessStatus.FAILURE)) {
-        status = processChange(i);
-      }
-      if (status.equals(ProcessStatus.IOEXCEPT)) {
+      try {
+        ProcessStatus status = processChange(i);
+        while (status.equals(ProcessStatus.FAILURE)) {
+          status = processChange(i);
+        }
+      } catch (RuntimeException e) {
         return Optional.empty();
       }
     }

@@ -1,11 +1,12 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.functionals.TypedPredicate;
-import com.itmo.mrdvd.device.input.InputDevice;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.functionals.TypedPredicate;
+import com.itmo.mrdvd.device.input.InputDevice;
 
 public interface InteractiveUpdater<T, K extends InputDevice> extends Updater<T> {
   public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
