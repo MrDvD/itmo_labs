@@ -3,12 +3,12 @@ package com.itmo.mrdvd.builder.builders;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
@@ -91,7 +91,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket, D
       DataInputDevice in,
       OutputDevice out,
       List<Interactor<?, DataInputDevice>> interactors,
-      List<TypedBiConsumer<Ticket, ?>> setters,
+      List<BiConsumer> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<Predicate> validators,

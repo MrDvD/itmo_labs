@@ -11,7 +11,6 @@ import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 
@@ -40,7 +39,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       K in,
       OutputDevice out,
       List<Interactor<?, K>> interactors,
-      List<TypedBiConsumer<T, ?>> setters,
+      List<BiConsumer> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<Predicate> validators,
@@ -183,7 +182,7 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
     }
     if (result.isPresent()
         && (validators.get(index) == null || validators.get(index).test(result.get()))) {
-      setters.get(index).acceptRaw(rawObject, result.get());
+      setters.get(index).accept(rawObject, result.get());
     } else {
       out.writeln(inter != null ? inter.error() : "[ERROR]: Не удалось сформировать поле");
       return ProcessStatus.FAILURE;

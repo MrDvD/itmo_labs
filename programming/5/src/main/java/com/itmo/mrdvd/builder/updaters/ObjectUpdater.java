@@ -8,10 +8,9 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.builder.functionals.TypedBiConsumer;
 
 public class ObjectUpdater<T> implements Updater<T> {
-  protected final List<TypedBiConsumer<T, ?>> setters;
+  protected final List<BiConsumer> setters;
   protected final List<Object> objects;
   protected final List<Supplier<?>> methods;
   protected final List<Predicate> validators;
@@ -23,7 +22,7 @@ public class ObjectUpdater<T> implements Updater<T> {
   }
 
   public ObjectUpdater(
-      List<TypedBiConsumer<T, ?>> setters,
+      List<BiConsumer> setters,
       List<Object> objects,
       List<Supplier<?>> methods,
       List<Predicate> validators) {
@@ -43,7 +42,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     if (setter == null) {
       throw new IllegalArgumentException("Setter не может быть null.");
     }
-    setters.add(TypedBiConsumer.of(valueCls, setter));
+    setters.add(setter);
     objects.add(value);
     methods.add(null);
     validators.add(validator);
@@ -61,7 +60,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     if (setter == null) {
       throw new IllegalArgumentException("Setter не может быть null.");
     }
-    setters.add(TypedBiConsumer.of(valueCls, setter));
+    setters.add(setter);
     objects.add(null);
     methods.add(method);
     validators.add(validator);
@@ -75,7 +74,7 @@ public class ObjectUpdater<T> implements Updater<T> {
     if (validators.get(index) != null && !validators.get(index).test(objects.get(index))) {
       return ProcessStatus.FAILURE;
     }
-    setters.get(index).acceptRaw(rawObject, objects.get(index));
+    setters.get(index).accept(rawObject, objects.get(index));
     return ProcessStatus.SUCCESS;
   }
 
