@@ -1,0 +1,9 @@
+/*
+ * TODO:
+ * 2. Ideally, TicketShell should be splitted from ObjectShell (create a new class)
+ * 3. Ideally, remove Ticket- prefix from generic classes
+ * 5. Move LoadCommand to the shell
+ * 6. Replace Scanner with BufferedInputStream (hasNext has strange consequences in shell's interactive behaviour)
+ * 7. FEATURE: support of Unicode.
+ * 8. Existance of BeanDeserializer?
+ */

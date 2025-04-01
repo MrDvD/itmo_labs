@@ -1,6 +1,8 @@
 computer\ science/annotations
+kulibin3
 *.class
 *.jar
-*.docx
-*.doc
-**/.vscode
+*.doc*
+*.vscode
+*.mvn
+*target/
