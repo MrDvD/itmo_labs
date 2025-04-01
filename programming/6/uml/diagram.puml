@@ -1,0 +1,450 @@
+@startuml name
+
+Command <.. HelpCommand : implements
+Command <.. InfoCommand : implements
+Command <.. ShowCommand : implements
+Command <.. MinByPriceCommand : implements
+Command <.. CountGreaterThanEventCommand : implements
+Command <.. PrintFieldDescendingTypeCommand : implements
+Command <.. AddCommand : implements
+Command <.. AddIfMaxCommand : implements
+Command <.. UpdateCommand : implements
+Command <.. RemoveByIdCommand : implements
+Command <.. RemoveAtCommand : implements
+Command <.. RemoveLastCommand : implements
+Command <.. ClearCommand : implements
+Command <.. SaveCommand : implements
+Command <.. ExecuteScriptCommand : implements
+Command <.. ExitCommand : implements
+Command <.. LoadCommand : implements
+Command <.. ReadEnvironmentFilepathCommand : implements
+
+InputDevice <-- InteractiveInputDevice
+
+interface InteractiveInputDevice {
+   +read(String message) : String
+}
+
+InteractiveInputDevice <.. Console : implements
+OutputDevice <.. Console : implements
+OutputDevice <.. XMLStorage : implements
+CollectionWorker <.. TicketCollection : implements
+Shell <.. TicketShell : implements
+TicketShell +-- RawCommand
+TicketShell +-- TShellParser
+
+class Console {
+   -in : Scanner
+   -out : OutputStreamWriter
+   +init() : Console
+}
+
+
+
+class TicketCollection
+class TicketShell
+
+interface Command {
+   +execute(String[] params) : void
+   +name() : String
+   +signature() : String
+   +description() : String
+}
+
+class AddCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +AddCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+}
+
+class AddIfMaxCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +AddIfMaxCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+}
+
+class UpdateCommand {
+   -collect : TicketCollection
+   -out : OutputDevice
+   +UpdateCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+class CountGreaterThanEventCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +CountGreaterThanEventCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+interface ShellCommand {
+   +setShell() : void
+}
+
+ShellCommand <.. ExecuteScriptCommand
+
+class ExecuteScriptCommand {
+   -shell : Shell
+   -log : OutputDevice
+   -stack : Set<String>
+   +ExecuteScriptCommand(OutputDevice log)
+   +validateParams() : int
+}
+
+ShellCommand <.. ExitCommand
+
+class ExitCommand {
+   -shell Shell
+}
+
+ShellCommand <.. HelpCommand
+
+class HelpCommand {
+   -shell : Shell
+   -out : OutputDevice
+   +HelpCommand()
+}
+
+class InfoCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +InfoCommand(TicketCollection collect, OutputDevice out)
+}
+
+interface Deserializer<T> {
+   +Deserialize(String str) : T
+}
+
+interface Serializer<T> {
+   +serialize(T obj) : String
+}
+
+Serializer <.. TicketXMLMapper : implements
+Deserializer <.. TicketXMLMapper : implements
+
+class TicketXMLMapper {
+   -mapper : XmlMapper
+   +TicketXMLMapper()
+}
+
+class LoadCommand {
+   -in : InputDevice
+   -collection : TicketCollection
+   -deserial : Deserializer<TicketCollection>
+   -out : OutputDevice
+   +LoadCommand(InputDevice in, TicketCollection collection, Deserializer<TicketCollection> deserial, OutputDevice out)
+}
+
+class MinByPriceCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +MinByPriceCommand(TicketCollection collect, OutputDevice out)
+}
+
+class PrintFieldDescendingTypeCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +PrintFieldDescendingTypeCommand(TicketCollection collect, OutputDevice out)
+}
+
+interface FileMeta {
+   +setPath(String filePath) : void
+   +getPath() : String
+   +getName() : String
+   +createFile() : int
+}
+
+class ReadEnvironmentFilepathCommand {
+   -envName : String
+   -log : OutputDevice
+   -file : FileMeta
+   +ReadEnvironmentFilepathCommand(String envName, FileMeta file, OutputDevice log)
+}
+
+class RemoveAtCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +RemoveAtCommand(TicketCollection collect, OutputDevice out)
+   +parseIndex(String idxString) : Integer
+   +validateParams(String[] params) : int
+}
+
+class RemoveByIdCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +RemoveByIdCommand(TicketCollection collect, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+class RemoveLastCommand {
+   -colection : TicketCollection
+   -out : OutputDevice
+   +RemoveLastCommand(TicketCollection collect, OutputDevice out)
+}
+
+class SaveCommand {
+   -collection : TicketCollection
+   -serial : Serializer<TicketCollection>
+   -log : OutputDevice
+   -file : FileDescriptor
+   +SaveCommand(TicketCollection collect, Serializer<TicketCollection> serial, FileDescriptor file, OutputDevice log)
+}
+
+InputDevice <.. FileDescriptor : implements
+OutputDevice <.. FileDescriptor : implements
+FileMeta <.. FileDescriptor : implements
+
+abstract class FileDescriptor
+
+FileDescriptor <-- FileIO
+
+class FileIO {
+   -filePath : String
+   -inStream : InputStream
+   -inReader : BufferedInputStream
+   -outStream : OutputStream
+   -outWriter : OutputStreamWriter
+}
+
+class ShowCommand {
+   -collection : TicketCollection
+   -out : OutputDevice
+   +ShowCommand(TicketCollection collect, OutputDevice out)
+}
+
+class UpdateCommand {
+   -collect : TicketCollection
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   +UpdateCommand(TicketCollection collect, InteractiveInputDevice in, OutputDevice out)
+   +validateParams(String[] params) : int
+}
+
+interface Shell {
+   +getInput() : InteractiveInputDevice
+   +getOutput() : OutputDevice
+   +getCommands() : Map<String, Command>
+   +getCommand(String str) : Command
+   +addCommand(Command cmd) : int
+   +getStackSize() : int
+   +setStackSize(int size) : void
+   +createFd() : FileDescriptor
+   +processCommandLine(String cmd) : int
+   +open(): void
+   +close(): void
+}
+
+class TicketShell {
+   -in : InteractiveInputDevice
+   -out : OutputDevice
+   -commands : Map<String, Command>
+   -preExecute : ArrayList<Command>
+   -isOpen : boolean
+   -stackSize : int
+   +TicketShell(InteractiveInputDevice in, OutputDevice out)
+}
+
+static class RawCommand {
+   cmd : String
+   params : String[]
+   +RawCommand(int paramsCount)
+}
+
+static class TShellParser {
+   +static parseLine(String line) : RawCommand
+}
+
+TicketCollection +-- TicketCollectionMetadata
+
+class TicketCollection {
+   -tickets : ArrayList<Ticket>
+   -ticketGenerator : IdGenerator
+   -eventGenerator : IdGenerator
+   -meta : TicketCollectionMetadata
+   +TicketCollection(String name, IdGenerator ticketGen, IdGenerator eventGen)
+   +addRaw(Ticket obj) : int
+   +removeAt(int index) : int
+   +removeLast() : int
+   +getTicketIdGenerator() : IdGenerator
+   +getEventIdGenerator() : IdGenerator
+   +sort(TicketField field) : ArrayList<Ticket>
+   +sort(TicketField field, boolean descending) : ArrayList<Ticket>
+   +getMetadata() : TicketCollectionMetadata
+   +setMetadata() : void
+}
+
+class TicketCollectionMetadata {
+   -creationTime : LocalDateTime
+   -type : String
+   -name : String
+   +TicketCollectionMetadata()
+   +TicketCollectionMetadata(String name)
+   +setName(String name) : void
+   +getCreationTime() : LocalDateTime
+   +getName() : String
+   +getType() : String
+}
+
+interface OutputDevice {
+   +write(str: String): void
+}
+
+interface CollectionWorker<T> {
+   +add(T obj) : int
+   +get(Long id) : T
+   +update(Long id) : int
+   +remove(Long id) : int
+   +clear() : void
+}
+
+IdGenerator <.. TicketIdGenerator : implements
+
+interface IdGenerator {
+   +bookId(Object obj) : Long
+   +takeId(Long id) : int
+   +freeId(Long id) : int
+   +isTaken(Long id) : boolean
+   +isBooked(Long id) : boolean
+}
+
+class TicketIdGenerator {
+   -userIds : Set<Long>
+   -pendingIds : Set<Long>
+   +TicketIdGenerator()
+}
+
+interface Command {
+   +execute(): void
+   +description(): String
+}
+
+interface Validatable {
+   +isValid() : boolean
+}
+
+Validatable <.. Coordinates : implements
+Validatable <.. Ticket : implements
+Validatable <.. Event : implements
+
+Ticket +-- TicketValidator
+Ticket +-- TicketParser
+
+class Ticket {
+   -id: Long;
+   -name: String
+   -coordinates: Coordinates
+   -creationDate: java.time.LocalDateTime
+   -price: int
+   -type: TicketType
+   -event: Event
+   +setId(Long id) : int
+   +setCreationDate(LocalDateTime date) : int
+   +setName(String name) : int
+   +setCoordinates(Coordinates coords) : int
+   +setPrice(int price) : int
+   +setType(TicketType type) : int
+   +setEvent(Event event) : int
+   +setEvent(Event event, boolean validate) : int
+   +getId() : Long
+   +getName() : String
+   +getCoordinates() : Coordinates
+   +getCreationDate() : LocalDateTime
+   +getPrice() : int
+   +getType() : TicketType
+   +getEvent() : Event
+}
+
+static class TicketValidator {
+   +static validateId(Long id) : boolean
+   +static validateCreationDate(LocalDateTime creationDate) : boolean
+   +static validateName(String name) : boolean
+   +static validateCoordinates(Coordinates coords) : boolean
+   +static validatePrice(int cost) : boolean
+   +static validateType(TicketType type) : boolean
+   +static validateEvent(Event event) : boolean
+}
+
+static class TicketParser {
+   +static parseId(String id) : Long
+   +static parsePrice(String price) : int
+   +static parseType(String type) : TicketType
+}
+
+Coordinates +-- CoordinatesValidator
+Coordinates +-- CoordinatesParser
+
+class Coordinates {
+   -x: Float
+   -y: Float
+   +setX(Float x) : int
+   +setY(Float y) : int
+   +getX() : Float
+   +getY() : Float
+}
+
+static class CoordinatesValidator {
+   +static validateX() : boolean
+   +static validateY() : boolean
+}
+
+static class CoordinatesParser {
+   +static parseX(String x) : Float
+   +static parseY(String y) : Float
+}
+
+Event +-- EventValidator
+Event +-- EventParser
+
+class Event {
+   -id: Long
+   -name: String
+   -description: String
+   -eventType: EventType
+   +setId(Long id) : int
+   +setName(String name) : int
+   +setDescription(String desc) : int
+   +setEventType(EventType type) : int
+   +getId() : Long
+   +getName() : String
+   +getDescription() : String
+   +getEventType() : EventType
+}
+
+static class EventValidator {
+   +static validateId(Long id) : boolean
+   +static validateName(String name) : boolean
+   +static validateDescription(String description) : boolean
+   +static validateEventType(EventType type) : boolean
+}
+
+static class EventParser {
+   +static parseId(String id) : Long
+   +static parseType(String type) : EventType
+}
+
+
+
+enum TicketType {
+   VIP
+   USUAL
+   BUDGETARY
+   CHEAP
+}
+enum EventType {
+   CONCERT
+   BASEBALL
+   OPERA
+}
+
+enum TicketField {
+   ID
+   NAME
+   CREATION_DATE
+   PRICE
+   TYPE
+   EVENT
+}
+
+@enduml

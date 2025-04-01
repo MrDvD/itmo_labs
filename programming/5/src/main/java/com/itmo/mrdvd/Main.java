@@ -1,5 +1,10 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
@@ -8,10 +13,6 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.shell.TicketShell;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
