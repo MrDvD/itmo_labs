@@ -1,0 +1,64 @@
+@startuml name
+ENTITY ENTITY {
+   * id «PK»
+   ---
+   name
+   birth_date
+   gender
+   + specie_id «FK»
+   + covering_id «FK»
+}
+
+ENTITY COVERING {
+   * id «PK»
+   ---
+   type
+   color
+   pattern
+}
+
+ENTITY ACTION {
+   * id «PK»
+   ---
+   name
+   timestamp
+   description
+   + place_id «FK»
+}
+
+ENTITY PLACE {
+   * id «PK»
+   ---
+   name
+   description
+}
+
+ENTITY OBJECT {
+   * id «PK»
+   ---
+   name
+   count
+   + owner_id «FK»
+}
+
+ENTITY STATE {
+   * id «PK»
+   ---
+   name
+}
+
+ENTITY SPECIE {
+   * id «PK»
+   ---
+   name
+   description
+}
+
+ENTITY::covering_id }o-l-o| COVERING::id
+ENTITY::specie_id }o-u-|| SPECIE::id
+ENTITY }|--|{ ACTION
+STATE }o--o{ OBJECT
+ACTION::place_id }o-l-o| PLACE::id
+OBJECT }|--|{ ACTION
+ENTITY::id |o-r-o{ OBJECT::owner_id
+@enduml

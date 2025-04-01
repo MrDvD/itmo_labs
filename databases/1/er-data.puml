@@ -1,0 +1,86 @@
+@startuml name
+
+ENTITY ENTITY {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+   birth_date : date
+   gender : enum
+   + specie_id «FK»
+   + covering_id «FK»
+}
+
+ENTITY COVERING {
+   * id : serial «PK»
+   ---
+   type : enum
+   color : varchar(45)
+   pattern : varchar(45)
+}
+
+ENTITY ACTION {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+   timestamp : timestamp
+   description : text
+   + place_id : integer «FK»
+}
+
+ENTITY PLACE {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+   description : text
+}
+
+ENTITY OBJECT {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+   count : integer
+   + owner_id : integer «FK»
+}
+
+ENTITY STATE {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+}
+
+ENTITY SPECIE {
+   * id : serial «PK»
+   ---
+   name : varchar(30)
+   description : text
+}
+
+ENTITY ACTION_INSTANCE {
+   * id : serial «PK»
+   ---
+   + action_id integer «FK»
+   + active_entity_id integer «FK»
+   + object_id integer «FK»
+   + passive_entity_id integer «FK»
+}
+
+ENTITY STATE_INSTANCE {
+   * id : serial «PK»
+   ---
+   + state_id : serial «FK»
+   + object_id : serial «FK»
+   acquisition_time : timestamp
+   removal_time : timestamp
+}
+
+ENTITY::specie_id }o-d-|| SPECIE::id
+ACTION_INSTANCE::active_entity_id }o-l-o| ENTITY::id
+ACTION_INSTANCE::passive_entity_id }o-d-o| ENTITY::id
+ENTITY::covering_id }o-u-o| COVERING::id
+STATE_INSTANCE::state_id }o-l-|| STATE::id
+STATE_INSTANCE::object_id }o-d-|| OBJECT::id
+ACTION_INSTANCE::action_id }o--o| ACTION::id
+ACTION_INSTANCE::object_id }o-r-o| OBJECT::id
+ACTION::place_id }o-r-o| PLACE::id
+OBJECT::owner_id }o-l-o| ENTITY::id
+@enduml
