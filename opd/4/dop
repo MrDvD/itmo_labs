@@ -5,36 +5,61 @@ INFTY:    WORD  22        ; upper bound of FACT's function arguments
 INPUT:    WORD  12        ; FACT's input argument
 
 START:    LD    INPUT     ; main program
-          NOP             ; TODO
+          PUSH
+          LD    RESADDR
+          PUSH
+          LD    RESWRDS
+          PUSH
+          CALL  FACT
+          HLT
 
-; ПЕРЕРАБОТАТЬ В СООТВЕТСТВИИ С СИГНАТУРОЙ
-FACT:     LD    &2        ; FACT(uint16_t number, uint16_t* result, uint16_t result_size)
+FACT:     LD    &3        ; FACT(uint16_t number, uint16_t* result, uint16_t result_size)
           CMP   #2
           BCC   BASE
           CMP   INFTY
           BCS   OFW
           DEC             ; FACT call (recursive)
           PUSH
-          LD    &2
+          LD    &3
+          PUSH
+          LD    &3
           PUSH
           CALL  FACT
-          LD    &2        ; MUL call
+          LD    &3        ; MUL call
           DEC             
           PUSH
-          LD    &2
+          LD    &3
+          PUSH
+          LD    &3
           PUSH
           CALL  MUL
           RET
-BASE:     LD    &1
+BASE:     LD    &2
+          ADD   &1
           ST    ADDR
-          LD    #1
-          
-          ST    &1
+          LD    &1
+          DEC
+          ST    IFACT
+          CLA
+          INC
+          ST    -(ADDR)
+BASEREP:  CLA
+          ST    -(ADDR)
+          LOOP  IFACT
+          JUMP  BASEREP
           RET
-OFW:      CLA
-          ST    &1
+OFW:      LD    &2
+          ADD   &1
+          ST    ADDR
+          LD    &1
+          ST    IFACT
+OFWREP:   CLA
+          ST    -(ADDR)
+          LOOP  IFACT
+          JUMP  OFWREP
           RET
-ADDR:     NOP              ; keeps ADDR from stack
+ADDR:     NOP             ; keeps current ADDR from stack
+IVAR:     NOP             ; i-variable for iteration over result
 
 ; ПЕРЕРАБОТАТЬ В СООТВЕТСТВИИ С СИГНАТУРОЙ
 MUL:      LD    RESWRDS   ; MUL(uint16_t number, uint16_t* result, uint_t result_size)
