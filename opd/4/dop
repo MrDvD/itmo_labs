@@ -1,0 +1,101 @@
+          ORG   0x20
+RESWRDS:  WORD  0x4       ; result's word capacity (recalculate INFTY if you change it!)
+RESADDR:  WORD  0x400     ; result's starting word address
+INFTY:    WORD  22        ; upper bound of FACT's function arguments
+INPUT:    WORD  12        ; FACT's input argument
+
+START:    LD    INPUT     ; main program
+          NOP             ; TODO
+
+; ПЕРЕРАБОТАТЬ В СООТВЕТСТВИИ С СИГНАТУРОЙ
+FACT:     LD    &2        ; FACT(uint16_t number, uint16_t* result, uint16_t result_size)
+          CMP   #2
+          BCC   BASE
+          CMP   INFTY
+          BCS   OFW
+          DEC             ; FACT call (recursive)
+          PUSH
+          LD    &2
+          PUSH
+          CALL  FACT
+          LD    &2        ; MUL call
+          DEC             
+          PUSH
+          LD    &2
+          PUSH
+          CALL  MUL
+          RET
+BASE:     LD    &1
+          ST    ADDR
+          LD    #1
+          
+          ST    &1
+          RET
+OFW:      CLA
+          ST    &1
+          RET
+ADDR:     NOP              ; keeps ADDR from stack
+
+; ПЕРЕРАБОТАТЬ В СООТВЕТСТВИИ С СИГНАТУРОЙ
+MUL:      LD    RESWRDS   ; MUL(uint16_t number, uint16_t* result, uint_t result_size)
+          ST    LOOPVAR
+VARREP:   ASL
+          LOOP  LOOPVAR
+          JUMP  VARREP
+          ST    MULITER
+MULJUMP:  LD    &1        ; load 16-bit multiple
+          ROR             
+          BCC   SHFT      ; check its least bit
+          LD    INITIDX
+          ST    CURRIDX
+          LD    STCKLD
+          ADD   RESWRDS
+          ST    CMDLD
+          LD    RESWRDS
+          DEC
+          ST    WRDITER
+          CLC
+CMDLD:    NOP             ; load current word of multiple from stack
+          ADC   (CURRIDX)
+          ST    -(CURRIDX)
+          LD    CMDLD
+          DEC
+          ST    CMDLD
+          LOOP  WRDITER
+          JUMP  CMDLD
+SHFT:     LD    INITIDX   ; shift-left resulting words
+          ST    CURRIDX
+          LD    RESWRDS
+          DEC
+          ST    WRDITER
+          CLC
+SHFTREP:  ADC   (CURRIDX)
+          ST    -(CURRIDX)
+          LOOP  WRDITER
+          JUMP  SHFTREP
+          LOOP  MULITER
+          JUMP  MULJUMP
+          LD    STCKST    ; load resulting words into stack
+          ADD   RESWRDS
+          ST    CMD
+          LD    INITIDX
+          INC
+          ST    CURRIDX
+          LD    RESWRDS
+          DEC
+          ST    WRDITER
+LOADREP:  LD    -(CURRIDX)
+CMDST:    NOP             ; load current word of result into stack
+          LD    CMDST
+          DEC
+          ST    CMDST
+          LOOP  WRDITER
+          JUMP  LOADREP
+          RET
+INITIDX:  NOP             ; points to ending word of result
+CURRIDX:  NOP             ; points to current word of result
+MULITER:  NOP             ; iter variable for multiplication (16 in total)
+WRDITER:  NOP             ; iter variable for word-wise operations
+LOOPVAR:  NOP
+STCKLD:   LD    &2        ; loads ending word of multiple from stack
+STCKST:   ST    &2        ; loads ending word of multiple from stack
