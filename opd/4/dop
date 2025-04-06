@@ -4,7 +4,7 @@ RESADDR:  WORD  0x400     ; result's starting word address
 INFTY:    WORD  22        ; upper bound of FACT's function arguments
 INPUT:    WORD  12        ; FACT's input argument
 
-START:    LD    INPUT     ; main program
+START:    LD    INPUT     ; main()
           PUSH
           LD    RESADDR
           PUSH
@@ -36,91 +36,75 @@ FACT:     LD    &3        ; FACT(uint16_t number, uint16_t* result, uint16_t res
           RET
 BASE:     LD    &2
           ADD   &1
-          ST    ADDR
+          ST    FADDR
           LD    &1
           DEC
           ST    IFACT
           CLA
           INC
-          ST    -(ADDR)
+          ST    -(FADDR)
 BASEREP:  CLA
-          ST    -(ADDR)
+          ST    -(FADDR)
           LOOP  IFACT
           JUMP  BASEREP
           RET
 OFW:      LD    &2
           ADD   &1
-          ST    ADDR
+          ST    FADDR
           LD    &1
           ST    IFACT
 OFWREP:   CLA
-          ST    -(ADDR)
+          ST    -(FADDR)
           LOOP  IFACT
           JUMP  OFWREP
           RET
-ADDR:     NOP             ; keeps current ADDR from stack
-IVAR:     NOP             ; i-variable for iteration over result
+FADDR:    NOP             ; keeps current result's word address from stack
+FIVAR:    NOP             ; i-variable for iteration over result
 
 ; ПЕРЕРАБОТАТЬ В СООТВЕТСТВИИ С СИГНАТУРОЙ
-MUL:      LD    RESWRDS   ; MUL(uint16_t number, uint16_t* result, uint_t result_size)
+MUL:      LD    &1        ; MUL(uint16_t arg1, uint16_t arg2[], uint16_t arg2_size, uint16_t* result)
           ST    LOOPVAR
 VARREP:   ASL
           LOOP  LOOPVAR
           JUMP  VARREP
           ST    MULITER
-MULJUMP:  LD    &1        ; load 16-bit multiple
-          ROR             
+          LD    &3
+          ST    MULTIPLE
+MULJUMP:  LD    MULTIPLE  ; load 16-bit multiple
+          ROR
           BCC   SHFT      ; check its least bit
-          LD    INITIDX
-          ST    CURRIDX
+          LD    &2
+          ST    MADDR
           LD    STCKLD
           ADD   RESWRDS
           ST    CMDLD
-          LD    RESWRDS
+          LD    &1
           DEC
-          ST    WRDITER
+          ST    MIVAR
           CLC
 CMDLD:    NOP             ; load current word of multiple from stack
-          ADC   (CURRIDX)
-          ST    -(CURRIDX)
+          ADC   (MADDR)
+          ST    -(MADDR)
           LD    CMDLD
           DEC
           ST    CMDLD
-          LOOP  WRDITER
+          LOOP  MIVAR
           JUMP  CMDLD
-SHFT:     LD    INITIDX   ; shift-left resulting words
-          ST    CURRIDX
-          LD    RESWRDS
-          DEC
-          ST    WRDITER
-          CLC
-SHFTREP:  ADC   (CURRIDX)
-          ST    -(CURRIDX)
-          LOOP  WRDITER
+SHFT:     LD    &2        ; shift-right resulting words
+          ST    MADDR
+          LD    &1
+          ST    MIVAR
+SHFTREP:  LD    (MADDR)+
+          ROR
+          ST    (MADDR)
+          LOOP  MIVAR
           JUMP  SHFTREP
-          LOOP  MULITER
+          LOOP  MITER     ; main multiplication loop over MULTIPLE's bits 
           JUMP  MULJUMP
-          LD    STCKST    ; load resulting words into stack
-          ADD   RESWRDS
-          ST    CMD
-          LD    INITIDX
-          INC
-          ST    CURRIDX
-          LD    RESWRDS
-          DEC
-          ST    WRDITER
-LOADREP:  LD    -(CURRIDX)
-CMDST:    NOP             ; load current word of result into stack
-          LD    CMDST
-          DEC
-          ST    CMDST
-          LOOP  WRDITER
-          JUMP  LOADREP
           RET
-INITIDX:  NOP             ; points to ending word of result
-CURRIDX:  NOP             ; points to current word of result
-MULITER:  NOP             ; iter variable for multiplication (16 in total)
-WRDITER:  NOP             ; iter variable for word-wise operations
+MADDR:    NOP             ; points to current word of result
+MULTIPLE: NOP             ; least 16-bit multiple for iteration
+MITER:    NOP             ; iter variable for multiplication (16 in total)
+MIVAR:    NOP             ; i-variable for iteration over result
 LOOPVAR:  NOP
 STCKLD:   LD    &2        ; loads ending word of multiple from stack
-STCKST:   ST    &2        ; loads ending word of multiple from stack
