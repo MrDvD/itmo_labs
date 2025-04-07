@@ -1,15 +1,15 @@
           ORG   0x20
-RESWRDS:  WORD  0x4       ; result's word capacity (recalculate INFTY if you change it!)
-RESADDR:  WORD  0x400     ; result's starting word address
+WRDS:     WORD  4         ; result's word capacity (recalculate INFTY if you change it!)
+ADDR:     WORD  0x400     ; result's starting word address
 INFTY:    WORD  22        ; upper bound of FACT's function arguments
-INPUT:    WORD  12        ; FACT's input argument
+INPUT:    WORD  5        ; FACT's input argument
 
 ; make a program relaunchable
 START:    LD    INPUT     ; main()
           PUSH
-          LD    RESADDR
+          LD    ADDR
           PUSH
-          LD    RESWRDS
+          LD    WRDS
           PUSH
           CALL  FACT
           HLT
@@ -22,6 +22,11 @@ FACT:     LD    &3
           BCS   OFW
           DEC             ; FACT call (recursive)
           PUSH
+          LD    &3
+          PUSH
+          LD    &3
+          PUSH
+          CALL  FACT
           LD    &3        ; saving 'result' param
           ST    RESADDR
           INC
@@ -38,45 +43,56 @@ LDREP:    LD    (FADDR)+  ; loading the result into stack (except the first word
           PUSH
           LD    RESADDR
           PUSH
-          CALL  FACT
           LD    &3        ; MUL call
           DEC             
           PUSH
-          LD    &3
-          PUSH
-          LD    &3
-          PUSH
           CALL  MUL
-          RET
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP          
+          POP
+          POP
+          JUMP  (FRETADDR)
 BASE:     LD    &2
           ST    FADDR
           LD    &1
           DEC
-          ST    IFACT
+          ST    FIVAR
 BASEREP:  CLA
           ST    (FADDR)+
-          LOOP  IFACT
+          LOOP  FIVAR
           JUMP  BASEREP
           LD    #1
           ST    (FADDR)
-          RET
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP          
+          POP
+          POP
+          JUMP  (FRETADDR)
 OFW:      LD    &2
           ST    FADDR
           LD    &1
-          ST    IFACT
+          ST    FIVAR
 OFWREP:   CLA
           ST    (FADDR)+
-          LOOP  IFACT
+          LOOP  FIVAR
           JUMP  OFWREP
-          RET
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP          
+          POP
+          POP
+          JUMP  (FRETADDR)
 FADDR:    NOP             ; keeps current result's word address from stack
 FIVAR:    NOP             ; i-variable for iteration over result
 RESADDR:  NOP             ; keeps starting result's word address from stack
 RESSIZE:  NOP             ; keeps result size variable from stack
+FRETADDR: NOP             ; keeps return address from stack
 
 ; чекнуть сдвиги размеров (+- 1 разница)
 ; MUL(uint16_t arg1, uint16_t arg2[], uint16_t arg2_size, uint16_t* result)
-MUL:      LD    #16        
+MUL:      LD    #16
           ST    MITER          
           LD    STCKLD    ; load arg1
           ADD   &2
@@ -115,9 +131,20 @@ SHFTREP:  LD    (MADDR)+
           JUMP  SHFTREP
           LOOP  MITER     ; main multiplication loop over MULTIPLE's bits 
           JUMP  MULJUMP
-          RET
+          LD    &2        ; exiting the function
+          ST    MIVAR
+          POP
+          ST    MRETADDR
+          POP
+          POP
+POPREP:   POP
+          LOOP  MIVAR
+          JUMP  POPREP
+          POP
+          JUMP  (MRETADDR)
 MADDR:    NOP             ; points to current word of result
 MULTIPLE: NOP             ; least 16-bit multiple for iteration
 MITER:    NOP             ; iter variable for multiplication (16 in total)
 MIVAR:    NOP             ; i-variable for iteration over result
 STCKLD:   LD    &3        ; loads ending word of multiple from stack
+MRETADDR: NOP             ; keeps return address from stack
