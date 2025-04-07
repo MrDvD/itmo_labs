@@ -1,8 +1,10 @@
           ORG   0x20
-WRDS:     WORD  4         ; result's word capacity (recalculate INFTY if you change it!)
+WRDS:     WORD  4         ; result's word capacity
+                          ; (recalculate INFTY if you change it!)
 ADDR:     WORD  0x100     ; result's starting word address
-INFTY:    WORD  22        ; upper bound of FACT's function arguments
-INPUT:    WORD  10         ; FACT's input argument
+INFTY:    WORD  18        ; upper (excluding) bound of FACT's function arguments
+                          ; (recalculate WRDS if you change it!)
+INPUT:    WORD  17        ; FACT's input argument
 
 START:    LD    INPUT     ; main()
           PUSH
@@ -26,9 +28,11 @@ FACT:     LD    &1
           LD    WRDS
           DEC
           ST    FIVAR
+          CLA             ; clearing the first resulting word
+          ST    (ADDR)
 LDREP:    LD    (FADDR)   ; loading the result into stack (except the first word!)
           PUSH
-          CLA             ; clear the resulting word
+          CLA             ; clear the current resulting word
           ST    (FADDR)+
           LOOP  FIVAR
           JUMP  LDREP
@@ -92,9 +96,7 @@ MULJUMP:  LD    MULTIPLE  ; load arg1 (ROR'ed)
 CMDLD:    NOP             ; load current word of multiple from stack
           ADC   -(MADDR)
           ST    (MADDR)
-          LD    CMDLD
-          INC
-          ST    CMDLD
+          LD    (CMDLD)+
           LOOP  MIVAR
           JUMP  CMDLD
 SHFT:     LD    ADDR      ; shift-right resulting words
