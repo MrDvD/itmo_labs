@@ -4,7 +4,7 @@ WRDS:     WORD  4         ; result's word capacity
 ADDR:     WORD  0x100     ; result's starting word address
 INFTY:    WORD  18        ; upper (excluding) bound of FACT's function arguments
                           ; (recalculate WRDS if you change it!)
-INPUT:    WORD  17        ; FACT's input argument
+INPUT:    WORD  10        ; FACT's input argument
 
 START:    LD    INPUT     ; main()
           PUSH
