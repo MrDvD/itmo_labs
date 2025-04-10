@@ -1,5 +1,9 @@
 package com.itmo.mrdvd.builder.builders;
 
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,11 +11,6 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 
 public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBuilder<T>
     implements InteractiveBuilder<T, K> {
@@ -56,10 +55,7 @@ public class InteractiveObjectBuilder<T, K extends InputDevice> extends ObjectBu
 
   @Override
   public <U> InteractiveObjectBuilder<T, K> addInteractiveSetter(
-      BiConsumer<T, U> setter,
-      Class<U> valueCls,
-      Interactor<?, K> inter,
-      Predicate<U> validator)
+      BiConsumer<T, U> setter, Class<U> valueCls, Interactor<?, K> inter, Predicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
       throw new IllegalArgumentException("Метаданные не могут быть null.");

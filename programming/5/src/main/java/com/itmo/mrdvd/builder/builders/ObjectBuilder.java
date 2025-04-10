@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.builder.builders;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.builder.ProcessStatus;
 
 public class ObjectBuilder<T> implements Builder<T> {
   protected final List<BiConsumer> setters;

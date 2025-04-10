@@ -1,5 +1,9 @@
 package com.itmo.mrdvd.builder.updaters;
 
+import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,11 +12,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.ProcessStatus;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 
 public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUpdater<T>
     implements InteractiveUpdater<T, K> {

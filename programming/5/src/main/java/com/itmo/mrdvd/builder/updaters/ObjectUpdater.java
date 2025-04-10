@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.builder.updaters;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.builder.ProcessStatus;
 
 public class ObjectUpdater<T> implements Updater<T> {
   protected final List<BiConsumer> setters;

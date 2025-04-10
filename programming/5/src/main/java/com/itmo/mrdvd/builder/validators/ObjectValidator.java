@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.builder.validators;
 
+import com.itmo.mrdvd.builder.ProcessStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
-
-import com.itmo.mrdvd.builder.ProcessStatus;
 
 public class ObjectValidator<T> implements Validator<T> {
   protected List<Function<T, ?>> getters;

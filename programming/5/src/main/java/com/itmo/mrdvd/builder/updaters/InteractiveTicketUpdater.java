@@ -1,12 +1,5 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.UserInteractor;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
@@ -19,6 +12,12 @@ import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, DataInputDevice> {
   private final InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate;
