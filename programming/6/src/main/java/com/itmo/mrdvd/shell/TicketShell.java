@@ -1,5 +1,10 @@
 package com.itmo.mrdvd.shell;
 
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveEventBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder;
@@ -10,7 +15,6 @@ import com.itmo.mrdvd.builder.validators.CoordinatesValidator;
 import com.itmo.mrdvd.builder.validators.EventValidator;
 import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.collection.TicketComparator;
 import com.itmo.mrdvd.command.AddCommand;
 import com.itmo.mrdvd.command.AddIfCommand;
@@ -36,24 +40,12 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
-public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
-  private boolean isOpen;
-
+public class TicketShell extends CollectionShell<Ticket> {
   public TicketShell(DataInputDevice in, OutputDevice out) {
-    this(in, out, new HashMap<>(), new ArrayList<>());
+    super(in, out);
   }
 
   public TicketShell(
@@ -62,23 +54,10 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
       Map<String, Command> commands,
       List<Command> preExecute) {
     super(in, out, commands, preExecute);
-    this.isOpen = false;
-  }
-
-  public Optional<Command> addCommand(Command cmd, boolean preExec) {
-    if (getCommands().containsKey(cmd.name())) {
-      return Optional.empty();
-    }
-    cmd = cmd.setShell(this);
-    if (getPreExecute().isPresent() && preExec) {
-      getPreExecute().get().add(cmd);
-    }
-    getCommands().put(cmd.name(), cmd);
-    return Optional.of(cmd);
   }
 
   public void initDefaultCommands(
-      TicketCollection collection,
+      Collection<Ticket, List<Ticket>> collection,
       String envName,
       DataFileDescriptor fd,
       Serializer<Collection<Ticket, List<Ticket>>> serial,
@@ -133,70 +112,5 @@ public class TicketShell extends Shell<Map<String, Command>, List<Command>> {
     addCommand(new SaveCommand<>(collection, serial, fd));
     addCommand(new ExecuteScriptCommand(fd, usedPaths));
     addCommand(new InfoCommand(collection));
-  }
-
-  @Override
-  public Optional<Command> addCommand(Command cmd) {
-    return addCommand(cmd, false);
-  }
-
-  @Override
-  public void open() {
-    if (getPreExecute().isPresent()) {
-      for (Command cmd : getPreExecute().get()) {
-        cmd.execute();
-      }
-    }
-    this.isOpen = true;
-    while (this.isOpen) {
-      if (InteractiveInputDevice.class.isInstance(getIn())) {
-        ((InteractiveInputDevice) getIn()).write("> ");
-      }
-      while (!this.in.hasNext()) {
-        this.in.closeIn();
-        this.isOpen = false;
-        return;
-      }
-      Optional<Command> cmd = Optional.empty();
-      try {
-        cmd = processCommandLine();
-      } catch (IOException e) {
-        close();
-      }
-      if (cmd.isEmpty()) {
-        getOut()
-            .writeln(
-                "[ERROR] Команда не найдена: введите 'help' для просмотра списка доступных команд.");
-      }
-    }
-  }
-
-  @Override
-  public Optional<Command> getCommand(String line) {
-    return Optional.ofNullable(getCommands().get(line));
-  }
-
-  @Override
-  public void close() {
-    this.isOpen = false;
-  }
-
-  @Override
-  public Iterator<Command> iterator() {
-    return getCommands().values().iterator();
-  }
-
-  @Override
-  public DataInputDevice getIn() {
-    return (DataInputDevice) this.in;
-  }
-
-  @Override
-  public TicketShell forkSubshell(DataInputDevice in, OutputDevice out) {
-    TicketShell subshell = new TicketShell(in, out);
-    for (Command cmd : this) {
-      subshell.addCommand(cmd.setShell(subshell));
-    }
-    return subshell;
   }
 }
