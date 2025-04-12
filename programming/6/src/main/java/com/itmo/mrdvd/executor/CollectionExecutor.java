@@ -1,0 +1,39 @@
+package com.itmo.mrdvd.executor;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
+import com.itmo.mrdvd.command.Command;
+
+public class CollectionExecutor implements Executor {
+  protected final Map<String, Command> commands;
+
+  public CollectionExecutor() {
+    this.commands = new HashMap<>();
+  }
+
+  public CollectionExecutor(Map<String, Command> commands) {
+    this.commands = commands;
+  }
+
+  @Override
+  public void setCommand(Command cmd) {
+    this.commands.put(cmd.name(), cmd);
+  }
+
+  @Override
+  public Optional<Command> getCommand(String name) {
+    return this.commands.containsKey(name) ? Optional.empty() : Optional.of(this.commands.get(name));
+  }
+
+  @Override
+  public void processQuery(Query q) throws RuntimeException {
+    Optional<Command> cmd = getCommand(q.cmd());
+    if (cmd.isPresent()) {
+      cmd.get().execute(); // set inputdevice reading stream from q.params() for params parsing!!!!
+    } else {
+      // throw here an error
+    }
+  }
+}

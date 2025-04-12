@@ -15,6 +15,8 @@ import java.util.List;
 
 /*
  * TODO:
+ * 1. Remove "commands" from shells --> executors
+ * 
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this
  * 2. Split the app into modules:
