@@ -1,26 +1,27 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class HelpCommand implements Command {
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public HelpCommand() {
     this(null);
   }
 
-  public HelpCommand(Shell<?, ?> shell) {
+  public HelpCommand(DefaultShell<?, ?> shell) {
     this.shell = shell;
   }
 
   @Override
-  public HelpCommand setShell(Shell<?, ?> shell) {
+  public HelpCommand setShell(DefaultShell<?, ?> shell) {
     return new HelpCommand(shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

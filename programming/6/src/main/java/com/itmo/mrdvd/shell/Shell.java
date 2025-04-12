@@ -1,65 +1,26 @@
 package com.itmo.mrdvd.shell;
 
-import java.io.IOException;
 import java.util.Optional;
 
-import com.itmo.mrdvd.command.Command;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.proxy.ClientProxy;
 
-public abstract class Shell<T, S> implements Iterable<Command> {
-  protected final T commands;
-  protected final Optional<S> preExecute;
-  protected DataInputDevice in;
-  protected final OutputDevice out;
+public interface Shell {
+  public DataInputDevice getIn();
 
-  public Shell(DataInputDevice in, OutputDevice out, T commands, S preExecute) {
-    this.in = in;
-    this.out = out;
-    this.commands = commands;
-    this.preExecute = Optional.ofNullable(preExecute);
-  }
+  public OutputDevice getOut();
 
-  public DataInputDevice getIn() {
-    return this.in;
-  }
+  public ClientProxy getProxy();
 
-  public OutputDevice getOut() {
-    return this.out;
-  }
+  public Optional<Query> fetchQuery(String name);
 
-  public T getCommands() {
-    return this.commands;
-  }
+  public void processLine();
 
-  public Optional<S> getPreExecute() {
-    return this.preExecute;
-  }
+  public Shell forkSubshell(DataInputDevice in, OutputDevice out);
 
-  public abstract Optional<Command> addCommand(Command cmd);
+  public void open();
 
-  public abstract Optional<Command> getCommand(String str);
-
-  public Optional<Command> processCommandLine() throws IOException {
-    Optional<String> cmdName = getIn().readToken();
-    if (cmdName.isEmpty()) {
-      getIn().skipLine();
-      return Optional.empty();
-    }
-    Optional<Command> cmd = getCommand(cmdName.get());
-    if (cmd.isPresent()) {
-      if (!cmd.get().hasParams()) {
-        getIn().skipLine();
-      }
-      cmd.get().execute();
-      return cmd;
-    }
-    return Optional.empty();
-  }
-
-  public abstract Shell<T, S> forkSubshell(DataInputDevice in, OutputDevice out);
-
-  public abstract void open();
-
-  public abstract void close();
+  public void close();
 }

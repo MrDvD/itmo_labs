@@ -1,17 +1,18 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
-import com.itmo.mrdvd.shell.Shell;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class SaveCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;
   private final Serializer<Collection<T, U>> serial;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
   private final FileDescriptor file;
 
   public SaveCommand(
@@ -23,7 +24,7 @@ public class SaveCommand<T extends HavingId, U> implements Command {
       Collection<T, U> collect,
       Serializer<Collection<T, U>> serial,
       FileDescriptor file,
-      Shell<?, ?> shell) {
+      DefaultShell<?, ?> shell) {
     this.collection = collect;
     this.serial = serial;
     this.file = file;
@@ -31,12 +32,12 @@ public class SaveCommand<T extends HavingId, U> implements Command {
   }
 
   @Override
-  public SaveCommand<T, U> setShell(Shell<?, ?> shell) {
+  public SaveCommand<T, U> setShell(DefaultShell<?, ?> shell) {
     return new SaveCommand<>(collection, serial, file, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

@@ -1,29 +1,30 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.shell.Shell;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class ClearCommand implements Command {
   private final CollectionWorker<?, ?> collection;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public ClearCommand(CollectionWorker<?, ?> collect) {
     this(collect, null);
   }
 
-  public ClearCommand(CollectionWorker<?, ?> collect, Shell<?, ?> shell) {
+  public ClearCommand(CollectionWorker<?, ?> collect, DefaultShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public ClearCommand setShell(Shell<?, ?> shell) {
+  public ClearCommand setShell(DefaultShell<?, ?> shell) {
     return new ClearCommand(collection, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

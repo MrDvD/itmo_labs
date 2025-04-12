@@ -1,29 +1,30 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.shell.Shell;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class ShowCommand implements Command {
   private final Collection<?, ?> collection;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public ShowCommand(Collection<?, ?> collect) {
     this(collect, null);
   }
 
-  public ShowCommand(Collection<?, ?> collect, Shell<?, ?> shell) {
+  public ShowCommand(Collection<?, ?> collect, DefaultShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public ShowCommand setShell(Shell<?, ?> shell) {
+  public ShowCommand setShell(DefaultShell<?, ?> shell) {
     return new ShowCommand(collection, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

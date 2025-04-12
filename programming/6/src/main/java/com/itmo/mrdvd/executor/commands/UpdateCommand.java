@@ -1,35 +1,36 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.io.IOException;
+import java.util.Optional;
 
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.Shell;
-import java.io.IOException;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class UpdateCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, ?> collect;
   private final InteractiveUpdater updater;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public UpdateCommand(CollectionWorker<T, ?> collection, InteractiveUpdater<T, ?> updater) {
     this(collection, updater, null);
   }
 
   public UpdateCommand(
-      CollectionWorker<T, ?> collection, InteractiveUpdater updater, Shell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveUpdater updater, DefaultShell<?, ?> shell) {
     this.collect = collection;
     this.updater = shell == null ? updater : updater.setIn(shell.getIn());
     this.shell = shell;
   }
 
   @Override
-  public UpdateCommand<T> setShell(Shell<?, ?> shell) {
+  public UpdateCommand<T> setShell(DefaultShell<?, ?> shell) {
     return new UpdateCommand<>(collect, updater, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

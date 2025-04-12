@@ -1,8 +1,5 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.device.DataFileDescriptor;
-import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.shell.Shell;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -10,8 +7,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import com.itmo.mrdvd.device.DataFileDescriptor;
+import com.itmo.mrdvd.device.IOStatus;
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class ExecuteScriptCommand implements Command {
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
   private final DataFileDescriptor fd;
   private final Set<Path> usedPaths;
 
@@ -19,19 +20,19 @@ public class ExecuteScriptCommand implements Command {
     this(fd, usedPaths, null);
   }
 
-  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths, Shell<?, ?> shell) {
+  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths, DefaultShell<?, ?> shell) {
     this.fd = fd;
     this.usedPaths = usedPaths;
     this.shell = shell;
   }
 
   @Override
-  public ExecuteScriptCommand setShell(Shell<?, ?> shell) {
+  public ExecuteScriptCommand setShell(DefaultShell<?, ?> shell) {
     return new ExecuteScriptCommand(fd, usedPaths, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

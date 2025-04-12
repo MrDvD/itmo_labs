@@ -1,7 +1,8 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
+
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public interface Command {
   public void execute() throws NullPointerException;
@@ -12,9 +13,9 @@ public interface Command {
 
   public String description();
 
-  public Command setShell(Shell<?, ?> shell);
+  public Command setShell(DefaultShell<?, ?> shell);
 
-  public Optional<Shell<?, ?>> getShell();
+  public Optional<DefaultShell<?, ?>> getShell();
 
   public default boolean hasParams() {
     return false;

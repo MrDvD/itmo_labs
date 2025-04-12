@@ -1,34 +1,35 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.Shell;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class AddCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, ?> collect;
   protected final InteractiveBuilder builder;
-  protected final Shell<?, ?> shell;
+  protected final DefaultShell<?, ?> shell;
 
   public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder<T, ?> builder) {
     this(collection, builder, null);
   }
 
   public AddCommand(
-      CollectionWorker<T, ?> collection, InteractiveBuilder builder, Shell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveBuilder builder, DefaultShell<?, ?> shell) {
     this.collect = collection;
     this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
   }
 
   @Override
-  public AddCommand<T> setShell(Shell<?, ?> shell) {
+  public AddCommand<T> setShell(DefaultShell<?, ?> shell) {
     return new AddCommand<>(collect, builder, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

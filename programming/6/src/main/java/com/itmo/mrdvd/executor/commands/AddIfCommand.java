@@ -1,18 +1,19 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class AddIfCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, List<T>> collect;
   protected final InteractiveBuilder builder;
-  protected final Shell<?, ?> shell;
+  protected final DefaultShell<?, ?> shell;
   protected final Comparator<T> comparator;
   protected final Set<Integer> values;
 
@@ -29,7 +30,7 @@ public class AddIfCommand<T extends HavingId> implements Command {
       InteractiveBuilder builder,
       Comparator<T> comparator,
       Set<Integer> values,
-      Shell<?, ?> shell) {
+      DefaultShell<?, ?> shell) {
     this.collect = collection;
     this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
@@ -38,12 +39,12 @@ public class AddIfCommand<T extends HavingId> implements Command {
   }
 
   @Override
-  public AddIfCommand<T> setShell(Shell<?, ?> shell) {
+  public AddIfCommand<T> setShell(DefaultShell<?, ?> shell) {
     return new AddIfCommand<>(collect, builder, comparator, values, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

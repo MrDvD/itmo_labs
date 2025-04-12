@@ -1,31 +1,32 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.shell.Shell;
 import java.io.IOException;
 import java.util.Optional;
 
+import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class CountGreaterThanEventCommand implements Command {
   private final Collection<Ticket, ?> collection;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public CountGreaterThanEventCommand(Collection<Ticket, ?> collect) {
     this(collect, null);
   }
 
-  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect, Shell<?, ?> shell) {
+  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect, DefaultShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public CountGreaterThanEventCommand setShell(Shell<?, ?> shell) {
+  public CountGreaterThanEventCommand setShell(DefaultShell<?, ?> shell) {
     return new CountGreaterThanEventCommand(collection, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

@@ -1,31 +1,32 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.Shell;
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class RemoveLastCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public RemoveLastCommand(CollectionWorker<T, List<T>> collection) {
     this(collection, null);
   }
 
-  public RemoveLastCommand(CollectionWorker<T, List<T>> collection, Shell<?, ?> shell) {
+  public RemoveLastCommand(CollectionWorker<T, List<T>> collection, DefaultShell<?, ?> shell) {
     this.collection = collection;
     this.shell = shell;
   }
 
   @Override
-  public RemoveLastCommand<T> setShell(Shell<?, ?> shell) {
+  public RemoveLastCommand<T> setShell(DefaultShell<?, ?> shell) {
     return new RemoveLastCommand<>(collection, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

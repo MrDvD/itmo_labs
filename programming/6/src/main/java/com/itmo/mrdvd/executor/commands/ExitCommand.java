@@ -1,16 +1,17 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class ExitCommand implements Command {
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public ExitCommand() {
     this(null);
   }
 
-  public ExitCommand(Shell<?, ?> shell) {
+  public ExitCommand(DefaultShell<?, ?> shell) {
     this.shell = shell;
   }
 
@@ -23,12 +24,12 @@ public class ExitCommand implements Command {
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 
   @Override
-  public ExitCommand setShell(Shell<?, ?> shell) {
+  public ExitCommand setShell(DefaultShell<?, ?> shell) {
     return new ExitCommand(shell);
   }
 

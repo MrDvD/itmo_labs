@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor;
+package com.itmo.mrdvd.executor.queries;
 
 public class DefaultQuery implements Query {
   private final String cmd;

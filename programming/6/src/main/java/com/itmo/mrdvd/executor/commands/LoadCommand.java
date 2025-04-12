@@ -1,4 +1,7 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.io.IOException;
+import java.util.Optional;
 
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
@@ -6,16 +9,14 @@ import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.shell.Shell;
-import java.io.IOException;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;
   private final Collection<T, U> collection;
   private final Validator<T> validator;
   private final Deserializer<Collection<T, U>> deserial;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
 
   public LoadCommand(
       InputDevice in,
@@ -30,7 +31,7 @@ public class LoadCommand<T extends HavingId, U> implements Command {
       Collection<T, U> collection,
       Validator<T> validator,
       Deserializer<Collection<T, U>> deserial,
-      Shell<?, ?> shell) {
+      DefaultShell<?, ?> shell) {
     this.in = in;
     this.collection = collection;
     this.validator = validator;
@@ -39,12 +40,12 @@ public class LoadCommand<T extends HavingId, U> implements Command {
   }
 
   @Override
-  public LoadCommand<T, U> setShell(Shell<?, ?> shell) {
+  public LoadCommand<T, U> setShell(DefaultShell<?, ?> shell) {
     return new LoadCommand<>(in, collection, validator, deserial, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

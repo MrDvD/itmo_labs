@@ -16,6 +16,16 @@ import java.util.List;
 /*
  * TODO:
  * 1. Remove "commands" from shells --> executors
+ *    - instead, add queries
+ *    - list of queries shouldn't be hard-coded: it should automatically generate from current executor's commands
+ *    - add command to terminal which loads available queries in the beginning
+ *    - input queries should be validated in terminal
+ *    - #### SCHEME:
+ *      1. Shell sends to Proxy AskingQuery if it has the command with the following name.
+ *      2. Proxy sends to Shell the Query description (params, validation, etc)
+ *      3. Shell validates the Query
+ *      4. If everything is OK, Shell sends the CommandQuery to Proxy
+ * 2. REMOVE CLIENTSHELL & SERVERSHELL AS THEY DO THE SAME THING: COMMAND PERMISSIONS ARE CHECKED IN CLIENTPROXY & SERVERPROXY 
  * 
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this

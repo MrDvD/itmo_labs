@@ -4,16 +4,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.executor.command.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 
-public class CollectionExecutor implements Executor {
+public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
 
-  public CollectionExecutor() {
+  public DefaultExecutor() {
     this.commands = new HashMap<>();
   }
 
-  public CollectionExecutor(Map<String, Command> commands) {
+  public DefaultExecutor(Map<String, Command> commands) {
     this.commands = commands;
   }
 

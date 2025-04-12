@@ -1,31 +1,32 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.device.FileMeta;
-import com.itmo.mrdvd.shell.Shell;
-import java.util.Optional;
+import com.itmo.mrdvd.shell.DefaultShell;
 
 public class ReadEnvironmentFilepathCommand implements Command {
   private final String envName;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
   private final FileMeta file;
 
   public ReadEnvironmentFilepathCommand(String envName, FileMeta file) {
     this(envName, file, null);
   }
 
-  public ReadEnvironmentFilepathCommand(String envName, FileMeta file, Shell<?, ?> shell) {
+  public ReadEnvironmentFilepathCommand(String envName, FileMeta file, DefaultShell<?, ?> shell) {
     this.envName = envName;
     this.file = file;
     this.shell = shell;
   }
 
   @Override
-  public ReadEnvironmentFilepathCommand setShell(Shell<?, ?> shell) {
+  public ReadEnvironmentFilepathCommand setShell(DefaultShell<?, ?> shell) {
     return new ReadEnvironmentFilepathCommand(envName, file, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

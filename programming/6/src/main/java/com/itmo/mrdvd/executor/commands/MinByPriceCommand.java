@@ -1,15 +1,16 @@
-package com.itmo.mrdvd.command;
+package com.itmo.mrdvd.executor.command;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.shell.DefaultShell;
+
 public class MinByPriceCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final Shell<?, ?> shell;
+  private final DefaultShell<?, ?> shell;
   private final Comparator<T> comparator;
 
   public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator) {
@@ -17,19 +18,19 @@ public class MinByPriceCommand<T extends HavingId> implements Command {
   }
 
   public MinByPriceCommand(
-      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, Shell<?, ?> shell) {
+      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, DefaultShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
     this.comparator = comparator;
   }
 
   @Override
-  public MinByPriceCommand<T> setShell(Shell<?, ?> shell) {
+  public MinByPriceCommand<T> setShell(DefaultShell<?, ?> shell) {
     return new MinByPriceCommand<>(collection, comparator, shell);
   }
 
   @Override
-  public Optional<Shell<?, ?>> getShell() {
+  public Optional<DefaultShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 
