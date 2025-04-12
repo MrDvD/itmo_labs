@@ -1,5 +1,10 @@
 package com.itmo.mrdvd.shell;
 
+import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.command.Command;
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,13 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.command.Command;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-
-public class CollectionShell<T extends HavingId> extends Shell<Map<String, Command>, List<Command>> {
+public class CollectionShell<T extends HavingId>
+    extends Shell<Map<String, Command>, List<Command>> {
   private boolean isOpen;
 
   public CollectionShell(DataInputDevice in, OutputDevice out) {
