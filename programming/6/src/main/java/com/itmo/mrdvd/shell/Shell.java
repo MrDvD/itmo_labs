@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.Optional;
+
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
-import java.util.Optional;
 
 public interface Shell {
   public DataInputDevice getIn();
@@ -13,7 +14,9 @@ public interface Shell {
 
   public ClientProxy getProxy();
 
-  public Optional<Query> fetchQuery(String name);
+  public void fetchQueries();
+  
+  public Optional<Query> getQuery(String name);
 
   public void processLine();
 

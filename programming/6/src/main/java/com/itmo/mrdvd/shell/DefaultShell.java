@@ -37,8 +37,22 @@ public class DefaultShell implements Shell {
     return this.out;
   }
 
+  /**
+   * Returns the cached query with the mentioned name.
+   */
   @Override
-  public Optional<Query> fetchQuery(String name) {
+  public Optional<Query> getQuery(String name) {
+    // ...
+  }
+
+  /**
+   * Fetches from the Proxy server the info about queries and caches it.
+   * Also gets the JavaScript files for params validation.
+   * 
+   * Should be launched either upon Shell start or as independent command.
+   */
+  @Override
+  public void fetchQueries() {
     // getProxy().getSender().send();
   }
 
@@ -49,7 +63,7 @@ public class DefaultShell implements Shell {
       getIn().skipLine();
       return;
     }
-    Optional<Query> q = fetchQuery(cmdName.get());
+    Optional<Query> q = checkQuery(cmdName.get());
     if (q.isPresent()) {
       // ...
     } else {
