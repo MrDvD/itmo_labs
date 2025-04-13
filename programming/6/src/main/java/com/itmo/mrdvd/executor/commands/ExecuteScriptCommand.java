@@ -1,15 +1,14 @@
 package com.itmo.mrdvd.executor.command;
 
+import com.itmo.mrdvd.device.DataFileDescriptor;
+import com.itmo.mrdvd.device.IOStatus;
+import com.itmo.mrdvd.shell.DefaultShell;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
-
-import com.itmo.mrdvd.device.DataFileDescriptor;
-import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.shell.DefaultShell;
 
 public class ExecuteScriptCommand implements Command {
   private final DefaultShell<?, ?> shell;
@@ -20,7 +19,8 @@ public class ExecuteScriptCommand implements Command {
     this(fd, usedPaths, null);
   }
 
-  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths, DefaultShell<?, ?> shell) {
+  public ExecuteScriptCommand(
+      DataFileDescriptor fd, Set<Path> usedPaths, DefaultShell<?, ?> shell) {
     this.fd = fd;
     this.usedPaths = usedPaths;
     this.shell = shell;

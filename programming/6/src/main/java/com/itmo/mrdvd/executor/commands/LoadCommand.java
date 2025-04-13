@@ -1,8 +1,5 @@
 package com.itmo.mrdvd.executor.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
@@ -10,6 +7,8 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.shell.DefaultShell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class LoadCommand<T extends HavingId, U> implements Command {
   private final InputDevice in;

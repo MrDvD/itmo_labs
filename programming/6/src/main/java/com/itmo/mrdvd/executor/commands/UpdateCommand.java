@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.executor.command;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.shell.DefaultShell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class UpdateCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, ?> collect;

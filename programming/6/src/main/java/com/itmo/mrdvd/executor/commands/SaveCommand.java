@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.executor.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.shell.DefaultShell;
+import java.util.Optional;
 
 public class SaveCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;

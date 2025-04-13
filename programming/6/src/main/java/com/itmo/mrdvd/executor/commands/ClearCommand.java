@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.executor.command;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.shell.DefaultShell;
+import java.util.Optional;
 
 public class ClearCommand implements Command {
   private final CollectionWorker<?, ?> collection;

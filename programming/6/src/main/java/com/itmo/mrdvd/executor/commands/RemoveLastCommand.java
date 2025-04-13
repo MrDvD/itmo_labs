@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.executor.command;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.shell.DefaultShell;
+import java.util.List;
+import java.util.Optional;
 
 public class RemoveLastCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;

@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.executor;
 
+import com.itmo.mrdvd.executor.command.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.itmo.mrdvd.executor.command.Command;
-import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
@@ -25,7 +24,9 @@ public class DefaultExecutor implements Executor {
 
   @Override
   public Optional<Command> getCommand(String name) {
-    return this.commands.containsKey(name) ? Optional.empty() : Optional.of(this.commands.get(name));
+    return this.commands.containsKey(name)
+        ? Optional.empty()
+        : Optional.of(this.commands.get(name));
   }
 
   @Override

@@ -4,12 +4,10 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.executor.command.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
-
 import java.io.IOException;
 import java.util.Optional;
-
-import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultShell implements Shell {
   protected final ClientProxy proxy;
@@ -89,7 +87,8 @@ public class DefaultShell implements Shell {
       }
       if (q.isEmpty()) {
         getOut()
-            .writeln("[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.");
+            .writeln(
+                "[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.");
       }
     }
   }

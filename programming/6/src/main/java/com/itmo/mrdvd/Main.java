@@ -1,17 +1,8 @@
 package com.itmo.mrdvd;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.DataConsole;
-import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.device.ObjectMapperDecorator;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.shell.TicketShell;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.Engine;
+import org.graalvm.polyglot.Value;
 
 /*
  * TODO:
@@ -25,8 +16,9 @@ import java.util.List;
  *      2. Proxy sends to Shell the Query description (params, validation, etc)
  *      3. Shell validates the Query
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
- * 2. REMOVE CLIENTSHELL & SERVERSHELL AS THEY DO THE SAME THING: COMMAND PERMISSIONS ARE CHECKED IN CLIENTPROXY & SERVERPROXY 
- * 
+ * 3. How to do the client-side validation?
+ *    - idea: use JavaScript to validate the input (СПРОСИТЬ У СЕВЫ, ок ли это)
+ *
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this
  * 2. Split the app into modules:
@@ -45,17 +37,26 @@ import java.util.List;
  * 4. Move builder from collection to shell commands
  *    - also move updater from collection (make two add/update methods : safe and not safe version w or w/o validation)
  * 5. Create somewhat of FinalTicket (which is created once and has all final fields).
+ *
+ * write usedpackages in readme
  */
 
 public class Main {
   public static void main(String[] args) {
-    DataConsole console = new DataConsole().init();
-    TicketCollection collection = new TicketCollection("My Collection");
-    ObjectMapperDecorator<Collection<Ticket, List<Ticket>>> mapper =
-        new ObjectMapperDecorator<>(new XmlMapper(), TicketCollection.class);
-    TicketShell shell = new TicketShell(console, console);
-    FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper, new HashSet<>());
-    shell.open();
+    String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
+    String who = args.length == 0 ? "World" : args[0];
+    Engine engine = Engine.newBuilder().option("engine.WarnInterpreterOnly", "false").build();
+    Context ctx = Context.newBuilder("js").engine(engine).build();
+    Value value = ctx.eval("js", JS_CODE);
+    value.execute(who);
+
+    // DataConsole console = new DataConsole().init();
+    // TicketCollection collection = new TicketCollection("My Collection");
+    // ObjectMapperDecorator<Collection<Ticket, List<Ticket>>> mapper =
+    //     new ObjectMapperDecorator<>(new XmlMapper(), TicketCollection.class);
+    // TicketShell shell = new TicketShell(console, console);
+    // FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
+    // shell.initDefaultCommands(collection, "COLLECT_PATH", fd, mapper, mapper, new HashSet<>());
+    // shell.open();
   }
 }

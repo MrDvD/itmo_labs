@@ -62,6 +62,20 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 #     <version>5.3.4</version>
 # </dependency>
 
+# GraalJS library
+
+# <dependency>
+#   <groupId>org.graalvm.polyglot</groupId>
+#   <artifactId>polyglot</artifactId>
+#   <version>24.2.0</version>
+# </dependency>
+# <dependency>
+#   <groupId>org.graalvm.polyglot</groupId>
+#   <artifactId>js</artifactId>
+#   <version>24.2.0</version>
+#   <type>pom</type>
+# </dependency>
+
 # compile maven project to single JAR file
 # the result will be placed into the target/ dir
 mvn clean fmt:format compile assembly:single
