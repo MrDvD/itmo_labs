@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.client;
 
+import com.itmo.mrdvd.proxy.ClientProxy;
+import com.itmo.mrdvd.proxy.TransportProtocol;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.util.Optional;
-
-import com.itmo.mrdvd.proxy.ClientProxy;
-import com.itmo.mrdvd.proxy.TransportProtocol;
 
 public class CollectionClientProxy implements ClientProxy {
   protected final Socket socket;

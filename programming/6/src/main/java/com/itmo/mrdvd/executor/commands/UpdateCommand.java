@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.command;
+package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;

@@ -3,7 +3,7 @@ package com.itmo.mrdvd.shell;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.command.Command;
+import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import java.io.IOException;
@@ -37,33 +37,32 @@ public class DefaultShell implements Shell {
     return this.out;
   }
 
-  /**
-   * Returns the cached query with the mentioned name.
-   */
+  /** Returns the cached query with the mentioned name. */
   @Override
   public Optional<Query> getQuery(String name) {
     // ...
   }
 
   /**
-   * Fetches from the Proxy server the info about queries and caches it.
-   * Also gets the JavaScript files for params validation.
-   * 
-   * Should be launched either upon Shell start or as independent command.
+   * Fetches the info about queries from the Proxy server and caches it. Also gets the JavaScript
+   * files for params validation.
+   *
+   * <p>Should be launched either upon Shell start or as independent command.
    */
   @Override
   public void fetchQueries() {
+    // getProxy().send(payload);
     // getProxy().getSender().send();
   }
 
   @Override
-  public void processLine() {
+  public void processLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
     if (cmdName.isEmpty()) {
       getIn().skipLine();
       return;
     }
-    Optional<Query> q = checkQuery(cmdName.get());
+    Optional<Query> q = getQuery(cmdName.get());
     if (q.isPresent()) {
       // ...
     } else {
@@ -95,9 +94,10 @@ public class DefaultShell implements Shell {
       }
       Optional<Query> q = Optional.empty();
       try {
-        q = processLine();
+        processLine();
       } catch (IOException e) {
         close();
+        continue;
       }
       if (q.isEmpty()) {
         getOut()

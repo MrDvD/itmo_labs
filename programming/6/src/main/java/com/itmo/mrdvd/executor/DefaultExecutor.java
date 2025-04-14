@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.executor;
 
-import com.itmo.mrdvd.executor.command.Command;
+import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;

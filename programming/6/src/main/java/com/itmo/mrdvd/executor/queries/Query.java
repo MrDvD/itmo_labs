@@ -1,9 +1,9 @@
 package com.itmo.mrdvd.executor.queries;
 
+import java.util.List;
+
 public interface Query {
   public String cmd();
 
-  public int paramsCount();
-
-  public String[] params();
+  public List<String> params();
 }

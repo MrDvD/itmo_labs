@@ -18,8 +18,6 @@ import org.graalvm.polyglot.Value;
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
  * 3. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
- * 
- * study selectors!!!
  *
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this

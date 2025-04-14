@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.command;
+package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
