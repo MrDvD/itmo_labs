@@ -1,0 +1,128 @@
+          ORG   0x20
+WRDS:     WORD  4         ; result's word capacity
+                          ; (recalculate INFTY if you change it!)
+ADDR:     WORD  0x100     ; result's starting word address
+INFTY:    WORD  18        ; upper (excluding) bound of FACT's function arguments
+                          ; (recalculate WRDS if you change it!)
+INPUT:    WORD  10        ; FACT's input argument
+
+START:    LD    INPUT     ; main()
+          PUSH
+          CALL  FACT
+          HLT
+
+; FACT(uint16_t number)
+FACT:     LD    &1
+          CMP   #2
+          BCC   BASE
+          CMP   INFTY
+          BCS   OFW
+          DEC             ; FACT call (recursive)
+          PUSH
+          CALL  FACT
+          LD    &1
+          PUSH
+          LD    ADDR      ; MUL call
+          INC
+          ST    FADDR
+          LD    WRDS
+          DEC
+          ST    FIVAR
+          CLA             ; clearing the first resulting word
+          ST    (ADDR)
+LDREP:    LD    (FADDR)   ; loading the result into stack (except the first word!)
+          PUSH
+          CLA             ; clear the current resulting word
+          ST    (FADDR)+
+          LOOP  FIVAR
+          JUMP  LDREP
+          CALL  MUL
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP          
+          JUMP  (FRETADDR)
+BASE:     LD    ADDR
+          ST    FADDR
+          LD    WRDS
+          DEC
+          ST    FIVAR
+BASEREP:  CLA
+          ST    (FADDR)+
+          LOOP  FIVAR
+          JUMP  BASEREP
+          LD    #1
+          ST    (FADDR)
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP
+          JUMP  (FRETADDR)
+OFW:      LD    ADDR
+          ST    FADDR
+          LD    WRDS
+          ST    FIVAR
+OFWREP:   CLA
+          ST    (FADDR)+
+          LOOP  FIVAR
+          JUMP  OFWREP
+          POP             ; exiting the function
+          ST    FRETADDR
+          POP
+          JUMP  (FRETADDR)
+FADDR:    NOP             ; keeps current result's word address from stack
+FIVAR:    NOP             ; i-variable for iteration over result
+FRETADDR: NOP             ; keeps return address from stack
+
+; MUL(uint16_t arg1, uint16_t arg2[])
+MUL:      LD    #16
+          ST    MITER          
+          LD    STCKLD    ; load arg1
+          ADD   WRDS
+          DEC
+          ST    LDARG1
+LDARG1:   NOP
+          ST    MULTIPLE
+MULJUMP:  LD    MULTIPLE  ; load arg1 (ROR'ed)
+          ROR
+          ST    MULTIPLE
+          BCC   SHFT      ; check its least bit
+          LD    WRDS
+          DEC
+          ST    MIVAR
+          ADD   ADDR      ; add arg2 word-wise to the result 
+          ST    MADDR
+          LD    STCKLD
+          ST    CMDLD
+          CLC
+CMDLD:    NOP             ; load current word of multiple from stack
+          ADC   -(MADDR)
+          ST    (MADDR)
+          LD    (CMDLD)+
+          LOOP  MIVAR
+          JUMP  CMDLD
+SHFT:     LD    ADDR      ; shift-right resulting words
+          ST    MADDR
+          LD    WRDS
+          ST    MIVAR
+SHFTREP:  LD    (MADDR)
+          ROR
+          ST    (MADDR)+
+          LOOP  MIVAR
+          JUMP  SHFTREP
+          LOOP  MITER     ; main multiplication loop over MULTIPLE's bits 
+          JUMP  MULJUMP
+          LD    WRDS      ; exiting the function
+          DEC
+          ST    MIVAR
+          POP
+          ST    MRETADDR
+POPREP:   POP
+          LOOP  MIVAR
+          JUMP  POPREP
+          POP
+          JUMP  (MRETADDR)
+MADDR:    NOP             ; points to current word of result
+MULTIPLE: NOP             ; least 16-bit multiple for iteration
+MITER:    NOP             ; iter variable for multiplication (16 in total)
+MIVAR:    NOP             ; i-variable for iteration over result
+STCKLD:   LD    &1        ; loads ending word of multiple from stack
+MRETADDR: NOP             ; keeps return address from stack
