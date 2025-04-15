@@ -1,0 +1,33 @@
+          ORG   0x1CD
+ADDR:     NOP
+INITADR:  WORD  0x622
+START:    CLA
+          OUT   2
+          LD    INITADR
+          ST    ADDR
+WAIT1:    IN    3
+          AND   #0x40
+          BZS   WAIT1
+          LD    (ADDR)
+          ROR
+          AND   #0x7F
+          ROL
+          BZS   STOP
+          OUT   2
+WAIT2:    IN    3
+          AND   #0x40
+          BZS   WAIT2
+          LD    (ADDR)+
+          SWAB
+          ROR
+          AND   #0x7F
+          ROL
+          BZS   STOP
+          OUT   2
+          JUMP  WAIT1
+STOP:     HLT
+
+          ORG   0x622   ; "w0Аh!" string
+          WORD  0x3077  ; "0", "w"
+          WORD  0x68C0  ; "h", "А" (russian)
+          WORD  0x0021  ; NUL, "!"
