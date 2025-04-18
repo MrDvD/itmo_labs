@@ -1,17 +1,20 @@
 package com.itmo.mrdvd.proxy;
 
-import com.itmo.mrdvd.device.Serializer;
 import java.io.InputStream;
+import java.util.Optional;
+
 import org.apache.hc.core5.http.ContentType;
+
+import com.itmo.mrdvd.device.Serializer;
 
 public interface TransportProtocol {
   public InputStream getPayload(InputStream stream) throws RuntimeException;
 
-  public String wrapPayload(String url, String payload, ContentType type);
+  public Optional<String> wrapPayload(String url, ContentType type, String payload);
 
-  public <T> String wrapPayload(String url, T obj, ContentType type);
+  public <T> Optional<String> wrapPayload(String url, T obj, ContentType type);
 
-  public <T> void addSerializer(Serializer<T> serial, Class<T> clz);
+  public void addSerializer(Serializer serial, Class<?> clz);
 
-  public <T> Serializer<T> getSerializer(Class<T> clazz);
+  public Serializer getSerializer(Class<?> clazz);
 }

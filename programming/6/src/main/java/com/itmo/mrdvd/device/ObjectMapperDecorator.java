@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.device;
 
+import java.util.Optional;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -9,13 +11,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.util.Optional;
 
-public class ObjectMapperDecorator<T> implements Serializer<T>, Deserializer<T> {
+public class ObjectMapperDecorator implements Serializer, Deserializer {
   private final ObjectMapper mapper;
-  private final Class<? extends T> cls;
+  private final Class<?> cls;
 
-  public ObjectMapperDecorator(ObjectMapper obj, Class<? extends T> cls) {
+  public ObjectMapperDecorator(ObjectMapper obj, Class<?> cls) {
     this.mapper = obj;
     this.cls = cls;
     mapper.registerModule(new JavaTimeModule());
@@ -27,7 +28,7 @@ public class ObjectMapperDecorator<T> implements Serializer<T>, Deserializer<T> 
   }
 
   @Override
-  public Optional<String> serialize(T obj) {
+  public <T> Optional<String> serialize(T obj) {
     try {
       return Optional.of(mapper.writeValueAsString(obj));
     } catch (JsonProcessingException e) {
@@ -36,7 +37,7 @@ public class ObjectMapperDecorator<T> implements Serializer<T>, Deserializer<T> 
   }
 
   @Override
-  public Optional<T> deserialize(String str) {
+  public <T> Optional<? super T> deserialize(String str) {
     try {
       return Optional.of(mapper.readValue(str, cls));
     } catch (JsonProcessingException e) {

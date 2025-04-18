@@ -1,47 +1,52 @@
 package com.itmo.mrdvd.proxy;
 
 import com.itmo.mrdvd.device.Serializer;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.Function;
+
 import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpEntityContainer;
 import org.apache.hc.core5.http.HttpException;
-import org.apache.hc.core5.http.HttpMessage;
 import org.apache.hc.core5.http.impl.io.AbstractMessageParser;
 import org.apache.hc.core5.http.io.SessionInputBuffer;
-import org.apache.hc.core5.http.message.BasicClassicHttpRequest;
 
-public class HttpProtocol<T extends HttpMessage & HttpEntityContainer>
-    implements TransportProtocol {
-  protected final AbstractMessageParser<T> parser;
+public class HttpProtocol implements TransportProtocol {
+  protected final AbstractMessageParser<ClassicHttpResponse> parser;
+  protected final Function<String, ClassicHttpRequest> newRequest;
   protected final BiFunction<InputStream, ContentType, HttpEntity> newEntity;
-  protected final Map<Class, Serializer> serializers;
+  protected final Map<Class<?>, Serializer> serializers;
 
   public HttpProtocol(
-      AbstractMessageParser<T> parser,
+      AbstractMessageParser<ClassicHttpResponse> parser,
+      Function<String, ClassicHttpRequest> newRequest,
       BiFunction<InputStream, ContentType, HttpEntity> newEntity,
-      Map<Class, Serializer> serializers) {
+      Map<Class<?>, Serializer> serializers) {
     this.parser = parser;
+    this.newRequest = newRequest;
     this.newEntity = newEntity;
     this.serializers = serializers;
   }
 
   @Override
-  public <U> String wrapPayload(String url, U obj, ContentType type) {
-    wrapPayload(url, getSerializer(obj.getClass()).serialize(obj), type);
+  public <U> Optional<String> wrapPayload(String url, U obj, ContentType type) {
+    Optional<String> serialized = getSerializer(obj.getClass()).serialize(obj);
+    return serialized.isEmpty() ? Optional.empty() : wrapPayload(url, type, serialized.get());
   }
 
   @Override
-  public String wrapPayload(String url, String payload, ContentType type) {
-    ClassicHttpRequest request = new BasicClassicHttpRequest("POST", url);
+  public Optional<String> wrapPayload(String url, ContentType type, String payload) {
+    ClassicHttpRequest request = this.newRequest.apply(url);
     HttpEntity entity = this.newEntity.apply(new ByteArrayInputStream(payload.getBytes()), type);
     request.setEntity(entity);
-    return request.toString();
+    return Optional.of(request.toString());
   }
 
   @Override
@@ -55,7 +60,12 @@ public class HttpProtocol<T extends HttpMessage & HttpEntityContainer>
   }
 
   @Override
-  public <U> void addSerializer(Serializer<U> serial, Class<U> clz) {
+  public void addSerializer(Serializer serial, Class<?> clz) {
     this.serializers.put(clz, serial);
+  }
+
+  @Override
+  public Serializer getSerializer(Class<?> clz) {
+    return this.serializers.get(clz);
   }
 }

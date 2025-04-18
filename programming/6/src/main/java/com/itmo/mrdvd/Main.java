@@ -41,6 +41,8 @@ import org.graalvm.polyglot.Value;
  * write usedpackages in readme
  */
 
+XmlMapper
+
 public class Main {
   public static void main(String[] args) {
     String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
