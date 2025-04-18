@@ -4,21 +4,38 @@ import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.queries.FetchAllQuery;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public class DefaultShell implements Shell {
   protected final ClientProxy proxy;
   protected final DataInputDevice in;
   protected final OutputDevice out;
+  protected final Map<String, Query> cachedQueries;
+  protected final Map<String, Command> shellCommands;
   private boolean isOpen;
 
   public DefaultShell(ClientProxy proxy, DataInputDevice in, OutputDevice out) {
+    this(proxy, in, out, new HashMap<>(), new HashMap<>());
+  }
+
+  public DefaultShell(
+      ClientProxy proxy,
+      DataInputDevice in,
+      OutputDevice out,
+      Map<String, Query> cachedQueries,
+      Map<String, Command> shellCommands) {
     this.proxy = proxy;
     this.in = in;
     this.out = out;
+    this.cachedQueries = cachedQueries;
+    this.shellCommands = shellCommands;
     this.isOpen = false;
   }
 
@@ -40,7 +57,7 @@ public class DefaultShell implements Shell {
   /** Returns the cached query with the mentioned name. */
   @Override
   public Optional<Query> getQuery(String name) {
-    // ...
+    return Optional.ofNullable(this.cachedQueries.get(name));
   }
 
   /**
@@ -51,8 +68,8 @@ public class DefaultShell implements Shell {
    */
   @Override
   public void fetchQueries() {
-    // getProxy().send(payload);
-    // getProxy().getSender().send();
+    getProxy().send(new FetchAllQuery());
+    // get payload and cache queries
   }
 
   @Override
@@ -108,8 +125,8 @@ public class DefaultShell implements Shell {
   }
 
   @Override
-  public Optional<Command> getCommand(String line) {
-    return Optional.ofNullable(getCommands().get(line));
+  public Optional<Command> getCommand(String name) {
+    return Optional.ofNullable(this.shellCommands.get(name));
   }
 
   @Override
@@ -118,11 +135,21 @@ public class DefaultShell implements Shell {
   }
 
   @Override
-  public CollectionShell forkSubshell(DataInputDevice in, OutputDevice out) {
-    CollectionShell subshell = new CollectionShell<>(in, out);
-    for (Command cmd : this) {
-      subshell.addCommand(cmd.setShell(subshell));
-    }
-    return subshell;
+  public Set<String> getShellCommandKeys() {
+    return this.shellCommands.keySet();
   }
+
+  @Override
+  public Set<String> getQueryKeys() {
+    return this.cachedQueries.keySet();
+  }
+
+  // @Override
+  // public CollectionShell forkSubshell(DataInputDevice in, OutputDevice out) {
+  //   CollectionShell subshell = new CollectionShell<>(in, out);
+  //   for (Command cmd : this) {
+  //     subshell.addCommand(cmd.setShell(subshell));
+  //   }
+  //   return subshell;
+  // }
 }

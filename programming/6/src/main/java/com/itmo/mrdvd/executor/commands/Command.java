@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.executor.commands;
 
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
 public interface Command {
@@ -12,9 +12,9 @@ public interface Command {
 
   public String description();
 
-  public Command setShell(DefaultShell<?, ?> shell);
+  public Command setShell(Shell shell);
 
-  public Optional<DefaultShell<?, ?>> getShell();
+  public Optional<Shell> getShell();
 
   public default boolean hasParams() {
     return false;

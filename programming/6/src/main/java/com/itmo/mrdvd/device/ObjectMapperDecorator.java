@@ -1,7 +1,5 @@
 package com.itmo.mrdvd.device;
 
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -11,14 +9,18 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Optional;
+import org.apache.hc.core5.http.ContentType;
 
 public class ObjectMapperDecorator implements Serializer, Deserializer {
   private final ObjectMapper mapper;
   private final Class<?> cls;
+  private final ContentType type;
 
-  public ObjectMapperDecorator(ObjectMapper obj, Class<?> cls) {
+  public ObjectMapperDecorator(ObjectMapper obj, Class<?> cls, ContentType type) {
     this.mapper = obj;
     this.cls = cls;
+    this.type = type;
     mapper.registerModule(new JavaTimeModule());
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -43,5 +45,10 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
     } catch (JsonProcessingException e) {
       return Optional.empty();
     }
+  }
+
+  @Override
+  public ContentType getContentType() {
+    return this.type;
   }
 }

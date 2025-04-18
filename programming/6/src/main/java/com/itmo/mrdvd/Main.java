@@ -1,8 +1,14 @@
 package com.itmo.mrdvd;
 
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Engine;
-import org.graalvm.polyglot.Value;
+import com.itmo.mrdvd.client.CollectionClientProxy;
+import com.itmo.mrdvd.device.DataConsole;
+import com.itmo.mrdvd.proxy.HttpProtocol;
+import com.itmo.mrdvd.server.CollectionServerProxy;
+import com.itmo.mrdvd.server.ServerExecutor;
+import com.itmo.mrdvd.shell.DefaultShell;
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
+import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
 
 /*
  * TODO:
@@ -41,16 +47,25 @@ import org.graalvm.polyglot.Value;
  * write usedpackages in readme
  */
 
-XmlMapper
-
 public class Main {
   public static void main(String[] args) {
-    String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
-    String who = args.length == 0 ? "World" : args[0];
-    Engine engine = Engine.newBuilder().option("engine.WarnInterpreterOnly", "false").build();
-    Context ctx = Context.newBuilder("js").engine(engine).build();
-    Value value = ctx.eval("js", JS_CODE);
-    value.execute(who);
+    ServerExecutor executor = new ServerExecutor();
+    HttpProtocol http =
+        new HttpProtocol(
+            new DefaultHttpRequestParser(),
+            new DefaultClassicHttpRequestFactory(),
+            BasicHttpEntity::new);
+    CollectionServerProxy proxy = new CollectionServerProxy(null, http);
+    CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
+    DataConsole console = new DataConsole().init();
+    DefaultShell shell = new DefaultShell(proxy2, console, console);
+    shell.open();
+    // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
+    // String who = args.length == 0 ? "World" : args[0];
+    // Engine engine = Engine.newBuilder().option("engine.WarnInterpreterOnly", "false").build();
+    // Context ctx = Context.newBuilder("js").engine(engine).build();
+    // Value value = ctx.eval("js", JS_CODE);
+    // value.execute(who);
 
     // DataConsole console = new DataConsole().init();
     // TicketCollection collection = new TicketCollection("My Collection");
