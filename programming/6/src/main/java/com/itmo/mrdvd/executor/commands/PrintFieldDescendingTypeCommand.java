@@ -2,14 +2,14 @@ package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Command {
   private final Collection<T, List<T>> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
   private final Comparator<T> comparator;
 
   public PrintFieldDescendingTypeCommand(Collection<T, List<T>> collect, Comparator<T> comparator) {
@@ -17,19 +17,19 @@ public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Comm
   }
 
   public PrintFieldDescendingTypeCommand(
-      Collection<T, List<T>> collect, Comparator<T> comparator, DefaultShell<?, ?> shell) {
+      Collection<T, List<T>> collect, Comparator<T> comparator, ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
     this.comparator = comparator;
   }
 
   @Override
-  public PrintFieldDescendingTypeCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public PrintFieldDescendingTypeCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new PrintFieldDescendingTypeCommand<>(collection, comparator, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

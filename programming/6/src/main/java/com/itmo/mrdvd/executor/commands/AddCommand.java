@@ -3,32 +3,32 @@ package com.itmo.mrdvd.executor.commands;
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 
 public class AddCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, ?> collect;
   protected final InteractiveBuilder builder;
-  protected final DefaultShell<?, ?> shell;
+  protected final ProxyShell<?, ?> shell;
 
   public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder<T, ?> builder) {
     this(collection, builder, null);
   }
 
   public AddCommand(
-      CollectionWorker<T, ?> collection, InteractiveBuilder builder, DefaultShell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveBuilder builder, ProxyShell<?, ?> shell) {
     this.collect = collection;
     this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
   }
 
   @Override
-  public AddCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public AddCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new AddCommand<>(collect, builder, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

@@ -1,29 +1,29 @@
 package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 
 public class ClearCommand implements Command {
   private final CollectionWorker<?, ?> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public ClearCommand(CollectionWorker<?, ?> collect) {
     this(collect, null);
   }
 
-  public ClearCommand(CollectionWorker<?, ?> collect, DefaultShell<?, ?> shell) {
+  public ClearCommand(CollectionWorker<?, ?> collect, ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public ClearCommand setShell(DefaultShell<?, ?> shell) {
+  public ClearCommand setShell(ProxyShell<?, ?> shell) {
     return new ClearCommand(collection, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

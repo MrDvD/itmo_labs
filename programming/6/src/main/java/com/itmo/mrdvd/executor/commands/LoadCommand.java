@@ -6,7 +6,7 @@ import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.input.InputDevice;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -15,7 +15,7 @@ public class LoadCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;
   private final Validator<T> validator;
   private final Deserializer<Collection<T, U>> deserial;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public LoadCommand(
       InputDevice in,
@@ -30,7 +30,7 @@ public class LoadCommand<T extends HavingId, U> implements Command {
       Collection<T, U> collection,
       Validator<T> validator,
       Deserializer<Collection<T, U>> deserial,
-      DefaultShell<?, ?> shell) {
+      ProxyShell<?, ?> shell) {
     this.in = in;
     this.collection = collection;
     this.validator = validator;
@@ -39,12 +39,12 @@ public class LoadCommand<T extends HavingId, U> implements Command {
   }
 
   @Override
-  public LoadCommand<T, U> setShell(DefaultShell<?, ?> shell) {
+  public LoadCommand<T, U> setShell(ProxyShell<?, ?> shell) {
     return new LoadCommand<>(in, collection, validator, deserial, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

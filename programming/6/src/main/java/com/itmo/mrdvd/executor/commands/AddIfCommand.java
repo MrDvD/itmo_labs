@@ -3,7 +3,7 @@ package com.itmo.mrdvd.executor.commands;
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ import java.util.Set;
 public class AddIfCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, List<T>> collect;
   protected final InteractiveBuilder builder;
-  protected final DefaultShell<?, ?> shell;
+  protected final ProxyShell<?, ?> shell;
   protected final Comparator<T> comparator;
   protected final Set<Integer> values;
 
@@ -29,7 +29,7 @@ public class AddIfCommand<T extends HavingId> implements Command {
       InteractiveBuilder builder,
       Comparator<T> comparator,
       Set<Integer> values,
-      DefaultShell<?, ?> shell) {
+      ProxyShell<?, ?> shell) {
     this.collect = collection;
     this.builder = shell == null ? builder : builder.setIn(shell.getIn());
     this.shell = shell;
@@ -38,12 +38,12 @@ public class AddIfCommand<T extends HavingId> implements Command {
   }
 
   @Override
-  public AddIfCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public AddIfCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new AddIfCommand<>(collect, builder, comparator, values, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

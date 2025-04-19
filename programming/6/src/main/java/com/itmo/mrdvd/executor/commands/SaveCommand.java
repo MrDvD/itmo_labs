@@ -5,13 +5,13 @@ import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 
 public class SaveCommand<T extends HavingId, U> implements Command {
   private final Collection<T, U> collection;
   private final Serializer<Collection<T, U>> serial;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
   private final FileDescriptor file;
 
   public SaveCommand(
@@ -23,7 +23,7 @@ public class SaveCommand<T extends HavingId, U> implements Command {
       Collection<T, U> collect,
       Serializer<Collection<T, U>> serial,
       FileDescriptor file,
-      DefaultShell<?, ?> shell) {
+      ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.serial = serial;
     this.file = file;
@@ -31,12 +31,12 @@ public class SaveCommand<T extends HavingId, U> implements Command {
   }
 
   @Override
-  public SaveCommand<T, U> setShell(DefaultShell<?, ?> shell) {
+  public SaveCommand<T, U> setShell(ProxyShell<?, ?> shell) {
     return new SaveCommand<>(collection, serial, file, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

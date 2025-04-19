@@ -1,29 +1,29 @@
 package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 
 public class ShowCommand implements Command {
   private final Collection<?, ?> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public ShowCommand(Collection<?, ?> collect) {
     this(collect, null);
   }
 
-  public ShowCommand(Collection<?, ?> collect, DefaultShell<?, ?> shell) {
+  public ShowCommand(Collection<?, ?> collect, ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public ShowCommand setShell(DefaultShell<?, ?> shell) {
+  public ShowCommand setShell(ProxyShell<?, ?> shell) {
     return new ShowCommand(collection, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

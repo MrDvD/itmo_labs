@@ -3,33 +3,33 @@ package com.itmo.mrdvd.executor.commands;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.io.IOException;
 import java.util.Optional;
 
 public class UpdateCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, ?> collect;
   private final InteractiveUpdater updater;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public UpdateCommand(CollectionWorker<T, ?> collection, InteractiveUpdater<T, ?> updater) {
     this(collection, updater, null);
   }
 
   public UpdateCommand(
-      CollectionWorker<T, ?> collection, InteractiveUpdater updater, DefaultShell<?, ?> shell) {
+      CollectionWorker<T, ?> collection, InteractiveUpdater updater, ProxyShell<?, ?> shell) {
     this.collect = collection;
     this.updater = shell == null ? updater : updater.setIn(shell.getIn());
     this.shell = shell;
   }
 
   @Override
-  public UpdateCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public UpdateCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new UpdateCommand<>(collect, updater, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(shell);
   }
 

@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.executor;
 
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
@@ -18,7 +19,10 @@ public class DefaultExecutor implements Executor {
   }
 
   @Override
-  public void setCommand(Command cmd) {
+  public void setCommand(Command cmd) throws IllegalArgumentException {
+    if (cmd == null) {
+      throw new IllegalArgumentException("Command не может быть null.");
+    }
     this.commands.put(cmd.name(), cmd);
   }
 

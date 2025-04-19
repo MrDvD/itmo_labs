@@ -1,13 +1,14 @@
 package com.itmo.mrdvd.shell;
 
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.ClientProxy;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
+
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.executor.commands.ShellCommand;
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.proxy.ClientProxy;
 
 public interface Shell {
   public DataInputDevice getIn();
@@ -20,13 +21,15 @@ public interface Shell {
 
   public Optional<Query> getQuery(String name);
 
-  public Optional<Command> getCommand(String name);
+  public void setCommand(ShellCommand cmd) throws IllegalArgumentException;
+
+  public Optional<ShellCommand> getCommand(String name);
 
   public Set<String> getShellCommandKeys();
 
   public Set<String> getQueryKeys();
 
-  public void processLine() throws IOException;
+  public Optional<String> processLine() throws IOException;
 
   public Shell forkSubshell(DataInputDevice in, OutputDevice out);
 

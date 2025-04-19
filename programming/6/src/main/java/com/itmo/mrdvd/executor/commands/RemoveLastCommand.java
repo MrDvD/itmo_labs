@@ -2,30 +2,30 @@ package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.List;
 import java.util.Optional;
 
 public class RemoveLastCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public RemoveLastCommand(CollectionWorker<T, List<T>> collection) {
     this(collection, null);
   }
 
-  public RemoveLastCommand(CollectionWorker<T, List<T>> collection, DefaultShell<?, ?> shell) {
+  public RemoveLastCommand(CollectionWorker<T, List<T>> collection, ProxyShell<?, ?> shell) {
     this.collection = collection;
     this.shell = shell;
   }
 
   @Override
-  public RemoveLastCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public RemoveLastCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new RemoveLastCommand<>(collection, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

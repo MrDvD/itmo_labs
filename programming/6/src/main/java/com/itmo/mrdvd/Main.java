@@ -1,14 +1,15 @@
 package com.itmo.mrdvd;
 
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
+import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
+
 import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.proxy.HttpProtocol;
 import com.itmo.mrdvd.server.CollectionServerProxy;
 import com.itmo.mrdvd.server.ServerExecutor;
-import com.itmo.mrdvd.shell.DefaultShell;
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
-import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
+import com.itmo.mrdvd.shell.ProxyShell;
 
 /*
  * TODO:
@@ -29,6 +30,7 @@ import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
  *    - maybe it would be better if i use an http server for this
  * 2. Split the app into modules:
  *    - exit in server vs exit in client; save in server
+ *      - maybe split it into exit (shell command) & shutdown (server-side command)
  *    - Proxy as interface (ServerProxy, ClientProxy)
  *      - accepts incoming connections (local or shared)
  *      - sends response to the client (two separate but parallel classes)
@@ -58,7 +60,7 @@ public class Main {
     CollectionServerProxy proxy = new CollectionServerProxy(null, http);
     CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
     DataConsole console = new DataConsole().init();
-    DefaultShell shell = new DefaultShell(proxy2, console, console);
+    ProxyShell shell = new ProxyShell(proxy2, console, console);
     shell.open();
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
     // String who = args.length == 0 ? "World" : args[0];

@@ -2,30 +2,30 @@ package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.io.IOException;
 import java.util.Optional;
 
 public class CountGreaterThanEventCommand implements Command {
   private final Collection<Ticket, ?> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public CountGreaterThanEventCommand(Collection<Ticket, ?> collect) {
     this(collect, null);
   }
 
-  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect, DefaultShell<?, ?> shell) {
+  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect, ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
   }
 
   @Override
-  public CountGreaterThanEventCommand setShell(DefaultShell<?, ?> shell) {
+  public CountGreaterThanEventCommand setShell(ProxyShell<?, ?> shell) {
     return new CountGreaterThanEventCommand(collection, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

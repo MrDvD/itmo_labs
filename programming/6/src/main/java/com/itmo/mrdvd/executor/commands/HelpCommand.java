@@ -1,14 +1,11 @@
 package com.itmo.mrdvd.executor.commands;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class HelpCommand implements Command {
-  private final Shell shell;
+import com.itmo.mrdvd.shell.Shell;
 
-  public HelpCommand() {
-    this(null);
-  }
+public class HelpCommand implements ShellCommand {
+  private final Shell shell;
 
   public HelpCommand(Shell shell) {
     this.shell = shell;
@@ -25,15 +22,16 @@ public class HelpCommand implements Command {
   }
 
   @Override
-  public void execute() {
+  public void execute() throws NullPointerException {
     if (getShell().isEmpty()) {
       throw new NullPointerException("Shell не может быть null.");
     }
-    for (Command cmd : shell) {
+    for (String cmdName : this.shell.getShellCommandKeys()) {
+      Optional<Command> cmd = this.shell.getCommand(cmdName);
       getShell()
           .get()
           .getOut()
-          .write(String.format("%-35s\t%s\n", cmd.signature(), cmd.description()));
+          .write(String.format("%-35s\t%s\n", cmd.get().signature(), cmd.get().description()));
     }
   }
 

@@ -1,31 +1,31 @@
 package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.device.FileMeta;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 
 public class ReadEnvironmentFilepathCommand implements Command {
   private final String envName;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
   private final FileMeta file;
 
   public ReadEnvironmentFilepathCommand(String envName, FileMeta file) {
     this(envName, file, null);
   }
 
-  public ReadEnvironmentFilepathCommand(String envName, FileMeta file, DefaultShell<?, ?> shell) {
+  public ReadEnvironmentFilepathCommand(String envName, FileMeta file, ProxyShell<?, ?> shell) {
     this.envName = envName;
     this.file = file;
     this.shell = shell;
   }
 
   @Override
-  public ReadEnvironmentFilepathCommand setShell(DefaultShell<?, ?> shell) {
+  public ReadEnvironmentFilepathCommand setShell(ProxyShell<?, ?> shell) {
     return new ReadEnvironmentFilepathCommand(envName, file, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

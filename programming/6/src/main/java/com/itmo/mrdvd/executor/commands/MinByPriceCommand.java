@@ -2,14 +2,14 @@ package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 public class MinByPriceCommand<T extends HavingId> implements Command {
   private final CollectionWorker<T, List<T>> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
   private final Comparator<T> comparator;
 
   public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator) {
@@ -17,19 +17,19 @@ public class MinByPriceCommand<T extends HavingId> implements Command {
   }
 
   public MinByPriceCommand(
-      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, DefaultShell<?, ?> shell) {
+      CollectionWorker<T, List<T>> collect, Comparator<T> comparator, ProxyShell<?, ?> shell) {
     this.collection = collect;
     this.shell = shell;
     this.comparator = comparator;
   }
 
   @Override
-  public MinByPriceCommand<T> setShell(DefaultShell<?, ?> shell) {
+  public MinByPriceCommand<T> setShell(ProxyShell<?, ?> shell) {
     return new MinByPriceCommand<>(collection, comparator, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

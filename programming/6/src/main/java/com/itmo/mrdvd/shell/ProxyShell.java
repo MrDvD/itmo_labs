@@ -1,36 +1,37 @@
 package com.itmo.mrdvd.shell;
 
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.FetchAllQuery;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.ClientProxy;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class DefaultShell implements Shell {
+import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.executor.commands.ShellCommand;
+import com.itmo.mrdvd.executor.queries.FetchAllQuery;
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.proxy.ClientProxy;
+
+public class ProxyShell implements Shell {
   protected final ClientProxy proxy;
   protected final DataInputDevice in;
   protected final OutputDevice out;
   protected final Map<String, Query> cachedQueries;
-  protected final Map<String, Command> shellCommands;
+  protected final Map<String, ShellCommand> shellCommands;
   private boolean isOpen;
 
-  public DefaultShell(ClientProxy proxy, DataInputDevice in, OutputDevice out) {
+  public ProxyShell(ClientProxy proxy, DataInputDevice in, OutputDevice out) {
     this(proxy, in, out, new HashMap<>(), new HashMap<>());
   }
 
-  public DefaultShell(
+  public ProxyShell(
       ClientProxy proxy,
       DataInputDevice in,
       OutputDevice out,
       Map<String, Query> cachedQueries,
-      Map<String, Command> shellCommands) {
+      Map<String, ShellCommand> shellCommands) {
     this.proxy = proxy;
     this.in = in;
     this.out = out;
@@ -54,7 +55,9 @@ public class DefaultShell implements Shell {
     return this.out;
   }
 
-  /** Returns the cached query with the mentioned name. */
+  /** 
+   * Returns the cached query with the mentioned name.
+   */
   @Override
   public Optional<Query> getQuery(String name) {
     return Optional.ofNullable(this.cachedQueries.get(name));
@@ -72,29 +75,31 @@ public class DefaultShell implements Shell {
     // get payload and cache queries
   }
 
+  /**
+   * Processes the input query or command.
+   * Returns the input keyword if it wasn't processed.
+   */
   @Override
-  public void processLine() throws IOException {
+  public Optional<String> processLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
     if (cmdName.isEmpty()) {
       getIn().skipLine();
-      return;
+      return Optional.empty();
+    }
+    Optional<ShellCommand> c = getCommand(cmdName.get());
+    if (c.isPresent()) {
+      if (!c.get().hasParams()) {
+        getIn().skipLine();
+      }
+      c.get().execute();
+      return Optional.empty();
     }
     Optional<Query> q = getQuery(cmdName.get());
     if (q.isPresent()) {
-      // ...
-    } else {
-      // ...
+      // send the query to the server
+      // and process the result.
     }
-
-    // Optional<Command> cmd = getCommand(cmdName.get());
-    // if (cmd.isPresent()) {
-    //   if (!cmd.get().hasParams()) {
-    //     getIn().skipLine();
-    //   }
-    //   cmd.get().execute();
-    //   return cmd;
-    // }
-    // return Optional.empty();
+    return cmdName;
   }
 
   @Override
@@ -109,23 +114,30 @@ public class DefaultShell implements Shell {
         this.isOpen = false;
         return;
       }
-      Optional<Query> q = Optional.empty();
+      Optional<String> cmd;
       try {
-        processLine();
+        cmd = processLine();
       } catch (IOException e) {
         close();
         continue;
       }
-      if (q.isEmpty()) {
+      if (cmd.isPresent()) {
         getOut()
-            .writeln(
-                "[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.");
+            .writeln(String.format("[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.", cmd.get()));
       }
     }
   }
 
   @Override
-  public Optional<Command> getCommand(String name) {
+  public void setCommand(ShellCommand cmd) throws IllegalArgumentException {
+    if (cmd == null) {
+      throw new IllegalArgumentException("Command не может быть null.");
+    }
+    this.shellCommands.put(cmd.name(), cmd);
+  }
+
+  @Override
+  public Optional<ShellCommand> getCommand(String name) {
     return Optional.ofNullable(this.shellCommands.get(name));
   }
 
@@ -144,12 +156,13 @@ public class DefaultShell implements Shell {
     return this.cachedQueries.keySet();
   }
 
-  // @Override
-  // public CollectionShell forkSubshell(DataInputDevice in, OutputDevice out) {
-  //   CollectionShell subshell = new CollectionShell<>(in, out);
-  //   for (Command cmd : this) {
-  //     subshell.addCommand(cmd.setShell(subshell));
-  //   }
-  //   return subshell;
-  // }
+  @Override
+  public ProxyShell forkSubshell(DataInputDevice in, OutputDevice out) {
+    ProxyShell subshell = new ProxyShell(proxy, in, out);
+    for (String cmdName : this.getShellCommandKeys()) {
+      Optional<ShellCommand> cmd = this.getCommand(cmdName);
+      subshell.setCommand(cmd.get());
+    }
+    return subshell;
+  }
 }

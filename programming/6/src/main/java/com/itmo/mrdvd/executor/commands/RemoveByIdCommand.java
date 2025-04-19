@@ -1,30 +1,30 @@
 package com.itmo.mrdvd.executor.commands;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.shell.DefaultShell;
+import com.itmo.mrdvd.shell.ProxyShell;
 import java.io.IOException;
 import java.util.Optional;
 
 public class RemoveByIdCommand implements Command {
   private final CollectionWorker<?, ?> collection;
-  private final DefaultShell<?, ?> shell;
+  private final ProxyShell<?, ?> shell;
 
   public RemoveByIdCommand(CollectionWorker<?, ?> collection) {
     this(collection, null);
   }
 
-  public RemoveByIdCommand(CollectionWorker<?, ?> collection, DefaultShell<?, ?> shell) {
+  public RemoveByIdCommand(CollectionWorker<?, ?> collection, ProxyShell<?, ?> shell) {
     this.collection = collection;
     this.shell = shell;
   }
 
   @Override
-  public RemoveByIdCommand setShell(DefaultShell<?, ?> shell) {
+  public RemoveByIdCommand setShell(ProxyShell<?, ?> shell) {
     return new RemoveByIdCommand(collection, shell);
   }
 
   @Override
-  public Optional<DefaultShell<?, ?>> getShell() {
+  public Optional<ProxyShell<?, ?>> getShell() {
     return Optional.ofNullable(this.shell);
   }
 
