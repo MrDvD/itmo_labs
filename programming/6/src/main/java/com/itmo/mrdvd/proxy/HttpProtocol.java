@@ -4,8 +4,8 @@ import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.Serializer;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.apache.hc.core5.http.ClassicHttpRequest;
 import org.apache.hc.core5.http.ContentType;
@@ -20,20 +20,20 @@ import org.apache.hc.core5.http.io.entity.HttpEntities;
 public class HttpProtocol implements TransportProtocol {
   protected final AbstractMessageParser<? extends ClassicHttpRequest> parser;
   protected final HttpRequestFactory<? extends ClassicHttpRequest> newRequest;
-  protected final Map<Class<?>, Serializer> serializers;
-  protected final Map<Class<?>, Deserializer> deserializers;
+  protected final List<Serializer> serializers;
+  protected final List<Deserializer> deserializers;
 
   public HttpProtocol(
       AbstractMessageParser<? extends ClassicHttpRequest> parser,
       HttpRequestFactory<? extends ClassicHttpRequest> newRequest) {
-    this(parser, newRequest, new HashMap<>(), new HashMap<>());
+    this(parser, newRequest, new ArrayList<>(), new ArrayList<>());
   }
 
   public HttpProtocol(
       AbstractMessageParser<? extends ClassicHttpRequest> parser,
       HttpRequestFactory<? extends ClassicHttpRequest> newRequest,
-      Map<Class<?>, Serializer> serializers,
-      Map<Class<?>, Deserializer> deserializers) {
+      List<Serializer> serializers,
+      List<Deserializer> deserializers) {
     this.parser = parser;
     this.newRequest = newRequest;
     this.serializers = serializers;
@@ -75,24 +75,18 @@ public class HttpProtocol implements TransportProtocol {
   }
 
   @Override
-  public void addSerializationPair(Class<?> clz, Serializer serial, Deserializer deserial) {
-    // in fact, this check is shish, because i cannot check for superclasses and interfaces. only
-    // concrete classes...
-    this.serializers.put(clz, serial);
-    this.deserializers.put(clz, deserial);
+  public void addSerializationPair(Serializer serial, Deserializer deserial) {
+    this.serializers.add(serial);
+    this.deserializers.add(deserial);
   }
 
   @Override
-  public Optional<Serializer> getSerializer(Class<?> clz) {
-    return this.serializers.containsKey(clz)
-        ? Optional.of(this.serializers.get(clz))
-        : Optional.empty();
+  public List<Serializer> getSerializers() {
+    return this.serializers;
   }
 
   @Override
-  public Optional<Deserializer> getDeserializer(Class<?> clz) {
-    return this.deserializers.containsKey(clz)
-        ? Optional.of(this.deserializers.get(clz))
-        : Optional.empty();
+  public List<Deserializer> getDeserializers() {
+    return this.deserializers;
   }
 }

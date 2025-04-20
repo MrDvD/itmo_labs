@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.executor.queries;
 
-public class FetchAllQuery implements Query {
-  @Override
-  public String cmd() {
-    return "fetch_all";
+public class FetchAllQuery extends Query {
+  public FetchAllQuery() {
+    super("fetch_all");
   }
 }

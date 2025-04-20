@@ -3,6 +3,7 @@ package com.itmo.mrdvd.proxy;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.Serializer;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Optional;
 import org.apache.hc.core5.http.ContentType;
 
@@ -14,9 +15,9 @@ public interface TransportProtocol {
   public <T> Optional<String> wrapPayload(String url, T obj, ContentType type)
       throws RuntimeException;
 
-  public void addSerializationPair(Class<?> clz, Serializer serial, Deserializer deserial);
+  public void addSerializationPair(Serializer serial, Deserializer deserial);
 
-  public Optional<Serializer> getSerializer(Class<?> clazz);
+  public List<Serializer> getSerializers();
 
-  public Optional<Deserializer> getDeserializer(Class<?> clazz);
+  public List<Deserializer> getDeserializers();
 }

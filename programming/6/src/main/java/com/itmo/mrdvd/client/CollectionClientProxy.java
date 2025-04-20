@@ -47,14 +47,16 @@ public class CollectionClientProxy implements ClientProxy {
 
   @Override
   public String send(Object payload) throws RuntimeException {
-    Optional<Serializer> serial = this.protocol.getSerializer(payload.getC);
-    if (serial.isEmpty()) {
-      throw new RuntimeException("[ERROR] Отсутствует сериализатор для переданного класса.");
+    Serializer serial;
+    try {
+      serial = this.protocol.getSerializers().get(0);
+    } catch (IndexOutOfBoundsException e) {
+      throw new RuntimeException("[ERROR] Отсутствует какой-либо сериализатор.");
     }
-    Optional<String> result = serial.get().serialize(payload);
+    Optional<String> result = serial.serialize(payload);
     if (result.isEmpty()) {
       throw new RuntimeException("[ERROR] Не удалось сериализовать переданный объект.");
     }
-    return send(result.get(), serial.get().getContentType());
+    return send(result.get(), serial.getContentType());
   }
 }
