@@ -1,15 +1,15 @@
 package com.itmo.mrdvd;
 
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
-import org.apache.hc.core5.http.io.entity.BasicHttpEntity;
-
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
+import com.itmo.mrdvd.device.ObjectMapperDecorator;
+import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.HttpProtocol;
-import com.itmo.mrdvd.server.CollectionServerProxy;
-import com.itmo.mrdvd.server.ServerExecutor;
 import com.itmo.mrdvd.shell.ProxyShell;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 /*
  * TODO:
@@ -25,6 +25,7 @@ import com.itmo.mrdvd.shell.ProxyShell;
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
  * 3. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
+ * 4. Fix addSerializationPair method in httpprotocol
  *
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this
@@ -51,13 +52,14 @@ import com.itmo.mrdvd.shell.ProxyShell;
 
 public class Main {
   public static void main(String[] args) {
-    ServerExecutor executor = new ServerExecutor();
+    // ServerExecutor executor = new ServerExecutor();
     HttpProtocol http =
-        new HttpProtocol(
-            new DefaultHttpRequestParser(),
-            new DefaultClassicHttpRequestFactory(),
-            BasicHttpEntity::new);
-    CollectionServerProxy proxy = new CollectionServerProxy(null, http);
+        new HttpProtocol(new DefaultHttpRequestParser(), new DefaultClassicHttpRequestFactory());
+    // how about querywithparams? will it be serialized/deserialized?
+    ObjectMapperDecorator mapper =
+        new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
+    http.addSerializationPair(Query.class, mapper, mapper);
+    // CollectionServerProxy proxy = new CollectionServerProxy(null, http);
     CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
     DataConsole console = new DataConsole().init();
     ProxyShell shell = new ProxyShell(proxy2, console, console);

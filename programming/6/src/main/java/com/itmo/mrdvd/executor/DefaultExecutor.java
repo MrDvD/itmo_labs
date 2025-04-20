@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.executor;
 
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;

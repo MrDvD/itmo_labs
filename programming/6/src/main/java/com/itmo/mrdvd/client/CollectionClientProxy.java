@@ -4,28 +4,18 @@ import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.Optional;
 import org.apache.hc.core5.http.ContentType;
 
 public class CollectionClientProxy implements ClientProxy {
-  protected final Socket socket;
+  protected final SocketChannel socket;
   protected TransportProtocol protocol;
-  protected Optional<InputStreamReader> in;
-  protected Optional<OutputStreamWriter> out;
 
-  public CollectionClientProxy(Socket sock, TransportProtocol proto) {
-    this.socket = sock;
+  public CollectionClientProxy(SocketChannel socket, TransportProtocol proto) {
+    this.socket = socket;
     this.protocol = proto;
-    try {
-      this.in = Optional.of(new InputStreamReader(sock.getInputStream()));
-      this.out = Optional.of(new OutputStreamWriter(sock.getOutputStream()));
-    } catch (IOException e) {
-      this.in = Optional.empty();
-      this.out = Optional.empty();
-    }
   }
 
   @Override
@@ -36,29 +26,35 @@ public class CollectionClientProxy implements ClientProxy {
   }
 
   @Override
-  public void send(String payload, ContentType content) throws RuntimeException {
-    if (this.out.isEmpty()) {
-      throw new RuntimeException("Ошибка записи в TCP-сокет.");
-    }
+  public String send(String payload, ContentType content) throws RuntimeException {
     try {
       Optional<String> request =
-          this.protocol.wrapPayload(this.socket.getInetAddress().toString(), payload, content);
+          this.protocol.wrapPayload(this.socket.getRemoteAddress().toString(), payload, content);
       if (request.isEmpty()) {
-        throw new RuntimeException("Ошибка сериализации запроса.");
+        throw new RuntimeException("[ERROR] Не удалось сериализовать запрос.");
       }
-      this.out.get().write(request.get());
+      ByteBuffer buffer = ByteBuffer.wrap(request.get().getBytes());
+      this.socket.write(buffer);
+      buffer.clear();
+      this.socket.read(buffer);
+      String response = new String(buffer.array()).trim();
+      buffer.clear();
+      return response;
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
 
   @Override
-  public void send(Object payload) throws RuntimeException {
-    Serializer serial = this.protocol.getSerializer(payload.getClass());
-    Optional<String> result = serial.serialize(payload);
-    if (result.isEmpty()) {
-      throw new RuntimeException("Ошибка сериализации объекта.");
+  public String send(Object payload) throws RuntimeException {
+    Optional<Serializer> serial = this.protocol.getSerializer(payload.getC);
+    if (serial.isEmpty()) {
+      throw new RuntimeException("[ERROR] Отсутствует сериализатор для переданного класса.");
     }
-    send(result.get(), serial.getContentType());
+    Optional<String> result = serial.get().serialize(payload);
+    if (result.isEmpty()) {
+      throw new RuntimeException("[ERROR] Не удалось сериализовать переданный объект.");
+    }
+    return send(result.get(), serial.get().getContentType());
   }
 }

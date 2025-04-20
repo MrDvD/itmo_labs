@@ -1,11 +1,5 @@
 package com.itmo.mrdvd.shell;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
@@ -13,6 +7,11 @@ import com.itmo.mrdvd.executor.commands.ShellCommand;
 import com.itmo.mrdvd.executor.queries.FetchAllQuery;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class ProxyShell implements Shell {
   protected final ClientProxy proxy;
@@ -55,9 +54,7 @@ public class ProxyShell implements Shell {
     return this.out;
   }
 
-  /** 
-   * Returns the cached query with the mentioned name.
-   */
+  /** Returns the cached query with the mentioned name. */
   @Override
   public Optional<Query> getQuery(String name) {
     return Optional.ofNullable(this.cachedQueries.get(name));
@@ -71,14 +68,19 @@ public class ProxyShell implements Shell {
    */
   @Override
   public void fetchQueries() {
-    getProxy().send(new FetchAllQuery());
+    String response = getProxy().send((Query) new FetchAllQuery());
+
+    // here i should deserialize the httpresponse
+    // but the problem is that i violate encapsulation principle?
+    // maybe do the deserialization logic inside proxy and return some generic value?
+    // no, i don't violate it because othervise Single Responsibility Principle is violated
+    // (proxy only sends appropriate data, and we cannot predict the input data result)
+    // so the validation logic of result should be here!
+
     // get payload and cache queries
   }
 
-  /**
-   * Processes the input query or command.
-   * Returns the input keyword if it wasn't processed.
-   */
+  /** Processes the input query or command. Returns the input keyword if it wasn't processed. */
   @Override
   public Optional<String> processLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
@@ -104,6 +106,7 @@ public class ProxyShell implements Shell {
 
   @Override
   public void open() {
+    this.fetchQueries();
     this.isOpen = true;
     while (this.isOpen) {
       if (InteractiveInputDevice.class.isInstance(getIn())) {
@@ -123,7 +126,10 @@ public class ProxyShell implements Shell {
       }
       if (cmd.isPresent()) {
         getOut()
-            .writeln(String.format("[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.", cmd.get()));
+            .writeln(
+                String.format(
+                    "[ERROR] Команда '%s' не найдена: введите 'help' для просмотра списка доступных команд.",
+                    cmd.get()));
       }
     }
   }

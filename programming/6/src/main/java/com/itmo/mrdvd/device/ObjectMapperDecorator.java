@@ -14,12 +14,10 @@ import org.apache.hc.core5.http.ContentType;
 
 public class ObjectMapperDecorator implements Serializer, Deserializer {
   private final ObjectMapper mapper;
-  private final Class<?> cls;
   private final ContentType type;
 
-  public ObjectMapperDecorator(ObjectMapper obj, Class<?> cls, ContentType type) {
+  public ObjectMapperDecorator(ObjectMapper obj, ContentType type) {
     this.mapper = obj;
-    this.cls = cls;
     this.type = type;
     mapper.registerModule(new JavaTimeModule());
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -39,9 +37,9 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
   }
 
   @Override
-  public <T> Optional<? super T> deserialize(String str) {
+  public <T> Optional<? super T> deserialize(String str, Class<?> clz) {
     try {
-      return Optional.of(mapper.readValue(str, cls));
+      return Optional.of(mapper.readValue(str, clz));
     } catch (JsonProcessingException e) {
       return Optional.empty();
     }

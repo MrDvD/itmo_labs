@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.executor.commands;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public interface ShellCommand extends Command {
   public Command setShell(Shell shell);
