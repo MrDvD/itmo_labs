@@ -1,7 +1,9 @@
 package com.itmo.mrdvd.executor.commands;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
+
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.shell.Shell;
 
 public class HelpCommand implements ShellCommand {
   private final Shell shell;
@@ -26,11 +28,18 @@ public class HelpCommand implements ShellCommand {
       throw new NullPointerException("Shell не может быть null.");
     }
     for (String cmdName : this.shell.getShellCommandKeys()) {
-      Optional<Command> cmd = this.shell.getCommand(cmdName);
+      Optional<ShellCommand> cmd = this.shell.getCommand(cmdName);
       getShell()
           .get()
           .getOut()
           .write(String.format("%-35s\t%s\n", cmd.get().signature(), cmd.get().description()));
+    }
+    for (String queryName : this.shell.getQueryKeys()) {
+      Optional<Query> q = this.shell.getQuery(queryName);
+      getShell()
+          .get()
+          .getOut()
+          .write(String.format("%-35s\t%s\n", q.get().getSignature(), q.get().getDesc()));
     }
   }
 

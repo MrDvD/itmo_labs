@@ -5,8 +5,8 @@ import java.util.List;
 public abstract class QueryWithParams extends Query {
   private List<String> params;
 
-  public QueryWithParams(String name, List<String> params) {
-    super(name);
+  public QueryWithParams(String name, String signature, String desc, List<String> params) {
+    super(name, signature, desc);
     this.params = params;
   }
 

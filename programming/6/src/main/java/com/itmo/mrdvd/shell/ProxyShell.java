@@ -1,5 +1,11 @@
 package com.itmo.mrdvd.shell;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
@@ -7,11 +13,6 @@ import com.itmo.mrdvd.executor.commands.ShellCommand;
 import com.itmo.mrdvd.executor.queries.FetchAllQuery;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 public class ProxyShell implements Shell {
   protected final ClientProxy proxy;
@@ -54,21 +55,20 @@ public class ProxyShell implements Shell {
     return this.out;
   }
 
-  /** Returns the cached query with the mentioned name. */
+  @Override
+  public void setQuery(Query q) {
+    this.cachedQueries.put(q.getCmd(), q);
+  }
+
   @Override
   public Optional<Query> getQuery(String name) {
     return Optional.ofNullable(this.cachedQueries.get(name));
   }
 
-  /**
-   * Fetches the info about queries from the Proxy server and caches it. Also gets the JavaScript
-   * files for params validation.
-   *
-   * <p>Should be launched either upon Shell start or as independent command.
-   */
   @Override
-  public void fetchQueries() {
+  public void fetchQueries() throws RuntimeException {
     String response = getProxy().send((Query) new FetchAllQuery());
+    
 
     // here i should deserialize the httpresponse
     // but the problem is that i violate encapsulation principle?
@@ -80,7 +80,6 @@ public class ProxyShell implements Shell {
     // get payload and cache queries
   }
 
-  /** Processes the input query or command. Returns the input keyword if it wasn't processed. */
   @Override
   public Optional<String> processLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
@@ -98,15 +97,22 @@ public class ProxyShell implements Shell {
     }
     Optional<Query> q = getQuery(cmdName.get());
     if (q.isPresent()) {
+      System.out.println("WIP: query is found");
       // send the query to the server
       // and process the result.
+      return Optional.empty();
     }
     return cmdName;
   }
 
   @Override
   public void open() {
-    this.fetchQueries();
+    try {
+      this.fetchQueries();
+
+    } catch (RuntimeException e) {
+      getOut().writeln("[ERROR] Не удалось получить перечень запросов, повторите попытку позже.");
+    }
     this.isOpen = true;
     while (this.isOpen) {
       if (InteractiveInputDevice.class.isInstance(getIn())) {

@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.executor;
 
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
@@ -34,7 +35,7 @@ public class DefaultExecutor implements Executor {
 
   @Override
   public void processQuery(Query q) throws RuntimeException {
-    Optional<Command> cmd = getCommand(q.cmd());
+    Optional<Command> cmd = getCommand(q.getCmd());
     if (cmd.isPresent()) {
       cmd.get().execute(); // set inputdevice reading stream from q.params() for params parsing!!!!
     } else {

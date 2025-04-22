@@ -41,13 +41,12 @@ public class HttpProtocol implements TransportProtocol {
   }
 
   @Override
-  public <U> Optional<String> wrapPayload(String url, U obj, ContentType type)
+  public Optional<String> wrapPayload(String url, Object obj, ContentType type)
       throws RuntimeException {
-    Optional<Serializer> serial = getSerializer(obj.getClass());
-    if (serial.isEmpty()) {
+    if (getSerializers().isEmpty() || getSerializers().get(0) == null) {
       throw new RuntimeException("[ERROR] Отсутствует сериализатор для переданного класса.");
     }
-    Optional<String> serialized = serial.get().serialize(obj);
+    Optional<String> serialized = getSerializers().get(0).serialize(obj);
     return serialized.isEmpty() ? Optional.empty() : wrapPayload(url, serialized.get(), type);
   }
 

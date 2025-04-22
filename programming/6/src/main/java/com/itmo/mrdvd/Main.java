@@ -1,14 +1,19 @@
 package com.itmo.mrdvd;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.client.CollectionClientProxy;
-import com.itmo.mrdvd.device.DataConsole;
-import com.itmo.mrdvd.device.ObjectMapperDecorator;
-import com.itmo.mrdvd.proxy.HttpProtocol;
-import com.itmo.mrdvd.shell.ProxyShell;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
 import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
+
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.itmo.mrdvd.client.CollectionClientProxy;
+import com.itmo.mrdvd.device.DataConsole;
+import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.device.ObjectMapperDecorator;
+import com.itmo.mrdvd.proxy.HttpProtocol;
+import com.itmo.mrdvd.shell.CollectionShell;
 
 /*
  * TODO:
@@ -60,7 +65,8 @@ public class Main {
     // CollectionServerProxy proxy = new CollectionServerProxy(null, http);
     CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
     DataConsole console = new DataConsole().init();
-    ProxyShell shell = new ProxyShell(proxy2, console, console);
+    FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
+    CollectionShell shell = new CollectionShell(proxy2, console, console, fd);
     shell.open();
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
     // String who = args.length == 0 ? "World" : args[0];

@@ -1,5 +1,8 @@
 package com.itmo.mrdvd.shell;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
@@ -7,10 +10,9 @@ import com.itmo.mrdvd.executor.commands.ExecuteScriptCommand;
 import com.itmo.mrdvd.executor.commands.ExitCommand;
 import com.itmo.mrdvd.executor.commands.HelpCommand;
 import com.itmo.mrdvd.executor.commands.ShellCommand;
+import com.itmo.mrdvd.executor.queries.FetchAllQuery;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CollectionShell extends ProxyShell {
   public CollectionShell(
@@ -29,5 +31,6 @@ public class CollectionShell extends ProxyShell {
     setCommand(new HelpCommand(this));
     setCommand(new ExitCommand(this));
     setCommand(new ExecuteScriptCommand(fd, this));
+    setQuery(new FetchAllQuery());
   }
 }
