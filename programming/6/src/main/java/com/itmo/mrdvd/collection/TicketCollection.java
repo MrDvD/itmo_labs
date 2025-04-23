@@ -148,19 +148,26 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator)
-      throws IllegalArgumentException {
+  public Optional<Ticket> add(Ticket obj) {
+    return add(obj, null);
+  }
+
+  @Override
+  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator) {
     return add(obj, validator, null, null);
+  }
+
+  @Override
+  public Optional<Ticket> add(Ticket obj, Comparator<Ticket> cond, Set<Integer> values)
+      throws IllegalArgumentException {
+    return add(obj, null, cond, values);
   }
 
   @Override
   public Optional<Ticket> add(
       Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
       throws IllegalArgumentException {
-    if (validator == null) {
-      throw new IllegalArgumentException("Не задан валидатор для объекта.");
-    }
-    if (!validator.validate(obj)) {
+    if (validator != null && !validator.validate(obj)) {
       return Optional.empty();
     }
     Optional<Ticket> result = acquireId(obj);

@@ -79,7 +79,8 @@ public class SuppliedObjectBuilder<T> extends ObjectBuilder<T> implements Suppli
   }
 
   @Override
-  protected ProcessStatus processSetter(int index) throws IllegalStateException {
+  protected ProcessStatus processSetter(int index)
+      throws IllegalStateException, IllegalArgumentException {
     Object attr;
     if (this.methods.get(index) == null) {
       if (this.elements == null) {
@@ -94,15 +95,19 @@ public class SuppliedObjectBuilder<T> extends ObjectBuilder<T> implements Suppli
     } else {
       attr = this.methods.get(index).get();
     }
-    if (validators.get(index) != null && !validators.get(index).test(attr)) {
-      return ProcessStatus.FAILURE;
+    try {
+      if (validators.get(index) != null && !validators.get(index).test(attr)) {
+        return ProcessStatus.FAILURE;
+      }
+      setters.get(index).accept(rawObject, attr);
+    } catch (ClassCastException e) {
+      throw new IllegalArgumentException("Неверный тип переданного элемента.");
     }
-    setters.get(index).accept(rawObject, attr);
     return ProcessStatus.SUCCESS;
   }
 
   @Override
-  public Optional<T> build() {
+  public Optional<T> build() throws IllegalStateException, IllegalArgumentException {
     this.suppliedIndex = 0;
     return super.build();
   }
