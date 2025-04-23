@@ -73,13 +73,13 @@ public class ProxyShell implements Shell {
     String response = getProxy().send((Query) new FetchAllQuery());
     Optional<TransportProtocol> proto = getProxy().getProtocol();
     if (proto.isEmpty() || proto.get().getDeserializers().isEmpty()) {
-      throw new RuntimeException("[ERROR] Нет установленных обработчиков ответа от сервера.");
+      throw new RuntimeException("Нет установленных обработчиков ответа от сервера.");
     }
     CollectionType type =
         TypeFactory.defaultInstance().constructCollectionType(List.class, Query.class);
     Optional<?> rawArr = proto.get().getDeserializers().get(0).deserialize(response, type);
     if (rawArr.isEmpty()) {
-      throw new RuntimeException("[ERROR] Не удалось десериализовать ответ от сервера");
+      throw new RuntimeException("Не удалось десериализовать ответ от сервера");
     }
     List<Query> arr = (List) rawArr.get();
     for (Query q : arr) {

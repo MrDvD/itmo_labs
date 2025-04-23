@@ -1,5 +1,9 @@
 package com.itmo.mrdvd.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.builder.validators.Validator;
+import com.itmo.mrdvd.object.Ticket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,11 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.builder.validators.Validator;
-import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
@@ -122,7 +121,10 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   protected boolean isValidTicketIds(Ticket obj) {
-    return obj.getId() != null && !this.getTicketIdGenerator().isTaken(obj.getId()) && obj.getEvent().getId() != null && !this.getEventIdGenerator().isTaken(obj.getEvent().getId());
+    return obj.getId() != null
+        && !this.getTicketIdGenerator().isTaken(obj.getId())
+        && obj.getEvent().getId() != null
+        && !this.getEventIdGenerator().isTaken(obj.getEvent().getId());
   }
 
   protected Optional<Ticket> acquireId(Ticket obj) {
@@ -146,12 +148,14 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator) throws IllegalArgumentException {
+  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator)
+      throws IllegalArgumentException {
     return add(obj, validator, null, null);
   }
 
   @Override
-  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
+  public Optional<Ticket> add(
+      Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
       throws IllegalArgumentException {
     if (validator == null) {
       throw new IllegalArgumentException("Не задан валидатор для объекта.");
@@ -200,7 +204,11 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
 
   @Override
   public Optional<Ticket> update(
-      Long id, Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
+      Long id,
+      Ticket obj,
+      Validator<Ticket> validator,
+      Comparator<Ticket> cond,
+      Set<Integer> values)
       throws IllegalArgumentException {
     if (validator == null) {
       throw new IllegalArgumentException("Не задан валидатор для объекта.");
@@ -208,8 +216,6 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     if (!validator.validate(obj) || !isValidTicketIds(obj)) {
       return Optional.empty();
     }
-    sadfsadf
-    // проверь этот код
     for (int i = 0; i < tickets.size(); i++) {
       Ticket ticket = tickets.get(i);
       if (ticket.getId().equals(id)) {

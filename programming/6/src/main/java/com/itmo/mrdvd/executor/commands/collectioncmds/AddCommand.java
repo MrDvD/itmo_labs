@@ -8,37 +8,23 @@ import java.util.Optional;
 
 public class AddCommand<T extends HavingId> implements Command {
   protected final CollectionWorker<T, ?> collect;
-  protected final InteractiveBuilder builder;
+  protected final InteractiveBuilder<T, ?> builder;
 
   public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder<T, ?> builder) {
-    this(collection, builder, null);
-  }
-
-  public AddCommand(CollectionWorker<T, ?> collection, InteractiveBuilder builder) {
     this.collect = collection;
-    this.builder = builder.setIn(shell.getIn());
+    this.builder = builder;
   }
 
   @Override
   public void execute() throws RuntimeException {
-    Optional<T> result = collect.add(builder);
-    if (result.isEmpty()) {
-      throw new RuntimeException("[ERROR] Не удалось добавить билет в коллекцию.");
+    Optional<T> obj = this.builder.build();
+    if (obj.isEmpty() || collect.add(obj.get()).isEmpty()) {
+      throw new RuntimeException("Не удалось добавить билет в коллекцию.");
     }
   }
 
   @Override
   public String name() {
     return "add";
-  }
-
-  @Override
-  public String signature() {
-    return name() + " {element}";
-  }
-
-  @Override
-  public String description() {
-    return "добавить новый элемент в коллекцию";
   }
 }
