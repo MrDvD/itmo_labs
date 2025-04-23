@@ -1,5 +1,12 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
@@ -7,11 +14,6 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.proxy.HttpProtocol;
 import com.itmo.mrdvd.shell.CollectionShell;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 /*
  * TODO:
@@ -22,29 +24,26 @@ import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
  *      2. Proxy sends to Shell the Query description (params, validation, etc)
  *      3. Shell validates the Query
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
- * 3. How to do the client-side validation?
+ * 2. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  *
- * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
- *    - maybe it would be better if i use an http server for this
- * 2. Split the app into modules:
+ * 3. Split the app into modules:
  *    - exit in server vs exit in client; save in server
  *      - maybe split it into exit (shell command) & shutdown (server-side command)
  *    - Proxy as interface (ServerProxy, ClientProxy)
  *      - accepts incoming connections (local or shared)
  *      - sends response to the client (two separate but parallel classes)
- *      - process queries and execute commands itself
+ *      - process queries and passes the commands to the executor
  *    - Executor - executes incoming commands
  *      - ServerExecutor vs ClientExecutor which differ only in pack of commands
  *    - Protocol as interface (HttpProtocol)
  *      - parses incoming packets (HTTP or Local stuff - or maybe use unified and no reason to use two protocols - just use different socket on localhost)
  *      - add netcommand which only sends the description of executing command
  *    - ServerResponse - sends response to the client (maybe connect with Protocol which parses the query -> this one will be generating query, and ServerProxy will send generated response)
- * 3. What does mean "неблокирующий режим"?
- * 4. Move builder from collection to shell commands
- *    - also move updater from collection (make two add/update methods : safe and not safe version w or w/o validation)
- * 5. Create somewhat of FinalTicket (which is created once and has all final fields).
+ * 4. What does mean "неблокирующий режим"?
+ * 5. Move updater from collection (make two add/update methods : safe and not safe version w or w/o validation)
+ * 6. Create somewhat of FinalTicket (which is created once and has all final fields).
  *
  * write usedpackages in readme
  */

@@ -1,10 +1,12 @@
 package com.itmo.mrdvd.executor;
 
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.queries.Query;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.commands.CommandWithParams;
+import com.itmo.mrdvd.executor.queries.Query;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
@@ -20,7 +22,7 @@ public class DefaultExecutor implements Executor {
   @Override
   public void setCommand(Command cmd) throws IllegalArgumentException {
     if (cmd == null) {
-      throw new IllegalArgumentException("Command не может быть null.");
+      throw new IllegalArgumentException("Нельзя установить null в качестве команды.");
     }
     this.commands.put(cmd.name(), cmd);
   }
@@ -33,12 +35,15 @@ public class DefaultExecutor implements Executor {
   }
 
   @Override
-  public void processQuery(Query q) throws RuntimeException {
+  public void processQuery(Query q) throws IllegalArgumentException {
     Optional<Command> cmd = getCommand(q.getCmd());
-    if (cmd.isPresent()) {
-      cmd.get().execute(); // set inputdevice reading stream from q.params() for params parsing!!!!
+    if (cmd.isEmpty()) {
+      throw new IllegalArgumentException("Не удалось распознать запрос.");
+    }
+    if (cmd.get() instanceof CommandWithParams cmdWithParams) {
+      cmdWithParams.withParams(q.getParams()).execute();
     } else {
-      // throw here an error
+      cmd.get().execute();
     }
   }
 }
