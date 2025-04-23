@@ -18,4 +18,9 @@ public abstract class QueryWithParams extends Query {
   public List<String> getParams() {
     return this.params;
   }
+
+  @Override
+  public boolean hasParams() {
+    return true;
+  }
 }

@@ -1,15 +1,13 @@
 package com.itmo.mrdvd.client;
 
+import com.itmo.mrdvd.device.Serializer;
+import com.itmo.mrdvd.proxy.ClientProxy;
+import com.itmo.mrdvd.proxy.TransportProtocol;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
-
 import org.apache.hc.core5.http.ContentType;
-
-import com.itmo.mrdvd.device.Serializer;
-import com.itmo.mrdvd.proxy.ClientProxy;
-import com.itmo.mrdvd.proxy.TransportProtocol;
 
 public class CollectionClientProxy implements ClientProxy {
   protected final SocketChannel socket;

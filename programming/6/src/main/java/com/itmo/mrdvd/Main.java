@@ -1,12 +1,5 @@
 package com.itmo.mrdvd;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
@@ -14,14 +7,16 @@ import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.proxy.HttpProtocol;
 import com.itmo.mrdvd.shell.CollectionShell;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 /*
  * TODO:
  * 1. Remove "commands" from shells --> executors
- *    - instead, add queries
- *    - list of queries shouldn't be hard-coded: it should automatically generate from current executor's commands
- *    - add command to terminal which loads available queries in the beginning
- *    - input queries should be validated in terminal
+ *    - input queries should be validated in terminal (and on server, ofc)
  *    - #### SCHEME:
  *      1. Shell sends to Proxy AskingQuery if it has the command with the following name.
  *      2. Proxy sends to Shell the Query description (params, validation, etc)
@@ -29,6 +24,7 @@ import com.itmo.mrdvd.shell.CollectionShell;
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
  * 3. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
+ *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  *
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this

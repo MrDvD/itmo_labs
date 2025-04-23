@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.commands;
+package com.itmo.mrdvd.executor.commands.shellcmds;
 
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;

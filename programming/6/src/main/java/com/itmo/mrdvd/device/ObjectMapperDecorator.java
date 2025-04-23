@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -40,6 +41,15 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
   public <T> Optional<? super T> deserialize(String str, Class<?> clz) {
     try {
       return Optional.of(mapper.readValue(str, clz));
+    } catch (JsonProcessingException e) {
+      return Optional.empty();
+    }
+  }
+
+  @Override
+  public <T> Optional<? super T> deserialize(String str, JavaType type) {
+    try {
+      return Optional.of(mapper.readValue(str, type));
     } catch (JsonProcessingException e) {
       return Optional.empty();
     }

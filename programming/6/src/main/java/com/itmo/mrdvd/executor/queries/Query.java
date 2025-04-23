@@ -37,4 +37,8 @@ public abstract class Query {
   public String getDesc() {
     return this.description;
   }
+
+  public boolean hasParams() {
+    return false;
+  }
 }

@@ -56,6 +56,11 @@ public class CollectionServerProxy implements ServerProxy {
   }
 
   @Override
+  public Optional<TransportProtocol> getProtocol() {
+    return Optional.ofNullable(this.protocol);
+  }
+
+  @Override
   public void addListener(ServerSocketChannel sock) throws IOException {
     sock.configureBlocking(false);
     this.sockets.put(sock.register(selector, SelectionKey.OP_ACCEPT), sock);

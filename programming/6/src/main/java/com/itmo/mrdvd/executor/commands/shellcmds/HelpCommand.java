@@ -1,9 +1,8 @@
-package com.itmo.mrdvd.executor.commands;
-
-import java.util.Optional;
+package com.itmo.mrdvd.executor.commands.shellcmds;
 
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.shell.Shell;
+import java.util.Optional;
 
 public class HelpCommand implements ShellCommand {
   private final Shell shell;

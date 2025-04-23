@@ -1,18 +1,21 @@
 package com.itmo.mrdvd.shell;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
+import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.commands.ShellCommand;
+import com.itmo.mrdvd.executor.commands.shellcmds.ShellCommand;
 import com.itmo.mrdvd.executor.queries.FetchAllQuery;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
+import com.itmo.mrdvd.proxy.TransportProtocol;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 public class ProxyShell implements Shell {
   protected final ClientProxy proxy;
@@ -68,8 +71,20 @@ public class ProxyShell implements Shell {
   @Override
   public void fetchQueries() throws RuntimeException {
     String response = getProxy().send((Query) new FetchAllQuery());
-    
-
+    Optional<TransportProtocol> proto = getProxy().getProtocol();
+    if (proto.isEmpty() || proto.get().getDeserializers().isEmpty()) {
+      throw new RuntimeException("[ERROR] Нет установленных обработчиков ответа от сервера.");
+    }
+    CollectionType type =
+        TypeFactory.defaultInstance().constructCollectionType(List.class, Query.class);
+    Optional<?> rawArr = proto.get().getDeserializers().get(0).deserialize(response, type);
+    if (rawArr.isEmpty()) {
+      throw new RuntimeException("[ERROR] Не удалось десериализовать ответ от сервера");
+    }
+    List<Query> arr = (List) rawArr.get();
+    for (Query q : arr) {
+      this.setQuery(q);
+    }
     // here i should deserialize the httpresponse
     // but the problem is that i violate encapsulation principle?
     // maybe do the deserialization logic inside proxy and return some generic value?
