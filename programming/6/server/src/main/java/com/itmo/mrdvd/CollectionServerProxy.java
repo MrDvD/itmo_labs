@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.server;
+package com.itmo.mrdvd;
 
 import com.itmo.mrdvd.proxy.ServerProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;

@@ -4,17 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>6-parent</artifactId>
+  <artifactId>6-server</artifactId>
   <version>1.0</version>
-  <packaging>pom</packaging>
 
-  <name>Lab 6 - Parent</name>
-
-  <modules>
-    <module>api</module>
-    <module>client</module>
-    <module>server</module>
-  </modules>
+  <name>Lab 6 - Server</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,6 +25,14 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.itmo.mrdvd</groupId>
+      <artifactId>6-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>

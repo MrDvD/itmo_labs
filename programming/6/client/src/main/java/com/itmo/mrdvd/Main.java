@@ -1,17 +1,18 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
+import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
 import com.itmo.mrdvd.proxy.HttpProtocol;
 import com.itmo.mrdvd.shell.CollectionShell;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 /*
  * TODO:
@@ -51,18 +52,16 @@ import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 public class Main {
   public static void main(String[] args) {
-    // ServerExecutor executor = new ServerExecutor();
     HttpProtocol http =
         new HttpProtocol(new DefaultHttpRequestParser(), new DefaultClassicHttpRequestFactory());
     // how about querywithparams? will it be serialized/deserialized?
     ObjectMapperDecorator mapper =
         new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
     http.addSerializationPair(mapper, mapper);
-    // CollectionServerProxy proxy = new CollectionServerProxy(null, http);
-    CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
+    CollectionClientProxy proxy = new CollectionClientProxy(null, http);
     DataConsole console = new DataConsole().init();
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    CollectionShell shell = new CollectionShell(proxy2, console, console, fd);
+    CollectionShell shell = new CollectionShell(proxy, console, console, fd);
     shell.open();
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
     // String who = args.length == 0 ? "World" : args[0];
