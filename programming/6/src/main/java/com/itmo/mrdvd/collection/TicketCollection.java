@@ -1,11 +1,5 @@
 package com.itmo.mrdvd.collection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.builder.builders.Builder;
-import com.itmo.mrdvd.builder.updaters.Updater;
-import com.itmo.mrdvd.builder.validators.Validator;
-import com.itmo.mrdvd.object.Ticket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -15,6 +9,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.builder.validators.Validator;
+import com.itmo.mrdvd.object.Ticket;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
@@ -122,7 +121,16 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     this.eventGenerator = eventGen;
   }
 
+  protected boolean isValidTicketIds(Ticket obj) {
+    return obj.getId() != null && !this.getTicketIdGenerator().isTaken(obj.getId()) && obj.getEvent().getId() != null && !this.getEventIdGenerator().isTaken(obj.getEvent().getId());
+  }
+
   protected Optional<Ticket> acquireId(Ticket obj) {
+    if (isValidTicketIds(obj)) {
+      getTicketIdGenerator().takeId(obj.getId());
+      getEventIdGenerator().takeId(obj.getEvent().getId());
+      return Optional.of(obj);
+    }
     Optional<Long> ticketId = getTicketIdGenerator().getId(obj);
     if (ticketId.isEmpty()) {
       return Optional.empty();
@@ -138,28 +146,27 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> add(Builder<Ticket> obj) throws IllegalArgumentException {
-    return add(obj, null, null);
+  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator) throws IllegalArgumentException {
+    return add(obj, validator, null, null);
   }
 
   @Override
-  public Optional<Ticket> add(Builder<Ticket> obj, Comparator<Ticket> cond, Set<Integer> values)
+  public Optional<Ticket> add(Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
       throws IllegalArgumentException {
-    if (obj == null) {
-      throw new IllegalArgumentException("Builder не может быть null.");
+    if (validator == null) {
+      throw new IllegalArgumentException("Не задан валидатор для объекта.");
     }
-    Optional<Ticket> ticket = obj.build();
-    if (ticket.isEmpty()) {
+    if (!validator.validate(obj)) {
       return Optional.empty();
     }
-    Optional<Ticket> result = acquireId(ticket.get());
+    Optional<Ticket> result = acquireId(obj);
     if (result.isEmpty()) {
       return Optional.empty();
     }
     Ticket ticketWithId = result.get();
     if (cond != null) {
       if (values == null) {
-        throw new IllegalArgumentException("Набор значений для сравнения не может быть null.");
+        throw new IllegalArgumentException("Не задан набор значений для сравнения.");
       }
       for (Ticket t : tickets) {
         if (!values.contains(cond.compare(ticketWithId, t))) {
@@ -168,23 +175,6 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
       }
     }
     tickets.add(ticketWithId);
-    return result;
-  }
-
-  @Override
-  public Optional<Ticket> add(Ticket rawObject, Validator<Ticket> validator)
-      throws IllegalArgumentException {
-    if (rawObject == null) {
-      throw new IllegalArgumentException("Объект не может быть null.");
-    }
-    if (validator != null && !validator.validate(rawObject)) {
-      return Optional.empty();
-    }
-    Optional<Ticket> result = acquireId(rawObject);
-    if (result.isEmpty()) {
-      return Optional.empty();
-    }
-    tickets.add(result.get());
     return result;
   }
 
@@ -204,28 +194,33 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
-  public Optional<Ticket> update(Long id, Updater<Ticket> updater) {
-    return update(id, updater, null, null);
+  public Optional<Ticket> update(Long id, Ticket obj, Validator<Ticket> validator) {
+    return update(id, obj, validator, null, null);
   }
 
   @Override
   public Optional<Ticket> update(
-      Long id, Updater<Ticket> updater, Comparator<Ticket> cond, Set<Integer> values)
+      Long id, Ticket obj, Validator<Ticket> validator, Comparator<Ticket> cond, Set<Integer> values)
       throws IllegalArgumentException {
+    if (validator == null) {
+      throw new IllegalArgumentException("Не задан валидатор для объекта.");
+    }
+    if (!validator.validate(obj) || !isValidTicketIds(obj)) {
+      return Optional.empty();
+    }
+    sadfsadf
+    // проверь этот код
     for (int i = 0; i < tickets.size(); i++) {
       Ticket ticket = tickets.get(i);
       if (ticket.getId().equals(id)) {
-        Optional<Ticket> obj = updater.update(ticket);
-        if (obj.isPresent()) {
-          if (cond != null && values == null) {
-            throw new IllegalArgumentException("Набор значений для сравнения не может быть null.");
-          }
-          if (cond == null || values.contains(cond.compare(obj.get(), ticket))) {
-            tickets.set(i, obj.get());
-            return obj;
-          }
-          return Optional.empty();
+        if (cond != null && values == null) {
+          throw new IllegalArgumentException("Не задан набор значений для сравнения.");
         }
+        if (cond == null || values.contains(cond.compare(obj, ticket))) {
+          tickets.set(i, obj);
+          return Optional.of(obj);
+        }
+        return Optional.empty();
       }
     }
     return Optional.empty();
