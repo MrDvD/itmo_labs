@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.client;
+package com.itmo.mrdvd;
 
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.proxy.ClientProxy;

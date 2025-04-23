@@ -4,17 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>6-parent</artifactId>
+  <artifactId>6-api</artifactId>
   <version>1.0</version>
-  <packaging>pom</packaging>
 
-  <name>Lab 6 - Parent</name>
-
-  <modules>
-    <module>api</module>
-    <module>client</module>
-    <module>server</module>
-  </modules>
+  <name>Lab 6 - Api</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,6 +25,40 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.17.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-xml</artifactId>
+      <version>2.11.1</version>
+   </dependency>
+   <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.6.0</version>
+   </dependency>
+   <dependency>
+      <groupId>org.apache.httpcomponents.core5</groupId>
+      <artifactId>httpcore5-h2</artifactId>
+      <version>5.3.4</version>
+   </dependency>
+   <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>polyglot</artifactId>
+      <version>24.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.graalvm.polyglot</groupId>
+      <artifactId>js</artifactId>
+      <version>24.2.0</version>
+      <type>pom</type>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>

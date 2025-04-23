@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.server;
+package com.itmo.mrdvd;
 
 import java.util.HashMap;
 import java.util.Map;

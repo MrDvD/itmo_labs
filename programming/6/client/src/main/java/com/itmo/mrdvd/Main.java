@@ -8,7 +8,6 @@ import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
 import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.client.CollectionClientProxy;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.device.ObjectMapperDecorator;
@@ -24,44 +23,45 @@ import com.itmo.mrdvd.shell.CollectionShell;
  *      2. Proxy sends to Shell the Query description (params, validation, etc)
  *      3. Shell validates the Query
  *      4. If everything is OK, Shell sends the CommandQuery to Proxy
- * 2. How to do the client-side validation?
+ * 3. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  *
- * 3. Split the app into modules:
+ * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
+ *    - maybe it would be better if i use an http server for this
+ * 2. Split the app into modules:
  *    - exit in server vs exit in client; save in server
  *      - maybe split it into exit (shell command) & shutdown (server-side command)
  *    - Proxy as interface (ServerProxy, ClientProxy)
  *      - accepts incoming connections (local or shared)
  *      - sends response to the client (two separate but parallel classes)
- *      - process queries and passes the commands to the executor
+ *      - process queries and execute commands itself
  *    - Executor - executes incoming commands
  *      - ServerExecutor vs ClientExecutor which differ only in pack of commands
  *    - Protocol as interface (HttpProtocol)
  *      - parses incoming packets (HTTP or Local stuff - or maybe use unified and no reason to use two protocols - just use different socket on localhost)
  *      - add netcommand which only sends the description of executing command
  *    - ServerResponse - sends response to the client (maybe connect with Protocol which parses the query -> this one will be generating query, and ServerProxy will send generated response)
- * 4. What does mean "неблокирующий режим"?
- * 5. Move updater from collection (make two add/update methods : safe and not safe version w or w/o validation)
- * 6. Create somewhat of FinalTicket (which is created once and has all final fields).
+ * 3. What does mean "неблокирующий режим"?
+ * 4. Move builder from collection to shell commands
+ *    - also move updater from collection (make two add/update methods : safe and not safe version w or w/o validation)
+ * 5. Create somewhat of FinalTicket (which is created once and has all final fields).
  *
  * write usedpackages in readme
  */
 
 public class Main {
   public static void main(String[] args) {
-    // ServerExecutor executor = new ServerExecutor();
     HttpProtocol http =
         new HttpProtocol(new DefaultHttpRequestParser(), new DefaultClassicHttpRequestFactory());
     // how about querywithparams? will it be serialized/deserialized?
     ObjectMapperDecorator mapper =
         new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
     http.addSerializationPair(mapper, mapper);
-    // CollectionServerProxy proxy = new CollectionServerProxy(null, http);
-    CollectionClientProxy proxy2 = new CollectionClientProxy(null, http);
+    CollectionClientProxy proxy = new CollectionClientProxy(null, http);
     DataConsole console = new DataConsole().init();
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    CollectionShell shell = new CollectionShell(proxy2, console, console, fd);
+    CollectionShell shell = new CollectionShell(proxy, console, console, fd);
     shell.open();
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
     // String who = args.length == 0 ? "World" : args[0];
