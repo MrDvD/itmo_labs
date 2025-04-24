@@ -1,10 +1,10 @@
-package com.itmo.mrdvd.executor.commands.shellcmds;
+package com.itmo.mrdvd.executor.commands.shell;
 
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class HelpCommand implements ShellCommand {
+public class HelpCommand implements ShellCommand, UserCommand {
   private final Shell shell;
 
   public HelpCommand(Shell shell) {
@@ -22,16 +22,18 @@ public class HelpCommand implements ShellCommand {
   }
 
   @Override
-  public void execute() throws NullPointerException {
+  public void execute() throws IllegalStateException {
     if (getShell().isEmpty()) {
-      throw new NullPointerException("Shell не может быть null.");
+      throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
     for (String cmdName : this.shell.getShellCommandKeys()) {
       Optional<ShellCommand> cmd = this.shell.getCommand(cmdName);
-      getShell()
-          .get()
-          .getOut()
-          .write(String.format("%-35s\t%s\n", cmd.get().signature(), cmd.get().description()));
+      if (cmd.get() instanceof UserCommand userCmd) {
+        getShell()
+            .get()
+            .getOut()
+            .write(String.format("%-35s\t%s\n", userCmd.signature(), userCmd.description()));
+      }
     }
     for (String queryName : this.shell.getQueryKeys()) {
       Optional<Query> q = this.shell.getQuery(queryName);

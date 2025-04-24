@@ -2,9 +2,8 @@ package com.itmo.mrdvd.shell;
 
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.executor.commands.shellcmds.ShellCommand;
+import com.itmo.mrdvd.executor.commands.shell.ShellCommand;
 import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.ClientProxy;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
@@ -13,16 +12,6 @@ public interface Shell {
   public DataInputDevice getIn();
 
   public OutputDevice getOut();
-
-  public ClientProxy getProxy();
-
-  /**
-   * Fetches the info about queries from the Proxy server and caches it. Also gets the JavaScript
-   * files for params validation.
-   *
-   * <p>Should be launched either upon Shell start or as independent command.
-   */
-  public void fetchQueries() throws RuntimeException;
 
   /** Sets / updates the cached query manually. */
   public void setQuery(Query q);

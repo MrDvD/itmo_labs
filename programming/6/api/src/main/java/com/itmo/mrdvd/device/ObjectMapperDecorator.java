@@ -38,7 +38,7 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
   }
 
   @Override
-  public <T> Optional<? super T> deserialize(String str, Class<?> clz) {
+  public <T> Optional<? extends T> deserialize(String str, Class<T> clz) {
     try {
       return Optional.of(mapper.readValue(str, clz));
     } catch (JsonProcessingException e) {
@@ -47,7 +47,7 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
   }
 
   @Override
-  public <T> Optional<? super T> deserialize(String str, JavaType type) {
+  public <T> Optional<? extends T> deserialize(String str, JavaType type) {
     try {
       return Optional.of(mapper.readValue(str, type));
     } catch (JsonProcessingException e) {

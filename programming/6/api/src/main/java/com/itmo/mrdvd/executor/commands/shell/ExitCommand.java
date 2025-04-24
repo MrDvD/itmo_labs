@@ -1,9 +1,9 @@
-package com.itmo.mrdvd.executor.commands.shellcmds;
+package com.itmo.mrdvd.executor.commands.shell;
 
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class ExitCommand implements ShellCommand {
+public class ExitCommand implements ShellCommand, UserCommand {
   private final Shell shell;
 
   public ExitCommand(Shell shell) {
@@ -11,9 +11,9 @@ public class ExitCommand implements ShellCommand {
   }
 
   @Override
-  public void execute() throws NullPointerException {
+  public void execute() throws IllegalStateException {
     if (getShell().isEmpty()) {
-      throw new NullPointerException("Shell не может быть null.");
+      throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
     getShell().get().close();
   }

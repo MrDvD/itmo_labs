@@ -1,5 +1,7 @@
 package com.itmo.mrdvd;
 
+import java.net.InetSocketAddress;
+import java.nio.channels.SocketChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
@@ -26,6 +28,8 @@ import com.itmo.mrdvd.shell.CollectionShell;
  * 3. How to do the client-side validation?
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
+ * 4. Add [ERROR] prefix of exceptions on Shell level
+ * 5. Add "connect" UserCommand on client
  *
  * 1. Create a separate class which is considered a Packet which traverses the net and supplies info about command (type, payload)
  *    - maybe it would be better if i use an http server for this
@@ -58,10 +62,14 @@ public class Main {
     ObjectMapperDecorator mapper =
         new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
     http.addSerializationPair(mapper, mapper);
+    // SocketChannel socket = SocketChannel.open();
+    // socket.connect(new InetSocketAddress("localhost", 8080));
+    // add shellcommand connect & reconnect
     CollectionClientProxy proxy = new CollectionClientProxy(null, http);
+    ClientExecutor exec = new ClientExecutor();
     DataConsole console = new DataConsole().init();
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    CollectionShell shell = new CollectionShell(proxy, console, console, fd);
+    CollectionShell shell = new CollectionShell(exec, proxy, console, console, fd);
     shell.open();
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
     // String who = args.length == 0 ? "World" : args[0];

@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.commands.collectioncmds;
+package com.itmo.mrdvd.executor.commands.collection;
 
 import com.itmo.mrdvd.builder.builders.SuppliedBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;

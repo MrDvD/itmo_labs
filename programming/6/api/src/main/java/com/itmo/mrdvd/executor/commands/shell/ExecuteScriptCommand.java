@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.commands.shellcmds;
+package com.itmo.mrdvd.executor.commands.shell;
 
 import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-public class ExecuteScriptCommand implements ShellCommand {
+public class ExecuteScriptCommand implements ShellCommand, UserCommand {
   private final Shell shell;
   private final DataFileDescriptor fd;
   private final Set<Path> usedPaths;
@@ -39,7 +39,7 @@ public class ExecuteScriptCommand implements ShellCommand {
   @Override
   public void execute() {
     if (getShell().isEmpty()) {
-      throw new NullPointerException("Shell не может быть null.");
+      throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
     Optional<String> params = Optional.empty();
     try {

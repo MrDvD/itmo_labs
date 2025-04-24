@@ -1,12 +1,13 @@
 package com.itmo.mrdvd.executor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.queries.Query;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class DefaultExecutor implements Executor {
   protected final Map<String, Command> commands;
@@ -30,18 +31,23 @@ public class DefaultExecutor implements Executor {
   @Override
   public Optional<Command> getCommand(String name) {
     return this.commands.containsKey(name)
-        ? Optional.empty()
-        : Optional.of(this.commands.get(name));
+        ? Optional.of(this.commands.get(name))
+        : Optional.empty();
   }
 
   @Override
-  public void processQuery(Query q) throws IllegalArgumentException {
+  public void processQuery(Query q, List<?> prefixParams) throws IllegalArgumentException {
     Optional<Command> cmd = getCommand(q.getCmd());
     if (cmd.isEmpty()) {
       throw new IllegalArgumentException("Не удалось распознать запрос.");
     }
     if (cmd.get() instanceof CommandWithParams cmdWithParams) {
-      cmdWithParams.withParams(q.getParams()).execute();
+      List<?> resultParams = List.of();
+      if (prefixParams != null) {
+        resultParams = prefixParams;
+      }
+      resultParams = Stream.concat(resultParams.stream(), q.getParams().stream()).toList();
+      cmdWithParams.withParams(resultParams).execute();
     } else {
       cmd.get().execute();
     }

@@ -8,7 +8,7 @@ import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.executor.DefaultExecutor;
 import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.commands.collectioncmds.AddCommand;
+import com.itmo.mrdvd.executor.commands.collection.AddCommand;
 
 public class ServerExecutor extends DefaultExecutor {
   public <U extends HavingId> ServerExecutor(Collection<U, ?> collect, SuppliedBuilder<U> builder) {
