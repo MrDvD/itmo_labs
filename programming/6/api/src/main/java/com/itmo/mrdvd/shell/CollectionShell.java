@@ -4,6 +4,7 @@ import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.executor.Executor;
+import com.itmo.mrdvd.executor.commands.shell.ConnectCommand;
 import com.itmo.mrdvd.executor.commands.shell.ExecuteScriptCommand;
 import com.itmo.mrdvd.executor.commands.shell.ExitCommand;
 import com.itmo.mrdvd.executor.commands.shell.HelpCommand;
@@ -38,6 +39,7 @@ public class CollectionShell extends ProxyShell {
     setCommand(new ExitCommand(this));
     setCommand(new ExecuteScriptCommand(fd, this));
     setCommand(new ProcessQueryCommand(this, proxy, exec));
+    setCommand(new ConnectCommand(this, proxy));
     setQuery(new FetchAllQuery());
   }
 }

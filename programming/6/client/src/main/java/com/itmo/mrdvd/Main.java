@@ -62,10 +62,8 @@ public class Main {
     ObjectMapperDecorator mapper =
         new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
     http.addSerializationPair(mapper, mapper);
-    // SocketChannel socket = SocketChannel.open();
-    // socket.connect(new InetSocketAddress("localhost", 8080));
-    // add shellcommand connect & reconnect
-    CollectionClientProxy proxy = new CollectionClientProxy(null, http);
+    // add shellcommand reconnect
+    CollectionClientProxy proxy = new CollectionClientProxy(http);
     ClientExecutor exec = new ClientExecutor();
     DataConsole console = new DataConsole().init();
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());

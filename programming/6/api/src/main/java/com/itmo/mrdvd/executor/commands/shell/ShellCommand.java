@@ -9,7 +9,7 @@ public interface ShellCommand extends Command {
 
   public Optional<Shell> getShell();
 
-  public default boolean hasParams() {
+  public default boolean hasArgs() {
     return false;
   }
 }

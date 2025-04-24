@@ -69,10 +69,14 @@ public class ProxyShell implements Shell {
     }
     Optional<ShellCommand> c = getCommand(cmdName.get());
     if (c.isPresent()) {
-      if (!c.get().hasParams()) {
+      if (!c.get().hasArgs()) {
         getIn().skipLine();
       }
-      c.get().execute();
+      try {
+        c.get().execute();
+      } catch (RuntimeException e) {
+        this.getOut().writeln(e.getMessage());
+      }
       return Optional.empty();
     }
     Optional<Query> q = getQuery(cmdName.get());

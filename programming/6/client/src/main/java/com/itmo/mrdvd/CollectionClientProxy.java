@@ -3,18 +3,20 @@ package com.itmo.mrdvd;
 import com.itmo.mrdvd.device.Serializer;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;
+
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
+
 import org.apache.hc.core5.http.ContentType;
 
 public class CollectionClientProxy implements ClientProxy {
-  protected final SocketChannel socket;
+  protected SocketChannel socket;
   protected TransportProtocol protocol;
 
-  public CollectionClientProxy(SocketChannel socket, TransportProtocol proto) {
-    this.socket = socket;
+  public CollectionClientProxy(TransportProtocol proto) {
     this.protocol = proto;
   }
 
@@ -31,10 +33,19 @@ public class CollectionClientProxy implements ClientProxy {
   }
 
   @Override
-  public String send(String payload, ContentType content) throws RuntimeException {
+  public void connect(SocketAddress addr) throws RuntimeException, IOException {
+    if (this.socket != null) {
+      this.socket.close();
+    }
+    this.socket = SocketChannel.open();
+    this.socket.connect(addr);
+  }
+
+  @Override
+  public String send(String payload, ContentType content) throws IllegalStateException, RuntimeException {
     try {
       if (this.socket == null) {
-        throw new RuntimeException("[ERROR] Передан null-сокет.");
+        throw new IllegalStateException("Подключение к серверу не установлено.");
       }
       Optional<String> request =
           this.protocol.wrapPayload(this.socket.getRemoteAddress().toString(), payload, content);
@@ -55,12 +66,10 @@ public class CollectionClientProxy implements ClientProxy {
 
   @Override
   public String send(Object payload) throws RuntimeException {
-    Serializer serial;
-    try {
-      serial = this.protocol.getSerializers().get(0);
-    } catch (IndexOutOfBoundsException e) {
-      throw new RuntimeException("[ERROR] Отсутствует какой-либо сериализатор.");
+    if (this.protocol.getSerializers().isEmpty()) {
+      throw new IllegalStateException("Отсутствует сериализатор для формирования запроса.");
     }
+    Serializer serial = this.protocol.getSerializers().get(0);
     Optional<String> result = serial.serialize(payload);
     if (result.isEmpty()) {
       throw new RuntimeException("[ERROR] Не удалось сериализовать переданный объект.");

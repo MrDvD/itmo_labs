@@ -97,7 +97,7 @@ public class ExecuteScriptCommand implements ShellCommand, UserCommand {
   }
 
   @Override
-  public boolean hasParams() {
+  public boolean hasArgs() {
     return true;
   }
 }
