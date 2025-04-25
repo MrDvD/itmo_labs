@@ -40,6 +40,6 @@ public class ExitCommand implements ShellCommand, UserCommand {
 
   @Override
   public String description() {
-    return "завершить программу (без сохранения в файл)";
+    return "завершить интерпретатор (без сохранения состояния)";
   }
 }

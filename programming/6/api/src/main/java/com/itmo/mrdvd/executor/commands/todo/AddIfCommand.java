@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.commands;
+package com.itmo.mrdvd.executor.commands.todo;
 
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;

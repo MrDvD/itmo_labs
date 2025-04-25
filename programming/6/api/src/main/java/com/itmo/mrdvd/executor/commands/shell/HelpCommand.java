@@ -56,6 +56,6 @@ public class HelpCommand implements ShellCommand, UserCommand {
 
   @Override
   public String description() {
-    return "вывести справку по доступным командам";
+    return "вывести справку по доступным командам и запросам";
   }
 }
