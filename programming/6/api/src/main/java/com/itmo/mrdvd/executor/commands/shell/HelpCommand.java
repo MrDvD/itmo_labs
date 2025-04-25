@@ -4,7 +4,7 @@ import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class HelpCommand implements ShellCommand, UserCommand {
+public class HelpCommand implements UserCommand {
   private final Shell shell;
 
   public HelpCommand(Shell shell) {
@@ -22,7 +22,7 @@ public class HelpCommand implements ShellCommand, UserCommand {
   }
 
   @Override
-  public void execute() throws IllegalStateException {
+  public Void execute() throws IllegalStateException {
     if (getShell().isEmpty()) {
       throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
@@ -42,6 +42,7 @@ public class HelpCommand implements ShellCommand, UserCommand {
           .getOut()
           .write(String.format("%-35s\t%s\n", q.get().getSignature(), q.get().getDesc()));
     }
+    return null;
   }
 
   @Override

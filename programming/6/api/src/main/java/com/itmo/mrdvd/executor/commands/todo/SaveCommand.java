@@ -1,10 +1,11 @@
-package com.itmo.mrdvd.executor.commands;
+package com.itmo.mrdvd.executor.commands.todo;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
+import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.shell.ProxyShell;
 import java.util.Optional;
 

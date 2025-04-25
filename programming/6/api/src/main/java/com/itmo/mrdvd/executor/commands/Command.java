@@ -1,9 +1,9 @@
 package com.itmo.mrdvd.executor.commands;
 
-public interface Command {
+public interface Command<T> {
   /** Returns the name of the command. */
   public String name();
 
   /** Executes the command. */
-  public void execute() throws NullPointerException;
+  public T execute() throws NullPointerException;
 }

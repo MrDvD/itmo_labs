@@ -1,5 +1,12 @@
 package com.itmo.mrdvd.shell;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
@@ -7,12 +14,6 @@ import com.itmo.mrdvd.executor.Executor;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.commands.shell.ShellCommand;
 import com.itmo.mrdvd.executor.queries.Query;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
 public class ProxyShell implements Shell {
   protected final Executor exec;

@@ -1,16 +1,17 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.executor.Executor;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;
 import com.itmo.mrdvd.shell.Shell;
-import java.util.List;
-import java.util.Optional;
 
 /** Sends the query to a server and passes the response to the executor. */
-public class ProcessQueryCommand implements ShellCommand, CommandWithParams {
+public class ProcessQueryCommand implements ShellCommand, CommandWithParams<Void> {
   protected final ClientProxy proxy;
   protected final Executor exec;
   protected final Shell shell;
@@ -39,7 +40,7 @@ public class ProcessQueryCommand implements ShellCommand, CommandWithParams {
   }
 
   @Override
-  public void execute() throws IllegalStateException, RuntimeException {
+  public Void execute() throws IllegalStateException, RuntimeException {
     if (this.proxy == null) {
       throw new IllegalStateException("Не предоставлен клиентский прокси для обработки запроса.");
     }
@@ -62,6 +63,7 @@ public class ProcessQueryCommand implements ShellCommand, CommandWithParams {
         throw new RuntimeException("Невозможно обработать ответ сервера.");
       }
     }
+    return null;
   }
 
   @Override

@@ -30,7 +30,7 @@ public class Main {
     SuppliedTicketBuilder ticketBuild = new SuppliedTicketBuilder(new SuppliedEventBuilder(), new SuppliedCoordinatesBuilder());
     ServerExecutor executor = new ServerExecutor(collect, ticketBuild);
     // подумать над возвращением результата, потому что сейчас его нет
-    CollectionServerProxy proxy = new CollectionServerProxy(Selector.open(), http, (Query q) -> { executor.processQuery(q, List.of()); return null; });
+    CollectionServerProxy proxy = new CollectionServerProxy(Selector.open(), http, (Query q) -> { return executor.processQuery(q, List.of()); });
     ServerSocketChannel socket = ServerSocketChannel.open();
     socket.bind(new InetSocketAddress("localhost", 8080));
     socket.configureBlocking(false);

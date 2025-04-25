@@ -29,6 +29,7 @@ import com.itmo.mrdvd.shell.CollectionShell;
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  * 4. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
+ * 5. Write return values for commands in execute() and check if it returns any with instanceof keyword inside executor Command<T> for T execute() (and result instanceof Void commands)
  *
  * 0. Split the app into modules (PLANNED & may be not relevant)
  *    - exit in server vs exit in client; save in server

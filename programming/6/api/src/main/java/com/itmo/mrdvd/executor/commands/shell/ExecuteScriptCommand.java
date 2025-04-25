@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
-public class ExecuteScriptCommand implements ShellCommand, UserCommand {
+public class ExecuteScriptCommand implements UserCommand {
   private final Shell shell;
   private final DataFileDescriptor fd;
   private final Set<Path> usedPaths;
@@ -37,7 +37,7 @@ public class ExecuteScriptCommand implements ShellCommand, UserCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     if (getShell().isEmpty()) {
       throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
@@ -52,18 +52,18 @@ public class ExecuteScriptCommand implements ShellCommand, UserCommand {
       file.setPath(params.get());
     } catch (InvalidPathException | NoSuchElementException e) {
       getShell().get().getOut().writeln("[ERROR] Неправильный формат ввода параметров команды.");
-      return;
+      return null;
     }
 
     IOStatus code = file.openIn();
     if (code.equals(IOStatus.FAILURE)) {
       getShell().get().getOut().writeln("[ERROR] Не удалось обратиться к файлу со скриптом.");
-      return;
+      return null;
     }
     Optional<Path> path = file.getPath();
     if (path.isEmpty()) {
       getShell().get().getOut().writeln("[ERROR] Неверный адрес к файлу со скриптом.");
-      return;
+      return null;
     }
     if (usedPaths.contains(path.get())) {
       getShell()
@@ -73,12 +73,13 @@ public class ExecuteScriptCommand implements ShellCommand, UserCommand {
               String.format(
                   "[WARN] Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".",
                   path.get().getFileName().toString()));
-      return;
+      return null;
     }
     usedPaths.add(path.get());
     file.openIn();
     getShell().get().forkSubshell(file, getShell().get().getOut()).open();
     usedPaths.remove(path.get());
+    return null;
   }
 
   @Override

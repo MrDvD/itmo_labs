@@ -7,7 +7,7 @@ import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 
-public class ConnectCommand implements ShellCommand, UserCommand {
+public class ConnectCommand implements UserCommand {
   protected final Shell shell;
   protected final ClientProxy proxy;
   protected List<?> params;
@@ -28,7 +28,7 @@ public class ConnectCommand implements ShellCommand, UserCommand {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     if (this.proxy == null) {
       throw new IllegalStateException("Не предоставлен прокси для работы.");
     }
@@ -55,6 +55,7 @@ public class ConnectCommand implements ShellCommand, UserCommand {
       throw new RuntimeException("Не удалось подключиться к серверу.");
     }
     getShell().get().getOut().writeln("Успешное подключение к серверу.");
+    return null;
   }
 
   @Override

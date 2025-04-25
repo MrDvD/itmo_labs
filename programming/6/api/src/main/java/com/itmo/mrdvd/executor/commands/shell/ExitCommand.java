@@ -3,7 +3,7 @@ package com.itmo.mrdvd.executor.commands.shell;
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class ExitCommand implements ShellCommand, UserCommand {
+public class ExitCommand implements UserCommand {
   private final Shell shell;
 
   public ExitCommand(Shell shell) {
@@ -11,11 +11,12 @@ public class ExitCommand implements ShellCommand, UserCommand {
   }
 
   @Override
-  public void execute() throws IllegalStateException {
+  public Void execute() throws IllegalStateException {
     if (getShell().isEmpty()) {
       throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
     getShell().get().close();
+    return null;
   }
 
   @Override

@@ -1,7 +1,8 @@
-package com.itmo.mrdvd.executor.commands;
+package com.itmo.mrdvd.executor.commands.todo;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.shell.ProxyShell;
 import java.io.IOException;
 import java.util.List;

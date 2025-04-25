@@ -1,13 +1,14 @@
 package com.itmo.mrdvd.executor.commands.collection;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.builder.builders.SuppliedBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
-import java.util.List;
-import java.util.Optional;
 
-public class AddCommand<T extends HavingId> implements CommandWithParams {
+public class AddCommand<T extends HavingId> implements CommandWithParams<Void> {
   protected final CollectionWorker<T, ?> collect;
   protected final SuppliedBuilder<T> builder;
   protected List<?> params;
@@ -24,11 +25,12 @@ public class AddCommand<T extends HavingId> implements CommandWithParams {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     Optional<T> obj = this.builder.withElements(params).build();
     if (obj.isEmpty() || collect.add(obj.get()).isEmpty()) {
       throw new RuntimeException("Не удалось добавить билет в коллекцию.");
     }
+    return null;
   }
 
   @Override

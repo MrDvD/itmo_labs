@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.executor.commands.shell.execute;
 
+import java.util.List;
+
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.shell.Shell;
-import java.util.List;
 
 /**
  * Fetches the info about queries from the Proxy server and caches it. Also gets the JavaScript
@@ -14,7 +15,7 @@ import java.util.List;
  * @param List server's response
  * @param Shell shell to work with
  */
-public class FetchAllCommand implements CommandWithParams {
+public class FetchAllCommand implements CommandWithParams<Void> {
   protected List<?> params;
 
   /** Passes the response, shell & client proxy into the command. */
@@ -25,7 +26,7 @@ public class FetchAllCommand implements CommandWithParams {
   }
 
   @Override
-  public void execute() {
+  public Void execute() {
     if (this.params == null || this.params.isEmpty() || !(this.params.get(0) instanceof Shell)) {
       throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
     }
@@ -41,6 +42,7 @@ public class FetchAllCommand implements CommandWithParams {
     } catch (ClassCastException e) {
       throw new RuntimeException("Не удалось добавить переданные запросы.");
     }
+    return null;
   }
 
   @Override
