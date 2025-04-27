@@ -15,18 +15,22 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.executor.commands.CommandWithParams;
+import com.itmo.mrdvd.executor.commands.response.Response;
 import com.itmo.mrdvd.executor.queries.Query;
 
-public class CollectionServerProxy implements ServerProxy {
+public class DefaultServerProxy implements ServerProxy {
   protected final Selector selector;
   protected final Map<SelectionKey, AbstractSelectableChannel> sockets;
   protected final Map<SelectionKey, ByteBuffer> buffers;
-  protected Function<Query, Query> callback;
   protected boolean isOpen;
   protected final int bufferSize;
   protected final Charset chars;
@@ -35,18 +39,17 @@ public class CollectionServerProxy implements ServerProxy {
   protected Optional<InputStreamReader> in;
   protected Optional<OutputStreamWriter> out;
 
-  public CollectionServerProxy(Selector selector, TransportProtocol proto, Function<Query, Query> callback) {
-    this(selector, proto, callback, 4096, Charset.forName("UTF-8"));
+  public DefaultServerProxy(Selector selector, TransportProtocol proto) {
+    this(selector, proto, 4096, Charset.forName("UTF-8"));
   }
 
-  public CollectionServerProxy(Selector selector, TransportProtocol proto, Function<Query, Query> callback, int bufferSize, Charset chars) {
-    this(selector, proto, callback, bufferSize, chars, new HashMap<>(), new HashMap<>());
+  public DefaultServerProxy(Selector selector, TransportProtocol proto, int bufferSize, Charset chars) {
+    this(selector, proto, bufferSize, chars, new HashMap<>(), new HashMap<>());
   }
 
-  public CollectionServerProxy(
+  public DefaultServerProxy(
       Selector selector,
       TransportProtocol proto,
-      Function<Query, Query> callback,
       int bufferSize,
       Charset chars,
       Map<SelectionKey, AbstractSelectableChannel> sockets,
@@ -78,8 +81,29 @@ public class CollectionServerProxy implements ServerProxy {
   }
 
   @Override
-  public void setCallback(Function<Query, Query> callback) {
-    this.callback = callback;
+  public Response processQuery(Query q) throws IllegalArgumentException {
+    Optional<Command<?>> cmd = getCommand(q.getCmd());
+    // return error query if command not found
+    if (cmd.isEmpty()) {
+      throw new IllegalArgumentException("Не удалось распознать запрос.");
+    }
+    if (cmd.get() instanceof CommandWithParams<?> cmdWithParams) {
+      List<?> resultParams = List.of();
+      if (prefixParams != null) {
+        resultParams = prefixParams;
+      }
+      resultParams = Stream.concat(resultParams.stream(), q.getArgs().stream()).toList();
+      Object result = cmdWithParams.withParams(resultParams).execute();
+      if (!(result instanceof Void)) {
+        // return query based on result
+      } else {
+        // return success query
+        // (error query will be sent higher in proxy level)
+      }
+      // how to return result if command fetches data for client?
+    } else {
+      cmd.get().execute();
+    }
   }
 
   /** 

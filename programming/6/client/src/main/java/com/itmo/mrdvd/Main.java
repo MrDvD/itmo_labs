@@ -58,7 +58,7 @@ public class Main {
         new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
     http.addSerializationPair(mapper, mapper);
     // add shellcommand reconnect
-    CollectionClientProxy proxy = new CollectionClientProxy(http);
+    DefaultClientProxy proxy = new DefaultClientProxy(http);
     ClientExecutor exec = new ClientExecutor();
     DataConsole console = new DataConsole().init();
     FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());

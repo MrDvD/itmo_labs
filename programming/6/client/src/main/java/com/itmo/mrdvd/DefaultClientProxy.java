@@ -12,11 +12,13 @@ import java.util.Optional;
 
 import org.apache.hc.core5.http.ContentType;
 
-public class CollectionClientProxy implements ClientProxy {
+import com.itmo.mrdvd.executor.commands.response.Response;
+
+public class DefaultClientProxy implements ClientProxy {
   protected SocketChannel socket;
   protected TransportProtocol protocol;
 
-  public CollectionClientProxy(TransportProtocol proto) {
+  public DefaultClientProxy(TransportProtocol proto) {
     this.protocol = proto;
   }
 
@@ -75,5 +77,10 @@ public class CollectionClientProxy implements ClientProxy {
       throw new RuntimeException("[ERROR] Не удалось сериализовать переданный объект.");
     }
     return send(result.get(), serial.getContentType());
+  }
+
+  @Override
+  public void processResponse(Response r) {
+    
   }
 }

@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.executor.commands.shell.execute;
+package com.itmo.mrdvd.executor.commands.response.shell;
 
 import java.util.List;
 
