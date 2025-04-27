@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.itmo.mrdvd.device.OutputDevice;
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.executor.Executor;
@@ -15,7 +16,7 @@ import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.commands.shell.ShellCommand;
 import com.itmo.mrdvd.executor.queries.Query;
 
-public class ProxyShell implements Shell {
+public class ProxyShell implements TTY {
   protected final Executor exec;
   protected final DataInputDevice in;
   protected final OutputDevice out;
@@ -39,16 +40,6 @@ public class ProxyShell implements Shell {
     this.cachedQueries = cachedQueries;
     this.shellCommands = shellCommands;
     this.isOpen = false;
-  }
-
-  @Override
-  public DataInputDevice getIn() {
-    return this.in;
-  }
-
-  @Override
-  public OutputDevice getOut() {
-    return this.out;
   }
 
   @Override

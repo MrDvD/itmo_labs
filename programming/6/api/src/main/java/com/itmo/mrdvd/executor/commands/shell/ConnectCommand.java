@@ -1,29 +1,30 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.ClientProxy;
-import com.itmo.mrdvd.shell.Shell;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Optional;
 
 public class ConnectCommand implements UserCommand {
-  protected final Shell shell;
+  protected final TTY shell;
   protected final ClientProxy proxy;
   protected List<?> params;
 
-  public ConnectCommand(Shell shell, ClientProxy proxy) {
+  public ConnectCommand(TTY shell, ClientProxy proxy) {
     this.shell = shell;
     this.proxy = proxy;
   }
 
   @Override
-  public Optional<Shell> getShell() {
+  public Optional<TTY> getShell() {
     return Optional.ofNullable(this.shell);
   }
 
   @Override
-  public ConnectCommand setShell(Shell shell) {
+  public ConnectCommand setShell(TTY shell) {
     return new ConnectCommand(shell, this.proxy);
   }
 

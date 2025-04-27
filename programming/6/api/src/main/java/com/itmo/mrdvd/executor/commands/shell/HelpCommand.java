@@ -1,23 +1,24 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.shell.Shell;
+
 import java.util.Optional;
 
 public class HelpCommand implements UserCommand {
-  private final Shell shell;
+  private final TTY shell;
 
-  public HelpCommand(Shell shell) {
+  public HelpCommand(TTY shell) {
     this.shell = shell;
   }
 
   @Override
-  public HelpCommand setShell(Shell shell) {
+  public HelpCommand setShell(TTY shell) {
     return new HelpCommand(shell);
   }
 
   @Override
-  public Optional<Shell> getShell() {
+  public Optional<TTY> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

@@ -2,7 +2,8 @@ package com.itmo.mrdvd.executor.commands.shell;
 
 import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
-import com.itmo.mrdvd.shell.Shell;
+import com.itmo.mrdvd.device.TTY;
+
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -12,27 +13,27 @@ import java.util.Optional;
 import java.util.Set;
 
 public class ExecuteScriptCommand implements UserCommand {
-  private final Shell shell;
+  private final TTY shell;
   private final DataFileDescriptor fd;
   private final Set<Path> usedPaths;
 
-  public ExecuteScriptCommand(DataFileDescriptor fd, Shell shell) {
+  public ExecuteScriptCommand(DataFileDescriptor fd, TTY shell) {
     this(fd, shell, new HashSet<>());
   }
 
-  public ExecuteScriptCommand(DataFileDescriptor fd, Shell shell, Set<Path> usedPaths) {
+  public ExecuteScriptCommand(DataFileDescriptor fd, TTY shell, Set<Path> usedPaths) {
     this.fd = fd;
     this.shell = shell;
     this.usedPaths = usedPaths;
   }
 
   @Override
-  public ExecuteScriptCommand setShell(Shell shell) {
+  public ExecuteScriptCommand setShell(TTY shell) {
     return new ExecuteScriptCommand(fd, shell, usedPaths);
   }
 
   @Override
-  public Optional<Shell> getShell() {
+  public Optional<TTY> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

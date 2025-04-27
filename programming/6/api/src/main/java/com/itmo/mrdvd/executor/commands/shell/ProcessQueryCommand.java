@@ -3,31 +3,31 @@ package com.itmo.mrdvd.executor.commands.shell;
 import java.util.List;
 import java.util.Optional;
 
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.commands.response.Response;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.ClientProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;
-import com.itmo.mrdvd.shell.Shell;
 
 /** Sends the query to a server and passes the response to the executor. */
 public class ProcessQueryCommand implements ShellCommand, CommandWithParams<Void> {
   protected final ClientProxy proxy;
-  protected final Shell shell;
+  protected final TTY shell;
   protected List<?> params;
 
-  public ProcessQueryCommand(Shell shell, ClientProxy proxy) {
+  public ProcessQueryCommand(TTY shell, ClientProxy proxy) {
     this.shell = shell;
     this.proxy = proxy;
   }
 
   @Override
-  public ProcessQueryCommand setShell(Shell shell) {
+  public ProcessQueryCommand setShell(TTY shell) {
     return new ProcessQueryCommand(shell, this.proxy);
   }
 
   @Override
-  public Optional<Shell> getShell() {
+  public Optional<TTY> getShell() {
     return Optional.ofNullable(this.shell);
   }
 

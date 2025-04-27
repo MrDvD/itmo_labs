@@ -1,12 +1,13 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
-import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 
-public class ExitCommand implements UserCommand {
-  private final Shell shell;
+import com.itmo.mrdvd.device.TTY;
 
-  public ExitCommand(Shell shell) {
+public class ExitCommand implements UserCommand {
+  private final TTY shell;
+
+  public ExitCommand(TTY shell) {
     this.shell = shell;
   }
 
@@ -20,12 +21,12 @@ public class ExitCommand implements UserCommand {
   }
 
   @Override
-  public Optional<Shell> getShell() {
+  public Optional<TTY> getShell() {
     return Optional.ofNullable(this.shell);
   }
 
   @Override
-  public ExitCommand setShell(Shell shell) {
+  public ExitCommand setShell(TTY shell) {
     return new ExitCommand(shell);
   }
 
