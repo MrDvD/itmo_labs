@@ -1,6 +1,7 @@
 package com.itmo.mrdvd;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,99 +9,101 @@ import java.util.Optional;
 
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.commands.response.Response;
-import com.itmo.mrdvd.executor.commands.shell.ShellCommand;
 import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.ClientProxy;
-import com.sun.net.httpserver.Request;
+import com.itmo.mrdvd.proxy.Proxy;
 
 public class CollectionShell extends AbstractShell {
-  protected final ClientProxy proxy;
+  protected final Proxy proxy;
+  protected final Map<String, Query> cachedQueries;
   private boolean isOpen;
 
-  public CollectionShell(ClientProxy proxy, TTY tty) {
-    this(proxy, tty, new HashMap<>());
+  public CollectionShell(Proxy proxy) {
+    this(proxy, new ArrayList<>(), new HashMap<>(), new HashMap<>());
   }
 
-  public CollectionShell(ClientProxy proxy, TTY tty, Map<String, Object> args) {
+  public CollectionShell(Proxy proxy, List<TTY> tty, Map<String, Object> args, Map<String, Query> cachedQueries) {
     super(tty, args);
     this.proxy = proxy;
+    this.cachedQueries = cachedQueries;
   }
 
   /**
    * Processes the passed Response.
    */
-  protected void processResponse(Response r) {
-
+  protected void processResponse(Response r) throws IllegalStateException {
+    if (getTty().isEmpty()) {
+      throw new IllegalStateException("Не предоставлен TTY для вывода ответа.");
+    }
+    if (r.getBody() != null) {
+      getTty().get().getOut().writeln(r.getBody());
+    }
   }
 
   /**
-   * Passes the Request to proxy & returns its Response. 
+   * Wraps the user input into Query.
    */
-  protected Response processRequest(Request q) {
-    Response r = this.proxy.send(q);
+  protected Optional<Query> fillQuery(String cmd) {
+    Optional<Query> qRaw = getQuery(cmd);
+    if (qRaw.isEmpty()) {
+      return Optional.empty(); 
+    }
+    Query q = qRaw.get();
+    Optional<Object> arg = getArg(cmd);
+    // here i also should set other args from user input (via JS & validation stuff)
+    if (arg.isPresent()) {
+      q.setArgs(arg.get());
+    }
+    return Optional.of(q);
   }
 
   /**
-   * Wraps the user command into Request.
+   * Gets the cached query with the given name.
    */
-  protected Request createRequest(String cmd) {
-    // here i should get args related to cmd (if present)
+  protected Optional<Query> getQuery(String name) {
+    return this.cachedQueries.containsKey(name) ? Optional.of(this.cachedQueries.get(name)) : Optional.empty();
   }
 
-  protected void processLine() throws IOException {
-    Optional<String> cmdName = getTty().getIn().readToken();
+  protected void processLine() throws IOException, IllegalStateException {
+    if (getTty().isEmpty()) {
+      throw new IllegalStateException("Не предоставлен TTY для обработки ввода/вывода.");
+    }
+    Optional<String> cmdName = getTty().get().getIn().readToken();
     if (cmdName.isEmpty()) {
-      getTty().getIn().skipLine();
+      getTty().get().getIn().skipLine();
       return;
     }
-    // Optional<ShellCommand> c = getCommand(cmdName.get());
-    // if (c.isPresent()) {
-    //   if (!c.get().hasArgs()) {
-    //     getIn().skipLine();
-    //   }
-    //   try {
-    //     c.get().execute();
-    //   } catch (RuntimeException e) {
-    //     this.getOut().writeln(e.getMessage());
-    //   }
-    //   return Optional.empty();
-    // }
-    // Optional<Query> q = getQuery(cmdName.get());
-    // if (q.isPresent()) {
-    //   Optional<ShellCommand> rawProcess = getCommand("process_query");
-    //   if (rawProcess.isPresent() && rawProcess.get() instanceof CommandWithParams processQuery) {
-    //     try {
-    //       processQuery.withParams(List.of(q.get())).execute();
-    //     } catch (RuntimeException e) {
-    //       this.getOut().writeln(e.getMessage());
-    //     }
-    //   } else {
-    //     this.getOut().writeln("В интерпретаторе не обнаружен обработчик запросов.");
-    //   }
-    //   return Optional.empty();
-    // }
-    // return cmdName;
+    Optional<Query> q = fillQuery(cmdName.get());
+    if (q.isEmpty()) {
+      getTty().get().getOut().writeln(String.format("Команда не найдена: %s", cmdName.get()));
+      return;
+    }
+    Response r = this.proxy.processQuery(q.get());
+    processResponse(r);
   }
 
   @Override
   public void start() {
+    if (getTty().isEmpty()) {
+      throw new IllegalStateException("Не предоставлен TTY для работы интерпретатора.");
+    }
     setArg("exit", this);
+    // 
     this.isOpen = true;
     while (this.isOpen) {
-      if (getTty().getIn() instanceof InteractiveInputDevice back) {
+      if (getTty().get().getIn() instanceof InteractiveInputDevice back) {
         back.write("> ");
       }
-      while (!getTty().getIn().hasNext()) {
-        getTty().getIn().closeIn();
+      while (!getTty().get().getIn().hasNext()) {
+        getTty().get().getIn().closeIn();
         stop();
         return;
       }
-      // execute here wrapper & use getArg()
-      // send via proxy
-      // wait for response
-      // print it
+      try {
+        processLine();
+      } catch (IOException e) {
+        stop();
+      }
     }
   }
 

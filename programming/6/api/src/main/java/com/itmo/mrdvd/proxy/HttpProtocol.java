@@ -17,6 +17,9 @@ import org.apache.hc.core5.http.impl.io.AbstractMessageParser;
 import org.apache.hc.core5.http.io.SessionInputBuffer;
 import org.apache.hc.core5.http.io.entity.HttpEntities;
 
+/**
+ * Deprecated
+ */
 public class HttpProtocol implements Protocol {
   protected final AbstractMessageParser<? extends ClassicHttpRequest> parser;
   protected final HttpRequestFactory<? extends ClassicHttpRequest> newRequest;

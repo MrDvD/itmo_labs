@@ -6,9 +6,9 @@ import java.util.Map;
 import com.itmo.mrdvd.builder.builders.SuppliedBuilder;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.executor.AbstractExecutor;
 import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.commands.collection.AddCommand;
+import com.itmo.mrdvd.service.AbstractExecutor;
 
 public class ServerExecutor extends AbstractExecutor {
   public <U extends HavingId> ServerExecutor(Collection<U, ?> collect, SuppliedBuilder<U> builder) {

@@ -1,16 +1,17 @@
 package com.itmo.mrdvd;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.Service;
+import com.itmo.mrdvd.service.Service;
 
 public abstract class AbstractShell implements Service {
   private final Map<String, Object> requestArgs;
-  private TTY tty;
+  private final List<TTY> tty;
 
-  public AbstractShell(TTY tty, Map<String, Object> args) {
+  public AbstractShell(List<TTY> tty, Map<String, Object> args) {
     this.tty = tty;
     this.requestArgs = args;
   }
@@ -32,10 +33,10 @@ public abstract class AbstractShell implements Service {
   }
 
   public void setTty(TTY tty) {
-    this.tty = tty;
+    this.tty.add(tty);
   }
 
-  public TTY getTty() {
-    return this.tty;
+  public Optional<TTY> getTty() {
+    return this.tty.isEmpty() ? Optional.empty() : Optional.of(this.tty.getLast());
   }
 }

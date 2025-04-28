@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.proxy;
+package com.itmo.mrdvd.service;
 
 public interface Service {
   public void start();

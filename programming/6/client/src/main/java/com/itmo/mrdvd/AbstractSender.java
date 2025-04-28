@@ -2,9 +2,10 @@ package com.itmo.mrdvd;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.util.Optional;
 
 import com.itmo.mrdvd.proxy.Mapper;
-import com.itmo.mrdvd.proxy.Service;
+import com.itmo.mrdvd.service.Service;
 
 /**
  * A service which blindly sends the info and gets the response.
@@ -19,8 +20,8 @@ public abstract class AbstractSender<T, U, R> implements Service {
   }
 
   /** Connects to the desired endpoint via passed address. */
-  public abstract void setReceiver(SocketAddress addr) throws IOException;
+  public abstract void connect(SocketAddress addr) throws IOException;
 
   /** Sends a message and returns the response from the server. */
-  public abstract R send(T obj) throws IOException;
+  public abstract Optional<R> send(T obj) throws IOException;
 }

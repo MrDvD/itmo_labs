@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.itmo.mrdvd.proxy.Mapper;
-import com.itmo.mrdvd.proxy.Service;
+import com.itmo.mrdvd.service.Service;
 
 /**
  * A service which blindly receives the info and sends the response.
