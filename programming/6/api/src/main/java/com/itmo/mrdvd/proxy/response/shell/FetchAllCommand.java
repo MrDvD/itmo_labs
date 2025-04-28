@@ -1,10 +1,9 @@
-package com.itmo.mrdvd.executor.commands.response.shell;
-
-import java.util.List;
+package com.itmo.mrdvd.proxy.response.shell;
 
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
 import com.itmo.mrdvd.executor.queries.Query;
+import java.util.List;
 
 /**
  * Fetches the info about queries from the Proxy server and caches it. Also gets the JavaScript

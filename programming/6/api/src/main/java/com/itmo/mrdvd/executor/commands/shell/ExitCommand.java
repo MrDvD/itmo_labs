@@ -1,33 +1,17 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
-import java.util.Optional;
+import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.service.Service;
 
-import com.itmo.mrdvd.device.TTY;
-
-public class ExitCommand implements UserCommand {
-  private final TTY shell;
-
-  public ExitCommand(TTY shell) {
-    this.shell = shell;
-  }
-
+public class ExitCommand implements Command<Void> {
   @Override
-  public Void execute() throws IllegalStateException {
-    if (getShell().isEmpty()) {
-      throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
+  public Void execute(Object params) throws IllegalArgumentException {
+    if (params instanceof Service s) {
+      s.stop();
+    } else {
+      throw new IllegalArgumentException("Не предоставлен сервис для завершения.");
     }
-    getShell().get().close();
     return null;
-  }
-
-  @Override
-  public Optional<TTY> getShell() {
-    return Optional.ofNullable(this.shell);
-  }
-
-  @Override
-  public ExitCommand setShell(TTY shell) {
-    return new ExitCommand(shell);
   }
 
   @Override

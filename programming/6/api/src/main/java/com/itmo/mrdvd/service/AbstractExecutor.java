@@ -1,32 +1,53 @@
 package com.itmo.mrdvd.service;
 
-import java.util.Map;
-
 import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.commands.CommandWithParams;
+import com.itmo.mrdvd.executor.queries.Query;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
-/**
- * A wrapper class for a map of commands.
- */
-public abstract class AbstractExecutor implements Service {
+/** A wrapper class for a map of commands & cached queries. */
+public abstract class AbstractExecutor {
   protected final Map<String, Command<?>> commands;
+  protected final Map<String, Query> cachedQueries;
 
-  public AbstractExecutor(Map<String, Command<?>> commands) {
+  public AbstractExecutor(Map<String, Command<?>> commands, Map<String, Query> cachedQueries) {
     this.commands = commands;
+    this.cachedQueries = cachedQueries;
+  }
+
+  public void setQuery(Query q) {
+    this.cachedQueries.put(q.getCmd(), q);
+  }
+
+  public Optional<Query> getQuery(String name) {
+    return this.cachedQueries.containsKey(name)
+        ? Optional.of(this.cachedQueries.get(name))
+        : Optional.empty();
+  }
+
+  public Set<String> getCachedQueryKeys() {
+    return this.cachedQueries.keySet();
   }
 
   public void setCommand(Command<?> command) {
-    commands.put(command.name(), command);
+    this.commands.put(command.name(), command);
   }
 
-  public <T> T processCommand(String name, Object params) throws IllegalArgumentException {
-    if (!commands.containsKey(name) || commands.get(name) == null) {
+  public Optional<Command<?>> getCommand(String name) {
+    return this.commands.containsKey(name)
+        ? Optional.of(this.commands.get(name))
+        : Optional.empty();
+  }
+
+  public Set<String> getCommandKeys() {
+    return this.commands.keySet();
+  }
+
+  public Object processCommand(String name, Object params) throws IllegalArgumentException {
+    if (!this.commands.containsKey(name) || this.commands.get(name) == null) {
       throw new IllegalArgumentException(String.format("Команда не найдена: ", name));
     }
-    Command<T> cmd = (Command) commands.get(name);
-    if (cmd instanceof CommandWithParams<T> cmdParams) {
-      return cmdParams.withParams(params).execute();
-    }
-    return cmd.execute();
+    return this.commands.get(name).execute(params);
   }
 }

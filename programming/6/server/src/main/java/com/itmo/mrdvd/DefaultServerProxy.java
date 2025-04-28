@@ -2,6 +2,7 @@ package com.itmo.mrdvd;
 
 import com.itmo.mrdvd.proxy.ServerProxy;
 import com.itmo.mrdvd.proxy.TransportProtocol;
+import com.itmo.mrdvd.proxy.response.Response;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -24,7 +25,6 @@ import java.util.stream.Stream;
 
 import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
-import com.itmo.mrdvd.executor.commands.response.Response;
 import com.itmo.mrdvd.executor.queries.Query;
 
 /**

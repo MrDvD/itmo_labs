@@ -4,8 +4,8 @@ import com.itmo.mrdvd.device.input.DataInputDevice;
 
 /**
  * Wraps the input and output devices for convenience.
- * 
- * In contrast to InteractiveInputDevice, this class allows different input and output devices.
+ *
+ * <p>In contrast to InteractiveInputDevice, this class allows different input and output devices.
  */
 public abstract class TTY {
   protected DataInputDevice in;

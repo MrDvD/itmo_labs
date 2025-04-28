@@ -1,49 +1,35 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
-import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.queries.Query;
-
+import com.itmo.mrdvd.service.AbstractExecutor;
 import java.util.Optional;
 
-public class HelpCommand implements UserCommand {
-  private final TTY shell;
+/** Propably do it as a method of AbstractShell. */
+public class HelpCommand implements Command<String> {
+  private final AbstractExecutor exec;
 
-  public HelpCommand(TTY shell) {
-    this.shell = shell;
+  public HelpCommand(AbstractExecutor exec) {
+    this.exec = exec;
   }
 
   @Override
-  public HelpCommand setShell(TTY shell) {
-    return new HelpCommand(shell);
-  }
-
-  @Override
-  public Optional<TTY> getShell() {
-    return Optional.ofNullable(this.shell);
-  }
-
-  @Override
-  public Void execute() throws IllegalStateException {
-    if (getShell().isEmpty()) {
-      throw new IllegalStateException("Не предоставлен интерпретатор для исполнения команды.");
-    }
-    for (String cmdName : this.shell.getShellCommandKeys()) {
-      Optional<ShellCommand> cmd = this.shell.getCommand(cmdName);
-      if (cmd.get() instanceof UserCommand userCmd) {
-        getShell()
-            .get()
-            .getOut()
-            .write(String.format("%-35s\t%s\n", userCmd.signature(), userCmd.description()));
+  public String execute(Object params) {
+    String result = "Available local commands:\n";
+    for (String cmdName : this.exec.getCommandKeys()) {
+      Optional<Command<?>> cmd = this.exec.getCommand(cmdName);
+      if (cmd.isPresent()) {
+        result += String.format("%-35s\t%s\n", cmd.get().signature(), cmd.get().description());
       }
     }
-    for (String queryName : this.shell.getQueryKeys()) {
-      Optional<Query> q = this.shell.getQuery(queryName);
-      getShell()
-          .get()
-          .getOut()
-          .write(String.format("%-35s\t%s\n", q.get().getSignature(), q.get().getDesc()));
+    result += "\nKnown cached queries:\n";
+    for (String cmdName : this.exec.getCachedQueryKeys()) {
+      Optional<Query> cmd = this.exec.getQuery(cmdName);
+      if (cmd.isPresent()) {
+        result += String.format("%-35s\t%s\n", cmd.get().getSignature(), cmd.get().getDesc());
+      }
     }
-    return null;
+    return result;
   }
 
   @Override

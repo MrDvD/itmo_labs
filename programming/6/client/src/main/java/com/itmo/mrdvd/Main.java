@@ -1,20 +1,16 @@
 package com.itmo.mrdvd;
 
-import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.impl.io.DefaultClassicHttpRequestFactory;
-import org.apache.hc.core5.http.impl.io.DefaultHttpRequestParser;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.device.DataConsole;
+import com.itmo.mrdvd.device.DefaultTTY;
 import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.device.ObjectMapperDecorator;
-import com.itmo.mrdvd.proxy.HttpProtocol;
-import com.itmo.mrdvd.shell.CollectionShell;
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.executor.queries.UserQuery;
+import com.itmo.mrdvd.proxy.ObjectSerializer;
+import com.itmo.mrdvd.proxy.response.Response;
 
 /*
  * TODO:
@@ -29,7 +25,6 @@ import com.itmo.mrdvd.shell.CollectionShell;
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  * 4. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
- * 5. Write return values for commands in execute() and check if it returns any with instanceof keyword inside executor Command<T> for T execute() (and result instanceof Void commands)
  *
  * 0. Split the app into modules (PLANNED & may be not relevant)
  *    - exit in server vs exit in client; save in server
@@ -51,19 +46,15 @@ import com.itmo.mrdvd.shell.CollectionShell;
 
 public class Main {
   public static void main(String[] args) {
-    HttpProtocol http =
-        new HttpProtocol(new DefaultHttpRequestParser(), new DefaultClassicHttpRequestFactory());
-    // how about querywithparams? will it be serialized/deserialized?
-    ObjectMapperDecorator mapper =
-        new ObjectMapperDecorator(new XmlMapper(), ContentType.APPLICATION_XML);
-    http.addSerializationPair(mapper, mapper);
-    // add shellcommand reconnect
-    DefaultClientProxy proxy = new DefaultClientProxy(http);
-    ClientExecutor exec = new ClientExecutor();
+    ObjectSerializer<Query> serialQuery = new ObjectSerializer<>(new XmlMapper(), Query.class);
+    ObjectSerializer<Response> serialResponse = new ObjectSerializer<>(new XmlMapper(), Response.class);
+    ClientSender sender = new ClientSender(serialQuery, serialResponse); 
+    ClientExecutor exec = new ClientExecutor(new FileIO(Path.of(""), FileSystems.getDefault()), sender);
+    ClientProxy proxy = new ClientProxy(sender, exec);
+    CollectionShell shell = new CollectionShell(proxy, UserQuery::new);
     DataConsole console = new DataConsole().init();
-    FileIO fd = new FileIO(Path.of(""), FileSystems.getDefault());
-    CollectionShell shell = new CollectionShell(exec, proxy, console, console, fd);
-    shell.open();
+    shell.setTty(new DefaultTTY(console, console));
+    shell.start();
     // // just checking javascript execution
     
     // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";

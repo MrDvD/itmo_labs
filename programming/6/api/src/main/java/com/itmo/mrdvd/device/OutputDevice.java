@@ -5,7 +5,7 @@ public interface OutputDevice {
 
   public IOStatus writeln(String str);
 
-  public IOStatus openOut() throws NullPointerException;
+  public void openOut() throws NullPointerException;
 
-  public IOStatus closeOut();
+  public void closeOut();
 }

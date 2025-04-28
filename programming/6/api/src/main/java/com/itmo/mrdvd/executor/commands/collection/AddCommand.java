@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.executor.commands.collection;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.builder.builders.SuppliedBuilder;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.executor.commands.CommandWithParams;
+import java.util.List;
+import java.util.Optional;
 
 public class AddCommand<T extends HavingId> implements CommandWithParams<Void> {
   protected final CollectionWorker<T, ?> collect;

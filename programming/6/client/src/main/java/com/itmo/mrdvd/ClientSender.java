@@ -6,14 +6,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
-import com.itmo.mrdvd.executor.commands.response.Response;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractSender;
 
-public class CollectionSender extends AbstractSender<Query, String, Response> {
+public class ClientSender extends AbstractSender<Query, String, Response> {
   protected SocketChannel socket;
 
-  public CollectionSender(Mapper<Query, String> mapper1, Mapper<Response, String> mapper2) {
+  public ClientSender(Mapper<Query, String> mapper1, Mapper<Response, String> mapper2) {
     super(mapper1, mapper2);
   }
 

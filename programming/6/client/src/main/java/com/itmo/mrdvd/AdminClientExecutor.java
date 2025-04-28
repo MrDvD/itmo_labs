@@ -6,6 +6,9 @@ import java.util.Map;
 import com.itmo.mrdvd.device.DataFileDescriptor;
 import com.itmo.mrdvd.executor.commands.Command;
 
+/**
+ * WIP
+ */
 public class AdminClientExecutor extends ClientExecutor {
   public AdminClientExecutor(DataFileDescriptor fd) {
     this(new HashMap<>());

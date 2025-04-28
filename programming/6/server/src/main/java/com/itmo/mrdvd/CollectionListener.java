@@ -14,9 +14,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.itmo.mrdvd.executor.commands.response.Response;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractListener;
 
 public class CollectionListener extends AbstractListener<Query, String, Response> {
   protected final Map<SelectionKey, ByteBuffer> buffers;

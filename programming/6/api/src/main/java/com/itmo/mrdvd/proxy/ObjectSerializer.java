@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.device;
+package com.itmo.mrdvd.proxy;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -6,20 +6,22 @@ import com.fasterxml.jackson.annotation.Nulls;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.Optional;
-import org.apache.hc.core5.http.ContentType;
 
-public class ObjectMapperDecorator implements Serializer, Deserializer {
+/**
+ * A wrapper of Jackson's ObjectMapper so it has needed configuration & implements necessary
+ * interface.
+ */
+public class ObjectSerializer<T> implements Mapper<T, String> {
   private final ObjectMapper mapper;
-  private final ContentType type;
+  private final Class<T> clz;
 
-  public ObjectMapperDecorator(ObjectMapper obj, ContentType type) {
+  public ObjectSerializer(ObjectMapper obj, Class<T> clz) {
     this.mapper = obj;
-    this.type = type;
+    this.clz = clz;
     mapper.registerModule(new JavaTimeModule());
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -29,34 +31,20 @@ public class ObjectMapperDecorator implements Serializer, Deserializer {
   }
 
   @Override
-  public <T> Optional<String> serialize(T obj) {
+  public String wrap(T obj) {
     try {
-      return Optional.of(mapper.writeValueAsString(obj));
+      return mapper.writeValueAsString(obj);
     } catch (JsonProcessingException e) {
-      return Optional.empty();
+      throw new RuntimeException(e);
     }
   }
 
   @Override
-  public <T> Optional<? extends T> deserialize(String str, Class<T> clz) {
+  public Optional<T> unwrap(String obj) {
     try {
-      return Optional.of(mapper.readValue(str, clz));
+      return Optional.of(mapper.readValue(obj, this.clz));
     } catch (JsonProcessingException e) {
       return Optional.empty();
     }
-  }
-
-  @Override
-  public <T> Optional<? extends T> deserialize(String str, JavaType type) {
-    try {
-      return Optional.of(mapper.readValue(str, type));
-    } catch (JsonProcessingException e) {
-      return Optional.empty();
-    }
-  }
-
-  @Override
-  public ContentType getContentType() {
-    return this.type;
   }
 }

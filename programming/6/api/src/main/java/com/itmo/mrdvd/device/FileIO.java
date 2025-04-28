@@ -33,52 +33,48 @@ public class FileIO extends DataFileDescriptor {
   }
 
   @Override
-  public IOStatus openIn() {
+  public void openIn() {
     if (path == null) {
-      throw new NullPointerException("Не указан путь для открытия файла.");
+      throw new IllegalStateException("Не указан путь для открытия файла.");
     }
     try {
       this.inStream = new FileInputStream(path.toString());
       this.inReader = new BufferedInputStream(inStream);
-      return IOStatus.SUCCESS;
-    } catch (FileNotFoundException | SecurityException e) {
-      return IOStatus.FAILURE;
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 
   @Override
-  public IOStatus openOut() {
+  public void openOut() {
+    if (path == null) {
+      throw new IllegalStateException("Не указан путь для открытия файла.");
+    }
     try {
-      if (path == null) {
-        throw new NullPointerException("Не указан путь для открытия файла.");
-      }
       this.outStream = new FileOutputStream(path.toString());
       this.outWriter = new OutputStreamWriter(outStream);
-      return IOStatus.SUCCESS;
-    } catch (FileNotFoundException | SecurityException e) {
-      return IOStatus.FAILURE;
+    } catch (FileNotFoundException e) {
+      throw new RuntimeException(e);
     }
   }
 
   @Override
-  public IOStatus closeIn() {
+  public void closeIn() {
     try {
       this.inReader.close();
       this.inStream.close();
-      return IOStatus.SUCCESS;
     } catch (IOException e) {
-      return IOStatus.FAILURE;
+      throw new RuntimeException(e);
     }
   }
 
   @Override
-  public IOStatus closeOut() {
+  public void closeOut() {
     try {
       this.outWriter.close();
       this.outStream.close();
-      return IOStatus.SUCCESS;
     } catch (IOException e) {
-      return IOStatus.FAILURE;
+      throw new RuntimeException(e);
     }
   }
 

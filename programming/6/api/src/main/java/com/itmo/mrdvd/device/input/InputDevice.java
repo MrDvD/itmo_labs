@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.device.input;
 
-import com.itmo.mrdvd.device.IOStatus;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -15,7 +14,7 @@ public interface InputDevice {
 
   public void skipLine() throws NullPointerException;
 
-  public IOStatus openIn() throws NullPointerException;
+  public void openIn() throws NullPointerException;
 
-  public IOStatus closeIn();
+  public void closeIn();
 }

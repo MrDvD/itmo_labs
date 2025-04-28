@@ -17,15 +17,13 @@ public abstract class Console implements InteractiveInputDevice {
   }
 
   @Override
-  public IOStatus openIn() {
+  public void openIn() {
     this.in = new Scanner(System.in);
-    return IOStatus.SUCCESS;
   }
 
   @Override
-  public IOStatus openOut() {
+  public void openOut() {
     this.out = new OutputStreamWriter(System.out);
-    return IOStatus.SUCCESS;
   }
 
   @Override
@@ -88,18 +86,16 @@ public abstract class Console implements InteractiveInputDevice {
   }
 
   @Override
-  public IOStatus closeIn() {
+  public void closeIn() {
     this.in.close();
-    return IOStatus.SUCCESS;
   }
 
   @Override
-  public IOStatus closeOut() {
+  public void closeOut() {
     try {
       this.out.close();
-      return IOStatus.SUCCESS;
     } catch (IOException e) {
-      return IOStatus.FAILURE;
+      throw new RuntimeException(e);
     }
   }
 }
