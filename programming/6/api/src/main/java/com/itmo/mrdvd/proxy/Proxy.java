@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.proxy;
 
-import java.util.Optional;
+import com.itmo.mrdvd.executor.commands.response.Response;
+import com.itmo.mrdvd.executor.queries.Query;
 
 public interface Proxy {
-  public void setProtocol(TransportProtocol proto);
+  public Response processQuery(Query r);
 
-  public Optional<TransportProtocol> getProtocol();
+  public void setStrategy(String name, ProxyStrategy stat);
 }

@@ -24,34 +24,6 @@ public class ProxyShell implements TTY {
   protected final Map<String, ShellCommand> shellCommands;
   private boolean isOpen;
 
-  public ProxyShell(Executor exec, DataInputDevice in, OutputDevice out) {
-    this(exec, in, out, new HashMap<>(), new HashMap<>());
-  }
-
-  public ProxyShell(
-      Executor exec,
-      DataInputDevice in,
-      OutputDevice out,
-      Map<String, Query> cachedQueries,
-      Map<String, ShellCommand> shellCommands) {
-    this.exec = exec;
-    this.in = in;
-    this.out = out;
-    this.cachedQueries = cachedQueries;
-    this.shellCommands = shellCommands;
-    this.isOpen = false;
-  }
-
-  @Override
-  public void setQuery(Query q) {
-    this.cachedQueries.put(q.getCmd(), q);
-  }
-
-  @Override
-  public Optional<Query> getQuery(String name) {
-    return Optional.ofNullable(this.cachedQueries.get(name));
-  }
-
   @Override
   public Optional<String> processLine() throws IOException {
     Optional<String> cmdName = getIn().readToken();
@@ -122,34 +94,6 @@ public class ProxyShell implements TTY {
                     cmd.get()));
       }
     }
-  }
-
-  @Override
-  public void setCommand(ShellCommand cmd) throws IllegalArgumentException {
-    if (cmd == null) {
-      throw new IllegalArgumentException("Command не может быть null.");
-    }
-    this.shellCommands.put(cmd.name(), cmd);
-  }
-
-  @Override
-  public Optional<ShellCommand> getCommand(String name) {
-    return Optional.ofNullable(this.shellCommands.get(name));
-  }
-
-  @Override
-  public void close() {
-    this.isOpen = false;
-  }
-
-  @Override
-  public Set<String> getShellCommandKeys() {
-    return this.shellCommands.keySet();
-  }
-
-  @Override
-  public Set<String> getQueryKeys() {
-    return this.cachedQueries.keySet();
   }
 
   @Override
