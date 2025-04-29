@@ -23,7 +23,7 @@ FUNC:   PUSH        ; F(X) = -7 * X + 7 -> ВУ-3
 
         ORG   0x046
 X:      WORD  0
-COUNT:  WORD  1000
+COUNT:  WORD  0xFF
 
 START:  DI          ; loading int vectors
         LD    #8
