@@ -1,5 +1,7 @@
 package com.itmo.mrdvd.executor.queries;
 
+import java.util.List;
+
 public interface Query {
   public void setCmd(String cmd);
 
@@ -7,7 +9,7 @@ public interface Query {
 
   public void setDesc(String desc);
 
-  public void setArgs(Object params);
+  public void setArgs(List<Object> params);
 
   public String getCmd();
 
@@ -15,5 +17,5 @@ public interface Query {
 
   public String getDesc();
 
-  public Object getArgs();
+  public List<Object> getArgs();
 }

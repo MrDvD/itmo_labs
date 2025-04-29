@@ -8,9 +8,9 @@ import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.commands.shell.ConnectCommand;
 import com.itmo.mrdvd.executor.commands.shell.ExecuteScriptCommand;
 import com.itmo.mrdvd.executor.commands.shell.ExitCommand;
+import com.itmo.mrdvd.executor.commands.shell.FetchAllCommand;
 import com.itmo.mrdvd.executor.commands.shell.HelpCommand;
 import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.response.shell.FetchAllCommand;
 import com.itmo.mrdvd.service.AbstractExecutor;
 import com.itmo.mrdvd.service.AbstractSender;
 
@@ -25,6 +25,6 @@ public class ClientExecutor extends AbstractExecutor {
     setCommand(new ExitCommand());
     setCommand(new ExecuteScriptCommand(fd));
     setCommand(new ConnectCommand(sender));
-    // setCommand(new FetchAllCommand());
+    setCommand(new FetchAllCommand(this));
   }
 }

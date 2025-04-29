@@ -14,17 +14,16 @@ import com.itmo.mrdvd.proxy.response.Response;
 
 /*
  * TODO:
- * 1. Remove "commands" from shells --> executors
- *    - input queries should be validated in terminal (and on server, ofc)
+ * 1. How to do the client-side validation?
+ *    - idea: use JavaScript to validate the input
+ *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
+ * 2. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
+ * 3. Realize the client-side validation
  *    - #### SCHEME:
  * ```` 1. Shell gets the list of available Queries from ServerProxy (sends the query via ClientProxy)
  *      2. ClientProxy receives available Queries and validations JavaScript files.
  *      3. Shell validates input via JavaScript files.
  *      4. ClientProxy sends the validated Query to ServerProxy.
- * 3. How to do the client-side validation?
- *    - idea: use JavaScript to validate the input
- *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
- * 4. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
  *
  * 0. Split the app into modules (PLANNED & may be not relevant)
  *    - exit in server vs exit in client; save in server

@@ -1,11 +1,5 @@
-package com.itmo.mrdvd.service;
+package com.itmo.mrdvd.service.shell;
 
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.shell_response_strategy.ShellResponseStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
+
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.executor.queries.Query;
+import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
+import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
@@ -27,7 +29,7 @@ public class DefaultShell extends AbstractShell {
       Proxy proxy,
       Function<String, Query> query,
       List<TTY> tty,
-      Map<String, Object> args,
+      Map<String, QueryFillStrategy> args,
       Map<String, ShellResponseStrategy> strats) {
     super(tty, args, strats);
     this.proxy = proxy;
@@ -47,11 +49,11 @@ public class DefaultShell extends AbstractShell {
   }
 
   /** Wraps the user input into Query. */
-  protected Optional<Query> fillQuery(String cmd) {
+  protected Optional<Query> fillQuery(String cmd) throws IOException {
     Query q = this.query.apply(cmd);
-    Optional<Object> arg = getArg(cmd);
+    Optional<QueryFillStrategy> arg = getArg(cmd);
     if (arg.isPresent()) {
-      q.setArgs(arg.get());
+      q = arg.get().fillArgs(q);
     }
     return Optional.of(q);
   }
@@ -79,8 +81,6 @@ public class DefaultShell extends AbstractShell {
     if (getTty().isEmpty()) {
       throw new IllegalStateException("Не предоставлен TTY для работы интерпретатора.");
     }
-    setArg("exit", this);
-    //
     this.isOpen = true;
     while (this.isOpen) {
       if (getTty().get().getIn() instanceof InteractiveInputDevice back) {
@@ -95,6 +95,8 @@ public class DefaultShell extends AbstractShell {
         processLine();
       } catch (IOException e) {
         stop();
+      } catch (RuntimeException e) {
+        getTty().get().getOut().writeln(e.getMessage());
       }
     }
   }

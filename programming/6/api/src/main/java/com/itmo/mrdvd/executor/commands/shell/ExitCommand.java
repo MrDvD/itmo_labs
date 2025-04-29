@@ -1,14 +1,20 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
+import java.util.List;
+
 import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.service.Service;
 
 public class ExitCommand implements Command<Void> {
   @Override
-  public Void execute(Object params) throws IllegalArgumentException {
-    if (params instanceof Service s) {
+  public Void execute(List<Object> params) throws IllegalArgumentException {
+    if (params.isEmpty()) {
+      throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
+    }
+    try {
+      Service s = (Service) params.get(0);
       s.stop();
-    } else {
+    } catch (ClassCastException e) {
       throw new IllegalArgumentException("Не предоставлен сервис для завершения.");
     }
     return null;

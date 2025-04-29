@@ -1,9 +1,11 @@
 package com.itmo.mrdvd.executor.commands.shell;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.executor.commands.Command;
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.service.AbstractExecutor;
-import java.util.Optional;
 
 /** Propably do it as a method of AbstractShell. */
 public class HelpCommand implements Command<String> {
@@ -14,7 +16,7 @@ public class HelpCommand implements Command<String> {
   }
 
   @Override
-  public String execute(Object params) {
+  public String execute(List<Object> params) {
     String result = "Available local commands:\n";
     for (String cmdName : this.exec.getCommandKeys()) {
       Optional<Command<?>> cmd = this.exec.getCommand(cmdName);

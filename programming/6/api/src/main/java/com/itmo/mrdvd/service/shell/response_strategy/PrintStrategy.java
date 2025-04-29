@@ -1,9 +1,10 @@
-package com.itmo.mrdvd.service.shell_response_strategy;
+package com.itmo.mrdvd.service.shell.response_strategy;
+
+import java.util.Optional;
 
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractShell;
-import java.util.Optional;
+import com.itmo.mrdvd.service.shell.AbstractShell;
 
 public class PrintStrategy implements ShellResponseStrategy {
   private final AbstractShell shell;

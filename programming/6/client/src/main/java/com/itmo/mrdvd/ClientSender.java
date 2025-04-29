@@ -30,7 +30,7 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
   @Override
   public Optional<Response> send(Query q) throws IllegalStateException, RuntimeException {
     if (this.socket == null) {
-      throw new IllegalStateException("Подключение не установлено.");
+      throw new IllegalStateException("Подключение не установлено для отправки запроса.");
     }
     if (this.mapper1 == null) {
       throw new IllegalStateException("Отсутствует маппер для исходящего запроса.");

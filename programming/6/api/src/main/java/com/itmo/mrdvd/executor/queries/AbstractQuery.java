@@ -6,13 +6,13 @@ public abstract class AbstractQuery implements Query {
   private String cmd;
   private String signature;
   private String description;
-  private Object params;
+  private List<Object> params;
 
   public AbstractQuery(String cmd, String signature, String desc) {
     this(cmd, signature, desc, List.of());
   }
 
-  public AbstractQuery(String cmd, String signature, String desc, Object params) {
+  public AbstractQuery(String cmd, String signature, String desc, List<Object> params) {
     this.cmd = cmd;
     this.signature = signature;
     this.description = desc;
@@ -35,7 +35,7 @@ public abstract class AbstractQuery implements Query {
   }
 
   @Override
-  public void setArgs(Object params) {
+  public void setArgs(List<Object> params) {
     this.params = params;
   }
 
@@ -55,7 +55,7 @@ public abstract class AbstractQuery implements Query {
   }
 
   @Override
-  public Object getArgs() {
+  public List<Object> getArgs() {
     return this.params;
   }
 }

@@ -1,17 +1,18 @@
 package com.itmo.mrdvd.proxy.strategies;
 
+import java.io.IOException;
+import java.util.Optional;
+
 import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.response.EmptyResponse;
 import com.itmo.mrdvd.proxy.response.InternalErrorResponse;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.service.AbstractSender;
-import java.io.IOException;
-import java.util.Optional;
 
-public class ClientStrategy implements ProxyStrategy {
+public class SendServerStrategy implements ProxyStrategy {
   private final AbstractSender<Query, String, Response> sender;
 
-  public ClientStrategy(AbstractSender<Query, String, Response> sender) {
+  public SendServerStrategy(AbstractSender<Query, String, Response> sender) {
     this.sender = sender;
   }
 
