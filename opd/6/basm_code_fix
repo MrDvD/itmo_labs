@@ -34,8 +34,8 @@ START:  DI          ; loading int vectors
         ST    X
 CYCLE:  LD    (X)+
         INC
-        CMP   #37
+        CMP   #13
         BCC   REPEAT
-        LD    #0xDB
+        LD    #0xEF
         ST    X
 REPEAT: JUMP  CYCLE
