@@ -1,0 +1,101 @@
+          ORG   0x100
+MASK:     WORD  0x00FF    ; masking last byte
+NONASCII: WORD  0x7F      ; first non-ascii symbol
+RUSSIAN:  WORD  0xC0      ; first russian symbol in KOI-8
+ADDR:     NOP             ; current mapping address
+INITADR:  WORD  0x200     ; start address of mapping table
+CHAR:     NOP             ; keeps an input char during the table lookup
+START:    LD    INITADR
+          ST    ADDR
+WAIT:     IN    5         ; spin-loop (wait for ВУ-2)
+          AND   #0x40
+          BZS   WAIT
+          IN    4
+          AND   MASK      ; check if an input char is in ascii range
+          CMP   NONASCII
+          BCC   PRINT
+          CMP   RUSSIAN   ; check if the input char is not russian
+          BCC   OUTRANGE  ; exit
+          ST    CHAR
+CHKKEY:   LD    (ADDR)    ; lookup for mapped char
+          AND   MASK
+          CMP   CHAR
+          BZS   GETVAL
+          LD    (ADDR)
+          SWAB
+          AND   MASK
+          CMP   CHAR
+          BZS   GETVAL
+          LD    (ADDR)+
+          JUMP  CHKKEY
+GETVAL:   LD    (ADDR)    ; retrieve decoded char
+          SWAB
+          AND   MASK
+PRINT:    OUT   2         ; send it to ВУ-1 (without asking SR#3)
+OUTRANGE: HLT
+
+          ORG   0x200     ; windows1251-to-koi8 table (key-value pairs)
+          WORD  0xE1C0    ; "А"
+          WORD  0xE2C1    ; "Б"
+          WORD  0xF7C2    ; "В"
+          WORD  0xE7C3    ; "Г"
+          WORD  0xE4C4    ; "Д"
+          WORD  0xE5C5    ; "Е"
+          WORD  0xF6C6    ; "Ж"
+          WORD  0xFAC7    ; "З"
+          WORD  0xE9C8    ; "И"
+          WORD  0xEAC9    ; "Й"
+          WORD  0xEBCA    ; "К"
+          WORD  0xECCB    ; "Л"
+          WORD  0xEDCC    ; "М"
+          WORD  0xEECD    ; "Н"
+          WORD  0xEFCE    ; "О"
+          WORD  0xF0CF    ; "П"
+          WORD  0xF2D0    ; "Р"
+          WORD  0xF3D1    ; "С"
+          WORD  0xF4D2    ; "Т"
+          WORD  0xF5D3    ; "У"
+          WORD  0xE6D4    ; "Ф"
+          WORD  0xE8D5    ; "Х"
+          WORD  0xE3D6    ; "Ц"
+          WORD  0xFED7    ; "Ч"
+          WORD  0xFBD8    ; "Ш"
+          WORD  0xFDD9    ; "Щ"
+          WORD  0xFFDA    ; "Ъ"
+          WORD  0xF9DB    ; "Ы"
+          WORD  0xF8DC    ; "Ь"
+          WORD  0xFCDD    ; "Э"
+          WORD  0xE0DE    ; "Ю"
+          WORD  0xF1DF    ; "Я"
+          WORD  0xC1E0    ; "а"  
+          WORD  0xC2E1    ; "б"  
+          WORD  0xD7E2    ; "в"  
+          WORD  0xC7E3    ; "г"  
+          WORD  0xC4E4    ; "д"  
+          WORD  0xC5E5    ; "е"  
+          WORD  0xD6E6    ; "ж"  
+          WORD  0xDAE7    ; "з"  
+          WORD  0xC9E8    ; "и"  
+          WORD  0xCAE9    ; "й"  
+          WORD  0xCBEA    ; "к"  
+          WORD  0xCCEB    ; "л"  
+          WORD  0xCDEC    ; "м"  
+          WORD  0xCEED    ; "н"  
+          WORD  0xCFEE    ; "о"  
+          WORD  0xD0EF    ; "п"  
+          WORD  0xD2F0    ; "р"  
+          WORD  0xD3F1    ; "с"  
+          WORD  0xD4F2    ; "т"  
+          WORD  0xD5F3    ; "у"  
+          WORD  0xC6F4    ; "ф"  
+          WORD  0xC8F5    ; "х"  
+          WORD  0xC3F6    ; "ц"  
+          WORD  0xDEF7    ; "ч"  
+          WORD  0xDBF8    ; "ш"  
+          WORD  0xDDF9    ; "щ"  
+          WORD  0xDFFA    ; "ъ"  
+          WORD  0xD9FB    ; "ы"  
+          WORD  0xD8FC    ; "ь"  
+          WORD  0xDCFD    ; "э"  
+          WORD  0xC0FE    ; "ю"  
+          WORD  0xD1FF    ; "я"  
