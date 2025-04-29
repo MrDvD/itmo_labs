@@ -3,27 +3,32 @@ V0:     WORD  $FUNC,0x180
 V1:     WORD  $LAND,0x180
 
         ORG   0x10
-LAND:   PUSH        ; X & (ВУ-2) -> X
+LAND:   NOP
+        PUSH        ; X & (ВУ-2) -> X
         IN    4
         AND   X
         ST    X
+        NOP
         POP
         IRET
 
-FUNC:   PUSH        ; F(X) = -7 * X + 7 -> ВУ-3
+FUNC:   NOP
+        PUSH        ; F(X) = -7 * X + 7 -> ВУ-3
         LD    X
         ASL
         ASL
         ADD   X
+        ADD   X
+        ADD   X
         NEG
         ADD   #7
         OUT   6
+        NOP
         POP
         IRET
 
         ORG   0x046
 X:      WORD  0
-COUNT:  WORD  0xFF
 
 START:  DI          ; loading int vectors
         LD    #8
@@ -33,7 +38,12 @@ START:  DI          ; loading int vectors
         EI          
         CLA         ; X++ in loop
         ST    X
-CYCLE:  LD    (X)+
-        LOOP  COUNT
+CYCLE:  DI
+        LD    X
+        INC
+        CMP   #13
+        BLT   REPEAT
+        LD    #0xEF
+REPEAT: ST    X
+        EI
         JUMP  CYCLE
-        HLT
