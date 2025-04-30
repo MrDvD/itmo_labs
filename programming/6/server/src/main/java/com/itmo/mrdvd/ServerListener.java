@@ -78,22 +78,16 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
             }
           }
           if (key.isReadable()) {
-            // System.out.println("Reading...");
             try (SocketChannel client = (SocketChannel) key.channel()) {
               ByteBuffer buffer = this.buffers.get(key);
               int bytesRead = client.read(buffer);
-              // System.out.println("Bytes read: " + bytesRead);
-              // System.out.println("Buffer content: " + new String(buffer.array()).trim());
               if (bytesRead > 0) {
                 buffer.flip();
                 String receivedData = this.chars.decode(buffer).toString();
                 buffer.clear();
                 Optional<? extends Query> q = this.mapper1.unwrap(receivedData);
                 if (q.isPresent()) {
-                  Response r = this.callback.apply(q.get());
-                  String s = this.mapper2.wrap(r);
-                  // System.out.println(s);
-                  ByteBuffer responseBuffer = this.chars.encode(s);
+                  ByteBuffer responseBuffer = this.chars.encode(this.mapper2.wrap(this.callback.apply(q.get())));
                   while (responseBuffer.hasRemaining()) {
                     client.write(responseBuffer);
                   }

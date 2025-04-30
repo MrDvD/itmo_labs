@@ -35,11 +35,7 @@ public class ConnectCommand implements Command<Void> {
       * because not each socketchannel requires host & port pair (like unix sockets).
       * And, to be honest, i don't really want to mess with this right now (maybe add this feature in future)
       */
-    try {
-      this.sender.connect(new InetSocketAddress(host, port));
-    } catch (RuntimeException | IOException e) {
-      throw new RuntimeException("Не удалось подключиться к серверу.");
-    }
+    this.sender.setAddress(new InetSocketAddress(host, port));
     return null;
   }
 
@@ -55,6 +51,6 @@ public class ConnectCommand implements Command<Void> {
 
   @Override
   public String description() {
-    return "подключить прокси к серверу по введённой связке хост-порт";
+    return "сохранить связку хост-порт для будущих запросов к коллекции";
   }
 }

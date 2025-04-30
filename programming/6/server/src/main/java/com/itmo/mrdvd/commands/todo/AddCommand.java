@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.commands;
+package com.itmo.mrdvd.commands.todo;
 
 import java.util.List;
 import java.util.Optional;

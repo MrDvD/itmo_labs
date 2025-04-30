@@ -45,6 +45,12 @@ public abstract class AbstractShell implements Service {
     return this.tty.isEmpty() ? Optional.empty() : Optional.of(this.tty.get(this.tty.size() - 1));
   }
 
+  public void popTty() {
+    if (!this.tty.isEmpty()) {
+      this.tty.remove(this.tty.size() - 1);
+    }
+  }
+
   public void setResponseStrategy(String name, ShellResponseStrategy s) {
     this.strats.put(name, s);
   }

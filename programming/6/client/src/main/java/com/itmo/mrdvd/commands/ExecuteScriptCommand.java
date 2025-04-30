@@ -64,7 +64,7 @@ public class ExecuteScriptCommand implements Command<Void> {
     usedPaths.add(p.get());
     shell.setTty(shell.getTty().get().setIn(fd));
     ...
-    // MOVE usedPaths to shell. Otherwise the command won't work as expected
+    // MOVE usedPaths to executor (map of objects). Otherwise the command won't work as expected
     usedPaths.remove(p.get());
     return null;
   }

@@ -1,13 +1,5 @@
 package com.itmo.mrdvd.service.shell;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.proxy.Proxy;
@@ -15,6 +7,13 @@ import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
@@ -49,13 +48,14 @@ public class DefaultShell extends AbstractShell {
   }
 
   /** Wraps the user input into Query. */
-  protected Optional<Query> fillQuery(String cmd) throws IOException {
+  protected Query fillQuery(String cmd) throws IOException {
     Query q = this.query.apply(cmd);
     Optional<QueryFillStrategy> arg = getArg(cmd);
     if (arg.isPresent()) {
       q = arg.get().fillArgs(q);
     }
-    return Optional.of(q);
+    getTty().get().getIn().skipLine();
+    return q;
   }
 
   protected void processLine() throws IOException, IllegalStateException {
@@ -67,13 +67,7 @@ public class DefaultShell extends AbstractShell {
       getTty().get().getIn().skipLine();
       return;
     }
-    Optional<Query> q = fillQuery(cmdName.get());
-    if (q.isEmpty()) {
-      getTty().get().getOut().writeln(String.format("Команда не найдена: %s", cmdName.get()));
-      return;
-    }
-    Response r = this.proxy.processQuery(q.get());
-    processResponse(r);
+    processResponse(this.proxy.processQuery(fillQuery(cmdName.get())));
   }
 
   @Override
@@ -87,16 +81,18 @@ public class DefaultShell extends AbstractShell {
         back.write("> ");
       }
       while (!getTty().get().getIn().hasNext()) {
+        getTty().get().getOut().closeOut();
         getTty().get().getIn().closeIn();
-        stop();
-        return;
+        popTty();
+        if (getTty().isEmpty()) {
+          stop();
+          return;
+        }
       }
       try {
         processLine();
       } catch (IOException e) {
         stop();
-      } catch (RuntimeException e) {
-        getTty().get().getOut().writeln(e.getMessage());
       }
     }
   }

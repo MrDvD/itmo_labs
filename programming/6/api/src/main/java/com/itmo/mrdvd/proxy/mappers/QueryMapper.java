@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.proxy.mappers;
 
+import com.itmo.mrdvd.proxy.Query;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.itmo.mrdvd.proxy.Query;
-
-public class QueryMapper implements Mapper<Map<String, String>, Query>{
+public class QueryMapper implements Mapper<Map<String, String>, Query> {
   private final Supplier<Query> supplier;
 
   public QueryMapper(Supplier<Query> supplier) {
@@ -24,6 +23,7 @@ public class QueryMapper implements Mapper<Map<String, String>, Query>{
 
   @Override
   public Optional<Map<String, String>> unwrap(Query q) {
-    return Optional.of(Map.of("cmd", q.getCmd(), "signature", q.getSignature(), "desc", q.getDesc()));
+    return Optional.of(
+        Map.of("cmd", q.getCmd(), "signature", q.getSignature(), "desc", q.getDesc()));
   }
 }

@@ -9,8 +9,7 @@ import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.mappers.QueryMapper;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.proxy.strategies.CacheQueriesStrategy;
-import com.itmo.mrdvd.proxy.strategies.ConnectStrategy;
-import com.itmo.mrdvd.proxy.strategies.ExitStrategy;
+import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.SendServerStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
@@ -26,8 +25,8 @@ public class ClientProxy extends AbstractProxy {
     super(strats);
     setDefaultStrategy(new SendServerStrategy(sender));
     setStrategy("help", new WrapStrategy(exec));
-    setStrategy("exit", new ExitStrategy(exec));
-    setStrategy("connect", new ConnectStrategy(exec));
+    setStrategy("exit", new InformStrategy(exec, "Производится выход..."));
+    setStrategy("connect", new InformStrategy(exec, "Связка \"хост-порт\" сохранена."));
     setStrategy("fetch_all", new CacheQueriesStrategy(sender, exec, mapper));
   }
 }

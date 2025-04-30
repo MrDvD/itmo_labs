@@ -13,18 +13,27 @@ import com.itmo.mrdvd.service.AbstractSender;
 
 public class ClientSender extends AbstractSender<Query, String, Response> {
   protected SocketChannel socket;
+  protected SocketAddress addr;
 
   public ClientSender(Mapper<? super Query, String> mapper1, Mapper<? extends Response, String> mapper2) {
     super(mapper1, mapper2);
   }
 
   @Override
-  public void connect(SocketAddress addr) throws RuntimeException, IOException {
+  public void setAddress(SocketAddress addr) {
+    this.addr = addr;
+  }
+
+  @Override
+  public void connect() throws IllegalStateException, IOException {
+    if (this.addr == null) {
+      throw new IllegalStateException("Адрес не установлен для подключения.");
+    }
     if (this.socket != null) {
       this.socket.close();
     }
     this.socket = SocketChannel.open();
-    this.socket.connect(addr);
+    this.socket.connect(this.addr);
   }
 
   @Override
@@ -53,7 +62,7 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
       String response = responseBuilder.toString().trim();
       // System.out.println(response);
       return this.mapper2.unwrap(response);
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
       throw new RuntimeException(e);
     }
   }

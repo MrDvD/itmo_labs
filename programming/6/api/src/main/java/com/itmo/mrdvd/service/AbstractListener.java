@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.service;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -7,8 +8,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.Map;
 import java.util.function.Function;
-
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 
 /** A service which blindly receives the info and sends the response. */
 public abstract class AbstractListener<T, U, R> implements Service {

@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.proxy.response;
 
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonRootName;
+import java.util.List;
 
 @JsonRootName("response")
 public abstract class AbstractResponse implements Response {
