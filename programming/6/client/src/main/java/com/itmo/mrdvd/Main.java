@@ -5,8 +5,8 @@ import java.nio.file.Path;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.device.DataConsole;
-import com.itmo.mrdvd.device.DefaultTTY;
 import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.EmptyQuery;
 import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
@@ -54,7 +54,7 @@ public class Main {
     ClientProxy proxy = new ClientProxy(sender, exec, new QueryMapper(EmptyQuery::new));
     CollectionShell shell = new CollectionShell(proxy, UserQuery::new);
     DataConsole console = new DataConsole().init();
-    shell.setTty(new DefaultTTY(console, console));
+    shell.setTty(new TTY(null, console, console) {});
     shell.start();
     // // just checking javascript execution
     

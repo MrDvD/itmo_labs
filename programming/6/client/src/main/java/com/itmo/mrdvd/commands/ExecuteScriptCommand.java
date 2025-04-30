@@ -4,31 +4,19 @@ import com.itmo.mrdvd.device.DataFileDescriptor;
 
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.Set;
 
+import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 
-/**
- * Propably it would be better to make this as a method of AbstractShell
- * instead of as a separate command?
- */
 public class ExecuteScriptCommand implements Command<Void> {
   private final DataFileDescriptor fd;
-  // move this field to AbstractShell!
-  private final Set<Path> usedPaths;
 
   public ExecuteScriptCommand(DataFileDescriptor fd) {
-    this(fd, new HashSet<>());
-  }
-
-  public ExecuteScriptCommand(DataFileDescriptor fd, Set<Path> usedPaths) {
     this.fd = fd;
-    this.usedPaths = usedPaths;
   }
 
   @Override
@@ -58,14 +46,13 @@ public class ExecuteScriptCommand implements Command<Void> {
     if (p.isEmpty()) {
       throw new IllegalArgumentException("Не удалось обратиться к файлу по адресу.");
     }
-    if (usedPaths.contains(p.get())) {
-      throw new RuntimeException(String.format("Обнаружена петля, экстренное завершение исполнения скрипта \"%s\".", p.get().getFileName().toString()));
+    try {
+      TTY tty = shell.getTty().get().setIn(fd);
+      tty.setName(p.get().toAbsolutePath().toString());
+      shell.setTty(tty);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException(String.format("Обнаружена петля, завершение выполнения: %s.", p.get().getFileName()));
     }
-    usedPaths.add(p.get());
-    shell.setTty(shell.getTty().get().setIn(fd));
-    ...
-    // MOVE usedPaths to executor (map of objects). Otherwise the command won't work as expected
-    usedPaths.remove(p.get());
     return null;
   }
 

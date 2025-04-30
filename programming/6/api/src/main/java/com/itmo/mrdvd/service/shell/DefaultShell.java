@@ -1,5 +1,15 @@
 package com.itmo.mrdvd.service.shell;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.proxy.Proxy;
@@ -7,13 +17,6 @@ import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
@@ -21,7 +24,7 @@ public class DefaultShell extends AbstractShell {
   private boolean isOpen;
 
   public DefaultShell(Proxy proxy, Function<String, Query> query) {
-    this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>());
+    this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
   }
 
   public DefaultShell(
@@ -29,8 +32,9 @@ public class DefaultShell extends AbstractShell {
       Function<String, Query> query,
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
-      Map<String, ShellResponseStrategy> strats) {
-    super(tty, args, strats);
+      Map<String, ShellResponseStrategy> strats,
+      Set<String> usedTtys) {
+    super(tty, args, strats, usedTtys);
     this.proxy = proxy;
     this.query = query;
   }

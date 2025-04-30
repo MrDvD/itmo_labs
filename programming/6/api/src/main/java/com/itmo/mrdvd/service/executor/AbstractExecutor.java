@@ -1,10 +1,11 @@
 package com.itmo.mrdvd.service.executor;
 
-import com.itmo.mrdvd.proxy.Query;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import com.itmo.mrdvd.proxy.Query;
 
 /** A wrapper class for a map of commands & cached queries. */
 public abstract class AbstractExecutor {
@@ -44,7 +45,7 @@ public abstract class AbstractExecutor {
     return this.commands.keySet();
   }
 
-  public void getArgsInstruction(String name) {}
+  // public void getArgsInstruction(String name) {}
 
   public Object processCommand(String name, List<Object> params) throws IllegalArgumentException {
     if (!this.commands.containsKey(name) || this.commands.get(name) == null) {

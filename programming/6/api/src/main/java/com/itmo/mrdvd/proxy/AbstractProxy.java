@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.proxy;
 
+import java.util.Map;
+
 import com.itmo.mrdvd.proxy.response.ErrorResponse;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
-import java.util.Map;
 
 public abstract class AbstractProxy implements Proxy {
   protected Map<String, ProxyStrategy> strats;
@@ -34,7 +35,7 @@ public abstract class AbstractProxy implements Proxy {
       }
       return this.defaultStrat.make(q);
     } catch (RuntimeException e) {
-      return new ErrorResponse(e.getMessage());
+      return new ErrorResponse(e.getLocalizedMessage());
     }
   }
 }

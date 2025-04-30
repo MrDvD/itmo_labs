@@ -1,26 +1,31 @@
 package com.itmo.mrdvd.service.shell;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.service.Service;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public abstract class AbstractShell implements Service {
   private final Map<String, QueryFillStrategy> requestArgs;
   protected final Map<String, ShellResponseStrategy> strats;
   protected ShellResponseStrategy defaultStrat;
+  private final Set<String> usedTtys;
   private final List<TTY> tty;
 
   public AbstractShell(
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
-      Map<String, ShellResponseStrategy> strats) {
+      Map<String, ShellResponseStrategy> strats,
+      Set<String> usedTtys) {
     this.tty = tty;
     this.requestArgs = args;
     this.strats = strats;
+    this.usedTtys = usedTtys;
   }
 
   /**
@@ -37,7 +42,10 @@ public abstract class AbstractShell implements Service {
     return Optional.ofNullable(this.requestArgs.get(name));
   }
 
-  public void setTty(TTY tty) {
+  public void setTty(TTY tty) throws IllegalArgumentException {
+    if (usedTtys.contains(tty.getName())) {
+      throw new IllegalArgumentException("TTY с таким именем уже используется.");
+    }
     this.tty.add(tty);
   }
 

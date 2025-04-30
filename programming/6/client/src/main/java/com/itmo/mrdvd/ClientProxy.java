@@ -26,6 +26,7 @@ public class ClientProxy extends AbstractProxy {
     setDefaultStrategy(new SendServerStrategy(sender));
     setStrategy("help", new WrapStrategy(exec));
     setStrategy("exit", new InformStrategy(exec, "Производится выход..."));
+    setStrategy("execute_script", new InformStrategy(exec, "Начинается выполнение скрипта..."));
     setStrategy("connect", new InformStrategy(exec, "Связка \"хост-порт\" сохранена."));
     setStrategy("fetch_all", new CacheQueriesStrategy(sender, exec, mapper));
   }
