@@ -24,12 +24,12 @@ import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 
-public class ServerExecutor extends AbstractExecutor {
-  public ServerExecutor(Collection<Ticket, List<Ticket>> collect, SuppliedBuilder<Ticket> builder) {
+public class PublicServerExecutor extends AbstractExecutor {
+  public PublicServerExecutor(Collection<Ticket, List<Ticket>> collect, SuppliedBuilder<Ticket> builder) {
     this(collect, builder, new HashMap<>(), new HashMap<>());
   }
 
-  public ServerExecutor(
+  public PublicServerExecutor(
       Collection<Ticket, List<Ticket>> collect, SuppliedBuilder<Ticket> builder, Map<String, Command<?>> commands, Map<String, Query> cachedQueries) {
     super(commands, cachedQueries);
     setCommand(new FetchAllCommand(this));

@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.commands;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.List;
 

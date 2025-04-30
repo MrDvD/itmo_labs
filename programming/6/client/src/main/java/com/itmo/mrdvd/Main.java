@@ -20,12 +20,16 @@ import com.itmo.mrdvd.queries.UserQuery;
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  * 2. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
- * 3. Realize the client-side validation
+ * 3. Realize the client-side validation (inrelevant for now)
  *    - #### SCHEME:
  * ```` 1. Shell gets the list of available Queries from ServerProxy (sends the query via ClientProxy)
  *      2. ClientProxy receives available Queries and validations JavaScript files.
  *      3. Shell validates input via JavaScript files.
  *      4. ClientProxy sends the validated Query to ServerProxy.
+ * 4. Somehow split the PublicServerExecutor and PrivateServerExecutor:
+ *    - integrate PrivateShell into ServerProxy (but it will be blocking)
+ *    - or split the shell and proxy at all (even with composition) and force it to speak with each other via unix sockets
+ *    - but then i have to differentiate between net socket and unix socket inside listener
  *
  * 0. Split the app into modules (PLANNED & may be not relevant)
  *    - exit in server vs exit in client; save in server
@@ -56,13 +60,5 @@ public class Main {
     DataConsole console = new DataConsole().init();
     shell.setTty(new TTY(null, console, console) {});
     shell.start();
-    // // just checking javascript execution
-    
-    // String JS_CODE = "(function myFun(param){console.log('Hello ' + param + ' from JS');})";
-    // String who = args.length == 0 ? "World" : args[0];
-    // Engine engine = Engine.newBuilder().option("engine.WarnInterpreterOnly", "false").build();
-    // Context ctx = Context.newBuilder("js").engine(engine).build();
-    // Value value = ctx.eval("js", JS_CODE);
-    // value.execute(who);
   }
 }

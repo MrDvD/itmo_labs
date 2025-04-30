@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.proxy.strategies;
 
+import com.itmo.mrdvd.service.AbstractSender;
 import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.response.EmptyResponse;
 import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractSender;
+
 import java.io.IOException;
 import java.util.Optional;
 

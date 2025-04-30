@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.service;
 
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Optional;
+
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 
 /** A service which blindly sends the info and gets the response. */
 public abstract class AbstractSender<T, U, R> implements Service {
