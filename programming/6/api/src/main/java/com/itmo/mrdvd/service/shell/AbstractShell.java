@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.service.shell;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.service.Service;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractShell implements Service {
   private final Map<String, QueryFillStrategy> requestArgs;
@@ -16,7 +15,9 @@ public abstract class AbstractShell implements Service {
   private final List<TTY> tty;
 
   public AbstractShell(
-      List<TTY> tty, Map<String, QueryFillStrategy> args, Map<String, ShellResponseStrategy> strats) {
+      List<TTY> tty,
+      Map<String, QueryFillStrategy> args,
+      Map<String, ShellResponseStrategy> strats) {
     this.tty = tty;
     this.requestArgs = args;
     this.strats = strats;

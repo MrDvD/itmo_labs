@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.itmo.mrdvd.device.DataFileDescriptor;
-import com.itmo.mrdvd.executor.commands.Command;
+import com.itmo.mrdvd.service.executor.Command;
 
 /**
  * WIP

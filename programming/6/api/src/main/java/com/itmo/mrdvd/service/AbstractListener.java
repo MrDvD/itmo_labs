@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.service;
 
-import com.itmo.mrdvd.proxy.Mapper;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -9,19 +8,21 @@ import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.Map;
 import java.util.function.Function;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+
 /** A service which blindly receives the info and sends the response. */
 public abstract class AbstractListener<T, U, R> implements Service {
   protected final Selector selector;
   protected final Map<SelectionKey, AbstractSelectableChannel> sockets;
-  protected final Mapper<T, U> mapper1;
-  protected final Mapper<R, U> mapper2;
+  protected final Mapper<? extends T, U> mapper1;
+  protected final Mapper<? super R, U> mapper2;
   protected final Function<T, R> callback;
 
   public AbstractListener(
       Selector selector,
       Function<T, R> callback,
-      Mapper<T, U> mapper1,
-      Mapper<R, U> mapper2,
+      Mapper<? extends T, U> mapper1,
+      Mapper<? super R, U> mapper2,
       Map<SelectionKey, AbstractSelectableChannel> sockets) {
     this.selector = selector;
     this.mapper1 = mapper1;

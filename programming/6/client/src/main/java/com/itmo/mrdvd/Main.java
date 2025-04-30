@@ -7,10 +7,12 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.DefaultTTY;
 import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.executor.queries.UserQuery;
-import com.itmo.mrdvd.proxy.ObjectSerializer;
-import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.proxy.EmptyQuery;
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
+import com.itmo.mrdvd.proxy.mappers.QueryMapper;
+import com.itmo.mrdvd.proxy.response.EmptyResponse;
+import com.itmo.mrdvd.queries.UserQuery;
 
 /*
  * TODO:
@@ -46,10 +48,10 @@ import com.itmo.mrdvd.proxy.response.Response;
 public class Main {
   public static void main(String[] args) {
     ObjectSerializer<Query> serialQuery = new ObjectSerializer<>(new XmlMapper(), Query.class);
-    ObjectSerializer<Response> serialResponse = new ObjectSerializer<>(new XmlMapper(), Response.class);
+    ObjectSerializer<EmptyResponse> serialResponse = new ObjectSerializer<>(new XmlMapper(), EmptyResponse.class);
     ClientSender sender = new ClientSender(serialQuery, serialResponse); 
     ClientExecutor exec = new ClientExecutor(new FileIO(Path.of(""), FileSystems.getDefault()), sender);
-    ClientProxy proxy = new ClientProxy(sender, exec);
+    ClientProxy proxy = new ClientProxy(sender, exec, new QueryMapper(EmptyQuery::new));
     CollectionShell shell = new CollectionShell(proxy, UserQuery::new);
     DataConsole console = new DataConsole().init();
     shell.setTty(new DefaultTTY(console, console));

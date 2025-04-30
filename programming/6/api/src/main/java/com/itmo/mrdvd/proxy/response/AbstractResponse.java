@@ -1,10 +1,15 @@
 package com.itmo.mrdvd.proxy.response;
 
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName("response")
 public abstract class AbstractResponse implements Response {
   protected String name;
-  protected Object body;
+  protected List<Object> body;
 
-  public AbstractResponse(String name, Object body) {
+  public AbstractResponse(String name, List<Object> body) {
     this.name = name;
     this.body = body;
   }
@@ -15,7 +20,7 @@ public abstract class AbstractResponse implements Response {
   }
 
   @Override
-  public void setBody(Object body) {
+  public void setBody(List<Object> body) {
     this.body = body;
   }
 
@@ -25,7 +30,7 @@ public abstract class AbstractResponse implements Response {
   }
 
   @Override
-  public Object getBody() {
+  public List<Object> getBody() {
     return this.body;
   }
 }

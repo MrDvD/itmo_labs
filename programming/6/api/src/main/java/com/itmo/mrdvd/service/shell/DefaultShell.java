@@ -10,8 +10,8 @@ import java.util.function.Function;
 
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;

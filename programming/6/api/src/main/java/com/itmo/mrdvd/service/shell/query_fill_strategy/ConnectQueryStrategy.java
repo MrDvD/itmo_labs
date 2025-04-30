@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.service.shell.query_fill_strategy;
 
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.service.shell.AbstractShell;
 
 public class ConnectQueryStrategy implements QueryFillStrategy {
   private final AbstractShell shell;

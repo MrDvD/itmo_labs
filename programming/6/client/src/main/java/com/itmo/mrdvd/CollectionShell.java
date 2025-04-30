@@ -7,8 +7,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.shell.DefaultShell;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ConnectQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ExitQueryStrategy;

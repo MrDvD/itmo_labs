@@ -6,15 +6,15 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.proxy.Mapper;
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.service.AbstractSender;
 
 public class ClientSender extends AbstractSender<Query, String, Response> {
   protected SocketChannel socket;
 
-  public ClientSender(Mapper<Query, String> mapper1, Mapper<Response, String> mapper2) {
+  public ClientSender(Mapper<? super Query, String> mapper1, Mapper<? extends Response, String> mapper2) {
     super(mapper1, mapper2);
   }
 
@@ -28,7 +28,7 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
   }
 
   @Override
-  public Optional<Response> send(Query q) throws IllegalStateException, RuntimeException {
+  public Optional<? extends Response> send(Query q) throws IllegalStateException, RuntimeException {
     if (this.socket == null) {
       throw new IllegalStateException("Подключение не установлено для отправки запроса.");
     }
@@ -43,9 +43,15 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
       ByteBuffer buffer = ByteBuffer.wrap(qSerial.getBytes());
       this.socket.write(buffer);
       buffer.clear();
-      this.socket.read(buffer);
-      String response = new String(buffer.array()).trim();
-      buffer.clear();
+      StringBuilder responseBuilder = new StringBuilder();
+      int bytesRead;
+      while ((bytesRead = this.socket.read(buffer)) > 0) {
+        buffer.flip();
+        responseBuilder.append(new String(buffer.array(), 0, bytesRead));
+        buffer.clear();
+      }
+      String response = responseBuilder.toString().trim();
+      // System.out.println(response);
       return this.mapper2.unwrap(response);
     } catch (IOException e) {
       throw new RuntimeException(e);

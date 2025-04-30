@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.service.shell.response_strategy;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.itmo.mrdvd.device.TTY;
@@ -18,7 +19,10 @@ public class PrintStrategy implements ShellResponseStrategy {
     Optional<TTY> tty = this.shell.getTty();
     if (tty.isPresent()) {
       try {
-        tty.get().getOut().writeln((String) r.getBody());
+        List<Object> lst = r.getBody();
+        if (!lst.isEmpty()) {
+          tty.get().getOut().writeln((String) lst.get(0));
+        }
       } catch (ClassCastException e) {
         throw new RuntimeException("Не удалось обработать ответ.");
       }

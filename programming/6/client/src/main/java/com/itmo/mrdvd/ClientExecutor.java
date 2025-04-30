@@ -3,16 +3,16 @@ package com.itmo.mrdvd;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itmo.mrdvd.commands.ConnectCommand;
+import com.itmo.mrdvd.commands.ExecuteScriptCommand;
+import com.itmo.mrdvd.commands.ExitCommand;
+import com.itmo.mrdvd.commands.HelpCommand;
 import com.itmo.mrdvd.device.DataFileDescriptor;
-import com.itmo.mrdvd.executor.commands.Command;
-import com.itmo.mrdvd.executor.commands.shell.ConnectCommand;
-import com.itmo.mrdvd.executor.commands.shell.ExecuteScriptCommand;
-import com.itmo.mrdvd.executor.commands.shell.ExitCommand;
-import com.itmo.mrdvd.executor.commands.shell.FetchAllCommand;
-import com.itmo.mrdvd.executor.commands.shell.HelpCommand;
-import com.itmo.mrdvd.executor.queries.Query;
-import com.itmo.mrdvd.service.AbstractExecutor;
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.queries.FetchAllQuery;
 import com.itmo.mrdvd.service.AbstractSender;
+import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import com.itmo.mrdvd.service.executor.Command;
 
 public class ClientExecutor extends AbstractExecutor {
   public ClientExecutor(DataFileDescriptor fd, AbstractSender<?, ?, ?> sender) {
@@ -25,6 +25,6 @@ public class ClientExecutor extends AbstractExecutor {
     setCommand(new ExitCommand());
     setCommand(new ExecuteScriptCommand(fd));
     setCommand(new ConnectCommand(sender));
-    setCommand(new FetchAllCommand(this));
+    setQuery(new FetchAllQuery());
   }
 }

@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.proxy;
 
-import com.itmo.mrdvd.executor.queries.Query;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import java.util.Map;

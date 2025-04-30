@@ -1,9 +1,11 @@
 package com.itmo.mrdvd.proxy.strategies;
 
-import com.itmo.mrdvd.executor.queries.Query;
+import java.util.List;
+
+import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.response.AbstractResponse;
 import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractExecutor;
+import com.itmo.mrdvd.service.executor.AbstractExecutor;
 
 public class ExitStrategy implements ProxyStrategy {
   private final AbstractExecutor exec;
@@ -15,6 +17,6 @@ public class ExitStrategy implements ProxyStrategy {
   @Override
   public Response make(Query q) {
     this.exec.processCommand(q.getCmd(), q.getArgs());
-    return new AbstractResponse(q.getCmd(), "Производится выход...") {};
+    return new AbstractResponse(q.getCmd(), List.of("Производится выход...")) {};
   }
 }
