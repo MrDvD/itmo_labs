@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
+import java.util.Optional;
 
 /** Propably do it as a method of AbstractShell. */
 public class HelpCommand implements Command<String> {

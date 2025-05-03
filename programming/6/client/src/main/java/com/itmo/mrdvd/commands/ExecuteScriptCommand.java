@@ -1,16 +1,14 @@
 package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.device.DataFileDescriptor;
-
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.service.executor.Command;
-import com.itmo.mrdvd.service.shell.AbstractShell;
 
 public class ExecuteScriptCommand implements Command<Void> {
   private final DataFileDescriptor fd;
@@ -51,7 +49,8 @@ public class ExecuteScriptCommand implements Command<Void> {
       tty.setName(p.get().toAbsolutePath().toString());
       shell.setTty(tty);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(String.format("Обнаружена петля, завершение выполнения: %s.", p.get().getFileName()));
+      throw new IllegalArgumentException(
+          String.format("Обнаружена петля, завершение выполнения: %s.", p.get().getFileName()));
     }
     return null;
   }

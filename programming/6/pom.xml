@@ -4,14 +4,16 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>6-parent</artifactId>
+  <artifactId>6-main</artifactId>
   <version>1.0</version>
   <packaging>pom</packaging>
 
-  <name>Lab 6 - Parent</name>
+  <name>Lab 6 - Main</name>
 
   <modules>
-    <module>api</module>
+    <module>common-api</module>
+    <module>client-api</module>
+    <module>server-api</module>
     <module>client</module>
     <module>server</module>
   </modules>

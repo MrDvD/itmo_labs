@@ -8,9 +8,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.builder.builders.SuppliedCoordinatesBuilder;
-import com.itmo.mrdvd.builder.builders.SuppliedEventBuilder;
-import com.itmo.mrdvd.builder.builders.SuppliedTicketBuilder;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.proxy.EmptyQuery;
@@ -23,7 +20,7 @@ public class Main {
     ObjectSerializer<Response> serialResponse = new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build(), Response.class);
     ObjectSerializer<TicketCollection> serialCollection = new ObjectSerializer<>(new XmlMapper(), TicketCollection.class);
     TicketCollection collect = new TicketCollection();
-    PublicServerExecutor publicExec = new PublicServerExecutor(collect, new SuppliedTicketBuilder(new SuppliedEventBuilder(), new SuppliedCoordinatesBuilder()));
+    PublicServerExecutor publicExec = new PublicServerExecutor(collect);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(collect, serialCollection, new FileIO(Path.of(""), FileSystems.getDefault()));
     ServerProxy proxy = new ServerProxy(publicExec);
     ServerListener listener = new ServerListener(Selector.open(), proxy::processQuery, serialQuery, serialResponse);

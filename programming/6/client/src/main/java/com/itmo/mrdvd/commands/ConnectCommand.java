@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.commands;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-
 import com.itmo.mrdvd.service.AbstractSender;
 import com.itmo.mrdvd.service.executor.Command;
+import java.net.InetSocketAddress;
+import java.util.List;
 
 public class ConnectCommand implements Command<Void> {
   protected final AbstractSender<?, ?, ?> sender;
@@ -30,10 +29,10 @@ public class ConnectCommand implements Command<Void> {
       throw new IllegalArgumentException("Не удалось распознать аргументы для подключения.");
     }
     /*
-      * Of course, it's Tight Coupling, but otherwise i would have to write the variable input parser (~Strategy Pattern or so)
-      * because not each socketchannel requires host & port pair (like unix sockets).
-      * And, to be honest, i don't really want to mess with this right now (maybe add this feature in future)
-      */
+     * Of course, it's Tight Coupling, but otherwise i would have to write the variable input parser (~Strategy Pattern or so)
+     * because not each socketchannel requires host & port pair (like unix sockets).
+     * And, to be honest, i don't really want to mess with this right now (maybe add this feature in future)
+     */
     this.sender.setAddress(new InetSocketAddress(host, port));
     return null;
   }

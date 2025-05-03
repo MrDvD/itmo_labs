@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.service.Service;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class ExitCommand implements Command<Void> {
   @Override

@@ -1,21 +1,21 @@
 package com.itmo.mrdvd;
 
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractSender;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractSender;
-
 public class ClientSender extends AbstractSender<Query, String, Response> {
   protected SocketChannel socket;
   protected SocketAddress addr;
 
-  public ClientSender(Mapper<? super Query, String> mapper1, Mapper<? extends Response, String> mapper2) {
+  public ClientSender(
+      Mapper<? super Query, String> mapper1, Mapper<? extends Response, String> mapper2) {
     super(mapper1, mapper2);
   }
 
