@@ -10,9 +10,13 @@ import java.nio.file.Path;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.private_scope.PrivateServerExecutor;
+import com.itmo.mrdvd.private_scope.PrivateServerProxy;
 import com.itmo.mrdvd.proxy.EmptyQuery;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.public_scope.PublicServerExecutor;
+import com.itmo.mrdvd.public_scope.PublicServerProxy;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -22,11 +26,15 @@ public class Main {
     TicketCollection collect = new TicketCollection();
     PublicServerExecutor publicExec = new PublicServerExecutor(collect);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(collect, serialCollection, new FileIO(Path.of(""), FileSystems.getDefault()));
-    ServerProxy proxy = new ServerProxy(publicExec);
-    ServerListener listener = new ServerListener(Selector.open(), proxy::processQuery, serialQuery, serialResponse);
-    ServerSocketChannel sock = ServerSocketChannel.open();
-    sock.bind(new InetSocketAddress("localhost", 8080));
-    listener.addListener(sock);
+    PublicServerProxy publicProxy = new PublicServerProxy(publicExec);
+    PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy);
+    ServerListener listener = new ServerListener(Selector.open(), serialQuery, serialResponse);
+    ServerSocketChannel publicSock = ServerSocketChannel.open();
+    ServerSocketChannel privateSock = ServerSocketChannel.open();
+    publicSock.bind(new InetSocketAddress("localhost", 8080));
+    privateSock.bind(new InetSocketAddress("localhost", 8090));
+    listener.addListener(publicSock, publicProxy::processQuery);
+    listener.addListener(privateSock, privateProxy::processQuery);
     listener.start();
   }
 }

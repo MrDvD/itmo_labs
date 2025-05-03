@@ -30,6 +30,10 @@ public abstract class AbstractExecutor {
     return this.cachedQueries.keySet();
   }
 
+  public void clearCachedQueries() {
+    this.cachedQueries.clear();
+  }
+
   public void setCommand(Command<?> command) {
     this.commands.put(command.name(), command);
   }

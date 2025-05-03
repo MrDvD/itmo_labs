@@ -1,5 +1,8 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
@@ -10,8 +13,6 @@ import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.QueryMapper;
 import com.itmo.mrdvd.proxy.response.EmptyResponse;
 import com.itmo.mrdvd.queries.UserQuery;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 /*
  * TODO:
@@ -25,10 +26,6 @@ import java.nio.file.Path;
  *      2. ClientProxy receives available Queries and validations JavaScript files.
  *      3. Shell validates input via JavaScript files.
  *      4. ClientProxy sends the validated Query to ServerProxy.
- * 4. Somehow split the PublicServerExecutor and PrivateServerExecutor:
- *    - integrate PrivateShell into ServerProxy (but it will be blocking)
- *    - or split the shell and proxy at all (even with composition) and force it to speak with each other via unix sockets
- *    - but then i have to differentiate between net socket and unix socket inside listener
  *
  * 0. Split the app into modules (PLANNED & may be not relevant)
  *    - exit in server vs exit in client; save in server

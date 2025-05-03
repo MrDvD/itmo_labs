@@ -1,4 +1,4 @@
-package com.itmo.mrdvd;
+package com.itmo.mrdvd.public_scope;
 
 import java.util.HashMap;
 import java.util.List;

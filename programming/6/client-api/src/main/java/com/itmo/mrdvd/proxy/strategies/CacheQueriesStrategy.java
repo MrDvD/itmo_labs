@@ -33,6 +33,7 @@ public class CacheQueriesStrategy implements ProxyStrategy {
         this.sender.connect();
         Optional<? extends Response> r = this.sender.send(q);
         if (r.isPresent()) {
+          this.exec.clearCachedQueries();
           for (Object qq : (List) r.get().getBody()) {
             this.exec.setQuery(this.mapper.wrap((Map) qq));
           }

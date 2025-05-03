@@ -25,23 +25,23 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
   protected final Charset chars;
   protected boolean isOpen;
 
-  public ServerListener(Selector selector, Function<Query, Response> callback, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2) {
-    this(selector, callback, mapper1, mapper2, 16384, Charset.forName("UTF-8"));
+  public ServerListener(Selector selector, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2) {
+    this(selector, mapper1, mapper2, 16384, Charset.forName("UTF-8"));
   }
 
-  public ServerListener(Selector selector, Function<Query, Response> callback, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2, int bufferSize, Charset chars) {
-    this(selector, callback, mapper1, mapper2, bufferSize, chars, new HashMap<>(), new HashMap<>());
+  public ServerListener(Selector selector, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2, int bufferSize, Charset chars) {
+    this(selector, mapper1, mapper2, bufferSize, chars, new HashMap<>(), new HashMap<>(), new HashMap<>());
   }
   
   public ServerListener(Selector selector,
-      Function<Query, Response> callback,
       Mapper<? extends Query, String> mapper1,
       Mapper<? super Response, String> mapper2,
       int bufferSize,
       Charset chars,
       Map<SelectionKey, AbstractSelectableChannel> sockets,
-      Map<SelectionKey, ByteBuffer> buffers) {
-    super(selector, callback, mapper1, mapper2, sockets);
+      Map<SelectionKey, ByteBuffer> buffers,
+      Map<SelectionKey, Function<Query, Response>> callbacks) {
+    super(selector, mapper1, mapper2, sockets, callbacks);
     this.buffers = buffers;
     this.bufferSize = bufferSize;
     this.chars = chars;
@@ -58,9 +58,6 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
     if (this.mapper2 == null) {
       throw new IllegalStateException("Не предоставлен маппер исходящих запросов.");
     }
-    if (this.callback == null) {
-      throw new IllegalStateException("Не предоставлен метод для обработки входящих запросов.");
-    }
     this.isOpen = true;
     try {
       while (this.isOpen) {
@@ -75,6 +72,7 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
               SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
               this.sockets.put(clientKey, client);
               this.buffers.put(clientKey, ByteBuffer.allocate(bufferSize));
+              this.callbacks.put(clientKey, this.callbacks.get(key));
             }
           }
           if (key.isReadable()) {
@@ -87,13 +85,16 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
                 buffer.clear();
                 Optional<? extends Query> q = this.mapper1.unwrap(receivedData);
                 if (q.isPresent()) {
-                  ByteBuffer responseBuffer = this.chars.encode(this.mapper2.wrap(this.callback.apply(q.get())));
+                  ByteBuffer responseBuffer = this.chars.encode(this.mapper2.wrap(this.callbacks.get(key).apply(q.get())));
                   while (responseBuffer.hasRemaining()) {
                     client.write(responseBuffer);
                   }
                 }
               }
             }
+            this.sockets.remove(key);
+            this.buffers.remove(key);
+            this.callbacks.remove(key);
           }
           keys.remove(key);
         }

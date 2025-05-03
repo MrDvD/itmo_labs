@@ -1,10 +1,11 @@
-package com.itmo.mrdvd;
+package com.itmo.mrdvd.private_scope;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.commands.FetchAllCommand;
 import com.itmo.mrdvd.commands.SaveCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.proxy.Query;
@@ -20,6 +21,7 @@ public class PrivateServerExecutor extends AbstractExecutor {
   public PrivateServerExecutor(
       Collection<?, ?> collect, Mapper<? super TicketCollection, String> serial, FileDescriptor fd, Map<String, Command<?>> commands, Map<String, Query> cachedQueries) {
     super(commands, cachedQueries);
+    setCommand(new FetchAllCommand(this));
     setCommand(new SaveCommand(collect, serial, null));
   }
 }
