@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.device;
 
+import com.itmo.mrdvd.device.input.InputDevice;
 import java.nio.file.FileSystem;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Optional;
-
-import com.itmo.mrdvd.device.input.InputDevice;
 
 public abstract class FileDescriptor implements InputDevice, OutputDevice, FileMeta {
   protected Path path;

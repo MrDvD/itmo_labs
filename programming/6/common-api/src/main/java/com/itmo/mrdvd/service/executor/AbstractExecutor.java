@@ -52,7 +52,7 @@ public abstract class AbstractExecutor {
 
   public Object processCommand(String name, List<Object> params) throws IllegalArgumentException {
     if (!this.commands.containsKey(name) || this.commands.get(name) == null) {
-      throw new IllegalArgumentException(String.format("Команда не найдена: ", name));
+      throw new IllegalArgumentException(String.format("Команда \"%s\" не найдена.", name));
     }
     return this.commands.get(name).execute(params);
   }

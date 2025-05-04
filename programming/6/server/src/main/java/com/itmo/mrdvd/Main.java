@@ -21,9 +21,6 @@ import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.public_scope.PublicServerExecutor;
 import com.itmo.mrdvd.public_scope.PublicServerProxy;
 
-/*
- * Fix "Команда не найдена: " message if proxy is not setup (but executor has commands)
- */
 public class Main {
   public static void main(String[] args) throws IOException {
     ObjectSerializer<EmptyQuery> serialQuery = new ObjectSerializer<>(new XmlMapper(), EmptyQuery.class);
