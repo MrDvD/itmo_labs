@@ -1,8 +1,5 @@
 package com.itmo.mrdvd;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.FileIO;
@@ -13,6 +10,8 @@ import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.QueryMapper;
 import com.itmo.mrdvd.proxy.response.EmptyResponse;
 import com.itmo.mrdvd.queries.UserQuery;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 /*
  * TODO:
@@ -20,7 +19,7 @@ import com.itmo.mrdvd.queries.UserQuery;
  *    - idea: use JavaScript to validate the input
  *    - when sending a query, execute JavaScript files if it has params (for validation purposes)
  * 2. Add [ERROR] / [WARN] prefix of exceptions on Shell level (maybe write my own exceptions with additional info for ERR/WARN differentiation)
- * 3. Realize the client-side validation (inrelevant for now)
+ * 3. Realize the client-side validation (irrelevant for now)
  *    - #### SCHEME:
  * ```` 1. Shell gets the list of available Queries from ServerProxy (sends the query via ClientProxy)
  *      2. ClientProxy receives available Queries and validations JavaScript files.
