@@ -1,22 +1,23 @@
 package com.itmo.mrdvd;
 
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractSender;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractSender;
+
 public class ClientSender extends AbstractSender<Query, String, Response> {
   protected SocketChannel socket;
   protected SocketAddress addr;
 
   public ClientSender(
-      Mapper<? super Query, String> mapper1, Mapper<? extends Response, String> mapper2) {
-    super(mapper1, mapper2);
+      Mapper<? super Query, String> querySerial, Mapper<String, ? extends Response> responseDeserial) {
+    super(querySerial, responseDeserial);
   }
 
   @Override
@@ -41,15 +42,18 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
     if (this.socket == null) {
       throw new IllegalStateException("Подключение не установлено для отправки запроса.");
     }
-    if (this.mapper1 == null) {
+    if (this.serial == null) {
       throw new IllegalStateException("Отсутствует маппер для исходящего запроса.");
     }
-    if (this.mapper2 == null) {
+    if (this.deserial == null) {
       throw new IllegalStateException("Отсутствует маппер для входящего запроса.");
     }
     try {
-      String qSerial = this.mapper1.wrap(q);
-      ByteBuffer buffer = ByteBuffer.wrap(qSerial.getBytes());
+      Optional<String> qSerial = this.serial.convert(q);
+      if (qSerial.isEmpty()) {
+        throw new RuntimeException("Не удалось сериализовать запрос.");
+      }
+      ByteBuffer buffer = ByteBuffer.wrap(qSerial.get().getBytes());
       this.socket.write(buffer);
       buffer.clear();
       StringBuilder responseBuilder = new StringBuilder();
@@ -60,8 +64,7 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
         buffer.clear();
       }
       String response = responseBuilder.toString().trim();
-      // System.out.println(response);
-      return this.mapper2.unwrap(response);
+      return this.deserial.convert(response);
     } catch (IOException | RuntimeException e) {
       throw new RuntimeException(e);
     }

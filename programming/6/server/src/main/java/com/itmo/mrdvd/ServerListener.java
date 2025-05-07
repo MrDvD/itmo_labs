@@ -1,9 +1,5 @@
 package com.itmo.mrdvd;
 
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractListener;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -18,7 +14,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-public class ServerListener extends AbstractListener<Query, String, Response> {
+import com.itmo.mrdvd.proxy.EmptyQuery;
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractListener;
+
+public class ServerListener extends AbstractListener<EmptyQuery, String, Response> {
   protected final Map<SelectionKey, ByteBuffer> buffers;
   protected final int bufferSize;
   protected final Charset chars;
@@ -26,21 +28,21 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
 
   public ServerListener(
       Selector selector,
-      Mapper<? extends Query, String> mapper1,
-      Mapper<? super Response, String> mapper2) {
-    this(selector, mapper1, mapper2, 16384, Charset.forName("UTF-8"));
+      Mapper<String, ? extends EmptyQuery> deserialQuery,
+      Mapper<? super Response, String> serialResponse) {
+    this(selector, deserialQuery, serialResponse, 16384, Charset.forName("UTF-8"));
   }
 
   public ServerListener(
       Selector selector,
-      Mapper<? extends Query, String> mapper1,
-      Mapper<? super Response, String> mapper2,
+      Mapper<String, ? extends EmptyQuery> deserialQuery,
+      Mapper<? super Response, String> serialResponse,
       int bufferSize,
       Charset chars) {
     this(
         selector,
-        mapper1,
-        mapper2,
+        deserialQuery,
+        serialResponse,
         bufferSize,
         chars,
         new HashMap<>(),
@@ -50,14 +52,14 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
 
   public ServerListener(
       Selector selector,
-      Mapper<? extends Query, String> mapper1,
-      Mapper<? super Response, String> mapper2,
+      Mapper<String, ? extends EmptyQuery> deserialQuery,
+      Mapper<? super Response, String> serialResponse,
       int bufferSize,
       Charset chars,
       Map<SelectionKey, AbstractSelectableChannel> sockets,
       Map<SelectionKey, ByteBuffer> buffers,
       Map<SelectionKey, Function<Query, Response>> callbacks) {
-    super(selector, mapper1, mapper2, sockets, callbacks);
+    super(selector, deserialQuery, serialResponse, sockets, callbacks);
     this.buffers = buffers;
     this.bufferSize = bufferSize;
     this.chars = chars;
@@ -66,10 +68,10 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
   /** Waits for incoming connections in a non-blocking way. */
   @Override
   public void start() throws IllegalStateException, RuntimeException {
-    if (this.mapper1 == null) {
+    if (this.deserialQuery == null) {
       throw new IllegalStateException("Не предоставлен маппер входящих запросов.");
     }
-    if (this.mapper2 == null) {
+    if (this.serialResponse == null) {
       throw new IllegalStateException("Не предоставлен маппер исходящих запросов.");
     }
     this.isOpen = true;
@@ -97,12 +99,14 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
                 buffer.flip();
                 String receivedData = this.chars.decode(buffer).toString();
                 buffer.clear();
-                Optional<? extends Query> q = this.mapper1.unwrap(receivedData);
+                Optional<? extends EmptyQuery> q = this.deserialQuery.convert(receivedData);
                 if (q.isPresent()) {
-                  ByteBuffer responseBuffer =
-                      this.chars.encode(this.mapper2.wrap(this.callbacks.get(key).apply(q.get())));
-                  while (responseBuffer.hasRemaining()) {
-                    client.write(responseBuffer);
+                  Optional<String> serialized = this.serialResponse.convert(this.callbacks.get(key).apply(q.get()));
+                  if (serialized.isPresent()) {
+                    ByteBuffer responseBuffer = this.chars.encode(serialized.get());
+                    while (responseBuffer.hasRemaining()) {
+                      client.write(responseBuffer);
+                    } 
                   }
                 }
               }

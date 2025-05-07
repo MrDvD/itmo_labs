@@ -1,8 +1,8 @@
 package com.itmo.mrdvd.queries;
 
-import com.itmo.mrdvd.proxy.AbstractQuery;
+import com.itmo.mrdvd.proxy.DefaultQuery;
 
-public class UserQuery extends AbstractQuery {
+public class UserQuery extends DefaultQuery {
   public UserQuery(String cmd) {
     super(cmd, cmd, "пользовательский запрос");
   }

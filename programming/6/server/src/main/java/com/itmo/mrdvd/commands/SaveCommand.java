@@ -1,11 +1,13 @@
 package com.itmo.mrdvd.commands;
 
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
-import java.util.List;
 
 public class SaveCommand<T extends HavingId, U> implements Command<Void> {
   private final Collection<T, U> collection;
@@ -40,7 +42,11 @@ public class SaveCommand<T extends HavingId, U> implements Command<Void> {
       throw new IllegalStateException("Не удалось распознать путь к файлу.");
     }
     file.openOut();
-    file.writeln(this.serial.wrap(collection));
+    Optional<String> serialized = this.serial.convert(collection);
+    if (serialized.isEmpty()) {
+      throw new RuntimeException("Не удалось сериализовать коллекцию.");
+    }
+    file.writeln(serialized.get());
     file.closeOut();
     return null;
   }

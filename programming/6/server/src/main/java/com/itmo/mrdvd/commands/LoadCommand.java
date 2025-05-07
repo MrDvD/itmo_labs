@@ -1,26 +1,27 @@
 package com.itmo.mrdvd.commands;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Optional;
+
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
 public class LoadCommand<T extends HavingId, U> implements Command<Void> {
   private final InputDevice in;
   private final Collection<T, U> collection;
   private final Validator<T> validator;
-  private final Mapper<? extends Collection<T, U>, String> deserial;
+  private final Mapper<String, ? extends Collection<T, U>> deserial;
 
   public LoadCommand(
       InputDevice in,
       Collection<T, U> collection,
       Validator<T> validator,
-      Mapper<? extends Collection<T, U>, String> deserial,
+      Mapper<String, ? extends Collection<T, U>> deserial,
       String params) {
     this.in = in;
     this.collection = collection;
@@ -41,7 +42,7 @@ public class LoadCommand<T extends HavingId, U> implements Command<Void> {
     if (fileContent.isEmpty()) {
       throw new RuntimeException("Не удалось считать файл с коллекцией.");
     }
-    Optional<? extends Collection<T, U>> loaded = this.deserial.unwrap(fileContent.get());
+    Optional<? extends Collection<T, U>> loaded = this.deserial.convert(fileContent.get());
     if (loaded.isEmpty()) {
       throw new RuntimeException("Не удалось конвертировать структуру файла с коллекцией.");
     }

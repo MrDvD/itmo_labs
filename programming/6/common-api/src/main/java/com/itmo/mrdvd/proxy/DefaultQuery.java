@@ -2,17 +2,17 @@ package com.itmo.mrdvd.proxy;
 
 import java.util.List;
 
-public abstract class AbstractQuery implements Query {
+public class DefaultQuery implements Query {
   private String cmd;
   private String signature;
   private String description;
   private List<Object> params;
 
-  public AbstractQuery(String cmd, String signature, String desc) {
+  public DefaultQuery(String cmd, String signature, String desc) {
     this(cmd, signature, desc, List.of());
   }
 
-  public AbstractQuery(String cmd, String signature, String desc, List<Object> params) {
+  public DefaultQuery(String cmd, String signature, String desc, List<Object> params) {
     this.cmd = cmd;
     this.signature = signature;
     this.description = desc;

@@ -1,18 +1,19 @@
 package com.itmo.mrdvd.service;
 
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Optional;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+
 /** A service which blindly sends the info and gets the response. */
 public abstract class AbstractSender<T, U, R> implements Service {
-  protected final Mapper<? super T, U> mapper1;
-  protected final Mapper<? extends R, U> mapper2;
+  protected final Mapper<? super T, U> serial;
+  protected final Mapper<U, ? extends R> deserial;
 
-  public AbstractSender(Mapper<? super T, U> mapper1, Mapper<? extends R, U> mapper2) {
-    this.mapper1 = mapper1;
-    this.mapper2 = mapper2;
+  public AbstractSender(Mapper<? super T, U> serial, Mapper<U, ? extends R> deserial) {
+    this.serial = serial;
+    this.deserial = deserial;
   }
 
   /** Saves the endpoint address for future connections. */

@@ -1,9 +1,11 @@
 package com.itmo.mrdvd;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.mappers.QueryMapper;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.proxy.strategies.CacheQueriesStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
@@ -12,19 +14,16 @@ import com.itmo.mrdvd.proxy.strategies.SendServerStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.AbstractSender;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
-import java.util.HashMap;
-import java.util.Map;
 
 public class ClientProxy extends AbstractProxy {
   public ClientProxy(
-      AbstractSender<Query, String, Response> sender, AbstractExecutor exec, QueryMapper mapper) {
-    this(sender, exec, mapper, new HashMap<>());
+      AbstractSender<Query, String, Response> sender, AbstractExecutor exec) {
+    this(sender, exec, new HashMap<>());
   }
 
   public ClientProxy(
       AbstractSender<Query, String, Response> sender,
       AbstractExecutor exec,
-      Mapper<Map<String, String>, Query> mapper,
       Map<String, ProxyStrategy> strats) {
     super(strats);
     setDefaultStrategy(new SendServerStrategy(sender));
@@ -32,6 +31,6 @@ public class ClientProxy extends AbstractProxy {
     setStrategy("exit", new InformStrategy(exec, "Производится выход..."));
     setStrategy("execute_script", new InformStrategy(exec, "Начинается выполнение скрипта..."));
     setStrategy("connect", new InformStrategy(exec, "Связка \"хост-порт\" сохранена."));
-    setStrategy("fetch_all", new CacheQueriesStrategy(sender, exec, mapper));
+    setStrategy("fetch_all", new CacheQueriesStrategy(sender, exec));
   }
 }
