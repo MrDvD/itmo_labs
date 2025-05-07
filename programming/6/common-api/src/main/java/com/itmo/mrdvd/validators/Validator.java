@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.builder.validators;
+package com.itmo.mrdvd.validators;
 
 import java.util.function.Function;
 import java.util.function.Predicate;

@@ -1,6 +1,6 @@
-package com.itmo.mrdvd.builder.validators;
+package com.itmo.mrdvd.validators;
 
-import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.ProcessStatus;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -40,10 +40,10 @@ public class ObjectValidator<T> implements Validator<T> {
   public <U> Validator<T> check(Function<T, U> getter, Validator<U> validator)
       throws IllegalArgumentException {
     if (getter == null) {
-      throw new IllegalArgumentException("Getter не может быть null.");
+      throw new IllegalArgumentException("Не передан геттер.");
     }
     if (validator == null) {
-      throw new IllegalArgumentException("Validator не может быть null.");
+      throw new IllegalArgumentException("Не передан метод валидации.");
     }
     this.getters.add(getter);
     this.methods.add(null);

@@ -2,8 +2,9 @@ package com.itmo.mrdvd.collection;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.validators.Validator;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

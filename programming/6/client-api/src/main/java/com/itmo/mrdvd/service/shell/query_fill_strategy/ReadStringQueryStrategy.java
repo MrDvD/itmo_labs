@@ -28,7 +28,7 @@ public class ReadStringQueryStrategy implements QueryFillStrategy {
     Stream<Object> args = q.getArgs().stream();
     Optional<TTY> tty = this.shell.getTty();
     if (tty.isEmpty()) {
-      throw new IllegalStateException("Не предоставлен TTY для чтения параметров");
+      throw new IllegalStateException("Не предоставлен TTY для чтения параметров.");
     }
     Optional<String> idx = tty.get().getIn().readToken();
     if (idx.isPresent()) {

@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.collection;
 
-import com.itmo.mrdvd.builder.validators.Validator;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
+
+import com.itmo.mrdvd.validators.Validator;
 
 public interface CollectionWorker<T extends HavingId, V> {
   /** Adds an object to the collection. */

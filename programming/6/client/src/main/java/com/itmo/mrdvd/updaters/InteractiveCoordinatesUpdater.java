@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
-import com.itmo.mrdvd.builder.UserInteractor;
+import com.itmo.mrdvd.builder.interactors.Interactor;
+import com.itmo.mrdvd.builder.interactors.UserInteractor;
 import com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.builder.validators.CoordinatesValidator;

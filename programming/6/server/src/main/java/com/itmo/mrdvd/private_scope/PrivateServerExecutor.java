@@ -3,7 +3,6 @@ package com.itmo.mrdvd.private_scope;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.commands.FetchAllCommand;
@@ -15,6 +14,7 @@ import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.validators.Validator;
 
 public class PrivateServerExecutor extends AbstractExecutor {
   public PrivateServerExecutor(Collection<Ticket, ?> collect, Mapper<? super TicketCollection, String> serial, Mapper<? extends TicketCollection, String> deserial, FileDescriptor fd, String path, Validator<Ticket> validator) {

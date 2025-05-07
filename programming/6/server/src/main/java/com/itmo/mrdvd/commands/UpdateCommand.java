@@ -2,10 +2,10 @@ package com.itmo.mrdvd.commands;
 
 import java.util.List;
 
-import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.validators.Validator;
 
 public class UpdateCommand<T extends HavingId> implements Command<Void> {
   private final CollectionWorker<T, ?> collect;

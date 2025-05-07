@@ -8,9 +8,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.builder.validators.CoordinatesValidator;
-import com.itmo.mrdvd.builder.validators.EventValidator;
-import com.itmo.mrdvd.builder.validators.TicketValidator;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
 import com.itmo.mrdvd.private_scope.PrivateServerExecutor;
@@ -20,6 +17,9 @@ import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.response.Response;
 import com.itmo.mrdvd.public_scope.PublicServerExecutor;
 import com.itmo.mrdvd.public_scope.PublicServerProxy;
+import com.itmo.mrdvd.validators.CoordinatesValidator;
+import com.itmo.mrdvd.validators.EventValidator;
+import com.itmo.mrdvd.validators.TicketValidator;
 
 public class Main {
   public static void main(String[] args) throws IOException {

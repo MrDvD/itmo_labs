@@ -27,26 +27,23 @@ public class ObjectBuilder<T> implements Builder<T> {
   }
 
   @Override
-  public ObjectBuilder<T> of(Supplier<T> newMethod) {
+  public void of(Supplier<T> newMethod) {
     this.newMethod = newMethod;
-    return this;
   }
 
   @Override
-  public <U> ObjectBuilder<T> set(BiConsumer<T, U> setter, Supplier<U> method) {
-    return set(setter, method, null);
+  public <U> void set(BiConsumer<T, U> setter, Supplier<U> method) {
+    set(setter, method, null);
   }
 
   @Override
-  public <U> ObjectBuilder<T> set(
-      BiConsumer<T, U> setter, Supplier<U> method, Predicate<U> validator) {
+  public <U> void set(BiConsumer<T, U> setter, Supplier<U> method, Predicate<U> validator) {
     if (setter == null) {
-      throw new IllegalArgumentException("Setter не может быть null.");
+      throw new IllegalArgumentException("Не предоставлен сеттер.");
     }
     setters.add(setter);
     methods.add(method);
     validators.add(validator);
-    return this;
   }
 
   protected ProcessStatus processSetter(int index) {

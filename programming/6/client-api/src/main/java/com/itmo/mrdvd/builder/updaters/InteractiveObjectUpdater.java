@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
 import com.itmo.mrdvd.builder.ProcessStatus;
+import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;

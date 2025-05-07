@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.builder.updaters;
 
-import com.itmo.mrdvd.builder.Interactor;
+import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.device.input.InputDevice;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -20,7 +20,7 @@ public interface InteractiveUpdater<T, K extends InputDevice> extends Updater<T>
       BiConsumer<T, U> setter,
       Function<T, U> getter,
       Class<U> valueCls,
-      Interactor<?, K> inter,
+      Interactor<?> inter,
       Predicate<U> validator)
       throws IllegalArgumentException;
 

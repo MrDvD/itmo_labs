@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.builder;
+package com.itmo.mrdvd;
 
 public enum ProcessStatus {
   FAILURE,

@@ -56,8 +56,9 @@ public class DefaultShell extends AbstractShell {
     Optional<QueryFillStrategy> arg = getArg(cmd);
     if (arg.isPresent()) {
       q = arg.get().fillArgs(q);
+    } else {
+      getTty().get().getIn().skipLine();
     }
-    getTty().get().getIn().skipLine();
     return q;
   }
 

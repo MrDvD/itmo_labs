@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.builder.validators;
+package com.itmo.mrdvd.validators;
 
 import com.itmo.mrdvd.object.Coordinates;
 
