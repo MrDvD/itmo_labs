@@ -10,70 +10,42 @@ import java.util.function.Supplier;
 
 public class ObjectUpdater<T> implements Updater<T> {
   protected final List<BiConsumer> setters;
-  protected final List<Object> objects;
   protected final List<Supplier<?>> methods;
   protected final List<Predicate> validators;
   protected Supplier<T> newMethod;
   protected T rawObject;
 
   public ObjectUpdater() {
-    this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
   }
 
   public ObjectUpdater(
-      List<BiConsumer> setters,
-      List<Object> objects,
-      List<Supplier<?>> methods,
-      List<Predicate> validators) {
+      List<BiConsumer> setters, List<Supplier<?>> methods, List<Predicate> validators) {
     this.setters = setters;
-    this.objects = objects;
     this.methods = methods;
     this.validators = validators;
   }
 
-  public <U> ObjectUpdater<T> change(BiConsumer<T, U> setter, Object value, Class<U> valueCls) {
-    return change(setter, value, valueCls, null);
+  public <U> void change(BiConsumer<T, U> setter, Supplier<U> method) {
+    change(setter, method, null);
   }
 
   @Override
-  public <U> ObjectUpdater<T> change(
-      BiConsumer<T, U> setter, Object value, Class<U> valueCls, Predicate<U> validator) {
+  public <U> void change(BiConsumer<T, U> setter, Supplier<U> method, Predicate<U> validator) {
     if (setter == null) {
-      throw new IllegalArgumentException("Setter не может быть null.");
+      throw new IllegalArgumentException("Не предоставлен сеттер.");
     }
     setters.add(setter);
-    objects.add(value);
-    methods.add(null);
-    validators.add(validator);
-    return this;
-  }
-
-  public <U> ObjectUpdater<T> changeFromMethod(
-      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls) {
-    return changeFromMethod(setter, method, valueCls, null);
-  }
-
-  @Override
-  public <U> ObjectUpdater<T> changeFromMethod(
-      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator) {
-    if (setter == null) {
-      throw new IllegalArgumentException("Setter не может быть null.");
-    }
-    setters.add(setter);
-    objects.add(null);
     methods.add(method);
     validators.add(validator);
-    return this;
   }
 
   protected ProcessStatus processChange(int index) throws RuntimeException {
-    if (methods.get(index) != null) {
-      objects.set(index, methods.get(index).get());
-    }
-    if (validators.get(index) != null && !validators.get(index).test(objects.get(index))) {
+    Object obj = this.methods.get(index).get();
+    if (validators.get(index) != null && !validators.get(index).test(obj)) {
       return ProcessStatus.FAILURE;
     }
-    setters.get(index).accept(rawObject, objects.get(index));
+    setters.get(index).accept(rawObject, obj);
     return ProcessStatus.SUCCESS;
   }
 

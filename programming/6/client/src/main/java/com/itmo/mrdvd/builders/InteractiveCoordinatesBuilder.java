@@ -1,12 +1,5 @@
 package com.itmo.mrdvd.builders;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder;
 import com.itmo.mrdvd.builder.interactors.Interactor;
@@ -15,10 +8,22 @@ import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class InteractiveCoordinatesBuilder extends InteractiveObjectBuilder<Coordinates> {
   public InteractiveCoordinatesBuilder(AbstractShell shell) {
-    this(shell, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    this(
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
   }
 
   public InteractiveCoordinatesBuilder(

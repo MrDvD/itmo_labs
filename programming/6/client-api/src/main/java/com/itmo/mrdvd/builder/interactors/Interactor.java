@@ -38,6 +38,11 @@ public abstract class Interactor<U> {
    */
   public abstract Optional<U> ask() throws IOException;
 
+  /*
+   * Asks the user for the input with context.
+   */
+  public abstract Optional<U> ask(String context) throws IOException;
+
   public Optional<List<String>> options() {
     return this.options;
   }

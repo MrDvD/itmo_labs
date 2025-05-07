@@ -1,12 +1,5 @@
 package com.itmo.mrdvd;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
@@ -20,16 +13,33 @@ import com.itmo.mrdvd.public_scope.PublicServerProxy;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 
 public class Main {
   public static void main(String[] args) throws IOException {
-    ObjectSerializer<EmptyQuery> serialQuery = new ObjectSerializer<>(new XmlMapper(), EmptyQuery.class);
-    ObjectSerializer<Response> serialResponse = new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build(), Response.class);
-    ObjectSerializer<TicketCollection> mapCollection = new ObjectSerializer<>(new XmlMapper(), TicketCollection.class);
+    ObjectSerializer<EmptyQuery> serialQuery =
+        new ObjectSerializer<>(new XmlMapper(), EmptyQuery.class);
+    ObjectSerializer<Response> serialResponse =
+        new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build(), Response.class);
+    ObjectSerializer<TicketCollection> mapCollection =
+        new ObjectSerializer<>(new XmlMapper(), TicketCollection.class);
     TicketCollection collect = new TicketCollection();
-    TicketValidator validator = new TicketValidator(new CoordinatesValidator(), new EventValidator());
+    TicketValidator validator =
+        new TicketValidator(new CoordinatesValidator(), new EventValidator());
     PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
-    PrivateServerExecutor privateExec = new PrivateServerExecutor(collect, mapCollection, mapCollection, new FileIO(Path.of(""), FileSystems.getDefault()), System.getenv("COLLECT_PATH"), validator);
+    PrivateServerExecutor privateExec =
+        new PrivateServerExecutor(
+            collect,
+            mapCollection,
+            mapCollection,
+            new FileIO(Path.of(""), FileSystems.getDefault()),
+            System.getenv("COLLECT_PATH"),
+            validator);
     PublicServerProxy publicProxy = new PublicServerProxy(publicExec);
     PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy);
     ServerListener listener = new ServerListener(Selector.open(), serialQuery, serialResponse);

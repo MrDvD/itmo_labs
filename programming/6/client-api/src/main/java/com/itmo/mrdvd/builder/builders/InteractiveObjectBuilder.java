@@ -90,9 +90,6 @@ public class InteractiveObjectBuilder<T> extends ObjectBuilder<T> implements Int
         throw new RuntimeException(e);
       }
     }
-    // if (methods.get(index) != null) {
-    //   objects.set(index, methods.get(index).get());
-    // }
     if (result.isPresent()
         && (validators.get(index) == null || validators.get(index).test(result.get()))) {
       setters.get(index).accept(rawObject, result.get());

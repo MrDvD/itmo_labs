@@ -4,12 +4,12 @@ import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.builder.interactors.UserInteractor;
 import com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
-import com.itmo.mrdvd.builder.validators.EventValidator;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
+import com.itmo.mrdvd.service.shell.AbstractShell;
+import com.itmo.mrdvd.validators.EventValidator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -17,25 +17,56 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, EnumInputDevice> {
-  private void init() {
+public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event> {
+  public InteractiveEventUpdater(AbstractShell shell) {
+    this(
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
+  }
+
+  public InteractiveEventUpdater(
+      AbstractShell shell,
+      List<Interactor<?>> interactors,
+      List<BiConsumer> setters,
+      List<Function<Event, ?>> getters,
+      List<Supplier<?>> methods,
+      List<Predicate> validators,
+      List<InteractiveUpdater> updaters) {
+    super(interactors, setters, getters, methods, validators, updaters);
     addInteractiveChange(
         Event::setName,
         Event::getName,
-        String.class,
         new UserInteractor<>(
             "Имя мероприятия",
-            InputDevice::read,
-            "[ERROR] Неправильный формат ввода: имя не должно быть пустым."),
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
+              Optional<String> res = x.read();
+              return res;
+            },
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: имя не должно быть пустым.\n"),
         EventValidator::validateName);
     addInteractiveChange(
         Event::setDescription,
         Event::getName,
-        String.class,
         new UserInteractor<>(
             "Описание мероприятия",
-            InputDevice::read,
-            "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов."),
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
+              Optional<String> res = x.read();
+              return res;
+            },
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: описание не должно быть пустым и превышать длину в 1190 символов.\n"),
         EventValidator::validateDescription);
     String[] options = new String[EventType.values().length];
     for (int i = 0; i < EventType.values().length; i++) {
@@ -44,40 +75,19 @@ public class InteractiveEventUpdater extends InteractiveObjectUpdater<Event, Enu
     addInteractiveChange(
         Event::setType,
         Event::getType,
-        EventType.class,
         new UserInteractor<>(
             "Тип мероприятия",
-            (EnumInputDevice x) -> {
-              Optional<Enum<EventType>> result = x.readEnum(EventType.class);
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
+              Optional<Enum<EventType>> res = x.readEnum(EventType.class);
               x.skipLine();
-              return result;
+              return res;
             },
-            "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.",
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: указанный вид мероприятия не найден.\n",
             List.of(options)),
         EventValidator::validateType);
-  }
-
-  public InteractiveEventUpdater(EnumInputDevice in, OutputDevice out) {
-    super(in, out);
-    init();
-  }
-
-  public InteractiveEventUpdater(
-      EnumInputDevice in,
-      OutputDevice out,
-      List<Interactor<?, EnumInputDevice>> interactors,
-      List<BiConsumer> setters,
-      List<Object> objects,
-      List<Supplier<?>> methods,
-      List<Predicate> validators,
-      List<Function<Event, ?>> getters,
-      List<InteractiveUpdater> updaters) {
-    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
-    init();
-  }
-
-  @Override
-  public InteractiveEventUpdater setIn(EnumInputDevice in) {
-    return new InteractiveEventUpdater(in, out);
   }
 }

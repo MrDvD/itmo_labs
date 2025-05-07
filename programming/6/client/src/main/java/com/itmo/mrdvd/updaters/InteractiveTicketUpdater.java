@@ -4,16 +4,14 @@ import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.builder.interactors.UserInteractor;
 import com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
-import com.itmo.mrdvd.builder.validators.TicketValidator;
-import com.itmo.mrdvd.device.OutputDevice;
 import com.itmo.mrdvd.device.input.DataInputDevice;
-import com.itmo.mrdvd.device.input.EnumInputDevice;
-import com.itmo.mrdvd.device.input.FloatInputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
+import com.itmo.mrdvd.service.shell.AbstractShell;
+import com.itmo.mrdvd.validators.TicketValidator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -21,34 +19,65 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, DataInputDevice> {
-  private final InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate;
-  private final InteractiveUpdater<Event, EnumInputDevice> eventUpdate;
+public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket> {
+  public InteractiveTicketUpdater(
+      InteractiveUpdater<Coordinates> coordUpdate,
+      InteractiveUpdater<Event> eventUpdate,
+      AbstractShell shell) {
+    this(
+        coordUpdate,
+        eventUpdate,
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
+  }
 
-  private void init() {
+  public InteractiveTicketUpdater(
+      InteractiveUpdater<Coordinates> coordUpdate,
+      InteractiveUpdater<Event> eventUpdate,
+      AbstractShell shell,
+      List<Interactor<?>> interactors,
+      List<BiConsumer> setters,
+      List<Function<Ticket, ?>> getters,
+      List<Supplier<?>> methods,
+      List<Predicate> validators,
+      List<InteractiveUpdater> updaters) {
+    super(interactors, setters, getters, methods, validators, updaters);
     addInteractiveChange(
         Ticket::setName,
         Ticket::getName,
-        String.class,
         new UserInteractor<>(
             "Название билета",
-            InputDevice::read,
-            "[ERROR] Неправильный формат ввода: название не должно быть пустым."),
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
+              Optional<String> res = x.read();
+              return res;
+            },
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: название не должно быть пустым.\n"),
         TicketValidator::validateName);
-    addInteractiveUpdater(
-        coordUpdate, Ticket::setCoordinates, Ticket::getCoordinates, Coordinates.class);
+    addInteractiveUpdater(Ticket::setCoordinates, Ticket::getCoordinates, coordUpdate);
     addInteractiveChange(
         Ticket::setPrice,
         Ticket::getPrice,
-        Integer.class,
         new UserInteractor<>(
             "Стоимость билета",
-            (x) -> {
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
               Optional<Integer> res = x.readInt();
               x.skipLine();
               return res;
             },
-            "[ERROR] Неправильный формат ввода: введите натуральное число.",
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: введите натуральное число.\n",
             "в у.е."),
         TicketValidator::validatePrice);
     String[] options = new String[TicketType.values().length];
@@ -58,53 +87,20 @@ public class InteractiveTicketUpdater extends InteractiveObjectUpdater<Ticket, D
     addInteractiveChange(
         Ticket::setType,
         Ticket::getType,
-        TicketType.class,
         new UserInteractor<>(
             "Тип билета",
-            (x) -> {
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
               Optional<Enum<TicketType>> res = x.readEnum(TicketType.class);
               x.skipLine();
               return res;
             },
-            "[ERROR] Неправильный формат ввода: указанный тип билета не найден.",
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: указанный тип билета не найден.\n",
             List.of(options)),
         TicketValidator::validateType);
-    addInteractiveUpdater(eventUpdate, Ticket::setEvent, Ticket::getEvent, Event.class);
-  }
-
-  public InteractiveTicketUpdater(
-      InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate,
-      InteractiveUpdater<Event, EnumInputDevice> eventUpdate,
-      DataInputDevice in,
-      OutputDevice out) {
-    super(in, out);
-    this.coordUpdate = coordUpdate;
-    this.eventUpdate = eventUpdate;
-    init();
-  }
-
-  public InteractiveTicketUpdater(
-      InteractiveUpdater<Coordinates, FloatInputDevice> coordUpdate,
-      InteractiveUpdater<Event, EnumInputDevice> eventUpdate,
-      DataInputDevice in,
-      OutputDevice out,
-      List<Interactor<?, DataInputDevice>> interactors,
-      List<BiConsumer> setters,
-      List<Object> objects,
-      List<Supplier<?>> methods,
-      List<Predicate> validators,
-      List<Function<Ticket, ?>> getters,
-      List<InteractiveUpdater> updaters) {
-    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
-    this.coordUpdate = coordUpdate;
-    this.eventUpdate = eventUpdate;
-    init();
-  }
-
-  @Override
-  public InteractiveTicketUpdater setIn(DataInputDevice in) {
-    InteractiveUpdater newCoords = this.coordUpdate.setIn(in);
-    InteractiveUpdater newEvent = this.eventUpdate.setIn(in);
-    return new InteractiveTicketUpdater(newCoords, newEvent, in, out);
+    addInteractiveUpdater(Ticket::setEvent, Ticket::getEvent, eventUpdate);
   }
 }

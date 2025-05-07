@@ -1,12 +1,5 @@
 package com.itmo.mrdvd.builders;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder;
 import com.itmo.mrdvd.builder.interactors.Interactor;
@@ -16,10 +9,22 @@ import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.EventType;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import com.itmo.mrdvd.validators.EventValidator;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class InteractiveEventBuilder extends InteractiveObjectBuilder<Event> {
   public InteractiveEventBuilder(AbstractShell shell) {
-    this(shell, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    this(
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
   }
 
   public InteractiveEventBuilder(

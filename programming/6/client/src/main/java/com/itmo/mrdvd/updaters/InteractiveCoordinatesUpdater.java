@@ -4,10 +4,11 @@ import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.builder.interactors.UserInteractor;
 import com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
-import com.itmo.mrdvd.builder.validators.CoordinatesValidator;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.FloatInputDevice;
+import com.itmo.mrdvd.device.input.DataInputDevice;
 import com.itmo.mrdvd.object.Coordinates;
+import com.itmo.mrdvd.service.shell.AbstractShell;
+import com.itmo.mrdvd.validators.CoordinatesValidator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -15,61 +16,60 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InteractiveCoordinatesUpdater
-    extends InteractiveObjectUpdater<Coordinates, FloatInputDevice> {
+public class InteractiveCoordinatesUpdater extends InteractiveObjectUpdater<Coordinates> {
+  public InteractiveCoordinatesUpdater(AbstractShell shell) {
+    this(
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
+  }
 
-  private void init() {
+  public InteractiveCoordinatesUpdater(
+      AbstractShell shell,
+      List<Interactor<?>> interactors,
+      List<BiConsumer> setters,
+      List<Function<Coordinates, ?>> getters,
+      List<Supplier<?>> methods,
+      List<Predicate> validators,
+      List<InteractiveUpdater> updaters) {
+    super(interactors, setters, getters, methods, validators, updaters);
     addInteractiveChange(
         Coordinates::setX,
         Coordinates::getX,
-        Float.class,
         new UserInteractor<>(
             "X-координата",
-            (FloatInputDevice x) -> {
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
               Optional<Float> res = x.readFloat();
               x.skipLine();
               return res;
             },
-            "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).",
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).\n",
             "разделитель - точка"),
         CoordinatesValidator::validateX);
     addInteractiveChange(
         Coordinates::setY,
         Coordinates::getY,
-        Float.class,
         new UserInteractor<>(
             "Y-координата",
-            (FloatInputDevice x) -> {
+            () -> {
+              DataInputDevice x = shell.getTty().get().getIn();
               Optional<Float> res = x.readFloat();
               x.skipLine();
               return res;
             },
-            "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).",
+            (String msg) -> {
+              shell.getTty().get().getOut().write(msg);
+            },
+            "[ERROR] Неправильный формат ввода: введите число (возможно, дробное).\n",
             "разделитель - точка"),
         CoordinatesValidator::validateY);
-  }
-
-  public InteractiveCoordinatesUpdater(FloatInputDevice in, OutputDevice out) {
-    super(in, out);
-    init();
-  }
-
-  public InteractiveCoordinatesUpdater(
-      FloatInputDevice in,
-      OutputDevice out,
-      List<Interactor<?, FloatInputDevice>> interactors,
-      List<BiConsumer> setters,
-      List<Object> objects,
-      List<Supplier<?>> methods,
-      List<Predicate> validators,
-      List<Function<Coordinates, ?>> getters,
-      List<InteractiveUpdater> updaters) {
-    super(in, out, interactors, setters, objects, methods, validators, getters, updaters);
-    init();
-  }
-
-  @Override
-  public InteractiveCoordinatesUpdater setIn(FloatInputDevice in) {
-    return new InteractiveCoordinatesUpdater(in, out);
   }
 }

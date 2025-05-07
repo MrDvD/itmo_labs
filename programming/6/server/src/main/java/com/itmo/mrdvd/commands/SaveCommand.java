@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class SaveCommand<T extends HavingId, U> implements Command<Void> {
   private final Collection<T, U> collection;
@@ -15,7 +14,10 @@ public class SaveCommand<T extends HavingId, U> implements Command<Void> {
   private final String path;
 
   public SaveCommand(
-      Collection<T, U> collect, Mapper<? super Collection<T, U>, String> serial, FileDescriptor fd, String path) {
+      Collection<T, U> collect,
+      Mapper<? super Collection<T, U>, String> serial,
+      FileDescriptor fd,
+      String path) {
     this.collection = collect;
     this.serial = serial;
     this.fd = fd;

@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.proxy.EmptyQuery;
 import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class FetchAllCommand implements Command<List<Query>> {
   private final AbstractExecutor exec;

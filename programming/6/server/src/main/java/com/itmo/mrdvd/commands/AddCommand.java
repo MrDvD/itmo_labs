@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
+import java.util.List;
 
 public class AddCommand<T extends HavingId> implements Command<Void> {
   protected final CollectionWorker<T, ?> collect;

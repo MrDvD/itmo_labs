@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 public class AddIfCommand<T extends HavingId> implements Command<Void> {
   protected final CollectionWorker<T, List<T>> collect;

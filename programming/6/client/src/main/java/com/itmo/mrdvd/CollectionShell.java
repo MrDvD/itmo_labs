@@ -1,14 +1,7 @@
 package com.itmo.mrdvd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.Proxy;
 import com.itmo.mrdvd.proxy.Query;
@@ -21,8 +14,16 @@ import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadObjectStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadStringQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ShellQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.SkipLineStrategy;
+import com.itmo.mrdvd.service.shell.query_fill_strategy.UpdateObjectStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.PrintStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 public class CollectionShell extends DefaultShell {
   public CollectionShell(Proxy proxy, Function<String, Query> query) {
@@ -40,16 +41,19 @@ public class CollectionShell extends DefaultShell {
     setDefaultResponseStrategy(new PrintStrategy(this));
     setQueryStrategy("exit", new ShellQueryStrategy(this));
     setQueryStrategy(
-        "execute_script", new SkipLineStrategy(this, new ReadStringQueryStrategy(this, new ShellQueryStrategy(this))));
+        "execute_script",
+        new SkipLineStrategy(
+            this, new ReadStringQueryStrategy(this, new ShellQueryStrategy(this))));
     setQueryStrategy("connect", new SkipLineStrategy(this, new ConnectQueryStrategy(this)));
     setQueryStrategy("remove_at", new SkipLineStrategy(this, new ReadIntQueryStrategy(this)));
     setQueryStrategy("remove_by_id", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
-    setQueryStrategy("count_greater_than_event", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
+    setQueryStrategy(
+        "count_greater_than_event", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
   }
 
-  public void setBuilder(InteractiveBuilder<?> builder) {
+  public void setBuilders(InteractiveBuilder<?> builder, InteractiveUpdater<?> updater) {
     setQueryStrategy("add", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
     setQueryStrategy("add_if_max", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
-    // setQueryStrategy("update", new ReadObjectStrategy(builder));
+    setQueryStrategy("update", new UpdateObjectStrategy(updater, new SkipLineStrategy(this)));
   }
 }

@@ -1,8 +1,5 @@
 package com.itmo.mrdvd.private_scope;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.Proxy;
 import com.itmo.mrdvd.proxy.strategies.FetchAllStrategy;
@@ -10,6 +7,8 @@ import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.RedirectToStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PrivateServerProxy extends AbstractProxy {
   public PrivateServerProxy(AbstractExecutor exec, Proxy other) {

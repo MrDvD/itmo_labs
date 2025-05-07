@@ -10,14 +10,13 @@ public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Comm
   private final Collection<T, List<T>> collection;
   private final Comparator<T> comparator;
 
-  public PrintFieldDescendingTypeCommand(
-      Collection<T, List<T>> collect, Comparator<T> comparator) {
+  public PrintFieldDescendingTypeCommand(Collection<T, List<T>> collect, Comparator<T> comparator) {
     this.collection = collect;
     this.comparator = comparator;
   }
 
   @Override
-  public String execute(List<Object> params) throws IllegalStateException{
+  public String execute(List<Object> params) throws IllegalStateException {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }

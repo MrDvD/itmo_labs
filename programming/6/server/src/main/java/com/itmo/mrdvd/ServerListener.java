@@ -1,5 +1,9 @@
 package com.itmo.mrdvd;
 
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.service.AbstractListener;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -14,26 +18,38 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractListener;
-
 public class ServerListener extends AbstractListener<Query, String, Response> {
   protected final Map<SelectionKey, ByteBuffer> buffers;
   protected final int bufferSize;
   protected final Charset chars;
   protected boolean isOpen;
 
-  public ServerListener(Selector selector, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2) {
+  public ServerListener(
+      Selector selector,
+      Mapper<? extends Query, String> mapper1,
+      Mapper<? super Response, String> mapper2) {
     this(selector, mapper1, mapper2, 16384, Charset.forName("UTF-8"));
   }
 
-  public ServerListener(Selector selector, Mapper<? extends Query, String> mapper1, Mapper<? super Response, String> mapper2, int bufferSize, Charset chars) {
-    this(selector, mapper1, mapper2, bufferSize, chars, new HashMap<>(), new HashMap<>(), new HashMap<>());
+  public ServerListener(
+      Selector selector,
+      Mapper<? extends Query, String> mapper1,
+      Mapper<? super Response, String> mapper2,
+      int bufferSize,
+      Charset chars) {
+    this(
+        selector,
+        mapper1,
+        mapper2,
+        bufferSize,
+        chars,
+        new HashMap<>(),
+        new HashMap<>(),
+        new HashMap<>());
   }
-  
-  public ServerListener(Selector selector,
+
+  public ServerListener(
+      Selector selector,
       Mapper<? extends Query, String> mapper1,
       Mapper<? super Response, String> mapper2,
       int bufferSize,
@@ -47,9 +63,7 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
     this.chars = chars;
   }
 
-  /** 
-   * Waits for incoming connections in a non-blocking way.
-   */
+  /** Waits for incoming connections in a non-blocking way. */
   @Override
   public void start() throws IllegalStateException, RuntimeException {
     if (this.mapper1 == null) {
@@ -85,7 +99,8 @@ public class ServerListener extends AbstractListener<Query, String, Response> {
                 buffer.clear();
                 Optional<? extends Query> q = this.mapper1.unwrap(receivedData);
                 if (q.isPresent()) {
-                  ByteBuffer responseBuffer = this.chars.encode(this.mapper2.wrap(this.callbacks.get(key).apply(q.get())));
+                  ByteBuffer responseBuffer =
+                      this.chars.encode(this.mapper2.wrap(this.callbacks.get(key).apply(q.get())));
                   while (responseBuffer.hasRemaining()) {
                     client.write(responseBuffer);
                   }

@@ -10,8 +10,7 @@ public class MinByPriceCommand<T extends HavingId> implements Command<String> {
   private final CollectionWorker<T, List<T>> collection;
   private final Comparator<T> comparator;
 
-  public MinByPriceCommand(
-      CollectionWorker<T, List<T>> collect, Comparator<T> comparator) {
+  public MinByPriceCommand(CollectionWorker<T, List<T>> collect, Comparator<T> comparator) {
     this.collection = collect;
     this.comparator = comparator;
   }
@@ -22,7 +21,9 @@ public class MinByPriceCommand<T extends HavingId> implements Command<String> {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
     this.collection.getCollection().sort(comparator);
-    return this.collection.getCollection().isEmpty() ? "Коллекция пуста." : collection.getCollection().get(0).toString();
+    return this.collection.getCollection().isEmpty()
+        ? "Коллекция пуста."
+        : collection.getCollection().get(0).toString();
   }
 
   @Override

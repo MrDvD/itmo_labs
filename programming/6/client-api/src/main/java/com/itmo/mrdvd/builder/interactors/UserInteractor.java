@@ -45,6 +45,11 @@ public class UserInteractor<U> extends Interactor<U> {
 
   @Override
   public Optional<U> ask() throws IOException {
+    return ask(null);
+  }
+
+  @Override
+  public Optional<U> ask(String context) throws IOException {
     if (this.in == null) {
       throw new IllegalStateException("Не передано устройство ввода.");
     }
@@ -63,6 +68,9 @@ public class UserInteractor<U> extends Interactor<U> {
     }
     if (comment().isPresent()) {
       msg += String.format(" (%s)", comment().get());
+    }
+    if (context != null) {
+      msg += String.format(" [%.15s]", context);
     }
     msg += ": ";
     this.out.accept(msg);

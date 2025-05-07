@@ -1,13 +1,5 @@
 package com.itmo.mrdvd.builders;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder;
 import com.itmo.mrdvd.builder.interactors.Interactor;
@@ -19,13 +11,28 @@ import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketType;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import com.itmo.mrdvd.validators.TicketValidator;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
   public InteractiveTicketBuilder(
       InteractiveBuilder<Coordinates> coordBuild,
       InteractiveBuilder<Event> eventBuild,
       AbstractShell shell) {
-    this(coordBuild, eventBuild, shell, new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+    this(
+        coordBuild,
+        eventBuild,
+        shell,
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>(),
+        new ArrayList<>());
   }
 
   public InteractiveTicketBuilder(
@@ -91,8 +98,6 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
             List.of(options)),
         TicketValidator::validateType);
     addInteractiveBuilder(Ticket::setEvent, eventBuild);
-    set(Ticket::setCreationDate,
-        LocalDateTime::now,
-        TicketValidator::validateCreationDate);
+    set(Ticket::setCreationDate, LocalDateTime::now, TicketValidator::validateCreationDate);
   }
 }

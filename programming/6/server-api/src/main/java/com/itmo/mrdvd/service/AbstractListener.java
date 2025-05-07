@@ -1,5 +1,8 @@
 package com.itmo.mrdvd.service;
 
+import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.response.Response;
 import java.io.IOException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -7,10 +10,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.Map;
 import java.util.function.Function;
-
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
 
 /** A service which blindly receives the info and sends the response. */
 public abstract class AbstractListener<T, U, R> implements Service {
@@ -33,7 +32,8 @@ public abstract class AbstractListener<T, U, R> implements Service {
     this.callbacks = callbacks;
   }
 
-  public void addListener(ServerSocketChannel sock, Function<Query, Response> callback) throws IOException {
+  public void addListener(ServerSocketChannel sock, Function<Query, Response> callback)
+      throws IOException {
     sock.configureBlocking(false);
     SelectionKey key = sock.register(selector, SelectionKey.OP_ACCEPT);
     this.sockets.put(key, sock);

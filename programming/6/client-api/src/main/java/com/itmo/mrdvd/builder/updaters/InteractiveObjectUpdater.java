@@ -2,8 +2,6 @@ package com.itmo.mrdvd.builder.updaters;
 
 import com.itmo.mrdvd.builder.ProcessStatus;
 import com.itmo.mrdvd.builder.interactors.Interactor;
-import com.itmo.mrdvd.device.OutputDevice;
-import com.itmo.mrdvd.device.input.InputDevice;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,19 +11,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUpdater<T>
-    implements InteractiveUpdater<T, K> {
-  protected final List<Interactor<?, K>> interactors;
-  protected final List<InteractiveUpdater> updaters;
+public class InteractiveObjectUpdater<T> extends ObjectUpdater<T> implements InteractiveUpdater<T> {
+  protected final List<Interactor<?>> interactors;
   protected final List<Function<T, ?>> getters;
-  protected final K in;
-  protected final OutputDevice out;
+  protected final List<InteractiveUpdater> updaters;
 
-  public InteractiveObjectUpdater(K in, OutputDevice out) {
+  public InteractiveObjectUpdater() {
     this(
-        in,
-        out,
-        new ArrayList<>(),
         new ArrayList<>(),
         new ArrayList<>(),
         new ArrayList<>(),
@@ -35,155 +27,85 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
   }
 
   public InteractiveObjectUpdater(
-      K in,
-      OutputDevice out,
-      List<Interactor<?, K>> interactors,
+      List<Interactor<?>> interactors,
       List<BiConsumer> setters,
-      List<Object> objects,
+      List<Function<T, ?>> getters,
       List<Supplier<?>> methods,
       List<Predicate> validators,
-      List<Function<T, ?>> getters,
       List<InteractiveUpdater> updaters) {
-    super(setters, objects, methods, validators);
-    this.in = in;
-    this.out = out;
+    super(setters, methods, validators);
     this.interactors = interactors;
     this.updaters = updaters;
     this.getters = getters;
   }
 
-  public <U> InteractiveObjectUpdater<T, K> addInteractiveChange(
-      BiConsumer<T, U> setter, Function<T, U> getter, Class<U> valueCls, Interactor<?, K> inter)
-      throws IllegalArgumentException {
-    addInteractiveChange(setter, getter, valueCls, inter, null);
-    getters.set(getters.size() - 1, getter);
-    return this;
-  }
-
   @Override
-  public <U> InteractiveObjectUpdater<T, K> addInteractiveChange(
-      BiConsumer<T, U> setter,
-      Function<T, U> getter,
-      Class<U> valueCls,
-      Interactor<?, K> inter,
-      Predicate<U> validator)
+  public <U> void addInteractiveChange(
+      BiConsumer<T, U> setter, Function<T, U> getter, Interactor<?> inter, Predicate<U> validator)
       throws IllegalArgumentException {
     if (inter == null) {
-      throw new IllegalArgumentException("Метаданные не могут быть null.");
+      throw new IllegalArgumentException("Не предоставлен интерактор для сеттера.");
     }
-    if (setter == null) {
-      throw new IllegalArgumentException("Setter не может быть null.");
-    }
-    change(setter, null, valueCls, validator);
-    interactors.set(interactors.size() - 1, inter);
-    getters.set(getters.size() - 1, getter);
-    return this;
+    change(setter, null, validator);
+    this.interactors.set(interactors.size() - 1, inter);
+    this.getters.set(getters.size() - 1, getter);
   }
 
-  public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
-      InteractiveUpdater<U, ?> updater,
-      BiConsumer<T, U> setter,
-      Function<T, U> getter,
-      Class<U> valueCls)
+  @Override
+  public <U> void addInteractiveUpdater(
+      BiConsumer<T, U> setter, Function<T, U> getter, InteractiveUpdater<U> updater)
       throws IllegalArgumentException {
-    return addInteractiveUpdater(updater, setter, getter, valueCls, null);
+    change(setter, null);
+    this.updaters.set(updaters.size() - 1, updater);
+    this.getters.set(getters.size() - 1, getter);
   }
 
   @Override
-  public <U> InteractiveUpdater<T, K> addInteractiveUpdater(
-      InteractiveUpdater<U, ?> updater,
-      BiConsumer<T, U> setter,
-      Function<T, U> getter,
-      Class<U> valueCls,
-      Predicate<U> validator)
+  public <U> void change(BiConsumer<T, U> setter, Supplier<U> method)
       throws IllegalArgumentException {
-    change(setter, null, valueCls, validator);
-    getters.set(getters.size() - 1, getter);
-    updaters.set(updaters.size() - 1, updater);
-    return this;
+    change(setter, method, null);
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T, K> changeFromMethod(
-      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls)
+  public <U> void change(BiConsumer<T, U> setter, Supplier<U> method, Predicate<U> validator)
       throws IllegalArgumentException {
-    return this.changeFromMethod(setter, method, valueCls, null);
+    super.change(setter, method, validator);
+    this.interactors.add(null);
+    this.updaters.add(null);
+    this.getters.add(null);
   }
 
   @Override
-  public <U> InteractiveObjectUpdater<T, K> changeFromMethod(
-      BiConsumer<T, U> setter, Supplier<U> method, Class<U> valueCls, Predicate<U> validator)
-      throws IllegalArgumentException {
-    super.changeFromMethod(setter, method, valueCls, validator);
-    interactors.add(null);
-    getters.add(null);
-    updaters.add(null);
-    return this;
-  }
-
-  @Override
-  public <U> InteractiveObjectUpdater<T, K> change(
-      BiConsumer<T, U> setter, Object value, Class<U> valueCls) throws IllegalArgumentException {
-    return this.change(setter, value, valueCls, null);
-  }
-
-  @Override
-  public <U> InteractiveObjectUpdater<T, K> change(
-      BiConsumer<T, U> setter, Object value, Class<U> valueCls, Predicate<U> validator)
-      throws IllegalArgumentException {
-    super.change(setter, value, valueCls, validator);
-    interactors.add(null);
-    getters.add(null);
-    updaters.add(null);
-    return this;
-  }
-
-  @Override
-  protected ProcessStatus processChange(int index) throws NullPointerException, RuntimeException {
-    if (getIn().isEmpty()) {
-      throw new NullPointerException("InputDevice не может быть null.");
-    }
+  protected ProcessStatus processChange(int index) throws RuntimeException {
     Optional<?> result;
-    Interactor<?, K> inter = null;
+    Interactor<?> inter = null;
     if (updaters.get(index) != null) {
       result = updaters.get(index).update(getters.get(index).apply(rawObject));
+      if (result.isEmpty()) {
+        throw new RuntimeException("Не удалось построить объект.");
+      }
     } else {
       inter = interactors.get(index);
       if (inter == null) {
         return super.processChange(index);
       }
-      String msg = "";
-      if (inter.options().isPresent()) {
-        msg += String.format("Выберите поле \"%s\" из списка:\n", inter.attributeName());
-        for (int j = 0; j < inter.options().get().size(); j++) {
-          msg += String.format("* %s\n", inter.options().get().get(j));
-        }
-        msg += "Ваш выбор";
-      } else {
-        msg += String.format("Введите поле \"%s\"", inter.attributeName());
-      }
-      if (inter.comment().isPresent()) {
-        msg += String.format(" (%s)", inter.comment().get());
-      }
-      if (getters.get(index) != null) {
-        msg += String.format(" [%s]", getters.get(index).apply(rawObject));
-      }
-      msg += ": ";
-      out.write(msg);
       try {
-        result = inter.get(getIn().get());
+        result = inter.ask(this.getters.get(index).toString());
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
-    }
-    if (methods.get(index) != null) {
-      objects.set(index, methods.get(index).get());
     }
     if (result.isPresent()
         && (validators.get(index) == null || validators.get(index).test(result.get()))) {
       setters.get(index).accept(rawObject, result.get());
     } else {
-      out.writeln(inter != null ? inter.error() : "[ERROR]: Не удалось сформировать поле");
+      if (inter != null) {
+        try {
+          inter.showError();
+        } catch (IOException e) {
+          throw new RuntimeException(e);
+        }
+      }
       return ProcessStatus.FAILURE;
     }
     return ProcessStatus.SUCCESS;
@@ -202,15 +124,5 @@ public class InteractiveObjectUpdater<T, K extends InputDevice> extends ObjectUp
       }
     }
     return Optional.of(rawObject);
-  }
-
-  @Override
-  public InteractiveObjectUpdater<T, K> setIn(K in) {
-    return new InteractiveObjectUpdater<>(in, out);
-  }
-
-  @Override
-  public Optional<K> getIn() {
-    return Optional.ofNullable(in);
   }
 }

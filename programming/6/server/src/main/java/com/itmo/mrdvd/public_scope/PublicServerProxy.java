@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.public_scope;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PublicServerProxy extends AbstractProxy {
   public PublicServerProxy(AbstractExecutor exec) {

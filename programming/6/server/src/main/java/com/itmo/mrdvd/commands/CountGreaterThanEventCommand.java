@@ -3,7 +3,6 @@ package com.itmo.mrdvd.commands;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.service.executor.Command;
-
 import java.util.List;
 
 public class CountGreaterThanEventCommand implements Command<String> {
