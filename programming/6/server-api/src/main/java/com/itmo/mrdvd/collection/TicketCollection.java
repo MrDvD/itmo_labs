@@ -1,18 +1,20 @@
 package com.itmo.mrdvd.collection;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.validators.Validator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.validators.Validator;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
@@ -106,7 +108,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   public TicketCollection() {
-    this("Безымянная коллекция билетов");
+    this("Unnamed ticket collection");
   }
 
   public TicketCollection(String name) {
@@ -201,7 +203,10 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
 
   @Override
   public Iterator<Ticket> iterator() {
-    return tickets.iterator();
+    if (this.tickets != null) {
+      return tickets.iterator();
+    }
+    return Collections.emptyIterator();
   }
 
   @Override

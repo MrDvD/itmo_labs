@@ -1,5 +1,13 @@
 package com.itmo.mrdvd;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.device.TTY;
@@ -14,16 +22,8 @@ import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadObjectStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadStringQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ShellQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.SkipLineStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.UpdateObjectStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.PrintStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
 
 public class CollectionShell extends DefaultShell {
   public CollectionShell(Proxy proxy, Supplier<ServiceQuery> query) {
@@ -54,6 +54,6 @@ public class CollectionShell extends DefaultShell {
   public void setBuilders(InteractiveBuilder<?> builder, InteractiveUpdater<?> updater) {
     setQueryStrategy("add", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
     setQueryStrategy("add_if_max", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
-    setQueryStrategy("update", new UpdateObjectStrategy(updater, new SkipLineStrategy(this)));
+    setQueryStrategy("update", new ReadObjectStrategy(builder, new ReadLongQueryStrategy(this, new SkipLineStrategy(this))));
   }
 }
