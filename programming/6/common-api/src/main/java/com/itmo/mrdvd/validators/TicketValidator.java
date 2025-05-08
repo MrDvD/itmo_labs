@@ -28,7 +28,6 @@ public class TicketValidator extends ObjectValidator<Ticket> {
   }
 
   private void init(Validator<Coordinates> coordinatesValidator, Validator<Event> eventValidator) {
-    check(Ticket::getId, Long.class, TicketValidator::validateId);
     check(Ticket::getName, String.class, TicketValidator::validateName);
     check(Ticket::getCoordinates, coordinatesValidator);
     check(Ticket::getPrice, Integer.class, TicketValidator::validatePrice);

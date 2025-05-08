@@ -21,7 +21,6 @@ public class EventValidator extends ObjectValidator<Event> {
   }
 
   private void init() {
-    check(Event::getId, Long.class, EventValidator::validateId);
     check(Event::getName, String.class, EventValidator::validateName);
     check(Event::getDescription, String.class, EventValidator::validateDescription);
     check(Event::getType, EventType.class, EventValidator::validateType);

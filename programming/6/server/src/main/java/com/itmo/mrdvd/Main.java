@@ -22,6 +22,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -45,9 +46,15 @@ public class Main {
             new FileIO(Path.of(""), FileSystems.getDefault()),
             System.getenv("COLLECT_PATH"),
             validator);
-    PublicServerProxy publicProxy = new PublicServerProxy(publicExec, new PacketQueryMapper());
+    PublicServerProxy publicProxy =
+        new PublicServerProxy(
+            publicExec,
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
     PrivateServerProxy privateProxy =
-        new PrivateServerProxy(privateExec, publicProxy, new PacketQueryMapper());
+        new PrivateServerProxy(
+            privateExec,
+            publicProxy,
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
     ServerListener listener = new ServerListener(Selector.open(), deserialPacket, serialPacket);
     ServerSocketChannel publicSock = ServerSocketChannel.open();
     ServerSocketChannel privateSock = ServerSocketChannel.open();

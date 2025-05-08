@@ -19,6 +19,7 @@ import com.itmo.mrdvd.updaters.InteractiveEventUpdater;
 import com.itmo.mrdvd.updaters.InteractiveTicketUpdater;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
 
 /*
  * 1. Split Update query into two parts:
@@ -39,7 +40,7 @@ public class Main {
             sender,
             exec,
             new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper())),
-            new PacketQueryMapper());
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
     CollectionShell shell = new CollectionShell(proxy, EmptyServiceQuery::new);
     shell.setBuilders(
         new InteractiveTicketBuilder(

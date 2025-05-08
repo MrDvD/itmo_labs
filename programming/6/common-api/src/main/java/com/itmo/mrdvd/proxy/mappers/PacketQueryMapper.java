@@ -10,13 +10,16 @@ import java.util.Optional;
 
 public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, String, List> {
   private final Map<String, Mapper<String, List>> mappers;
+  private final Mapper<String, List> defaultMapper;
 
-  public PacketQueryMapper() {
-    this(new HashMap<>());
+  public PacketQueryMapper(Mapper<String, List> defaultMapper) {
+    this(defaultMapper, new HashMap<>());
   }
 
-  public PacketQueryMapper(Map<String, Mapper<String, List>> mappers) {
+  public PacketQueryMapper(
+      Mapper<String, List> defaultMapper, Map<String, Mapper<String, List>> mappers) {
     this.mappers = mappers;
+    this.defaultMapper = defaultMapper;
   }
 
   @Override
@@ -32,6 +35,8 @@ public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, S
     Optional<List> result = Optional.empty();
     if (this.mappers.containsKey(obj.getName())) {
       result = this.mappers.get(obj.getName()).convert(obj.getPayload());
+    } else {
+      result = this.defaultMapper.convert(obj.getPayload());
     }
     return Optional.of(
         new AbstractServiceQuery(obj.getName(), result.isEmpty() ? List.of() : result.get()) {});

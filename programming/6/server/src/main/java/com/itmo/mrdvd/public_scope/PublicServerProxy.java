@@ -1,7 +1,11 @@
 package com.itmo.mrdvd.public_scope;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
@@ -29,12 +33,23 @@ public class PublicServerProxy extends AbstractProxy {
       Map<String, ProxyStrategy> strats) {
     super(strats);
     this.mapper = mapper;
-    // this.mapper.setStrategy(name, strat);
+    this.mapper.setStrategy(
+        "add",
+        new ObjectDeserializer<>(
+            new XmlMapper(),
+            TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
+    this.mapper.setStrategy(
+        "add_if_max",
+        new ObjectDeserializer<>(
+            new XmlMapper(),
+            TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
     setDefaultStrategy(new WrapStrategy(exec));
     setStrategy("clear", new InformStrategy(exec, "Коллекция очищена."));
     setStrategy("remove_last", new InformStrategy(exec, "Последний элемент удалён."));
     setStrategy("remove_at", new InformStrategy(exec, "Элемент удалён."));
     setStrategy("remove_by_id", new InformStrategy(exec, "Элемент удалён."));
+    setStrategy("add", new InformStrategy(exec, "Элемент добавлен."));
+    setStrategy("add_if_max", new InformStrategy(exec, "Элемент добавлен."));
   }
 
   public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial) {
