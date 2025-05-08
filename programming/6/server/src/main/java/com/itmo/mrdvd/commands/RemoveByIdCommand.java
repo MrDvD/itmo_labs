@@ -1,8 +1,9 @@
 package com.itmo.mrdvd.commands;
 
+import java.util.List;
+
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.service.executor.Command;
-import java.util.List;
 
 public class RemoveByIdCommand implements Command<Void> {
   private final CollectionWorker<?, ?> collection;
@@ -20,9 +21,12 @@ public class RemoveByIdCommand implements Command<Void> {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
     Long id = null;
-    try {
+    if (Long.class.isInstance(params.get(0))) {
       id = (Long) params.get(0);
-    } catch (ClassCastException e) {
+    }
+    try {
+      id = Long.valueOf((String) params.get(0));
+    } catch (NumberFormatException|ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать id элемента.");
     }
     if (id < 0) {

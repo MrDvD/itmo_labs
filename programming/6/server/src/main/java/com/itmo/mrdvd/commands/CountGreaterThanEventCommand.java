@@ -1,9 +1,10 @@
 package com.itmo.mrdvd.commands;
 
+import java.util.List;
+
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.service.executor.Command;
-import java.util.List;
 
 public class CountGreaterThanEventCommand implements Command<String> {
   private final Collection<Ticket, ?> collection;
@@ -21,9 +22,12 @@ public class CountGreaterThanEventCommand implements Command<String> {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
     Long id = null;
-    try {
+    if (Long.class.isInstance(params.get(0))) {
       id = (Long) params.get(0);
-    } catch (ClassCastException e) {
+    }
+    try {
+      id = Long.valueOf((String) params.get(0));
+    } catch (NumberFormatException|ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать id события.");
     }
     if (id < 0) {
