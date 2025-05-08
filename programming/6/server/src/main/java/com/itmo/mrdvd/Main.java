@@ -1,5 +1,13 @@
 package com.itmo.mrdvd;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.List;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
@@ -16,13 +24,6 @@ import com.itmo.mrdvd.public_scope.PublicServerProxy;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) throws IOException {
@@ -42,9 +43,11 @@ public class Main {
     TicketCollection collect = new TicketCollection();
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
+    ServerListener listener = new ServerListener(Selector.open(), deserialPacket, serialPacket);
     PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
     PrivateServerExecutor privateExec =
         new PrivateServerExecutor(
+            listener,
             collect,
             serialCollection,
             deserialCollection,
@@ -60,7 +63,6 @@ public class Main {
             privateExec,
             publicProxy,
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
-    ServerListener listener = new ServerListener(Selector.open(), deserialPacket, serialPacket);
     ServerSocketChannel publicSock = ServerSocketChannel.open();
     ServerSocketChannel privateSock = ServerSocketChannel.open();
     publicSock.bind(new InetSocketAddress("localhost", 8080));

@@ -1,5 +1,13 @@
 package com.itmo.mrdvd;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Supplier;
+
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.Proxy;
@@ -16,13 +24,7 @@ import com.itmo.mrdvd.service.shell.query_fill_strategy.SkipLineStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.UpdateObjectStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.PrintStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
+import com.itmo.mrdvd.service.shell.response_strategy.ShutdownStrategy;
 
 public class CollectionShell extends DefaultShell {
   public CollectionShell(Proxy proxy, Supplier<ServiceQuery> query) {
@@ -38,6 +40,7 @@ public class CollectionShell extends DefaultShell {
       Set<String> usedTtys) {
     super(proxy, query, tty, args, strats, usedTtys);
     setDefaultResponseStrategy(new PrintStrategy(this));
+    setResponseStrategy("shutdown", new ShutdownStrategy(this, new PrintStrategy(this)));
     setQueryStrategy("exit", new ShellQueryStrategy(this));
     setQueryStrategy(
         "execute_script",

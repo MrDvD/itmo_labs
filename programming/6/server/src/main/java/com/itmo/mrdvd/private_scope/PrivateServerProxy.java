@@ -1,5 +1,11 @@
 package com.itmo.mrdvd.private_scope;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.Proxy;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
@@ -12,11 +18,6 @@ import com.itmo.mrdvd.proxy.strategies.IgnoreStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
 
 public class PrivateServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
@@ -39,7 +40,7 @@ public class PrivateServerProxy extends AbstractProxy {
     setStrategy("fetch_all", new FetchAllStrategy(exec, other));
     setStrategy("save", new InformStrategy(exec, "Коллекция сохранена."));
     setStrategy("load", new InformStrategy(exec, "Коллекция загружена."));
-    // shutdown
+    setStrategy("shutdown", new InformStrategy(exec, "Сервер завершил работу."));
   }
 
   public Packet processPacket(
