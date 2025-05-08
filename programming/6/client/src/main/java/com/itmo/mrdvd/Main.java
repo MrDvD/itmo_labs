@@ -1,9 +1,5 @@
 package com.itmo.mrdvd;
 
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.List;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builders.InteractiveEventBuilder;
@@ -21,6 +17,9 @@ import com.itmo.mrdvd.proxy.service_query.EmptyServiceQuery;
 import com.itmo.mrdvd.updaters.InteractiveCoordinatesUpdater;
 import com.itmo.mrdvd.updaters.InteractiveEventUpdater;
 import com.itmo.mrdvd.updaters.InteractiveTicketUpdater;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.List;
 
 /*
  * 1. Split Update query into two parts:

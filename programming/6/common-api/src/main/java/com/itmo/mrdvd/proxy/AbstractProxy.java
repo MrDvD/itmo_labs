@@ -5,6 +5,7 @@ import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public abstract class AbstractProxy implements Proxy {
   protected Map<String, ProxyStrategy> strats;
@@ -25,7 +26,7 @@ public abstract class AbstractProxy implements Proxy {
   }
 
   @Override
-  public ServiceQuery processQuery(ServiceQuery q) {
+  public Optional<ServiceQuery> processQuery(ServiceQuery q) {
     try {
       if (this.strats.containsKey(q.getName())) {
         return this.strats.get(q.getName()).make(q);
@@ -35,7 +36,7 @@ public abstract class AbstractProxy implements Proxy {
       }
       return this.defaultStrat.make(q);
     } catch (RuntimeException e) {
-      return new AbstractServiceQuery("error", List.of(e.getLocalizedMessage())) {};
+      return Optional.of(new AbstractServiceQuery("error", List.of(e.getLocalizedMessage())) {});
     }
   }
 }

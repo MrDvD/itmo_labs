@@ -26,6 +26,11 @@ import java.util.List;
 
 public class Main {
   public static void main(String[] args) throws IOException {
+    String path = System.getenv("COLLECT_PATH");
+    if (path == null) {
+      System.err.println("Не указана переменная окружения COLLECT_PATH.");
+      return;
+    }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
     ObjectDeserializer<? extends EmptyPacket> deserialPacket =
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
@@ -44,7 +49,7 @@ public class Main {
             serialCollection,
             deserialCollection,
             new FileIO(Path.of(""), FileSystems.getDefault()),
-            System.getenv("COLLECT_PATH"),
+            path,
             validator);
     PublicServerProxy publicProxy =
         new PublicServerProxy(
@@ -68,7 +73,12 @@ public class Main {
     listener.addListener(
         privateSock,
         (Packet p) -> {
-          return privateProxy.processPacket(p, queryPacket);
+          return privateProxy.processPacket(
+              p,
+              queryPacket,
+              (Packet q) -> {
+                return publicProxy.processPacket(q, queryPacket);
+              });
         });
     listener.start();
   }

@@ -8,14 +8,15 @@ import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.FetchAllStrategy;
+import com.itmo.mrdvd.proxy.strategies.IgnoreStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
-import com.itmo.mrdvd.proxy.strategies.RedirectToStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 
 public class PrivateServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
@@ -34,20 +35,24 @@ public class PrivateServerProxy extends AbstractProxy {
       Map<String, ProxyStrategy> strats) {
     super(strats);
     this.mapper = mapper;
-    // this.mapper.setStrategy(name, strat);
-    setDefaultStrategy(new RedirectToStrategy(other));
+    setDefaultStrategy(new IgnoreStrategy());
     setStrategy("fetch_all", new FetchAllStrategy(exec, other));
     setStrategy("save", new InformStrategy(exec, "Коллекция сохранена."));
     setStrategy("load", new InformStrategy(exec, "Коллекция загружена."));
     // shutdown
   }
 
-  public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial) {
-    Optional<ServiceQuery> deserial = this.mapper.convert(p);
-    if (deserial.isEmpty()) {
-      return new EmptyPacket();
+  public Packet processPacket(
+      Packet p, Mapper<ServiceQuery, Packet> serial, Function<Packet, Packet> redirect) {
+    Optional<ServiceQuery> raw = this.mapper.convert(p);
+    if (raw.isEmpty()) {
+      return redirect.apply(p);
     }
-    Optional<Packet> result = serial.convert(processQuery(deserial.get()));
+    Optional<ServiceQuery> ans = processQuery(raw.get());
+    if (ans.isEmpty()) {
+      return redirect.apply(p);
+    }
+    Optional<Packet> result = serial.convert(ans.get());
     return result.isEmpty() ? new EmptyPacket() : result.get();
   }
 }

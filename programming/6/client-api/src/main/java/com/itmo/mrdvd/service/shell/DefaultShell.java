@@ -1,5 +1,11 @@
 package com.itmo.mrdvd.service.shell;
 
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
+import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,13 +15,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
-
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
-import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
@@ -72,7 +71,10 @@ public class DefaultShell extends AbstractShell {
       getTty().get().getIn().skipLine();
       return;
     }
-    processResponse(this.proxy.processQuery(fillQuery(cmdName.get())));
+    Optional<ServiceQuery> q = this.proxy.processQuery(fillQuery(cmdName.get()));
+    if (q.isPresent()) {
+      processResponse(q.get());
+    }
   }
 
   @Override
@@ -87,14 +89,13 @@ public class DefaultShell extends AbstractShell {
       }
       while (!getTty().get().getIn().hasNext()) {
         getTty().get().getIn().closeIn();
+        getTty().get().getOut().closeOut();
         popTty();
-        if (getTty().get().getIn() instanceof InteractiveInputDevice back) {
-          back.write("> ");
-        }
         if (getTty().isEmpty()) {
-          getTty().get().getOut().closeOut();
           stop();
           return;
+        } else if (getTty().get().getIn() instanceof InteractiveInputDevice back) {
+          back.write("> ");
         }
       }
       try {

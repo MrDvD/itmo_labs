@@ -2,7 +2,7 @@ package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.HavingId;
-import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
@@ -11,25 +11,28 @@ import java.util.List;
 import java.util.Optional;
 
 public class LoadCommand<T extends HavingId, U> implements Command<Void> {
-  private final InputDevice in;
+  private final FileDescriptor in;
   private final Collection<T, U> collection;
   private final Validator<T> validator;
   private final Mapper<String, ? extends Collection<T, U>> deserial;
+  private final String path;
 
   public LoadCommand(
-      InputDevice in,
+      FileDescriptor in,
       Collection<T, U> collection,
       Validator<T> validator,
       Mapper<String, ? extends Collection<T, U>> deserial,
-      String params) {
+      String path) {
     this.in = in;
     this.collection = collection;
     this.validator = validator;
     this.deserial = deserial;
+    this.path = path;
   }
 
   @Override
   public Void execute(List<Object> params) throws RuntimeException {
+    this.in.setPath(path);
     this.in.openIn();
     Optional<String> fileContent = Optional.empty();
     try {

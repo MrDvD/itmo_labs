@@ -57,7 +57,11 @@ public class PublicServerProxy extends AbstractProxy {
     if (deserial.isEmpty()) {
       return new EmptyPacket();
     }
-    Optional<Packet> result = serial.convert(processQuery(deserial.get()));
+    Optional<ServiceQuery> ans = processQuery(deserial.get());
+    if (ans.isEmpty()) {
+      return new EmptyPacket();
+    }
+    Optional<Packet> result = serial.convert(ans.get());
     return result.isEmpty() ? new EmptyPacket() : result.get();
   }
 }

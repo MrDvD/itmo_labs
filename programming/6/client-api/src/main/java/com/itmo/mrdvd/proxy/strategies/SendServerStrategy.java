@@ -25,7 +25,7 @@ public class SendServerStrategy implements ProxyStrategy {
   }
 
   @Override
-  public ServiceQuery make(ServiceQuery q) {
+  public Optional<ServiceQuery> make(ServiceQuery q) {
     try {
       Optional<? extends Packet> serialized = this.serial.convert(q);
       if (serialized.isEmpty()) {
@@ -39,9 +39,9 @@ public class SendServerStrategy implements ProxyStrategy {
         if (deserialized.isEmpty()) {
           throw new RuntimeException("Не удалось десериализовать ответ.");
         }
-        return deserialized.get();
+        return Optional.of(deserialized.get());
       }
-      return new EmptyServiceQuery();
+      return Optional.of(new EmptyServiceQuery());
     } catch (IOException e) {
       throw new RuntimeException("Не удалось отправить запрос.");
     }

@@ -31,7 +31,8 @@ public class CacheQueriesStrategy implements ProxyStrategy {
   }
 
   @Override
-  public ServiceQuery make(ServiceQuery q) throws IllegalStateException, RuntimeException {
+  public Optional<ServiceQuery> make(ServiceQuery q)
+      throws IllegalStateException, RuntimeException {
     if (this.exec != null) {
       try {
         Optional<? extends Packet> serialized = this.serial.convert(q);
@@ -49,16 +50,16 @@ public class CacheQueriesStrategy implements ProxyStrategy {
           for (Object qq : (List) deserialized.get().getArgs()) {
             this.exec.setCache((CommandMeta) qq);
           }
-          return new AbstractServiceQuery(
-              q.getName(), List.of("Получен набор запросов от сервера.")) {};
+          return Optional.of(
+              new AbstractServiceQuery(
+                  q.getName(), List.of("Получен набор запросов от сервера.")) {});
         }
-        return new EmptyServiceQuery();
+        return Optional.of(new EmptyServiceQuery());
       } catch (ClassCastException e) {
         throw new RuntimeException("Не удалось распознать полученные запросы.");
       } catch (IOException e) {
         throw new RuntimeException("Не удалось отправить запрос.");
       }
-
     } else {
       throw new IllegalStateException("Не передан исполнитель для кеширования запросов.");
     }
