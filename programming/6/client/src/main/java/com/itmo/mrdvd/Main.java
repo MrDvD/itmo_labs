@@ -1,12 +1,16 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.List;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builders.InteractiveEventBuilder;
 import com.itmo.mrdvd.builders.InteractiveTicketBuilder;
 import com.itmo.mrdvd.device.DataConsole;
+import com.itmo.mrdvd.device.DefaultTTY;
 import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
@@ -17,9 +21,6 @@ import com.itmo.mrdvd.proxy.service_query.EmptyServiceQuery;
 import com.itmo.mrdvd.updaters.InteractiveCoordinatesUpdater;
 import com.itmo.mrdvd.updaters.InteractiveEventUpdater;
 import com.itmo.mrdvd.updaters.InteractiveTicketUpdater;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.List;
 
 /*
  * 1. Split Update query into two parts:
@@ -48,7 +49,7 @@ public class Main {
         new InteractiveTicketUpdater(
             new InteractiveCoordinatesUpdater(shell), new InteractiveEventUpdater(shell), shell));
     DataConsole console = new DataConsole().init();
-    shell.setTty(new TTY(null, console, console) {});
+    shell.setTty(new DefaultTTY(null, console, console));
     shell.start();
   }
 }

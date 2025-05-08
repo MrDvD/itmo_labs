@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
   private final CollectionWorker<T, List<T>> collection;
@@ -30,7 +29,7 @@ public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
     }
     try {
       idx = Integer.valueOf((String) params.get(0));
-    } catch (NumberFormatException|ClassCastException e) {
+    } catch (NumberFormatException | ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать индекс элемента.");
     }
     if (idx < 0) {

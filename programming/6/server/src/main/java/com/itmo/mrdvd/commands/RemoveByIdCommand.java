@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class RemoveByIdCommand implements Command<Void> {
   private final CollectionWorker<?, ?> collection;
@@ -26,7 +25,7 @@ public class RemoveByIdCommand implements Command<Void> {
     }
     try {
       id = Long.valueOf((String) params.get(0));
-    } catch (NumberFormatException|ClassCastException e) {
+    } catch (NumberFormatException | ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать id элемента.");
     }
     if (id < 0) {

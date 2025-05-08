@@ -8,9 +8,9 @@ import com.itmo.mrdvd.device.input.DataInputDevice;
  * <p>In contrast to InteractiveInputDevice, this class allows different input and output devices.
  */
 public abstract class TTY {
-  protected String name;
-  protected DataInputDevice in;
-  protected OutputDevice out;
+  protected final String name;
+  protected final DataInputDevice in;
+  protected final OutputDevice out;
 
   public TTY(String name, DataInputDevice in, OutputDevice out) {
     this.name = name;
@@ -18,20 +18,11 @@ public abstract class TTY {
     this.out = out;
   }
 
-  public TTY setName(String name) {
-    this.name = name;
-    return this;
-  }
+  public abstract TTY setName(String name);
 
-  public TTY setIn(DataInputDevice in) {
-    this.in = in;
-    return this;
-  }
+  public abstract TTY setIn(DataInputDevice in);
 
-  public TTY setOut(OutputDevice out) {
-    this.out = out;
-    return this;
-  }
+  public abstract TTY setOut(OutputDevice out);
 
   public String getName() {
     return this.name;

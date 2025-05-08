@@ -1,14 +1,15 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.device.DataFileDescriptor;
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.service.executor.Command;
-import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import com.itmo.mrdvd.device.DataFileDescriptor;
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.service.shell.AbstractShell;
 
 public class ExecuteScriptCommand implements Command<Void> {
   private final DataFileDescriptor fd;
@@ -45,8 +46,8 @@ public class ExecuteScriptCommand implements Command<Void> {
       throw new IllegalArgumentException("Не удалось обратиться к файлу по адресу.");
     }
     try {
-      TTY tty = shell.getTty().get().setIn(fd);
-      tty.setName(p.get().toAbsolutePath().toString());
+      TTY tty = shell.getTty().get().setIn(file);
+      tty = tty.setName(p.get().toAbsolutePath().toString());
       shell.setTty(tty);
     } catch (IllegalArgumentException e) {
       throw new IllegalArgumentException(
