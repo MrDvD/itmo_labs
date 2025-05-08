@@ -1,5 +1,9 @@
 package com.itmo.mrdvd.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.validators.Validator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,11 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.validators.Validator;
 
 public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   @JsonProperty private List<Ticket> tickets;
@@ -225,7 +224,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
     if (validator == null) {
       throw new IllegalArgumentException("Не задан валидатор для объекта.");
     }
-    if (!validator.validate(obj) || !isValidTicketIds(obj)) {
+    if (!validator.validate(obj)) {
       return Optional.empty();
     }
     for (int i = 0; i < tickets.size(); i++) {
@@ -235,6 +234,8 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
           throw new IllegalArgumentException("Не задан набор значений для сравнения.");
         }
         if (cond == null || values.contains(cond.compare(obj, ticket))) {
+          obj.setId(ticket.getId());
+          obj.getEvent().setId(ticket.getEvent().getId());
           tickets.set(i, obj);
           return Optional.of(obj);
         }

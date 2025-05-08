@@ -1,14 +1,10 @@
 package com.itmo.mrdvd.public_scope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.proxy.AbstractProxy;
+import com.itmo.mrdvd.proxy.UpdateDTO;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.VariableMapper;
@@ -19,6 +15,10 @@ import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class PublicServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
@@ -45,10 +45,14 @@ public class PublicServerProxy extends AbstractProxy {
             new XmlMapper(),
             TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
     this.mapper.setStrategy(
-      "update",
-      new ObjectDeserializer<>(
-          new XmlMapper(),
-          TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
+        "update",
+        new ObjectDeserializer<>(
+            new XmlMapper(),
+            TypeFactory.defaultInstance()
+                .constructCollectionType(
+                    List.class,
+                    TypeFactory.defaultInstance()
+                        .constructParametricType(UpdateDTO.class, Ticket.class))));
     setDefaultStrategy(new WrapStrategy(exec));
     setStrategy("clear", new InformStrategy(exec, "Коллекция очищена."));
     setStrategy("remove_last", new InformStrategy(exec, "Последний элемент удалён."));

@@ -1,20 +1,27 @@
 package com.itmo.mrdvd.service.shell.query_fill_strategy;
 
-import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
+import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.proxy.UpdateDTO;
 import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
-public class UpdateObjectStrategy implements QueryFillStrategy {
-  private final InteractiveUpdater<?> updater;
+public class UpdateObjectStrategy<T> implements QueryFillStrategy {
+  private final AbstractShell shell;
+  private final InteractiveBuilder<T> builder;
   private final QueryFillStrategy prev;
 
-  public UpdateObjectStrategy(InteractiveUpdater<?> updater) {
-    this(updater, null);
+  public UpdateObjectStrategy(AbstractShell shell, InteractiveBuilder<T> builder) {
+    this(shell, builder, null);
   }
 
-  public UpdateObjectStrategy(InteractiveUpdater<?> updater, QueryFillStrategy prev) {
-    this.updater = updater;
+  public UpdateObjectStrategy(
+      AbstractShell shell, InteractiveBuilder<T> builder, QueryFillStrategy prev) {
+    this.shell = shell;
+    this.builder = builder;
     this.prev = prev;
   }
 
@@ -24,13 +31,24 @@ public class UpdateObjectStrategy implements QueryFillStrategy {
       q = prev.fillArgs(q);
     }
     Stream<Object> args = q.getArgs().stream();
-    if (this.updater == null) {
-      throw new IllegalStateException("Не предоставлен updater для обновления объекта.");
+    Optional<TTY> tty = this.shell.getTty();
+    if (tty.isEmpty()) {
+      throw new IllegalStateException("Не предоставлен TTY для чтения параметров.");
     }
-    // Optional<?> obj = this.updater.update();
-    // if (obj.isPresent()) {
-    //   args = Stream.concat(args, Stream.of(obj.get()));
-    // }
+    if (this.builder == null) {
+      throw new IllegalStateException("Не предоставлен билдер для обновления объекта.");
+    }
+    Optional<Long> idx = tty.get().getIn().readLong();
+    tty.get().getIn().skipLine();
+    UpdateDTO<T> updateDTO = new UpdateDTO<>(); // Tight coupling with UpdateDTO, ikr
+    if (idx.isPresent()) {
+      updateDTO.setId(idx.get());
+    }
+    Optional<T> obj = this.builder.build();
+    if (obj.isPresent()) {
+      updateDTO.setObject(obj.get());
+    }
+    args = Stream.concat(args, Stream.of(updateDTO));
     q.setArgs(args.toList());
     return q;
   }

@@ -2,6 +2,7 @@ package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
 import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.proxy.UpdateDTO;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.List;
@@ -9,12 +10,10 @@ import java.util.List;
 public class UpdateCommand<T extends HavingId> implements Command<Void> {
   private final CollectionWorker<T, ?> collect;
   private final Validator<T> validator;
-  private final Class<T> clz;
 
-  public UpdateCommand(CollectionWorker<T, ?> collection, Validator<T> validator, Class<T> clz) {
+  public UpdateCommand(CollectionWorker<T, ?> collection, Validator<T> validator) {
     this.collect = collection;
     this.validator = validator;
-    this.clz = clz;
   }
 
   @Override
@@ -26,8 +25,8 @@ public class UpdateCommand<T extends HavingId> implements Command<Void> {
       throw new IllegalArgumentException("Не предоставлен объект для обновления в коллекции.");
     }
     try {
-      T obj = this.clz.cast(params.get(0));
-      if (collect.update(obj.getId(), obj, validator).isEmpty()) {
+      UpdateDTO<T> obj = (UpdateDTO) params.get(0);
+      if (collect.update(obj.getId(), obj.getObject(), validator).isEmpty()) {
         throw new RuntimeException("Не удалось обновить элемент в коллекции.");
       }
     } catch (ClassCastException e) {

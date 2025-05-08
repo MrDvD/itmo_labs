@@ -53,6 +53,6 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(
         new AddIfCommand<>(
             collect, validator, new TicketComparator(TicketField.ID), Ticket.class, Set.of(1)));
-    setCommand(new UpdateCommand<>(collect, validator, Ticket.class));
+    setCommand(new UpdateCommand<>(collect, validator));
   }
 }
