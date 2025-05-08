@@ -1,14 +1,14 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.proxy.EmptyQuery;
-import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.service.executor.CommandMeta;
+import com.itmo.mrdvd.service.executor.DefaultCommandMeta;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class FetchAllCommand implements Command<List<Query>> {
+public class FetchAllCommand implements Command<List<CommandMeta>> {
   private final AbstractExecutor exec;
 
   public FetchAllCommand(AbstractExecutor exec) {
@@ -16,12 +16,12 @@ public class FetchAllCommand implements Command<List<Query>> {
   }
 
   @Override
-  public List<Query> execute(List<Object> params) {
-    Stream<Query> queries = Stream.empty();
+  public List<CommandMeta> execute(List<Object> params) {
+    Stream<CommandMeta> queries = Stream.empty();
     for (String cmdName : this.exec.getCommandKeys()) {
       Optional<Command<?>> cmd = this.exec.getCommand(cmdName);
       if (cmd.isPresent()) {
-        Query q = new EmptyQuery();
+        CommandMeta q = new DefaultCommandMeta();
         q.setCmd(cmd.get().name());
         q.setSignature(cmd.get().signature());
         q.setDesc(cmd.get().description());

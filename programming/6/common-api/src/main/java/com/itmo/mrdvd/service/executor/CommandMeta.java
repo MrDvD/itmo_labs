@@ -1,21 +1,15 @@
-package com.itmo.mrdvd.proxy;
+package com.itmo.mrdvd.service.executor;
 
-import java.util.List;
-
-public interface Query {
+public interface CommandMeta {
   public void setCmd(String cmd);
 
   public void setSignature(String signature);
 
   public void setDesc(String desc);
 
-  public void setArgs(List<Object> params);
-
   public String getCmd();
 
   public String getSignature();
 
   public String getDesc();
-
-  public List<Object> getArgs();
 }

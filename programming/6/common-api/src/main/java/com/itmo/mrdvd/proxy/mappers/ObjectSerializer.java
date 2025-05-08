@@ -1,7 +1,5 @@
 package com.itmo.mrdvd.proxy.mappers;
 
-import java.util.Optional;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -10,6 +8,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Optional;
 
 /**
  * A wrapper of Jackson's ObjectMapper so it has needed configuration & implements necessary

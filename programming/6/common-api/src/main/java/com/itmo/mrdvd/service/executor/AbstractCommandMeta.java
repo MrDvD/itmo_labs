@@ -1,22 +1,15 @@
-package com.itmo.mrdvd.proxy;
+package com.itmo.mrdvd.service.executor;
 
-import java.util.List;
-
-public class DefaultQuery implements Query {
+/** DTO for keeping information about available commands. */
+public abstract class AbstractCommandMeta implements CommandMeta {
   private String cmd;
   private String signature;
   private String description;
-  private List<Object> params;
 
-  public DefaultQuery(String cmd, String signature, String desc) {
-    this(cmd, signature, desc, List.of());
-  }
-
-  public DefaultQuery(String cmd, String signature, String desc, List<Object> params) {
+  public AbstractCommandMeta(String cmd, String signature, String desc) {
     this.cmd = cmd;
     this.signature = signature;
     this.description = desc;
-    this.params = params;
   }
 
   @Override
@@ -35,11 +28,6 @@ public class DefaultQuery implements Query {
   }
 
   @Override
-  public void setArgs(List<Object> params) {
-    this.params = params;
-  }
-
-  @Override
   public String getCmd() {
     return this.cmd;
   }
@@ -52,10 +40,5 @@ public class DefaultQuery implements Query {
   @Override
   public String getDesc() {
     return this.description;
-  }
-
-  @Override
-  public List<Object> getArgs() {
-    return this.params;
   }
 }

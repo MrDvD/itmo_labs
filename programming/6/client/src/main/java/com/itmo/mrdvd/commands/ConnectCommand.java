@@ -6,9 +6,9 @@ import java.net.InetSocketAddress;
 import java.util.List;
 
 public class ConnectCommand implements Command<Void> {
-  protected final AbstractSender<?, ?, ?> sender;
+  protected final AbstractSender<?> sender;
 
-  public ConnectCommand(AbstractSender<?, ?, ?> sender) {
+  public ConnectCommand(AbstractSender<?> sender) {
     this.sender = sender;
   }
 

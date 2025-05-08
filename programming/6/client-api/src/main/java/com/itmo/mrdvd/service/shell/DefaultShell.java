@@ -3,8 +3,7 @@ package com.itmo.mrdvd.service.shell;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.device.input.InteractiveInputDevice;
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
 import java.io.IOException;
@@ -15,20 +14,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
-  protected final Function<String, Query> query;
+  protected final Supplier<ServiceQuery> query;
   private boolean isOpen;
 
-  public DefaultShell(Proxy proxy, Function<String, Query> query) {
+  public DefaultShell(Proxy proxy, Supplier<ServiceQuery> query) {
     this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
   }
 
   public DefaultShell(
       Proxy proxy,
-      Function<String, Query> query,
+      Supplier<ServiceQuery> query,
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
       Map<String, ShellResponseStrategy> strats,
@@ -39,7 +38,7 @@ public class DefaultShell extends AbstractShell {
   }
 
   /** Processes the passed Response. */
-  protected void processResponse(Response r) throws IllegalStateException {
+  protected void processResponse(ServiceQuery r) throws IllegalStateException {
     if (this.strats.containsKey(r.getName())) {
       this.strats.get(r.getName()).make(r);
     } else {
@@ -51,8 +50,9 @@ public class DefaultShell extends AbstractShell {
   }
 
   /** Wraps the user input into Query. */
-  protected Query fillQuery(String cmd) throws IOException {
-    Query q = this.query.apply(cmd);
+  protected ServiceQuery fillQuery(String cmd) throws IOException {
+    ServiceQuery q = this.query.get();
+    q.setName(cmd);
     Optional<QueryFillStrategy> arg = getArg(cmd);
     if (arg.isPresent()) {
       q = arg.get().fillArgs(q);

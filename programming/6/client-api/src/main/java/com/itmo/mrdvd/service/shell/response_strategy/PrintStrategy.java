@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.service.shell.response_strategy;
 
 import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.util.List;
 import java.util.Optional;
@@ -14,12 +14,12 @@ public class PrintStrategy implements ShellResponseStrategy {
   }
 
   @Override
-  public void make(Response r) throws IllegalStateException {
+  public void make(ServiceQuery r) throws IllegalStateException {
     Optional<TTY> tty = this.shell.getTty();
     if (tty.isPresent()) {
       tty.get().getOut().writeln(String.format("[%s]: ", r.getName()));
       try {
-        List<Object> lst = r.getBody();
+        List<Object> lst = r.getArgs();
         if (!lst.isEmpty()) {
           tty.get().getOut().writeln((String) lst.get(0));
         }

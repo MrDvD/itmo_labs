@@ -1,8 +1,8 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.service.executor.CommandMeta;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,8 +24,8 @@ public class HelpCommand implements Command<String> {
       }
     }
     result += "\nKnown cached queries:\n";
-    for (String cmdName : this.exec.getCachedQueryKeys()) {
-      Optional<Query> cmd = this.exec.getQuery(cmdName);
+    for (String cmdName : this.exec.getCachedKeys()) {
+      Optional<CommandMeta> cmd = this.exec.getCache(cmdName);
       if (cmd.isPresent()) {
         result += String.format("%-35s\t%s\n", cmd.get().getSignature(), cmd.get().getDesc());
       }

@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.service.shell.query_fill_strategy;
 
 import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
 import java.util.Optional;
@@ -15,7 +15,7 @@ public class ConnectQueryStrategy implements QueryFillStrategy {
   }
 
   @Override
-  public Query fillArgs(Query q) throws IOException {
+  public ServiceQuery fillArgs(ServiceQuery q) throws IOException {
     Stream<Object> args = q.getArgs().stream();
     Optional<TTY> tty = this.shell.getTty();
     if (tty.isEmpty()) {

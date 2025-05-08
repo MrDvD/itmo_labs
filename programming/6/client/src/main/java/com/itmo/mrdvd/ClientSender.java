@@ -1,23 +1,21 @@
 package com.itmo.mrdvd;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.service.AbstractSender;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.util.Optional;
 
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.response.Response;
-import com.itmo.mrdvd.service.AbstractSender;
-
-public class ClientSender extends AbstractSender<Query, String, Response> {
+public class ClientSender extends AbstractSender<Packet> {
   protected SocketChannel socket;
   protected SocketAddress addr;
 
   public ClientSender(
-      Mapper<? super Query, String> querySerial, Mapper<String, ? extends Response> responseDeserial) {
-    super(querySerial, responseDeserial);
+      Mapper<? super Packet, String> serial, Mapper<String, ? extends Packet> deserial) {
+    super(serial, deserial);
   }
 
   @Override
@@ -38,7 +36,7 @@ public class ClientSender extends AbstractSender<Query, String, Response> {
   }
 
   @Override
-  public Optional<? extends Response> send(Query q) throws IllegalStateException, RuntimeException {
+  public Optional<? extends Packet> send(Packet q) throws IllegalStateException, RuntimeException {
     if (this.socket == null) {
       throw new IllegalStateException("Подключение не установлено для отправки запроса.");
     }

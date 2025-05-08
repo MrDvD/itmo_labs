@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.service.executor;
 
-import com.itmo.mrdvd.proxy.Query;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -9,29 +8,30 @@ import java.util.Set;
 /** A wrapper class for a map of commands & cached queries. */
 public abstract class AbstractExecutor {
   protected final Map<String, Command<?>> commands;
-  protected final Map<String, Query> cachedQueries;
+  protected final Map<String, CommandMeta> cachedCommands;
 
-  public AbstractExecutor(Map<String, Command<?>> commands, Map<String, Query> cachedQueries) {
+  public AbstractExecutor(
+      Map<String, Command<?>> commands, Map<String, CommandMeta> cachedCommands) {
     this.commands = commands;
-    this.cachedQueries = cachedQueries;
+    this.cachedCommands = cachedCommands;
   }
 
-  public void setQuery(Query q) {
-    this.cachedQueries.put(q.getCmd(), q);
+  public void setCache(CommandMeta q) {
+    this.cachedCommands.put(q.getCmd(), q);
   }
 
-  public Optional<Query> getQuery(String name) {
-    return this.cachedQueries.containsKey(name)
-        ? Optional.of(this.cachedQueries.get(name))
+  public Optional<CommandMeta> getCache(String name) {
+    return this.cachedCommands.containsKey(name)
+        ? Optional.of(this.cachedCommands.get(name))
         : Optional.empty();
   }
 
-  public Set<String> getCachedQueryKeys() {
-    return this.cachedQueries.keySet();
+  public Set<String> getCachedKeys() {
+    return this.cachedCommands.keySet();
   }
 
-  public void clearCachedQueries() {
-    this.cachedQueries.clear();
+  public void clearCache() {
+    this.cachedCommands.clear();
   }
 
   public void setCommand(Command<?> command) {

@@ -17,9 +17,9 @@ import com.itmo.mrdvd.commands.ShowCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
-import com.itmo.mrdvd.proxy.Query;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
+import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.HashMap;
 import java.util.List;
@@ -36,8 +36,8 @@ public class PublicServerExecutor extends AbstractExecutor {
       Collection<Ticket, List<Ticket>> collect,
       Validator<Ticket> validator,
       Map<String, Command<?>> commands,
-      Map<String, Query> cachedQueries) {
-    super(commands, cachedQueries);
+      Map<String, CommandMeta> cache) {
+    super(commands, cache);
     setCommand(new FetchAllCommand(this));
     setCommand(new ClearCommand(collect));
     setCommand(new InfoCommand(collect));

@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.proxy.strategies;
 
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.Query;
-import com.itmo.mrdvd.proxy.response.Response;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 
 public class RedirectToStrategy implements ProxyStrategy {
   private final Proxy other;
@@ -12,7 +11,7 @@ public class RedirectToStrategy implements ProxyStrategy {
   }
 
   @Override
-  public Response make(Query q) {
+  public ServiceQuery make(ServiceQuery q) {
     if (this.other == null) {
       throw new IllegalStateException("Не обнаружен прокси для перенаправления.");
     }

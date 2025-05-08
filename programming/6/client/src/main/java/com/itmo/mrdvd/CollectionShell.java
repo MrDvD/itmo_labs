@@ -4,7 +4,7 @@ import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.builder.updaters.InteractiveUpdater;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.service.shell.DefaultShell;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.ConnectQueryStrategy;
 import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
@@ -23,16 +23,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class CollectionShell extends DefaultShell {
-  public CollectionShell(Proxy proxy, Function<String, Query> query) {
+  public CollectionShell(Proxy proxy, Supplier<ServiceQuery> query) {
     this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
   }
 
   public CollectionShell(
       Proxy proxy,
-      Function<String, Query> query,
+      Supplier<ServiceQuery> query,
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
       Map<String, ShellResponseStrategy> strats,

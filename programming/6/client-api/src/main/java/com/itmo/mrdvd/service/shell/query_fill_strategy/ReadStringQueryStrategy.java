@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.service.shell.query_fill_strategy;
 
 import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.Query;
+import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public class ReadStringQueryStrategy implements QueryFillStrategy {
   }
 
   @Override
-  public Query fillArgs(Query q) throws IOException {
+  public ServiceQuery fillArgs(ServiceQuery q) throws IOException {
     if (prev != null) {
       q = prev.fillArgs(q);
     }
