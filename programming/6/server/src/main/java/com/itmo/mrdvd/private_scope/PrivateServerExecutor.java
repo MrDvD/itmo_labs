@@ -9,7 +9,7 @@ import com.itmo.mrdvd.commands.ShutdownCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.service.AbstractListener;
+import com.itmo.mrdvd.service.ListenerService;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class PrivateServerExecutor extends AbstractExecutor {
   public PrivateServerExecutor(
-      AbstractListener<?> server,
+      ListenerService<?> server,
       Collection<Ticket, ?> collect,
       Mapper<? super TicketCollection, String> serial,
       Mapper<String, ? extends TicketCollection> deserial,
@@ -30,7 +30,7 @@ public class PrivateServerExecutor extends AbstractExecutor {
   }
 
   public PrivateServerExecutor(
-      AbstractListener<?> server,
+      ListenerService<?> server,
       Collection<Ticket, ?> collect,
       Mapper<? super TicketCollection, String> serial,
       Mapper<String, ? extends TicketCollection> deserial,

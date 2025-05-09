@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
@@ -21,12 +22,16 @@ import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.public_scope.PublicServerExecutor;
 import com.itmo.mrdvd.public_scope.PublicServerProxy;
+import com.itmo.mrdvd.service.ServerClientHandler;
+import com.itmo.mrdvd.service.ServerConnectionAcceptor;
+import com.itmo.mrdvd.service.ServerListenerService;
+import com.itmo.mrdvd.service.ServerResponseSender;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
 
 public class Main {
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     String envName, publicHostname;
     int publicPort, privatePort;
     if (args.length < 4) {
@@ -51,6 +56,13 @@ public class Main {
       System.err.printf("Не указана переменная окружения \"%s\".\n", envName);
       return;
     }
+    Selector selector;
+    try {
+      selector = Selector.open();
+    } catch (IOException e) {
+      System.err.println("Не удалось создать селектор.");
+      return;
+    }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
     ObjectDeserializer<? extends EmptyPacket> deserialPacket =
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
@@ -62,7 +74,8 @@ public class Main {
     TicketCollection collect = new TicketCollection();
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
-    ServerListener listener = new ServerListener(Selector.open(), deserialPacket, serialPacket);
+    ServerListenerService<Packet> listener = new ServerListenerService<>(selector,
+    new ServerConnectionAcceptor(selector), new ServerClientHandler<>(StandardCharsets.UTF_8, serialPacket, deserialPacket, new ServerResponseSender(StandardCharsets.UTF_8)), 8192);
     PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
     PrivateServerExecutor privateExec =
         new PrivateServerExecutor(
@@ -82,25 +95,30 @@ public class Main {
             privateExec,
             publicProxy,
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
-    ServerSocketChannel publicSock = ServerSocketChannel.open();
-    ServerSocketChannel privateSock = ServerSocketChannel.open();
-    publicSock.bind(new InetSocketAddress(publicHostname, publicPort));
-    privateSock.bind(new InetSocketAddress("localhost", privatePort));
-    listener.addListener(
-        publicSock,
-        (Packet p) -> {
-          return publicProxy.processPacket(p, queryPacket);
-        });
-    listener.addListener(
-        privateSock,
-        (Packet p) -> {
-          return privateProxy.processPacket(
-              p,
-              queryPacket,
-              (Packet q) -> {
-                return publicProxy.processPacket(q, queryPacket);
-              });
-        });
+    try {
+      ServerSocketChannel publicSock = ServerSocketChannel.open();
+      ServerSocketChannel privateSock = ServerSocketChannel.open();
+      publicSock.bind(new InetSocketAddress(publicHostname, publicPort));
+      privateSock.bind(new InetSocketAddress("localhost", privatePort));
+      listener.addListener(
+          publicSock,
+          (Packet p) -> {
+            return publicProxy.processPacket(p, queryPacket);
+          });
+      listener.addListener(
+          privateSock,
+          (Packet p) -> {
+            return privateProxy.processPacket(
+                p,
+                queryPacket,
+                (Packet q) -> {
+                  return publicProxy.processPacket(q, queryPacket);
+                });
+          });
+    } catch (IOException e) {
+      System.err.println("Не удалось привязать сокеты к серверу.");
+      return;
+    }
     listener.start();
   }
 }
