@@ -6,3 +6,4 @@ kulibin3
 *.vscode
 *.mvn
 *target/
+*.ovpn
