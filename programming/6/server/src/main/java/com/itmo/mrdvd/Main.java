@@ -27,13 +27,28 @@ import com.itmo.mrdvd.validators.TicketValidator;
 
 public class Main {
   public static void main(String[] args) throws IOException {
+    String envName, publicHostname;
+    int publicPort, privatePort;
     if (args.length < 4) {
-      System.err.println("Не указаны все аргументы командной строки.");
-      return;
+      envName = "COLLECT_PATH";
+      publicHostname = "localhost";
+      publicPort = 8080;
+      privatePort = 8090;
+      System.err.println("Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
+    } else {
+      envName = args[0];
+      publicHostname = args[1];
+      try {
+        publicPort = Integer.parseInt(args[2]);
+        privatePort = Integer.parseInt(args[3]);
+      } catch (NumberFormatException e) {
+        System.err.println("Не удалось распарсить порты.");
+        return;
+      }
     }
-    String path = System.getenv(args[0]);
+    String path = System.getenv(envName);
     if (path == null) {
-      System.err.printf("Не указана переменная окружения \"%s\".\n", args[0]);
+      System.err.printf("Не указана переменная окружения \"%s\".\n", envName);
       return;
     }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
@@ -69,8 +84,8 @@ public class Main {
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
     ServerSocketChannel publicSock = ServerSocketChannel.open();
     ServerSocketChannel privateSock = ServerSocketChannel.open();
-    publicSock.bind(new InetSocketAddress(args[1], Integer.parseInt(args[2])));
-    privateSock.bind(new InetSocketAddress("localhost", Integer.parseInt(args[3])));
+    publicSock.bind(new InetSocketAddress(publicHostname, publicPort));
+    privateSock.bind(new InetSocketAddress("localhost", privatePort));
     listener.addListener(
         publicSock,
         (Packet p) -> {
