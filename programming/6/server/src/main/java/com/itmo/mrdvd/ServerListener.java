@@ -1,21 +1,24 @@
 package com.itmo.mrdvd;
 
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.service.AbstractListener;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
+
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.service.AbstractListener;
 
 public class ServerListener extends AbstractListener<Packet> {
   protected final Map<SelectionKey, ByteBuffer> buffers;
@@ -27,7 +30,7 @@ public class ServerListener extends AbstractListener<Packet> {
       Selector selector,
       Mapper<String, ? extends Packet> deserialPacket,
       Mapper<? super Packet, String> serialPacket) {
-    this(selector, deserialPacket, serialPacket, 16384, Charset.forName("UTF-8"));
+    this(selector, deserialPacket, serialPacket, 8192, StandardCharsets.UTF_8);
   }
 
   public ServerListener(
@@ -101,10 +104,7 @@ public class ServerListener extends AbstractListener<Packet> {
                   Optional<String> serialized =
                       this.serialPacket.convert(this.callbacks.get(key).apply(q.get()));
                   if (serialized.isPresent()) {
-                    ByteBuffer responseBuffer = this.chars.encode(serialized.get());
-                    while (responseBuffer.hasRemaining()) {
-                      client.write(responseBuffer);
-                    }
+                    client.write(this.chars.encode(CharBuffer.wrap(serialized.get())));
                   }
                 }
               }

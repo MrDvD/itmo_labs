@@ -27,9 +27,13 @@ import com.itmo.mrdvd.validators.TicketValidator;
 
 public class Main {
   public static void main(String[] args) throws IOException {
-    String path = System.getenv("COLLECT_PATH");
+    if (args.length < 4) {
+      System.err.println("Не указаны все аргументы командной строки.");
+      return;
+    }
+    String path = System.getenv(args[0]);
     if (path == null) {
-      System.err.println("Не указана переменная окружения COLLECT_PATH.");
+      System.err.printf("Не указана переменная окружения \"%s\".\n", args[0]);
       return;
     }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
@@ -65,8 +69,8 @@ public class Main {
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
     ServerSocketChannel publicSock = ServerSocketChannel.open();
     ServerSocketChannel privateSock = ServerSocketChannel.open();
-    publicSock.bind(new InetSocketAddress("localhost", 8080));
-    privateSock.bind(new InetSocketAddress("localhost", 8090));
+    publicSock.bind(new InetSocketAddress(args[1], Integer.parseInt(args[2])));
+    privateSock.bind(new InetSocketAddress("localhost", Integer.parseInt(args[3])));
     listener.addListener(
         publicSock,
         (Packet p) -> {

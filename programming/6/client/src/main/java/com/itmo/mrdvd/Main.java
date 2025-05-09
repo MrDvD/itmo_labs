@@ -1,5 +1,9 @@
 package com.itmo.mrdvd;
 
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.List;
+
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.builders.InteractiveCoordinatesBuilder;
 import com.itmo.mrdvd.builders.InteractiveEventBuilder;
@@ -14,9 +18,6 @@ import com.itmo.mrdvd.proxy.mappers.QueryPacketMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.service_query.EmptyServiceQuery;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {

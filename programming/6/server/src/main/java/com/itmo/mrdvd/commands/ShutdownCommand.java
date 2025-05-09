@@ -1,13 +1,12 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.service.Service;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class ShutdownCommand implements Command<Void> {
   private final Service service;
-  
+
   public ShutdownCommand(Service service) {
     this.service = service;
   }
