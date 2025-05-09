@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.service;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -8,15 +9,17 @@ import java.nio.charset.Charset;
 import java.util.Optional;
 import java.util.function.Function;
 
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-
 public class ServerClientHandler<T> implements ClientHandler {
   private final Charset chars;
   private final Mapper<? super T, String> serialDTO;
   private final Mapper<String, ? extends T> deserialDTO;
   private final ResponseSender sender;
 
-  public ServerClientHandler(Charset chars, Mapper<? super T, String> serialDTO, Mapper<String, ? extends T> deserialDTO, ResponseSender sender) {
+  public ServerClientHandler(
+      Charset chars,
+      Mapper<? super T, String> serialDTO,
+      Mapper<String, ? extends T> deserialDTO,
+      ResponseSender sender) {
     this.chars = chars;
     this.serialDTO = serialDTO;
     this.deserialDTO = deserialDTO;

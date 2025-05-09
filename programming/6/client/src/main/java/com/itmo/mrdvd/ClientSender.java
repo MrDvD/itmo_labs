@@ -1,5 +1,8 @@
 package com.itmo.mrdvd;
 
+import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.service.AbstractSender;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -9,10 +12,6 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
-import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.service.AbstractSender;
 
 public class ClientSender extends AbstractSender<Packet> {
   protected final Charset chars;
@@ -25,7 +24,9 @@ public class ClientSender extends AbstractSender<Packet> {
   }
 
   public ClientSender(
-      Mapper<? super Packet, String> serial, Mapper<String, ? extends Packet> deserial, Charset chars) {
+      Mapper<? super Packet, String> serial,
+      Mapper<String, ? extends Packet> deserial,
+      Charset chars) {
     super(serial, deserial);
     this.chars = chars;
   }

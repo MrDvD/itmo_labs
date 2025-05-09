@@ -48,7 +48,7 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 
 # compile maven subprojects to independent JAR files
 # the result will be placed into the target/ dir
-mvn package assembly:single
+mvn clean fmt:format package assembly:single
 
 # connect to vpn via your login & password
 openvpn students.ovpn

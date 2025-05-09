@@ -1,14 +1,5 @@
 package com.itmo.mrdvd;
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
-import java.util.List;
-
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.device.FileIO;
@@ -29,6 +20,14 @@ import com.itmo.mrdvd.service.ServerResponseSender;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
@@ -39,7 +38,8 @@ public class Main {
       publicHostname = "localhost";
       publicPort = 8080;
       privatePort = 8090;
-      System.err.println("Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
+      System.err.println(
+          "Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
     } else {
       envName = args[0];
       publicHostname = args[1];
@@ -74,8 +74,16 @@ public class Main {
     TicketCollection collect = new TicketCollection();
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
-    ServerListenerService<Packet> listener = new ServerListenerService<>(selector,
-    new ServerConnectionAcceptor(selector), new ServerClientHandler<>(StandardCharsets.UTF_8, serialPacket, deserialPacket, new ServerResponseSender(StandardCharsets.UTF_8)), 8192);
+    ServerListenerService<Packet> listener =
+        new ServerListenerService<>(
+            selector,
+            new ServerConnectionAcceptor(selector),
+            new ServerClientHandler<>(
+                StandardCharsets.UTF_8,
+                serialPacket,
+                deserialPacket,
+                new ServerResponseSender(StandardCharsets.UTF_8)),
+            8192);
     PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
     PrivateServerExecutor privateExec =
         new PrivateServerExecutor(

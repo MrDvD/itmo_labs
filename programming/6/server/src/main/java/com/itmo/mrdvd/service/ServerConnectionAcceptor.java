@@ -8,7 +8,6 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 
 public class ServerConnectionAcceptor implements ConnectionAcceptor {
   private final Map<SelectionKey, AbstractSelectableChannel> sockets;
@@ -18,7 +17,8 @@ public class ServerConnectionAcceptor implements ConnectionAcceptor {
     this(selector, new HashMap<>());
   }
 
-  public ServerConnectionAcceptor(Selector selector, Map<SelectionKey, AbstractSelectableChannel> sockets) {
+  public ServerConnectionAcceptor(
+      Selector selector, Map<SelectionKey, AbstractSelectableChannel> sockets) {
     this.selector = selector;
     this.sockets = sockets;
   }

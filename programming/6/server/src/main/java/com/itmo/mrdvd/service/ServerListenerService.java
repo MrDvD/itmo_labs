@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-
 public class ServerListenerService<T> implements ListenerService<T> {
   protected final Selector selector;
   protected final ConnectionAcceptor acceptor;
@@ -21,10 +20,7 @@ public class ServerListenerService<T> implements ListenerService<T> {
   protected boolean isOpen;
 
   public ServerListenerService(
-      Selector selector,
-      ConnectionAcceptor acceptor,
-      ClientHandler handler,
-      int bufferSize) {
+      Selector selector, ConnectionAcceptor acceptor, ClientHandler handler, int bufferSize) {
     this(selector, acceptor, handler, bufferSize, new HashMap<>());
   }
 
@@ -68,7 +64,8 @@ public class ServerListenerService<T> implements ListenerService<T> {
           keys.remove(key);
         }
       }
-    } catch (IOException e) {}
+    } catch (IOException e) {
+    }
   }
 
   @Override
