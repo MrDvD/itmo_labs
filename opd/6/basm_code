@@ -3,8 +3,8 @@ V0:     WORD  $FUNC,0x180
 V1:     WORD  $LAND,0x180
 
         ORG   0x10
-LAND:   NOP
-        PUSH        ; X & (ВУ-2) -> X
+LAND:   NOP         ; X & (ВУ-2) -> X
+        PUSH        
         IN    4
         AND   X
         ST    X
@@ -12,8 +12,8 @@ LAND:   NOP
         POP
         IRET
 
-FUNC:   NOP
-        PUSH        ; F(X) = -7 * X + 7 -> ВУ-3
+FUNC:   NOP         ; F(X) = -7 * X + 7 -> ВУ-3
+        PUSH        
         LD    X
         ASL
         ASL
