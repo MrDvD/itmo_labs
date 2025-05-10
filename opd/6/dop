@@ -1,0 +1,43 @@
+        ORG   0x0
+V0:     WORD  $CMD,0x180
+
+        ORG   0x10
+CMD:    NOP         ; breakpoint
+        PUSH        ; reads the command and then executes it
+        LD    FLAG
+        BZC   SECND
+        INC         ; reading first byte of command
+        ST    FLAG
+        IN    4     
+        SWAB
+        ST    BUF
+        NOP         ; breakpoint
+        POP
+        IRET
+SECND:  DEC         ; reading second byte of command
+        ST    FLAG
+        LD    BUF
+        IN    4
+        ST    EXEC
+        NOP         ; breakpoint
+        POP
+EXEC:   NOP
+        NOP         ; breakpoint
+        IRET
+BUF:    NOP         ; keeps the first byte of input command
+FLAG:   NOP         ; distinguishes first byte from the second one
+
+        ORG   0x40
+X:      NOP         ; var X
+START:  DI          ; loading int vectors
+        LD    #8
+        OUT   5
+        EI          
+        CLA         ; X++ in loop (for example)
+        ST    X
+CYCLE:  DI
+        LD    X
+        INC
+        ST    X
+        EI
+        JUMP  CYCLE
