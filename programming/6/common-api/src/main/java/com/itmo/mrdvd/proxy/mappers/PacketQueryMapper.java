@@ -1,12 +1,13 @@
 package com.itmo.mrdvd.proxy.mappers;
 
-import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.service_query.AbstractServiceQuery;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 
 public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, String, List> {
   private final Map<String, Mapper<String, List>> mappers;

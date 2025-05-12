@@ -1,8 +1,9 @@
 package com.itmo.mrdvd.proxy;
 
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
-import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import java.util.Optional;
+
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 
 public interface Proxy {
   public Optional<ServiceQuery> processQuery(ServiceQuery r) throws IllegalStateException;

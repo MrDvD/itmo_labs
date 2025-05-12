@@ -1,10 +1,11 @@
-package com.itmo.mrdvd.service.shell.query_fill_strategy;
+package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 
 public class ReadObjectStrategy implements QueryFillStrategy {
   private final InteractiveBuilder<?> builder;

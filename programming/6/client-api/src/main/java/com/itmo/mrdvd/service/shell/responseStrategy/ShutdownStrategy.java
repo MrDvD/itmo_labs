@@ -1,6 +1,6 @@
-package com.itmo.mrdvd.service.shell.response_strategy;
+package com.itmo.mrdvd.service.shell.responseStrategy;
 
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
 
 public class ShutdownStrategy implements ShellResponseStrategy {
