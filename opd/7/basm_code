@@ -8,10 +8,10 @@ VAR2:   NOP
 TEST1:  LD    INT1
         ST    VAR1
         LD    AC1
-        HLT           ; breakpoint
+        NOP           ; breakpoint
         WORD  0x9E06  ; MADD VAR1
         LD    VAR1
-        HLT           ; breakpoint
+        NOP           ; breakpoint
         CMP   EXP1
         BZC   FAIL1
         LD    (RES1)+
@@ -40,10 +40,10 @@ EXP2:   WORD  0x3888
 TEST3:  LD    INT3
         PUSH
         LD    AC3
-        HLT           ; breakpoint
+        NOP           ; breakpoint
         WORD  0x9C00  ; MADD &0
-        HLT           ; breakpoint
-        LD    &0
+        NOP           ; breakpoint
+        POP
         CMP   EXP3
         BZC   FAIL3
         LD    (RES3)+
