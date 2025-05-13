@@ -1,0 +1,85 @@
+        ORG   0x50
+TOTAL:  NOP
+RES1:   NOP
+RES2:   NOP
+RES3:   NOP
+VAR2:   NOP
+
+TEST1:  LD    INT1
+        ST    VAR1
+        LD    AC1
+        HLT           ; breakpoint
+        WORD  0x9E06  ; MADD VAR1
+        LD    VAR1
+        HLT           ; breakpoint
+        CMP   EXP1
+        BZC   FAIL1
+        LD    (RES1)+
+FAIL1:  RET
+VAR1:   NOP
+INT1:   WORD  0x0437
+AC1:    WORD  0x5001
+EXP1:   WORD  0x5438
+
+TEST2:  LD    INT2
+        ST    VAR2
+        LD    AC2
+        NOP           ; breakpoint
+        WORD  0x9806  ; MADD (CELL2)
+        LD    VAR2
+        NOP           ; breakpoint
+        CMP   EXP2
+        BZC   FAIL2
+        LD    (RES2)+
+FAIL2:  RET
+CELL2:  WORD  0x54
+INT2:   WORD  0x3889
+AC2:    WORD  0xFFFF
+EXP2:   WORD  0x3888
+
+TEST3:  LD    INT3
+        PUSH
+        LD    AC3
+        HLT           ; breakpoint
+        WORD  0x9C00  ; MADD &0
+        HLT           ; breakpoint
+        LD    &0
+        CMP   EXP3
+        BZC   FAIL3
+        LD    (RES3)+
+FAIL3:  RET
+INT3:   WORD  0x5011
+AC3:    WORD  0x2193
+EXP3:   WORD  0x71A4
+
+CHECK:  LD    &1
+        ST    CELL
+        LD    (CELL)
+        BZC   IGNR
+        HLT
+IGNR:   RET
+CELL:   NOP
+
+START:  CLA           ; resetting test results
+        ST    TOTAL
+        ST    RES1
+        ST    RES2
+        ST    RES3
+        CALL  TEST1
+        LD    #0x51
+        PUSH
+        CALL  CHECK
+        POP
+        CALL  TEST2
+        LD    #0x52
+        PUSH
+        CALL  CHECK
+        POP
+        CALL  TEST3
+        LD    #0x53
+        PUSH
+        CALL  CHECK
+        POP
+        LD    #1
+        ST    TOTAL
+        HLT
