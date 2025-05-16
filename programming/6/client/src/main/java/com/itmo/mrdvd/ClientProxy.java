@@ -7,7 +7,7 @@ import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.CacheQueriesStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
