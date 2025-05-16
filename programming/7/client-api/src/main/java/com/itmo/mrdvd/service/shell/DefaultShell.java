@@ -1,11 +1,5 @@
 package com.itmo.mrdvd.service.shell;
 
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
-import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +9,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
+import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;

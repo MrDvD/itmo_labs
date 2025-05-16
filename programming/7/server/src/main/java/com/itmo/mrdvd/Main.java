@@ -1,25 +1,5 @@
 package com.itmo.mrdvd;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.FileIO;
-import com.itmo.mrdvd.private_scope.PrivateServerExecutor;
-import com.itmo.mrdvd.private_scope.PrivateServerProxy;
-import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
-import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
-import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
-import com.itmo.mrdvd.proxy.mappers.QueryPacketMapper;
-import com.itmo.mrdvd.proxy.packet.EmptyPacket;
-import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.public_scope.PublicServerExecutor;
-import com.itmo.mrdvd.public_scope.PublicServerProxy;
-import com.itmo.mrdvd.service.ServerClientHandler;
-import com.itmo.mrdvd.service.ServerConnectionAcceptor;
-import com.itmo.mrdvd.service.ServerListenerService;
-import com.itmo.mrdvd.service.ServerResponseSender;
-import com.itmo.mrdvd.validators.CoordinatesValidator;
-import com.itmo.mrdvd.validators.EventValidator;
-import com.itmo.mrdvd.validators.TicketValidator;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.Selector;
@@ -28,6 +8,27 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
+
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
+import com.itmo.mrdvd.privateScope.PrivateServerProxy;
+import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
+import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
+import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
+import com.itmo.mrdvd.proxy.mappers.QueryPacketMapper;
+import com.itmo.mrdvd.proxy.packet.EmptyPacket;
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.publicScope.PublicServerExecutor;
+import com.itmo.mrdvd.publicScope.PublicServerProxy;
+import com.itmo.mrdvd.service.ServerClientHandler;
+import com.itmo.mrdvd.service.ServerConnectionAcceptor;
+import com.itmo.mrdvd.service.ServerListenerService;
+import com.itmo.mrdvd.service.ServerResponseSender;
+import com.itmo.mrdvd.validators.CoordinatesValidator;
+import com.itmo.mrdvd.validators.EventValidator;
+import com.itmo.mrdvd.validators.TicketValidator;
 
 public class Main {
   public static void main(String[] args) {

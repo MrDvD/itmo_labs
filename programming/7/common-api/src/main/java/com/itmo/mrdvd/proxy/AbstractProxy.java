@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.proxy;
 
-import com.itmo.mrdvd.proxy.service_query.AbstractServiceQuery;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import java.util.List;
 import java.util.Map;

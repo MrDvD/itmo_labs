@@ -1,21 +1,22 @@
-package com.itmo.mrdvd.service.shell.query_fill_strategy;
+package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
-import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class ReadIntQueryStrategy implements QueryFillStrategy {
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.service.shell.AbstractShell;
+
+public class ReadLongQueryStrategy implements QueryFillStrategy {
   private final AbstractShell shell;
   private final QueryFillStrategy prev;
 
-  public ReadIntQueryStrategy(AbstractShell shell) {
+  public ReadLongQueryStrategy(AbstractShell shell) {
     this(shell, null);
   }
 
-  public ReadIntQueryStrategy(AbstractShell shell, QueryFillStrategy prev) {
+  public ReadLongQueryStrategy(AbstractShell shell, QueryFillStrategy prev) {
     this.shell = shell;
     this.prev = prev;
   }
@@ -30,7 +31,7 @@ public class ReadIntQueryStrategy implements QueryFillStrategy {
     if (tty.isEmpty()) {
       throw new IllegalStateException("Не предоставлен TTY для чтения параметров.");
     }
-    Optional<Integer> idx = tty.get().getIn().readInt();
+    Optional<Long> idx = tty.get().getIn().readLong();
     if (idx.isPresent()) {
       args = Stream.concat(args, Stream.of(idx.get()));
     }

@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.proxy.service_query;
+package com.itmo.mrdvd.proxy.serviceQuery;
 
 import java.util.List;
 

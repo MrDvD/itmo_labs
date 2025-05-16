@@ -13,7 +13,8 @@ import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
 import com.itmo.mrdvd.proxy.mappers.QueryPacketMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.service_query.EmptyServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.EmptyServiceQuery;
+
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;

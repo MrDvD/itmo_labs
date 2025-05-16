@@ -1,4 +1,9 @@
-package com.itmo.mrdvd.public_scope;
+package com.itmo.mrdvd.publicScope;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketComparator;
@@ -21,10 +26,6 @@ import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(

@@ -1,22 +1,5 @@
 package com.itmo.mrdvd;
 
-import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
-import com.itmo.mrdvd.service.shell.DefaultShell;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ConnectQueryStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.QueryFillStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadIntQueryStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadLongQueryStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadObjectStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ReadStringQueryStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.ShellQueryStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.SkipLineStrategy;
-import com.itmo.mrdvd.service.shell.query_fill_strategy.UpdateObjectStrategy;
-import com.itmo.mrdvd.service.shell.response_strategy.PrintStrategy;
-import com.itmo.mrdvd.service.shell.response_strategy.ShellResponseStrategy;
-import com.itmo.mrdvd.service.shell.response_strategy.ShutdownStrategy;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,6 +7,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
+
+import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.service.shell.DefaultShell;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ConnectQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadIntQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadLongQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadObjectStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadStringQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.ShellQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.SkipLineStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.UpdateObjectStrategy;
+import com.itmo.mrdvd.service.shell.responseStrategy.PrintStrategy;
+import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
+import com.itmo.mrdvd.service.shell.responseStrategy.ShutdownStrategy;
 
 public class CollectionShell extends DefaultShell {
   public CollectionShell(Proxy proxy, Supplier<ServiceQuery> query) {

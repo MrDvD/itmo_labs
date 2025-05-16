@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.public_scope;
+package com.itmo.mrdvd.publicScope;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -10,7 +10,7 @@ import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.service_query.ServiceQuery;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
