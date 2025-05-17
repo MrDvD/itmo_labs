@@ -1,8 +1,7 @@
 package com.itmo.mrdvd.proxy.strategies;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import java.util.Optional;
 
 public class IgnoreStrategy implements ProxyStrategy {
   @Override

@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.proxy.strategies;
 
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import java.util.List;
@@ -18,6 +17,6 @@ public class InformStrategy implements ProxyStrategy {
   @Override
   public Optional<ServiceQuery> make(ServiceQuery q) {
     this.exec.processCommand(q.getName(), q.getArgs());
-    return Optional.of(new AbstractServiceQuery(q.getName(), List.of(this.info)) {});
+    return Optional.of(ServiceQuery.of(q.getName(), List.of(this.info)));
   }
 }

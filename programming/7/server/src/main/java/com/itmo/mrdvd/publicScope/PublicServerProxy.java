@@ -12,6 +12,7 @@ import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
+import com.itmo.mrdvd.proxy.strategies.LoginCheckStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -53,14 +54,29 @@ public class PublicServerProxy extends AbstractProxy {
                     List.class,
                     TypeFactory.defaultInstance()
                         .constructParametricType(UpdateDTO.class, Ticket.class))));
-    setDefaultStrategy(new WrapStrategy(exec));
-    setStrategy("clear", new InformStrategy(exec, "Коллекция очищена."));
-    setStrategy("remove_last", new InformStrategy(exec, "Последний элемент удалён."));
-    setStrategy("remove_at", new InformStrategy(exec, "Элемент удалён."));
-    setStrategy("remove_by_id", new InformStrategy(exec, "Элемент удалён."));
-    setStrategy("add", new InformStrategy(exec, "Элемент добавлен."));
-    setStrategy("add_if_max", new InformStrategy(exec, "Элемент добавлен."));
-    setStrategy("update", new InformStrategy(exec, "Элемент обновлён."));
+    setDefaultStrategy(new LoginCheckStrategy(this, "login", new WrapStrategy(exec)));
+    setStrategy(
+        "clear",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Коллекция очищена.")));
+    setStrategy(
+        "remove_last",
+        new LoginCheckStrategy(
+            this, "login", new InformStrategy(exec, "Последний элемент удалён.")));
+    setStrategy(
+        "remove_at",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент удалён.")));
+    setStrategy(
+        "remove_by_id",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент удалён.")));
+    setStrategy(
+        "add",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент добавлен.")));
+    setStrategy(
+        "add_if_max",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент добавлен.")));
+    setStrategy(
+        "update",
+        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент обновлён.")));
   }
 
   public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial) {

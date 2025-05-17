@@ -1,5 +1,11 @@
 package com.itmo.mrdvd.service.shell;
 
+import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.device.input.InteractiveInputDevice;
+import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
+import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,34 +14,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.function.Supplier;
-
-import com.itmo.mrdvd.device.TTY;
-import com.itmo.mrdvd.device.input.InteractiveInputDevice;
-import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
-import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
-import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
 
 public class DefaultShell extends AbstractShell {
   protected final Proxy proxy;
-  protected final Supplier<ServiceQuery> query;
   private boolean isOpen;
 
-  public DefaultShell(Proxy proxy, Supplier<ServiceQuery> query) {
-    this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
+  public DefaultShell(Proxy proxy) {
+    this(proxy, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
   }
 
   public DefaultShell(
       Proxy proxy,
-      Supplier<ServiceQuery> query,
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
       Map<String, ShellResponseStrategy> strats,
       Set<String> usedTtys) {
     super(tty, args, strats, usedTtys);
     this.proxy = proxy;
-    this.query = query;
   }
 
   /** Processes the passed Response. */
@@ -52,8 +47,7 @@ public class DefaultShell extends AbstractShell {
 
   /** Wraps the user input into Query. */
   protected ServiceQuery fillQuery(String cmd) throws IOException {
-    ServiceQuery q = this.query.get();
-    q.setName(cmd);
+    ServiceQuery q = ServiceQuery.of(cmd, List.of());
     Optional<QueryFillStrategy> arg = getArg(cmd);
     if (arg.isPresent()) {
       q = arg.get().fillArgs(q);

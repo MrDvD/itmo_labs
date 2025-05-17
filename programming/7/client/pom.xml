@@ -4,10 +4,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>6-client</artifactId>
+  <artifactId>7-client</artifactId>
   <version>1.0</version>
 
-  <name>Lab 6 - Client</name>
+  <name>Lab 7 - Client</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -29,7 +29,7 @@
   <dependencies>
     <dependency>
       <groupId>com.itmo.mrdvd</groupId>
-      <artifactId>6-client-api</artifactId>
+      <artifactId>7-client-api</artifactId>
       <version>${project.version}</version>
     </dependency>
   </dependencies>

@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.proxy.strategies;
 
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import java.util.List;
@@ -26,7 +25,6 @@ public class FetchAllStrategy implements ProxyStrategy {
     List<?> left = obj.get().getArgs();
     List<?> right = (List) this.exec.processCommand(q.getName(), q.getArgs());
     return Optional.of(
-        new AbstractServiceQuery(
-            q.getName(), Stream.concat(left.stream(), right.stream()).toList()) {});
+        ServiceQuery.of(q.getName(), Stream.concat(left.stream(), right.stream()).toList()));
   }
 }

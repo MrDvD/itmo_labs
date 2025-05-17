@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
+import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
-import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 
 public class ReadObjectStrategy implements QueryFillStrategy {
   private final InteractiveBuilder<?> builder;
@@ -33,7 +32,6 @@ public class ReadObjectStrategy implements QueryFillStrategy {
     if (obj.isPresent()) {
       args = Stream.concat(args, Stream.of(obj.get()));
     }
-    q.setArgs(args.toList());
-    return q;
+    return ServiceQuery.of(q.getName(), args.toList());
   }
 }

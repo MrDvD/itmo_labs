@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
+import java.io.IOException;
+import java.util.stream.Stream;
 
 public class ShellQueryStrategy implements QueryFillStrategy {
   private final AbstractShell shell;
@@ -28,7 +27,6 @@ public class ShellQueryStrategy implements QueryFillStrategy {
     if (this.shell != null) {
       args = Stream.concat(args, Stream.of(this.shell));
     }
-    q.setArgs(args.toList());
-    return q;
+    return ServiceQuery.of(q.getName(), args.toList());
   }
 }

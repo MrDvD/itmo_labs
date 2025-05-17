@@ -1,11 +1,10 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.Optional;
-
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
+import java.io.IOException;
+import java.util.Optional;
 
 public class SkipLineStrategy implements QueryFillStrategy {
   private final AbstractShell shell;

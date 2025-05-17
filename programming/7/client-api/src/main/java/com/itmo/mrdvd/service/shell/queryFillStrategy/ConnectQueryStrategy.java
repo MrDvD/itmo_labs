@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ConnectQueryStrategy implements QueryFillStrategy {
   private final AbstractShell shell;
@@ -30,7 +29,6 @@ public class ConnectQueryStrategy implements QueryFillStrategy {
     if (port.isPresent()) {
       args = Stream.concat(args, Stream.of(port.get()));
     }
-    q.setArgs(args.toList());
-    return q;
+    return ServiceQuery.of(q.getName(), args.toList());
   }
 }

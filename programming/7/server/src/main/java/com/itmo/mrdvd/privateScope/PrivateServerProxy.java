@@ -1,11 +1,5 @@
 package com.itmo.mrdvd.privateScope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-
 import com.itmo.mrdvd.proxy.AbstractProxy;
 import com.itmo.mrdvd.proxy.Proxy;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
@@ -16,8 +10,14 @@ import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.FetchAllStrategy;
 import com.itmo.mrdvd.proxy.strategies.IgnoreStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
+import com.itmo.mrdvd.proxy.strategies.LoginCheckStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class PrivateServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
@@ -37,10 +37,18 @@ public class PrivateServerProxy extends AbstractProxy {
     super(strats);
     this.mapper = mapper;
     setDefaultStrategy(new IgnoreStrategy());
-    setStrategy("fetch_all", new FetchAllStrategy(exec, other));
-    setStrategy("save", new InformStrategy(exec, "Коллекция сохранена."));
-    setStrategy("load", new InformStrategy(exec, "Коллекция загружена."));
-    setStrategy("shutdown", new InformStrategy(exec, "Сервер завершил работу."));
+    setStrategy(
+        "fetch_all", new LoginCheckStrategy(other, "login", new FetchAllStrategy(exec, other)));
+    setStrategy(
+        "save",
+        new LoginCheckStrategy(other, "login", new InformStrategy(exec, "Коллекция сохранена.")));
+    setStrategy(
+        "load",
+        new LoginCheckStrategy(other, "login", new InformStrategy(exec, "Коллекция загружена.")));
+    setStrategy(
+        "shutdown",
+        new LoginCheckStrategy(
+            other, "login", new InformStrategy(exec, "Сервер завершил работу.")));
   }
 
   public Packet processPacket(

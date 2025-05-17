@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.proxy.mappers;
 
-import java.util.Optional;
-
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import java.util.Optional;
 
 public class QueryPacketMapper implements Mapper<ServiceQuery, Packet> {
   private final Mapper<Object, String> mapper;

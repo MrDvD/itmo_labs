@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.proxy.strategies;
 
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import java.util.List;
@@ -17,8 +16,8 @@ public class WrapStrategy implements ProxyStrategy {
   public Optional<ServiceQuery> make(ServiceQuery q) {
     Object obj = this.exec.processCommand(q.getName(), q.getArgs());
     if (obj instanceof List lst) {
-      return Optional.of(new AbstractServiceQuery(q.getName(), lst) {});
+      return Optional.of(ServiceQuery.of(q.getName(), lst));
     }
-    return Optional.of(new AbstractServiceQuery(q.getName(), List.of(obj)) {});
+    return Optional.of(ServiceQuery.of(q.getName(), List.of(obj)));
   }
 }

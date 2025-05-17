@@ -1,17 +1,8 @@
 package com.itmo.mrdvd;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.DefaultShell;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ConnectQueryStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
@@ -25,20 +16,25 @@ import com.itmo.mrdvd.service.shell.queryFillStrategy.UpdateObjectStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.PrintStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.ShutdownStrategy;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CollectionShell extends DefaultShell {
-  public CollectionShell(Proxy proxy, Supplier<ServiceQuery> query) {
-    this(proxy, query, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
+  public CollectionShell(Proxy proxy) {
+    this(proxy, new ArrayList<>(), new HashMap<>(), new HashMap<>(), new HashSet<>());
   }
 
   public CollectionShell(
       Proxy proxy,
-      Supplier<ServiceQuery> query,
       List<TTY> tty,
       Map<String, QueryFillStrategy> args,
       Map<String, ShellResponseStrategy> strats,
       Set<String> usedTtys) {
-    super(proxy, query, tty, args, strats, usedTtys);
+    super(proxy, tty, args, strats, usedTtys);
     setDefaultResponseStrategy(new PrintStrategy(this));
     setResponseStrategy("shutdown", new ShutdownStrategy(this, new PrintStrategy(this)));
     setQueryStrategy("exit", new ShellQueryStrategy(this));

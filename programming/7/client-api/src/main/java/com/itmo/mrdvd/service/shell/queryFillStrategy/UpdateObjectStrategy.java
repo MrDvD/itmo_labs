@@ -1,14 +1,13 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.UpdateDTO;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class UpdateObjectStrategy<T> implements QueryFillStrategy {
   private final AbstractShell shell;
@@ -50,7 +49,6 @@ public class UpdateObjectStrategy<T> implements QueryFillStrategy {
       updateDTO.setObject(obj.get());
     }
     args = Stream.concat(args, Stream.of(updateDTO));
-    q.setArgs(args.toList());
-    return q;
+    return ServiceQuery.of(q.getName(), args.toList());
   }
 }

@@ -1,13 +1,11 @@
 package com.itmo.mrdvd.proxy.mappers;
 
+import com.itmo.mrdvd.proxy.packet.Packet;
+import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
-import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 
 public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, String, List> {
   private final Map<String, Mapper<String, List>> mappers;
@@ -39,7 +37,6 @@ public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, S
     } else {
       result = this.defaultMapper.convert(obj.getPayload());
     }
-    return Optional.of(
-        new AbstractServiceQuery(obj.getName(), result.isEmpty() ? List.of() : result.get()) {});
+    return Optional.of(ServiceQuery.of(obj.getName(), result.isEmpty() ? List.of() : result.get()));
   }
 }

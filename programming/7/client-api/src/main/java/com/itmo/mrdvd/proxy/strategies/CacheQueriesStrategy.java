@@ -3,7 +3,6 @@ package com.itmo.mrdvd.proxy.strategies;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.EmptyServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.AbstractSender;
@@ -46,13 +45,15 @@ public class CacheQueriesStrategy implements ProxyStrategy {
           if (deserialized.isEmpty()) {
             throw new RuntimeException("Не удалось десериализовать ответ.");
           }
-          this.exec.clearCache();
-          for (Object qq : (List) deserialized.get().getArgs()) {
-            this.exec.setCache((CommandMeta) qq);
+          if (q.getName().equals(deserialized.get().getName())) {
+            this.exec.clearCache();
+            for (Object qq : (List) deserialized.get().getArgs()) {
+              this.exec.setCache((CommandMeta) qq);
+            }
+            return Optional.of(
+                ServiceQuery.of(q.getName(), List.of("Получен набор запросов от сервера.")));
           }
-          return Optional.of(
-              new AbstractServiceQuery(
-                  q.getName(), List.of("Получен набор запросов от сервера.")) {});
+          return Optional.of(deserialized.get());
         }
         return Optional.of(new EmptyServiceQuery());
       } catch (ClassCastException e) {

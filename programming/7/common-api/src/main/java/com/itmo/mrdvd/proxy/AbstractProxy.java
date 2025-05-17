@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.proxy;
 
-import com.itmo.mrdvd.proxy.serviceQuery.AbstractServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import java.util.List;
@@ -36,7 +35,7 @@ public abstract class AbstractProxy implements Proxy {
       }
       return this.defaultStrat.make(q);
     } catch (RuntimeException e) {
-      return Optional.of(new AbstractServiceQuery("error", List.of(e.getLocalizedMessage())) {});
+      return Optional.of(ServiceQuery.of("error", List.of(e.getLocalizedMessage())));
     }
   }
 }

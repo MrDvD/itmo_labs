@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.shell.AbstractShell;
+import java.io.IOException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class ReadLongQueryStrategy implements QueryFillStrategy {
   private final AbstractShell shell;
@@ -35,7 +34,6 @@ public class ReadLongQueryStrategy implements QueryFillStrategy {
     if (idx.isPresent()) {
       args = Stream.concat(args, Stream.of(idx.get()));
     }
-    q.setArgs(args.toList());
-    return q;
+    return ServiceQuery.of(q.getName(), args.toList());
   }
 }

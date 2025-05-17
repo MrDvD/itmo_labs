@@ -26,11 +26,12 @@ public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
     Integer idx = null;
     if (Integer.class.isInstance(params.get(0))) {
       idx = (Integer) params.get(0);
-    }
-    try {
-      idx = Integer.valueOf((String) params.get(0));
-    } catch (NumberFormatException | ClassCastException e) {
-      throw new IllegalArgumentException("Не удалось распознать индекс элемента.");
+    } else {
+      try {
+        idx = Integer.valueOf((String) params.get(0));
+      } catch (NumberFormatException | ClassCastException e) {
+        throw new IllegalArgumentException("Не удалось распознать индекс элемента.");
+      }
     }
     if (idx < 0) {
       throw new IllegalArgumentException("Индекс элемента не может быть отрицательным.");

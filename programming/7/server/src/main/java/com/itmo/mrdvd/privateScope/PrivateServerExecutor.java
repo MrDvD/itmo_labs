@@ -1,8 +1,5 @@
 package com.itmo.mrdvd.privateScope;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.commands.FetchAllCommand;
@@ -17,6 +14,8 @@ import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PrivateServerExecutor extends AbstractExecutor {
   public PrivateServerExecutor(

@@ -22,11 +22,12 @@ public class RemoveByIdCommand implements Command<Void> {
     Long id = null;
     if (Long.class.isInstance(params.get(0))) {
       id = (Long) params.get(0);
-    }
-    try {
-      id = Long.valueOf((String) params.get(0));
-    } catch (NumberFormatException | ClassCastException e) {
-      throw new IllegalArgumentException("Не удалось распознать id элемента.");
+    } else {
+      try {
+        id = Long.valueOf((String) params.get(0));
+      } catch (NumberFormatException | ClassCastException e) {
+        throw new IllegalArgumentException("Не удалось распознать id элемента.");
+      }
     }
     if (id < 0) {
       throw new IllegalArgumentException("Параметр id не может быть отрицательным.");

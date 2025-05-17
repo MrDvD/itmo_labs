@@ -13,8 +13,6 @@ import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
 import com.itmo.mrdvd.proxy.mappers.QueryPacketMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
-import com.itmo.mrdvd.proxy.serviceQuery.EmptyServiceQuery;
-
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.List;
@@ -34,7 +32,7 @@ public class Main {
             exec,
             new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper())),
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
-    CollectionShell shell = new CollectionShell(proxy, EmptyServiceQuery::new);
+    CollectionShell shell = new CollectionShell(proxy);
     shell.setBuilders(
         new InteractiveTicketBuilder(
             new InteractiveCoordinatesBuilder(shell), new InteractiveEventBuilder(shell), shell));
