@@ -1,48 +1,33 @@
 package com.itmo.mrdvd.privateScope;
 
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.TicketCollection;
+import com.itmo.mrdvd.collection.CrudWorker;
+import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.commands.FetchAllCommand;
 import com.itmo.mrdvd.commands.LoadDatabaseCommand;
-import com.itmo.mrdvd.commands.SaveDatabaseCommand;
 import com.itmo.mrdvd.commands.ShutdownCommand;
-import com.itmo.mrdvd.device.FileDescriptor;
-import com.itmo.mrdvd.object.Ticket;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.ListenerService;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
-import com.itmo.mrdvd.validators.Validator;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PrivateServerExecutor extends AbstractExecutor {
-  public PrivateServerExecutor(
-      ListenerService<?> server,
-      Collection<Ticket, ?> collect,
-      Mapper<? super TicketCollection, String> serial,
-      Mapper<String, ? extends TicketCollection> deserial,
-      FileDescriptor fd,
-      String path,
-      Validator<Ticket> validator) {
-    this(server, collect, serial, deserial, fd, path, validator, new HashMap<>(), new HashMap<>());
+  public <U extends HavingId> PrivateServerExecutor(
+      ListenerService<?> server, CrudWorker<U, ?> dbworker, Collection<U, ?> collect) {
+    this(server, dbworker, collect, new HashMap<>(), new HashMap<>());
   }
 
-  public PrivateServerExecutor(
+  public <U extends HavingId> PrivateServerExecutor(
       ListenerService<?> server,
-      Collection<Ticket, ?> collect,
-      Mapper<? super TicketCollection, String> serial,
-      Mapper<String, ? extends TicketCollection> deserial,
-      FileDescriptor fd,
-      String path,
-      Validator<Ticket> validator,
+      CrudWorker<U, ?> dbworker,
+      Collection<U, ?> collect,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
-    setCommand(new SaveDatabaseCommand(collect, serial, fd, path));
-    setCommand(new LoadDatabaseCommand(fd, collect, validator, deserial, path));
+    setCommand(new LoadDatabaseCommand(dbworker, collect));
     setCommand(new ShutdownCommand(server));
   }
 }

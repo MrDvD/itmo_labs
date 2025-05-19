@@ -1,13 +1,13 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class RemoveByIdCommand implements Command<Void> {
-  private final CollectionWorker<?, ?> collection;
+  private final CrudWorker<?, ?> collection;
 
-  public RemoveByIdCommand(CollectionWorker<?, ?> collection) {
+  public RemoveByIdCommand(CrudWorker<?, ?> collection) {
     this.collection = collection;
   }
 

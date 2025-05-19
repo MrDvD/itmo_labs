@@ -14,13 +14,11 @@ public class LoginCommand implements Command<Boolean> {
     if (params.size() < 2) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
-    String login = null, password = null;
-    try {
-      login = (String) params.get(0);
-      password = (String) params.get(1);
-    } catch (ClassCastException e) {
+    if (!String.class.isInstance(params.get(0)) || !String.class.isInstance(params.get(1))) {
       throw new IllegalArgumentException("Не удалось распознать аргументы команды.");
     }
+    String login = (String) params.get(0);
+    String password = (String) params.get(1);
     // here comes magical interaction with database
     return false;
   }

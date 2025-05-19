@@ -1,5 +1,10 @@
 package com.itmo.mrdvd.collection;
 
+import com.itmo.mrdvd.object.AuthoredTicket;
+import com.itmo.mrdvd.object.Coordinates;
+import com.itmo.mrdvd.object.Event;
+import com.itmo.mrdvd.object.EventType;
+import com.itmo.mrdvd.object.TicketType;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,12 +14,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-
-import com.itmo.mrdvd.object.AuthoredTicket;
-import com.itmo.mrdvd.object.Coordinates;
-import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.EventType;
-import com.itmo.mrdvd.object.TicketType;
+import java.util.function.Predicate;
 
 public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> {
   private String url;
@@ -28,13 +28,15 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   }
 
   @Override
-  public Optional<AuthoredTicket> add(AuthoredTicket t) {
+  public Optional<AuthoredTicket> add(AuthoredTicket t, Predicate<AuthoredTicket> cond) {
     String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?)";
-    String sqlTicket = "insert into TICKETS (name, coords, price, type, event, author) values (?, ?, ?, ?, ?, ?)";
+    String sqlTicket =
+        "insert into TICKETS (name, coords, price, type, event, author) values (?, ?, ?, ?, ?, ?)";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       Long eventId = null;
-      try (PreparedStatement stmtEvent = conn.prepareStatement(sqlEvent, Statement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement stmtEvent =
+          conn.prepareStatement(sqlEvent, Statement.RETURN_GENERATED_KEYS)) {
         stmtEvent.setString(1, t.getEvent().getName());
         stmtEvent.setString(2, t.getEvent().getDescription());
         stmtEvent.setString(3, t.getEvent().getType().toString());
@@ -52,7 +54,8 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
         }
       }
 
-      try (PreparedStatement stmtTicket = conn.prepareStatement(sqlTicket, Statement.RETURN_GENERATED_KEYS)) {
+      try (PreparedStatement stmtTicket =
+          conn.prepareStatement(sqlTicket, Statement.RETURN_GENERATED_KEYS)) {
         stmtTicket.setString(1, t.getName());
         stmtTicket.setString(2, t.getCoordinates().toString());
         stmtTicket.setInt(3, t.getPrice());
@@ -66,12 +69,13 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
         try (ResultSet generatedKeys = stmtTicket.getGeneratedKeys()) {
           if (generatedKeys.next()) {
             t.setId(generatedKeys.getLong(1));
-            conn.commit();
-            return Optional.of(t);
-          } else {
-            conn.rollback();
-            return Optional.empty();
+            if (cond.test(t)) {
+              conn.commit();
+              return Optional.of(t);
+            }
           }
+          conn.rollback();
+          return Optional.empty();
         }
       }
     } catch (SQLException e) {
@@ -80,8 +84,10 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   }
 
   @Override
-  public Optional<AuthoredTicket> update(Long id, AuthoredTicket t) {
-    String sqlEvent = "update EVENTS set name = ?, description = ?, type = ? where id = (select event from TICKETS where id = ?)";
+  public Optional<AuthoredTicket> update(
+      Long id, AuthoredTicket t, Predicate<AuthoredTicket> cond) {
+    String sqlEvent =
+        "update EVENTS set name = ?, description = ?, type = ? where id = (select event from TICKETS where id = ?)";
     String sqlTicket = "update TICKETS set name = ?, coords = ?, price = ?, type = ? where id = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
@@ -106,8 +112,12 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
           return Optional.empty();
         }
       }
-      conn.commit();
-      return Optional.of(t);
+      if (cond.test(t)) {
+        conn.commit();
+        return Optional.of(t);
+      }
+      conn.rollback();
+      return Optional.empty();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
@@ -115,13 +125,14 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
 
   @Override
   public Optional<AuthoredTicket> get(Long id) {
-    String sql = "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, " +
-                "u.name as author, e.id as event_id, e.name as event_name, " +
-                "e.description as event_description, e.type as event_type " +
-                "from TICKETS t " +
-                "join EVENTS e on t.event = e.id " +
-                "join USERS u on u.id = t.author " +
-                "where t.id = ?";
+    String sql =
+        "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, "
+            + "u.name as author, e.id as event_id, e.name as event_name, "
+            + "e.description as event_description, e.type as event_type "
+            + "from TICKETS t "
+            + "join EVENTS e on t.event = e.id "
+            + "join USERS u on u.id = t.author "
+            + "where t.id = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         PreparedStatement stmt = conn.prepareStatement(sql)) {
       stmt.setLong(1, id);
@@ -157,14 +168,15 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   public Set<AuthoredTicket> getAll() {
     return getAll(new HashSet<>());
   }
-  
+
   public Set<AuthoredTicket> getAll(Set<AuthoredTicket> tickets) {
-    String sql = "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, " +
-                 "u.name as author, e.id as event_id, e.name as event_name, " +
-                 "e.description as event_description, e.type as event_type " +
-                 "from TICKETS t " +
-                 "join EVENTS e on t.event = e.id " +
-                 "join USERS u on u.id = t.author";
+    String sql =
+        "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, "
+            + "u.name as author, e.id as event_id, e.name as event_name, "
+            + "e.description as event_description, e.type as event_type "
+            + "from TICKETS t "
+            + "join EVENTS e on t.event = e.id "
+            + "join USERS u on u.id = t.author";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql)) {

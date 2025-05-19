@@ -2,7 +2,7 @@ package com.itmo.mrdvd;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.collection.TicketJdbc;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
@@ -25,13 +25,11 @@ import java.net.InetSocketAddress;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
-    String envName, publicHostname;
+    String envName, envUser, envPass, publicHostname;
     int publicPort, privatePort;
     if (args.length < 4) {
       envName = "COLLECT_PATH";
@@ -56,6 +54,10 @@ public class Main {
       System.err.printf("Не указана переменная окружения \"%s\".\n", envName);
       return;
     }
+    System.out.print("Введите имя пользователя PostgreSQL: ");
+    envUser = System.console().readLine();
+    System.out.print("Введите пароль пользователя PostgreSQL: ");
+    envPass = System.console().readLine();
     Selector selector;
     try {
       selector = Selector.open();
@@ -68,10 +70,8 @@ public class Main {
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
     ObjectSerializer<Packet> serialPacket =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
-    ObjectSerializer<TicketCollection> serialCollection = new ObjectSerializer<>(new XmlMapper());
-    ObjectDeserializer<TicketCollection> deserialCollection =
-        new ObjectDeserializer<>(new XmlMapper(), TicketCollection.class);
-    TicketCollection collect = new TicketCollection();
+    TicketJdbc jdbc = new TicketJdbc("jdbc:postgresql:/", envUser, envPass);
+    TicketCollection collect = new TicketCollection(jdbc);
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
     ServerListenerService<Packet> listener =
@@ -85,15 +85,7 @@ public class Main {
                 new ServerResponseSender(StandardCharsets.UTF_8)),
             8192);
     PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
-    PrivateServerExecutor privateExec =
-        new PrivateServerExecutor(
-            listener,
-            collect,
-            serialCollection,
-            deserialCollection,
-            new FileIO(Path.of(""), FileSystems.getDefault()),
-            path,
-            validator);
+    PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
     PublicServerProxy publicProxy =
         new PublicServerProxy(
             publicExec,

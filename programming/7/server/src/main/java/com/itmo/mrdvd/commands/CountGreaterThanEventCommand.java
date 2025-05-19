@@ -6,9 +6,9 @@ import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class CountGreaterThanEventCommand implements Command<String> {
-  private final Collection<Ticket, ?> collection;
+  private final Collection<? extends Ticket, ?> collection;
 
-  public CountGreaterThanEventCommand(Collection<Ticket, ?> collect) {
+  public CountGreaterThanEventCommand(Collection<? extends Ticket, ?> collect) {
     this.collection = collect;
   }
 

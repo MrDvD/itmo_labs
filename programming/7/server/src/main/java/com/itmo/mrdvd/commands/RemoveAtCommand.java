@@ -1,14 +1,15 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.collection.CrudWorker;
+import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
+import java.util.Set;
 
-public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
-  private final CollectionWorker<T, List<T>> collection;
+public class RemoveAtCommand implements Command<Void> {
+  private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>> collection;
 
-  public RemoveAtCommand(CollectionWorker<T, List<T>> collection) {
+  public RemoveAtCommand(CrudWorker<AuthoredTicket, Set<AuthoredTicket>> collection) {
     this.collection = collection;
   }
 
@@ -39,7 +40,12 @@ public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
     if (idx >= collection.getAll().size()) {
       throw new IllegalArgumentException("В коллекции нет элемента с введённым индексом.");
     }
-    this.collection.getAll().remove(idx.intValue());
+    List<AuthoredTicket> sortedList =
+        this.collection.getAll().stream()
+            .sorted((a, b) -> a.getCreationDate().compareTo(b.getCreationDate()))
+            .toList();
+    AuthoredTicket toRemove = sortedList.get(idx);
+    this.collection.remove(toRemove.getId());
     return null;
   }
 

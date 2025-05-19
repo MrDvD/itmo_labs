@@ -1,18 +1,18 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CollectionWorker;
+import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.List;
 
 public class AddCommand<T extends HavingId> implements Command<Void> {
-  protected final CollectionWorker<T, ?> collect;
+  protected final CrudWorker<T, ?> collect;
   protected final Validator<T> validator;
   protected final Class<T> clz;
   protected List<?> params;
 
-  public AddCommand(CollectionWorker<T, ?> collection, Validator<T> validator, Class<T> clz) {
+  public AddCommand(CrudWorker<T, ?> collection, Validator<T> validator, Class<T> clz) {
     this.collect = collection;
     this.validator = validator;
     this.clz = clz;
@@ -28,7 +28,7 @@ public class AddCommand<T extends HavingId> implements Command<Void> {
     }
     try {
       T obj = this.clz.cast(params.get(0));
-      if (collect.add(obj, this.validator).isEmpty()) {
+      if (collect.add(obj, (T t) -> this.validator.validate(t)).isEmpty()) {
         throw new RuntimeException("Не удалось добавить элемент в коллекцию.");
       }
     } catch (ClassCastException e) {

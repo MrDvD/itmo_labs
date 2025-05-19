@@ -29,6 +29,11 @@ create type event_type as enum(
   'OPERA'
 );
 
+-- create table COLLECTIONS (
+--   id serial primary key,
+--   name varchar(42) not null
+-- );
+
 create table USERS (
   id serial primary key,
   name varchar(42) not null,

@@ -15,6 +15,7 @@ import com.itmo.mrdvd.commands.RemoveByIdCommand;
 import com.itmo.mrdvd.commands.RemoveLastCommand;
 import com.itmo.mrdvd.commands.ShowCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
+import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -22,19 +23,19 @@ import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
-      Collection<Ticket, List<Ticket>> collect, Validator<Ticket> validator) {
+      Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
+      Validator<? extends Ticket> validator) {
     this(collect, validator, new HashMap<>(), new HashMap<>());
   }
 
   public PublicServerExecutor(
-      Collection<Ticket, List<Ticket>> collect,
-      Validator<Ticket> validator,
+      Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
+      Validator<? extends Ticket> validator,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {
     super(commands, cache);
@@ -42,17 +43,21 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(new ClearCommand(collect));
     setCommand(new InfoCommand(collect));
     setCommand(new MinByPriceCommand(collect, new TicketComparator(TicketField.PRICE)));
-    setCommand(new RemoveLastCommand<>(collect));
+    setCommand(new RemoveLastCommand(collect));
     setCommand(new ShowCommand(collect));
     setCommand(
         new PrintFieldDescendingTypeCommand(collect, new TicketComparator(TicketField.TYPE)));
-    setCommand(new RemoveAtCommand<>(collect));
+    setCommand(new RemoveAtCommand(collect));
     setCommand(new RemoveByIdCommand(collect));
     setCommand(new CountGreaterThanEventCommand(collect));
-    setCommand(new AddCommand<>(collect, validator, Ticket.class));
+    setCommand(new AddCommand(collect, validator, AuthoredTicket.class));
     setCommand(
-        new AddIfCommand<>(
-            collect, validator, new TicketComparator(TicketField.ID), Ticket.class, Set.of(1)));
-    setCommand(new UpdateCommand<>(collect, validator));
+        new AddIfCommand(
+            collect,
+            validator,
+            new TicketComparator(TicketField.ID),
+            AuthoredTicket.class,
+            Set.of(1)));
+    setCommand(new UpdateCommand(collect, validator));
   }
 }
