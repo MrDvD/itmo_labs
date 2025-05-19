@@ -20,7 +20,7 @@ public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Comm
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    collection.getCollection().sort(comparator);
+    collection.getAll().sort(comparator);
     String result = "";
     for (T obj : collection) {
       result += obj.toString() + "\n";

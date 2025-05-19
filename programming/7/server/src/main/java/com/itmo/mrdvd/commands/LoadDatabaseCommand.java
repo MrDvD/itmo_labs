@@ -10,14 +10,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
-public class LoadCommand<T extends HavingId, U> implements Command<Void> {
+public class LoadDatabaseCommand<T extends HavingId, U extends java.util.Collection<? extends T>> implements Command<Void> {
   private final FileDescriptor in;
   private final Collection<T, U> collection;
   private final Validator<T> validator;
   private final Mapper<String, ? extends Collection<T, U>> deserial;
   private final String path;
 
-  public LoadCommand(
+  public LoadDatabaseCommand(
       FileDescriptor in,
       Collection<T, U> collection,
       Validator<T> validator,
@@ -37,9 +37,9 @@ public class LoadCommand<T extends HavingId, U> implements Command<Void> {
     Optional<String> fileContent = Optional.empty();
     try {
       fileContent = in.readAll();
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    // } catch (IOException e) {
+    //   throw new RuntimeException(e);
+    // }
     in.closeIn();
     if (fileContent.isEmpty()) {
       throw new RuntimeException("Не удалось считать файл с коллекцией.");
@@ -60,7 +60,7 @@ public class LoadCommand<T extends HavingId, U> implements Command<Void> {
 
   @Override
   public String name() {
-    return "load";
+    return "load_db";
   }
 
   @Override
@@ -70,6 +70,6 @@ public class LoadCommand<T extends HavingId, U> implements Command<Void> {
 
   @Override
   public String description() {
-    return "загрузить коллекцию из файла";
+    return "загрузить коллекцию из базы данных";
   }
 }

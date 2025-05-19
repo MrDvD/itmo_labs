@@ -20,10 +20,10 @@ public class MinByPriceCommand<T extends HavingId> implements Command<String> {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    this.collection.getCollection().sort(comparator);
-    return this.collection.getCollection().isEmpty()
+    this.collection.getAll().sort(comparator);
+    return this.collection.getAll().isEmpty()
         ? "Коллекция пуста."
-        : collection.getCollection().get(0).toString();
+        : collection.getAll().get(0).toString();
   }
 
   @Override

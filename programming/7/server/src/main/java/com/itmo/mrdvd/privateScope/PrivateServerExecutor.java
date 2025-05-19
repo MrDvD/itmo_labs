@@ -3,8 +3,8 @@ package com.itmo.mrdvd.privateScope;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.TicketCollection;
 import com.itmo.mrdvd.commands.FetchAllCommand;
-import com.itmo.mrdvd.commands.LoadCommand;
-import com.itmo.mrdvd.commands.SaveCommand;
+import com.itmo.mrdvd.commands.LoadDatabaseCommand;
+import com.itmo.mrdvd.commands.SaveDatabaseCommand;
 import com.itmo.mrdvd.commands.ShutdownCommand;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.object.Ticket;
@@ -41,8 +41,8 @@ public class PrivateServerExecutor extends AbstractExecutor {
       Map<String, CommandMeta> cache) {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
-    setCommand(new SaveCommand(collect, serial, fd, path));
-    setCommand(new LoadCommand(fd, collect, validator, deserial, path));
+    setCommand(new SaveDatabaseCommand(collect, serial, fd, path));
+    setCommand(new LoadDatabaseCommand(fd, collect, validator, deserial, path));
     setCommand(new ShutdownCommand(server));
   }
 }

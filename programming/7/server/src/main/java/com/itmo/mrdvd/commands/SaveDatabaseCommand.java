@@ -8,13 +8,13 @@ import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Optional;
 
-public class SaveCommand<T extends HavingId, U> implements Command<Void> {
+public class SaveDatabaseCommand<T extends HavingId, U extends java.util.Collection<? extends T>> implements Command<Void> {
   private final Collection<T, U> collection;
   private final Mapper<? super Collection<T, U>, String> serial;
   private final FileDescriptor fd;
   private final String path;
 
-  public SaveCommand(
+  public SaveDatabaseCommand(
       Collection<T, U> collect,
       Mapper<? super Collection<T, U>, String> serial,
       FileDescriptor fd,
@@ -30,8 +30,8 @@ public class SaveCommand<T extends HavingId, U> implements Command<Void> {
     if (this.serial == null) {
       throw new IllegalStateException("Не задан сериализатор для коллекции.");
     }
-    if (this.collection == null) {
-      throw new IllegalStateException("Не задана коллекция для сериализации.");
+    // if (this.collection == null) {
+    //   throw new IllegalStateException("Не задана коллекция для сериализации.");
     }
     if (this.fd == null) {
       throw new IllegalStateException("Не задан файловый дескриптор для записи коллекции.");
@@ -52,7 +52,7 @@ public class SaveCommand<T extends HavingId, U> implements Command<Void> {
 
   @Override
   public String name() {
-    return "save";
+    return "save_db";
   }
 
   @Override
@@ -62,6 +62,6 @@ public class SaveCommand<T extends HavingId, U> implements Command<Void> {
 
   @Override
   public String description() {
-    return "сохранить коллекцию в файл";
+    return "сохранить коллекцию в базу данных";
   }
 }

@@ -209,6 +209,11 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
   }
 
   @Override
+  public Optional<Ticket> update(Long id, Ticket obj) {
+    return update(id, obj, null);
+  }
+
+  @Override
   public Optional<Ticket> update(Long id, Ticket obj, Validator<Ticket> validator) {
     return update(id, obj, validator, null, null);
   }
@@ -221,10 +226,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
       Comparator<Ticket> cond,
       Set<Integer> values)
       throws IllegalArgumentException {
-    if (validator == null) {
-      throw new IllegalArgumentException("Не задан валидатор для объекта.");
-    }
-    if (!validator.validate(obj)) {
+    if (validator != null && !validator.validate(obj)) {
       return Optional.empty();
     }
     for (int i = 0; i < tickets.size(); i++) {
@@ -257,7 +259,7 @@ public class TicketCollection extends Collection<Ticket, List<Ticket>> {
 
   @JsonIgnore
   @Override
-  public List<Ticket> getCollection() {
+  public List<Ticket> getAll() {
     return tickets;
   }
 

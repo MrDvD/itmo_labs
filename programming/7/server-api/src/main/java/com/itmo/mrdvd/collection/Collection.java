@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.collection;
 
-public abstract class Collection<T extends HavingId, U>
-    implements CollectionWorker<T, U>, Iterable<T> {
+public abstract class Collection<T extends HavingId, V extends java.util.Collection<? extends T>>
+    implements CollectionWorker<T, V>, Iterable<T> {
   public abstract CollectionMetadata getMetadata();
 
   public abstract void setMetadata(CollectionMetadata metadata);

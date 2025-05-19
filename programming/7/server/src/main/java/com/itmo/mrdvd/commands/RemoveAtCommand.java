@@ -17,7 +17,7 @@ public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    if (this.collection.getCollection().isEmpty()) {
+    if (this.collection.getAll().isEmpty()) {
       throw new RuntimeException("Коллекция пуста.");
     }
     if (params.isEmpty()) {
@@ -36,10 +36,10 @@ public class RemoveAtCommand<T extends HavingId> implements Command<Void> {
     if (idx < 0) {
       throw new IllegalArgumentException("Индекс элемента не может быть отрицательным.");
     }
-    if (idx >= collection.getCollection().size()) {
+    if (idx >= collection.getAll().size()) {
       throw new IllegalArgumentException("В коллекции нет элемента с введённым индексом.");
     }
-    this.collection.getCollection().remove(idx.intValue());
+    this.collection.getAll().remove(idx.intValue());
     return null;
   }
 

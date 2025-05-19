@@ -17,10 +17,10 @@ public class RemoveLastCommand<T extends HavingId> implements Command<Void> {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    if (this.collection.getCollection().isEmpty()) {
+    if (this.collection.getAll().isEmpty()) {
       throw new RuntimeException("Коллекция пуста.");
     }
-    collection.getCollection().remove(collection.getCollection().size() - 1);
+    collection.getAll().remove(collection.getAll().size() - 1);
     return null;
   }
 
