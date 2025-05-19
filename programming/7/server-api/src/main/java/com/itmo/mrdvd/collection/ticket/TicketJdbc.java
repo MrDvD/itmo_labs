@@ -1,5 +1,6 @@
-package com.itmo.mrdvd.collection;
+package com.itmo.mrdvd.collection.ticket;
 
+import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
@@ -16,10 +17,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> {
-  private String url;
-  private String user;
-  private String password;
+public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> {
+  private final String url;
+  private final String user;
+  private final String password;
 
   public TicketJdbc(String url, String user, String password) {
     this.url = url;

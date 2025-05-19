@@ -1,18 +1,17 @@
 package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.List;
 
-public class AddCommand<T extends HavingId> implements Command<Void> {
-  protected final CrudWorker<T, ?> collect;
+public class AddCommand<T> implements Command<Void> {
+  protected final CrudWorker<T, ?, ?> collect;
   protected final Validator<T> validator;
   protected final Class<T> clz;
   protected List<?> params;
 
-  public AddCommand(CrudWorker<T, ?> collection, Validator<T> validator, Class<T> clz) {
+  public AddCommand(CrudWorker<T, ?, ?> collection, Validator<T> validator, Class<T> clz) {
     this.collect = collection;
     this.validator = validator;
     this.clz = clz;

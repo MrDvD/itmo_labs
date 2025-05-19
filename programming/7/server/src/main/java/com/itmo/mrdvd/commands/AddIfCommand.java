@@ -1,22 +1,21 @@
 package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-public class AddIfCommand<T extends HavingId> implements Command<Void> {
-  protected final CrudWorker<T, Set<T>> collect;
+public class AddIfCommand<T> implements Command<Void> {
+  protected final CrudWorker<T, Set<T>, ?> collect;
   protected final Validator<T> validator;
   protected final Comparator<T> comparator;
   protected final Set<Integer> values;
   protected final Class<T> clz;
 
   public AddIfCommand(
-      CrudWorker<T, Set<T>> collection,
+      CrudWorker<T, Set<T>, ?> collection,
       Validator<T> validator,
       Comparator<T> comparator,
       Class<T> clz,

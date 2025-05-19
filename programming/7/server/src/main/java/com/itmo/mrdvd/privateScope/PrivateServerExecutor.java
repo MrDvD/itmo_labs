@@ -2,7 +2,6 @@ package com.itmo.mrdvd.privateScope;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.commands.FetchAllCommand;
 import com.itmo.mrdvd.commands.LoadDatabaseCommand;
 import com.itmo.mrdvd.commands.ShutdownCommand;
@@ -14,14 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PrivateServerExecutor extends AbstractExecutor {
-  public <U extends HavingId> PrivateServerExecutor(
-      ListenerService<?> server, CrudWorker<U, ?> dbworker, Collection<U, ?> collect) {
+  public <U> PrivateServerExecutor(
+      ListenerService<?> server, CrudWorker<U, ?, ?> dbworker, Collection<U, ?> collect) {
     this(server, dbworker, collect, new HashMap<>(), new HashMap<>());
   }
 
-  public <U extends HavingId> PrivateServerExecutor(
+  public <U> PrivateServerExecutor(
       ListenerService<?> server,
-      CrudWorker<U, ?> dbworker,
+      CrudWorker<U, ?, ?> dbworker,
       Collection<U, ?> collect,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {

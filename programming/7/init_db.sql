@@ -36,7 +36,7 @@ create type event_type as enum(
 
 create table USERS (
   id serial primary key,
-  name varchar(42) not null,
+  name varchar(42) not null unique,
   passwd_hash text not null
 );
 

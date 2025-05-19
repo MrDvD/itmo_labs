@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.collection;
+package com.itmo.mrdvd.collection.ticket;
 
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;

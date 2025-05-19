@@ -1,7 +1,10 @@
-package com.itmo.mrdvd.collection;
+package com.itmo.mrdvd.collection.ticket;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.CollectionMetadata;
+import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.Ticket;
 import java.time.LocalDateTime;
@@ -14,21 +17,22 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTicket>> {
-  private final CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> dbworker;
+  private final CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker;
   private Set<AuthoredTicket> tickets;
   private TicketCollectionMetadata meta;
 
-  public TicketCollection(CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> dbworker) {
+  public TicketCollection(
+      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker) {
     this(dbworker, "A new ticket collection");
   }
 
   public TicketCollection(
-      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> dbworker, String name) {
+      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker, String name) {
     this(dbworker, name, new HashSet<>());
   }
 
   public TicketCollection(
-      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>> dbworker,
+      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker,
       String name,
       Set<AuthoredTicket> tickets) {
     this.dbworker = dbworker;
@@ -47,12 +51,7 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
 
   @Override
   public Optional<AuthoredTicket> get(Long id) {
-    for (AuthoredTicket ticket : tickets) {
-      if (ticket.getId().equals(id)) {
-        return Optional.of(ticket);
-      }
-    }
-    return Optional.empty();
+    return this.tickets.stream().filter(ticket -> ticket.getId().equals(id)).findAny();
   }
 
   @Override
@@ -82,7 +81,7 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
 
   @Override
   public Set<AuthoredTicket> getAll() {
-    return tickets;
+    return this.tickets;
   }
 
   @Override

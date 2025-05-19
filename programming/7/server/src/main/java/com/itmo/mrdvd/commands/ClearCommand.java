@@ -5,9 +5,9 @@ import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class ClearCommand implements Command<Void> {
-  private final CrudWorker<?, ?> collection;
+  private final CrudWorker<?, ?, ?> collection;
 
-  public ClearCommand(CrudWorker<?, ?> collect) {
+  public ClearCommand(CrudWorker<?, ?, ?> collect) {
     this.collection = collect;
   }
 

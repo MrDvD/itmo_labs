@@ -1,16 +1,16 @@
 package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
-public class MinByPriceCommand<T extends HavingId> implements Command<String> {
-  private final CrudWorker<T, List<T>> collection;
+public class MinByPriceCommand<T> implements Command<String> {
+  private final CrudWorker<T, Set<T>, ?> collection;
   private final Comparator<T> comparator;
 
-  public MinByPriceCommand(CrudWorker<T, List<T>> collect, Comparator<T> comparator) {
+  public MinByPriceCommand(CrudWorker<T, Set<T>, ?> collect, Comparator<T> comparator) {
     this.collection = collect;
     this.comparator = comparator;
   }
@@ -20,10 +20,10 @@ public class MinByPriceCommand<T extends HavingId> implements Command<String> {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    this.collection.getAll().sort(comparator);
-    return this.collection.getAll().isEmpty()
-        ? "Коллекция пуста."
-        : collection.getAll().get(0).toString();
+    if (this.collection.getAll().isEmpty()) {
+      throw new RuntimeException("Коллекция пуста.");
+    }
+    return this.collection.getAll().stream().min(this.comparator).toString();
   }
 
   @Override

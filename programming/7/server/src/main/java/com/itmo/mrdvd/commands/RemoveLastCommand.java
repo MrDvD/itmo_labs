@@ -7,9 +7,9 @@ import java.util.List;
 import java.util.Set;
 
 public class RemoveLastCommand implements Command<Void> {
-  private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>> collection;
+  private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
 
-  public RemoveLastCommand(CrudWorker<AuthoredTicket, Set<AuthoredTicket>> collection) {
+  public RemoveLastCommand(CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection) {
     this.collection = collection;
   }
 

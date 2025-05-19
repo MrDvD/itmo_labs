@@ -1,8 +1,8 @@
 package com.itmo.mrdvd;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.collection.TicketCollection;
-import com.itmo.mrdvd.collection.TicketJdbc;
+import com.itmo.mrdvd.collection.ticket.TicketCollection;
+import com.itmo.mrdvd.collection.ticket.TicketJdbc;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;

@@ -30,7 +30,7 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 # </plugin>
 # <plugin>
 
-# add JacksonXML module
+# JacksonXML module
 
 # <dependency>
 #    <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -44,6 +44,14 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 #    <groupId>com.fasterxml.jackson.datatype</groupId>
 #    <artifactId>jackson-datatype-jsr310</artifactId>
 #    <version>2.6.0</version>
+# </dependency>
+
+# BCrypt module
+
+# <dependency>
+#   <groupId>at.favre.lib</groupId>
+#   <artifactId>bcrypt</artifactId>
+#   <version>{latest-version}</version>
 # </dependency>
 
 # compile maven subprojects to independent JAR files

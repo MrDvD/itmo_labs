@@ -5,9 +5,9 @@ import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class RemoveByIdCommand implements Command<Void> {
-  private final CrudWorker<?, ?> collection;
+  private final CrudWorker<?, ?, Long> collection;
 
-  public RemoveByIdCommand(CrudWorker<?, ?> collection) {
+  public RemoveByIdCommand(CrudWorker<?, ?, Long> collection) {
     this.collection = collection;
   }
 

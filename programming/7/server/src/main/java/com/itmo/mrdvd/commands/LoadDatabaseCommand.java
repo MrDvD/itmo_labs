@@ -2,16 +2,15 @@ package com.itmo.mrdvd.commands;
 
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
-public class LoadDatabaseCommand<T extends HavingId, U extends java.util.Collection<? extends T>>
+public class LoadDatabaseCommand<T, U extends java.util.Collection<? extends T>>
     implements Command<Void> {
-  private final CrudWorker<T, U> dbworker;
+  private final CrudWorker<T, U, ?> dbworker;
   private final Collection<T, U> collection;
 
-  public LoadDatabaseCommand(CrudWorker<T, U> dbworker, Collection<T, U> collection) {
+  public LoadDatabaseCommand(CrudWorker<T, U, ?> dbworker, Collection<T, U> collection) {
     this.dbworker = dbworker;
     this.collection = collection;
   }

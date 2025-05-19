@@ -1,16 +1,17 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
-public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Command<String> {
-  private final Collection<T, List<T>> collection;
+public class PrintFieldDescendingTypeCommand<T> implements Command<String> {
+  private final CrudWorker<T, Set<T>, ?> collection;
   private final Comparator<T> comparator;
 
-  public PrintFieldDescendingTypeCommand(Collection<T, List<T>> collect, Comparator<T> comparator) {
+  public PrintFieldDescendingTypeCommand(
+      CrudWorker<T, Set<T>, ?> collect, Comparator<T> comparator) {
     this.collection = collect;
     this.comparator = comparator;
   }
@@ -20,12 +21,11 @@ public class PrintFieldDescendingTypeCommand<T extends HavingId> implements Comm
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    collection.getAll().sort(comparator);
-    String result = "";
-    for (T obj : collection) {
-      result += obj.toString() + "\n";
-    }
-    return result + "Конец коллекции.";
+    StringBuilder result = new StringBuilder();
+    this.collection.getAll().stream()
+        .sorted(this.comparator)
+        .forEach(obj -> result.append(obj.toString()).append("\n"));
+    return result.toString() + "Конец коллекции.";
   }
 
   @Override

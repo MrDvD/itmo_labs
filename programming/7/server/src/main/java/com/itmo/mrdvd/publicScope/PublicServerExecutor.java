@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.publicScope;
 
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.TicketComparator;
+import com.itmo.mrdvd.collection.ticket.TicketComparator;
 import com.itmo.mrdvd.commands.AddCommand;
 import com.itmo.mrdvd.commands.AddIfCommand;
 import com.itmo.mrdvd.commands.ClearCommand;
