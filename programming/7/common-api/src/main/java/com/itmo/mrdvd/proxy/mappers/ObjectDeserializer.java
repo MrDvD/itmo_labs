@@ -33,9 +33,9 @@ public class ObjectDeserializer<T> implements Mapper<String, T> {
   }
 
   private void init() {
-    mapper.registerModule(new JavaTimeModule());
-    mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
-    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    this.mapper.registerModule(new JavaTimeModule());
+    this.mapper.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
+    this.mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
   }
 
   @Override

@@ -1,5 +1,10 @@
 package com.itmo.mrdvd.publicScope;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.object.Ticket;
@@ -16,25 +21,24 @@ import com.itmo.mrdvd.proxy.strategies.LoginCheckStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 public class PublicServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
+  private final Mapper<ServiceQuery, ServiceQuery> authMapper;
 
   public PublicServerProxy(
-      AbstractExecutor exec, VariableMapper<Packet, ServiceQuery, String, List> mapper) {
-    this(exec, mapper, new HashMap<>());
+      AbstractExecutor exec, VariableMapper<Packet, ServiceQuery, String, List> mapper, Mapper<ServiceQuery, ServiceQuery> authMapper) {
+    this(exec, mapper, authMapper, new HashMap<>());
   }
 
   public PublicServerProxy(
       AbstractExecutor exec,
       VariableMapper<Packet, ServiceQuery, String, List> mapper,
+      Mapper<ServiceQuery, ServiceQuery> authMapper,
       Map<String, ProxyStrategy> strats) {
     super(strats);
     this.mapper = mapper;
+    this.authMapper = authMapper;
     this.mapper.setStrategy(
         "add",
         new ObjectDeserializer<>(
@@ -77,10 +81,15 @@ public class PublicServerProxy extends AbstractProxy {
     setStrategy(
         "update",
         new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент обновлён.")));
+    setStrategy("login", new WrapStrategy(exec));
   }
 
   public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial) {
     Optional<ServiceQuery> deserial = this.mapper.convert(p);
+    if (deserial.isEmpty()) {
+      return new EmptyPacket();
+    }
+    deserial = this.authMapper.convert(deserial.get());
     if (deserial.isEmpty()) {
       return new EmptyPacket();
     }

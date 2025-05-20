@@ -1,6 +1,8 @@
 package com.itmo.mrdvd.publicScope;
 
+import com.itmo.mrdvd.collection.CacheWorker;
 import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.login.SelfContainedHash;
 import com.itmo.mrdvd.collection.ticket.TicketComparator;
 import com.itmo.mrdvd.commands.AddCommand;
 import com.itmo.mrdvd.commands.AddIfCommand;
@@ -8,6 +10,7 @@ import com.itmo.mrdvd.commands.ClearCommand;
 import com.itmo.mrdvd.commands.CountGreaterThanEventCommand;
 import com.itmo.mrdvd.commands.FetchAllCommand;
 import com.itmo.mrdvd.commands.InfoCommand;
+import com.itmo.mrdvd.commands.LoginCommand;
 import com.itmo.mrdvd.commands.MinByPriceCommand;
 import com.itmo.mrdvd.commands.PrintFieldDescendingTypeCommand;
 import com.itmo.mrdvd.commands.RemoveAtCommand;
@@ -16,6 +19,7 @@ import com.itmo.mrdvd.commands.RemoveLastCommand;
 import com.itmo.mrdvd.commands.ShowCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
 import com.itmo.mrdvd.object.AuthoredTicket;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -29,13 +33,17 @@ import java.util.Set;
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
       Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
-      Validator<? extends Ticket> validator) {
-    this(collect, validator, new HashMap<>(), new HashMap<>());
+      Validator<? extends Ticket> validator,
+      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      SelfContainedHash hash) {
+    this(collect, validator, loginWorker, hash, new HashMap<>(), new HashMap<>());
   }
 
   public PublicServerExecutor(
       Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
       Validator<? extends Ticket> validator,
+      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      SelfContainedHash hash,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {
     super(commands, cache);
@@ -59,5 +67,6 @@ public class PublicServerExecutor extends AbstractExecutor {
             AuthoredTicket.class,
             Set.of(1)));
     setCommand(new UpdateCommand(collect, validator));
+    setCommand(new LoginCommand(loginWorker, hash));
   }
 }

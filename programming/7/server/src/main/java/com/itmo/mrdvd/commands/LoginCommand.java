@@ -1,25 +1,44 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.collection.login.SelfContainedHash;
+import com.itmo.mrdvd.object.LoginPasswordPair;
+import com.itmo.mrdvd.service.executor.Command;
 
 public class LoginCommand implements Command<Boolean> {
-  public LoginCommand() {}
+  private final CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker;
+  private final SelfContainedHash hash;
+
+  public LoginCommand(CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker, SelfContainedHash hash) {
+    this.loginWorker = loginWorker;
+    this.hash = hash;
+  }
 
   @Override
   public Boolean execute(List<Object> params) throws IllegalStateException {
-    if (params.isEmpty()) {
-      throw new IllegalArgumentException("Не предоставлен объект для добавления в коллекцию.");
+    if (this.loginWorker == null) {
+      throw new IllegalStateException("Не предоставлен обработчик логина.");
     }
-    if (params.size() < 2) {
+    if (this.hash == null) {
+      throw new IllegalStateException("Не предоставлен обработчик хеширования.");
+    }
+    if (params.isEmpty()) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
-    if (!String.class.isInstance(params.get(0)) || !String.class.isInstance(params.get(1))) {
+    LoginPasswordPair pair = null;
+    try {
+      pair = (LoginPasswordPair) params.get(0);
+    } catch (ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать аргументы команды.");
     }
-    String login = (String) params.get(0);
-    String password = (String) params.get(1);
-    // here comes magical interaction with database
+    Optional<? extends LoginPasswordPair> dbPair = this.loginWorker.get(pair.getLogin());
+    if (dbPair.isPresent() && this.hash.compare(pair.getPassword(), dbPair.get().getPassword())) {
+      return true;
+    }
     return false;
   }
 

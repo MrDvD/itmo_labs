@@ -20,14 +20,11 @@ public class ConnectCommand implements Command<Void> {
     if (params.size() < 2) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
-    String host = null;
-    Integer port = null;
-    try {
-      host = (String) params.get(0);
-      port = (Integer) params.get(1);
-    } catch (ClassCastException e) {
-      throw new IllegalArgumentException("Не удалось распознать аргументы для подключения.");
+    if (!String.class.isInstance(params.get(0)) || !Integer.class.isInstance(params.get(1))) {
+      throw new IllegalArgumentException("Не удалось распознать аргументы команды.");
     }
+    String host = (String) params.get(0);
+    Integer port = (Integer) params.get(1);
     /*
      * Of course, it's Tight Coupling, but otherwise i would have to write the variable input parser (~Strategy Pattern or so)
      * because not each socketchannel requires host & port pair (like unix sockets).

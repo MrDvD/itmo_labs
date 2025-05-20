@@ -21,21 +21,25 @@ import java.util.function.Function;
 
 public class PrivateServerProxy extends AbstractProxy {
   private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
+  private final Mapper<ServiceQuery, ServiceQuery> authMapper;
 
   public PrivateServerProxy(
       AbstractExecutor exec,
       Proxy other,
-      VariableMapper<Packet, ServiceQuery, String, List> mapper) {
-    this(exec, other, mapper, new HashMap<>());
+      VariableMapper<Packet, ServiceQuery, String, List> mapper,
+      Mapper<ServiceQuery, ServiceQuery> authMapper) {
+    this(exec, other, mapper, authMapper, new HashMap<>());
   }
 
   public PrivateServerProxy(
       AbstractExecutor exec,
       Proxy other,
       VariableMapper<Packet, ServiceQuery, String, List> mapper,
+      Mapper<ServiceQuery, ServiceQuery> authMapper,
       Map<String, ProxyStrategy> strats) {
     super(strats);
     this.mapper = mapper;
+    this.authMapper = authMapper;
     setDefaultStrategy(new IgnoreStrategy());
     setStrategy(
         "fetch_all", new LoginCheckStrategy(other, "login", new FetchAllStrategy(exec, other)));
@@ -51,6 +55,10 @@ public class PrivateServerProxy extends AbstractProxy {
   public Packet processPacket(
       Packet p, Mapper<ServiceQuery, Packet> serial, Function<Packet, Packet> redirect) {
     Optional<ServiceQuery> raw = this.mapper.convert(p);
+    if (raw.isEmpty()) {
+      return redirect.apply(p);
+    }
+    raw = this.authMapper.convert(raw.get());
     if (raw.isEmpty()) {
       return redirect.apply(p);
     }

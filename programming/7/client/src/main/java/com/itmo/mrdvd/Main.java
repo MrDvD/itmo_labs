@@ -24,14 +24,16 @@ public class Main {
     ObjectSerializer<Packet> serialPacket =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
     ClientSender sender = new ClientSender(serialPacket, deserialPacket);
+    LoginPasswordAuthContext context = new LoginPasswordAuthContext();
     ClientExecutor exec =
-        new ClientExecutor(new FileIO(Path.of(""), FileSystems.getDefault()), sender);
+        new ClientExecutor(new FileIO(Path.of(""), FileSystems.getDefault()), sender, context);
     ClientProxy proxy =
         new ClientProxy(
             sender,
             exec,
             new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper())),
-            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
+            context);
     CollectionShell shell = new CollectionShell(proxy);
     shell.setBuilders(
         new InteractiveTicketBuilder(

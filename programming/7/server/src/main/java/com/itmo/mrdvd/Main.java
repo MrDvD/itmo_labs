@@ -1,10 +1,15 @@
 package com.itmo.mrdvd;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.itmo.mrdvd.collection.login.BCryptHash;
+import com.itmo.mrdvd.collection.login.LoginCollection;
+import com.itmo.mrdvd.collection.login.LoginJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
+import com.itmo.mrdvd.proxy.mappers.AuthMapper;
+import com.itmo.mrdvd.proxy.mappers.AuthQueryWrapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
@@ -27,32 +32,28 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/** TODO:
+ * 1. Hide LoginCommand as a service one (client has its own command)
+ * */
 public class Main {
   public static void main(String[] args) {
-    String envName, envUser, envPass, publicHostname;
+    String envUser, envPass, publicHostname;
     int publicPort, privatePort;
-    if (args.length < 4) {
-      envName = "COLLECT_PATH";
+    if (args.length < 3) {
       publicHostname = "localhost";
       publicPort = 8080;
       privatePort = 8090;
       System.err.println(
           "Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
     } else {
-      envName = args[0];
-      publicHostname = args[1];
+      publicHostname = args[0];
       try {
-        publicPort = Integer.parseInt(args[2]);
-        privatePort = Integer.parseInt(args[3]);
+        publicPort = Integer.parseInt(args[1]);
+        privatePort = Integer.parseInt(args[2]);
       } catch (NumberFormatException e) {
         System.err.println("Не удалось распарсить порты.");
         return;
       }
-    }
-    String path = System.getenv(envName);
-    if (path == null) {
-      System.err.printf("Не указана переменная окружения \"%s\".\n", envName);
-      return;
     }
     System.out.print("Введите имя пользователя PostgreSQL: ");
     envUser = System.console().readLine();
@@ -84,17 +85,22 @@ public class Main {
                 deserialPacket,
                 new ServerResponseSender(StandardCharsets.UTF_8)),
             8192);
-    PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator);
+    BCryptHash hash = new BCryptHash();
+    LoginCollection loginCollection = new LoginCollection(new LoginJdbc("jdbc:postgresql:/", envUser, envPass, hash));
+    PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator, loginCollection, hash);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
+    AuthQueryWrapper authWrapper = new AuthQueryWrapper(new AuthMapper());
     PublicServerProxy publicProxy =
         new PublicServerProxy(
             publicExec,
-            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
+            authWrapper);
     PrivateServerProxy privateProxy =
         new PrivateServerProxy(
             privateExec,
             publicProxy,
-            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)));
+            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
+            authWrapper);
     try {
       ServerSocketChannel publicSock = ServerSocketChannel.open();
       ServerSocketChannel privateSock = ServerSocketChannel.open();

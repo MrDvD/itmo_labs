@@ -47,6 +47,7 @@ public class CollectionShell extends DefaultShell {
     setQueryStrategy("remove_by_id", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
     setQueryStrategy(
         "count_greater_than_event", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
+    setQueryStrategy("login", new SkipLineStrategy(this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this))));
   }
 
   public void setBuilders(InteractiveBuilder<?> builder) {

@@ -18,7 +18,7 @@ public class LoginCheckStrategy implements ProxyStrategy {
 
   @Override
   public Optional<ServiceQuery> make(ServiceQuery q) {
-    if (q.getArgs().size() < 2) {
+    if (q.getArgs().isEmpty()) {
       return Optional.of(
           ServiceQuery.of("login_error", List.of("Не удалось распознать реквизиты для запроса.")));
     }
@@ -29,7 +29,7 @@ public class LoginCheckStrategy implements ProxyStrategy {
         && !loginCheck.get().getArgs().isEmpty()
         && loginCheck.get().getArgs().get(0) instanceof Boolean success) {
       if (success) {
-        return this.next.make(ServiceQuery.of(q.getName(), q.getArgs().stream().skip(2).toList()));
+        return this.next.make(ServiceQuery.of(q.getName(), q.getArgs().stream().skip(1).toList()));
       }
       return Optional.of(
           ServiceQuery.of("login_error", List.of("Некорректные реквизиты для запроса.")));

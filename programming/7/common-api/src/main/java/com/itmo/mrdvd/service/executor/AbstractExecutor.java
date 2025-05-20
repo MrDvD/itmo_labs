@@ -48,8 +48,6 @@ public abstract class AbstractExecutor {
     return this.commands.keySet();
   }
 
-  // public void getArgsInstruction(String name) {}
-
   public Object processCommand(String name, List<Object> params) throws IllegalArgumentException {
     if (!this.commands.containsKey(name) || this.commands.get(name) == null) {
       throw new IllegalArgumentException(String.format("Команда \"%s\" не найдена.", name));

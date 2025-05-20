@@ -14,18 +14,34 @@ public class SendServerStrategy implements ProxyStrategy {
   private final AbstractSender<Packet> sender;
   private final Mapper<? super ServiceQuery, Packet> serial;
   private final VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial;
+  private final ProxyStrategy prev;
 
   public SendServerStrategy(
       AbstractSender<Packet> sender,
       Mapper<? super ServiceQuery, Packet> serial,
       VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial) {
+    this(sender, serial, deserial, null);
+  }
+
+  public SendServerStrategy(
+      AbstractSender<Packet> sender,
+      Mapper<? super ServiceQuery, Packet> serial,
+      VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial,
+      ProxyStrategy prev) {
     this.sender = sender;
     this.serial = serial;
     this.deserial = deserial;
+    this.prev = prev;
   }
 
   @Override
   public Optional<ServiceQuery> make(ServiceQuery q) {
+    if (this.prev != null) {
+      Optional<ServiceQuery> prevResult = this.prev.make(q);
+      if (prevResult.isPresent()) {
+        q = prevResult.get();
+      }
+    }
     try {
       Optional<? extends Packet> serialized = this.serial.convert(q);
       if (serialized.isEmpty()) {

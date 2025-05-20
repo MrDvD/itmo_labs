@@ -14,15 +14,11 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class LoginJdbc
-    implements CrudWorker<LoginPasswordPair, Set<? extends LoginPasswordPair>, String> {
+    implements CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
   private final String url;
   private final String user;
   private final String password;
   private final SelfContainedHash hash;
-
-  public LoginJdbc(String url, String user, String password) {
-    this(url, user, password, new BCryptHash());
-  }
 
   public LoginJdbc(String url, String user, String password, SelfContainedHash hash) {
     this.url = url;
@@ -72,7 +68,7 @@ public class LoginJdbc
 
   @Override
   public Optional<LoginPasswordPair> get(String key) {
-    String sql = "select name from USERS where name = ?";
+    String sql = "select name, passwd_hash from USERS where name = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setString(1, key);
@@ -80,6 +76,7 @@ public class LoginJdbc
         if (rs.next()) {
           LoginPasswordPair pair = new LoginPasswordPair();
           pair.setLogin(rs.getString("name"));
+          pair.setPassword(rs.getString("passwd_hash"));
           return Optional.of(pair);
         }
       }
@@ -95,13 +92,14 @@ public class LoginJdbc
   }
 
   public Set<LoginPasswordPair> getAll(Set<LoginPasswordPair> pairs) {
-    String sql = "select name from USERS";
+    String sql = "select name, passwd_hash from USERS";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql)) {
       while (rs.next()) {
         LoginPasswordPair pair = new LoginPasswordPair();
         pair.setLogin(rs.getString("name"));
+        pair.setPassword(rs.getString("passwd_hash"));
         pairs.add(pair);
       }
       return pairs;
