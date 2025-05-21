@@ -3,7 +3,6 @@ package com.itmo.mrdvd.commands;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
-import com.itmo.mrdvd.service.executor.DefaultCommandMeta;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -21,11 +20,7 @@ public class FetchAllCommand implements Command<List<CommandMeta>> {
     for (String cmdName : this.exec.getCommandKeys()) {
       Optional<Command<?>> cmd = this.exec.getCommand(cmdName);
       if (cmd.isPresent()) {
-        CommandMeta q = new DefaultCommandMeta();
-        q.setCmd(cmd.get().name());
-        q.setSignature(cmd.get().signature());
-        q.setDesc(cmd.get().description());
-        queries = Stream.concat(queries, Stream.of(q));
+        queries = Stream.concat(queries, Stream.of(CommandMeta.of(cmd.get().name(), cmd.get().signature(), cmd.get().description())));
       }
     }
     return queries.toList();

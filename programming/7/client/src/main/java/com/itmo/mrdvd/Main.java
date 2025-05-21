@@ -7,6 +7,7 @@ import com.itmo.mrdvd.builders.InteractiveTicketBuilder;
 import com.itmo.mrdvd.device.DataConsole;
 import com.itmo.mrdvd.device.DefaultTTY;
 import com.itmo.mrdvd.device.FileIO;
+import com.itmo.mrdvd.mappers.CommandMetaMapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
@@ -33,7 +34,8 @@ public class Main {
             exec,
             new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper())),
             new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
-            context);
+            context,
+            new CommandMetaMapper());
     CollectionShell shell = new CollectionShell(proxy);
     shell.setBuilders(
         new InteractiveTicketBuilder(

@@ -6,10 +6,11 @@ import com.itmo.mrdvd.collection.login.LoginCollection;
 import com.itmo.mrdvd.collection.login.LoginJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
+import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
 import com.itmo.mrdvd.proxy.mappers.AuthMapper;
-import com.itmo.mrdvd.proxy.mappers.AuthQueryWrapper;
+import com.itmo.mrdvd.proxy.mappers.HashmapObjectMapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.proxy.mappers.PacketQueryMapper;
@@ -32,21 +33,23 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/** TODO:
- * 1. Hide LoginCommand as a service one (client has its own command)
- * */
+/** TODO: 1. Hide LoginCommand as a service one (client has its own command) */
 public class Main {
   public static void main(String[] args) {
-    String envUser, envPass, publicHostname;
+    String envUser, envPass, publicHostname, pgHost, pgDbname;
     int publicPort, privatePort;
-    if (args.length < 3) {
+    if (args.length < 5) {
       publicHostname = "localhost";
       publicPort = 8080;
       privatePort = 8090;
+      pgHost = "localhost";
+      pgDbname = "";
       System.err.println(
           "Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
     } else {
       publicHostname = args[0];
+      pgHost = args[3];
+      pgDbname = args[4];
       try {
         publicPort = Integer.parseInt(args[1]);
         privatePort = Integer.parseInt(args[2]);
@@ -67,11 +70,12 @@ public class Main {
       return;
     }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
+    PacketQueryMapper packetQuery = new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class));
     ObjectDeserializer<? extends EmptyPacket> deserialPacket =
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
     ObjectSerializer<Packet> serialPacket =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
-    TicketJdbc jdbc = new TicketJdbc("jdbc:postgresql:/", envUser, envPass);
+    TicketJdbc jdbc = new TicketJdbc(String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass);
     TicketCollection collect = new TicketCollection(jdbc);
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
@@ -86,21 +90,14 @@ public class Main {
                 new ServerResponseSender(StandardCharsets.UTF_8)),
             8192);
     BCryptHash hash = new BCryptHash();
-    LoginCollection loginCollection = new LoginCollection(new LoginJdbc("jdbc:postgresql:/", envUser, envPass, hash));
-    PublicServerExecutor publicExec = new PublicServerExecutor(collect, validator, loginCollection, hash);
+    LoginCollection loginCollection =
+        new LoginCollection(
+            new LoginJdbc(String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass, hash));
+    PublicServerExecutor publicExec =
+        new PublicServerExecutor(collect, validator, loginCollection, hash);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
-    AuthQueryWrapper authWrapper = new AuthQueryWrapper(new AuthMapper());
-    PublicServerProxy publicProxy =
-        new PublicServerProxy(
-            publicExec,
-            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
-            authWrapper);
-    PrivateServerProxy privateProxy =
-        new PrivateServerProxy(
-            privateExec,
-            publicProxy,
-            new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class)),
-            authWrapper);
+    PublicServerProxy publicProxy = new PublicServerProxy(publicExec, new AuthMapper(), new HashmapObjectMapper<>(new XmlMapper(), AuthoredTicket.class));
+    PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy, new AuthMapper());
     try {
       ServerSocketChannel publicSock = ServerSocketChannel.open();
       ServerSocketChannel privateSock = ServerSocketChannel.open();
@@ -109,17 +106,12 @@ public class Main {
       listener.addListener(
           publicSock,
           (Packet p) -> {
-            return publicProxy.processPacket(p, queryPacket);
+            return publicProxy.processPacket(p, queryPacket, packetQuery);
           });
       listener.addListener(
           privateSock,
           (Packet p) -> {
-            return privateProxy.processPacket(
-                p,
-                queryPacket,
-                (Packet q) -> {
-                  return publicProxy.processPacket(q, queryPacket);
-                });
+            return privateProxy.processPacket(p, queryPacket, packetQuery);
           });
     } catch (IOException e) {
       System.err.println("Не удалось привязать сокеты к серверу.");

@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.AuthContext;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
 
 public class LoginCommand implements Command<Void> {
   private final AuthContext<LoginPasswordPair> authContext;

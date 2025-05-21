@@ -37,6 +37,11 @@
       <artifactId>bcrypt</artifactId>
       <version>0.10.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.5</version>
+    </dependency>
   </dependencies>
 
   <build>

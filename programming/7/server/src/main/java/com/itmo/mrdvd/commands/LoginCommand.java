@@ -1,19 +1,20 @@
 package com.itmo.mrdvd.commands;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import com.itmo.mrdvd.collection.CacheWorker;
 import com.itmo.mrdvd.collection.login.SelfContainedHash;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class LoginCommand implements Command<Boolean> {
   private final CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker;
   private final SelfContainedHash hash;
 
-  public LoginCommand(CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker, SelfContainedHash hash) {
+  public LoginCommand(
+      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      SelfContainedHash hash) {
     this.loginWorker = loginWorker;
     this.hash = hash;
   }

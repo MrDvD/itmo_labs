@@ -2,28 +2,14 @@ package com.itmo.mrdvd.proxy.mappers;
 
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, String, List> {
-  private final Map<String, Mapper<String, List>> mappers;
-  private final Mapper<String, List> defaultMapper;
+public class PacketQueryMapper implements Mapper<Packet, ServiceQuery> {
+  private final Mapper<String, List> mapper;
 
-  public PacketQueryMapper(Mapper<String, List> defaultMapper) {
-    this(defaultMapper, new HashMap<>());
-  }
-
-  public PacketQueryMapper(
-      Mapper<String, List> defaultMapper, Map<String, Mapper<String, List>> mappers) {
-    this.mappers = mappers;
-    this.defaultMapper = defaultMapper;
-  }
-
-  @Override
-  public void setStrategy(String name, Mapper<String, List> mapper) {
-    this.mappers.put(name, mapper);
+  public PacketQueryMapper(Mapper<String, List> mapper) {
+    this.mapper = mapper;
   }
 
   @Override
@@ -32,11 +18,7 @@ public class PacketQueryMapper implements VariableMapper<Packet, ServiceQuery, S
       return Optional.empty();
     }
     Optional<List> result = Optional.empty();
-    if (this.mappers.containsKey(obj.getName())) {
-      result = this.mappers.get(obj.getName()).convert(obj.getPayload());
-    } else {
-      result = this.defaultMapper.convert(obj.getPayload());
-    }
+    result = this.mapper.convert(obj.getPayload());
     return Optional.of(ServiceQuery.of(obj.getName(), result.isEmpty() ? List.of() : result.get()));
   }
 }

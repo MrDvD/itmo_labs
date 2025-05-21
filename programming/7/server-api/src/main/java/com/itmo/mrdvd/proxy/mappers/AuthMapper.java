@@ -1,9 +1,8 @@
 package com.itmo.mrdvd.proxy.mappers;
 
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import java.util.Map;
 import java.util.Optional;
-
-import com.itmo.mrdvd.object.LoginPasswordPair;
 
 public class AuthMapper implements Mapper<Map<String, String>, LoginPasswordPair> {
   @Override

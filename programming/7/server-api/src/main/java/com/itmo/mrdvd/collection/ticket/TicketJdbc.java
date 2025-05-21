@@ -30,9 +30,9 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
 
   @Override
   public Optional<AuthoredTicket> add(AuthoredTicket t, Predicate<AuthoredTicket> cond) {
-    String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?)";
+    String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?::event_type)";
     String sqlTicket =
-        "insert into TICKETS (name, coords, price, type, event, author) values (?, ?, ?, ?, ?, ?)";
+        "insert into TICKETS (name, x, y, price, type, event, author) values (?, ?, ?, ?, ?::ticket_type, ?, ?)";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       Long eventId = null;
@@ -58,11 +58,12 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
       try (PreparedStatement stmtTicket =
           conn.prepareStatement(sqlTicket, Statement.RETURN_GENERATED_KEYS)) {
         stmtTicket.setString(1, t.getName());
-        stmtTicket.setString(2, t.getCoordinates().toString());
-        stmtTicket.setInt(3, t.getPrice());
-        stmtTicket.setString(4, t.getType().toString());
-        stmtTicket.setLong(5, eventId);
-        stmtTicket.setString(6, t.getAuthor());
+        stmtTicket.setFloat(2, t.getCoordinates().getX());
+        stmtTicket.setFloat(3, t.getCoordinates().getY());
+        stmtTicket.setInt(4, t.getPrice());
+        stmtTicket.setString(5, t.getType().toString());
+        stmtTicket.setLong(6, eventId);
+        stmtTicket.setString(7, t.getAuthor());
         if (stmtTicket.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
@@ -89,7 +90,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
       Long id, AuthoredTicket t, Predicate<AuthoredTicket> cond) {
     String sqlEvent =
         "update EVENTS set name = ?, description = ?, type = ? where id = (select event from TICKETS where id = ?)";
-    String sqlTicket = "update TICKETS set name = ?, coords = ?, price = ?, type = ? where id = ?";
+    String sqlTicket = "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ? where id = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       try (PreparedStatement stmtEvent = conn.prepareStatement(sqlEvent)) {
@@ -104,10 +105,11 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
       }
       try (PreparedStatement stmtTicket = conn.prepareStatement(sqlTicket)) {
         stmtTicket.setString(1, t.getName());
-        stmtTicket.setString(2, t.getCoordinates().toString());
-        stmtTicket.setInt(3, t.getPrice());
-        stmtTicket.setString(4, t.getType().toString());
-        stmtTicket.setLong(5, id);
+        stmtTicket.setFloat(2, t.getCoordinates().getX());
+        stmtTicket.setFloat(3, t.getCoordinates().getY());
+        stmtTicket.setInt(4, t.getPrice());
+        stmtTicket.setString(5, t.getType().toString());
+        stmtTicket.setLong(6, id);
         if (stmtTicket.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
@@ -127,7 +129,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   @Override
   public Optional<AuthoredTicket> get(Long id) {
     String sql =
-        "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, "
+        "select t.id, t.name, t.x, t.y, t.creation_date, t.price, t.type, "
             + "u.name as author, e.id as event_id, e.name as event_name, "
             + "e.description as event_description, e.type as event_type "
             + "from TICKETS t "
@@ -172,7 +174,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
 
   public Set<AuthoredTicket> getAll(Set<AuthoredTicket> tickets) {
     String sql =
-        "select t.id, t.name, t.coords, t.creation_date, t.price, t.type, "
+        "select t.id, t.name, t.x, t.y, t.creation_date, t.price, t.type, "
             + "u.name as author, e.id as event_id, e.name as event_name, "
             + "e.description as event_description, e.type as event_type "
             + "from TICKETS t "
@@ -221,7 +223,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
 
   @Override
   public void clear() {
-    String sql = "truncate TICKETS, EVENTS";
+    String sql = "truncate TICKETS, EVENTS cascade";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement()) {
       stmt.executeUpdate(sql);

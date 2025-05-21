@@ -5,6 +5,7 @@ import com.itmo.mrdvd.device.TTY;
 import com.itmo.mrdvd.proxy.Proxy;
 import com.itmo.mrdvd.service.shell.DefaultShell;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ConnectQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.FillLoginPasswordStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.QueryFillStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadIntQueryStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadLongQueryStrategy;
@@ -47,7 +48,16 @@ public class CollectionShell extends DefaultShell {
     setQueryStrategy("remove_by_id", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
     setQueryStrategy(
         "count_greater_than_event", new SkipLineStrategy(this, new ReadLongQueryStrategy(this)));
-    setQueryStrategy("login", new SkipLineStrategy(this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this))));
+    setQueryStrategy(
+        "login",
+        new SkipLineStrategy(
+            this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this))));
+    setQueryStrategy(
+        "register",
+        new FillLoginPasswordStrategy(
+            this,
+            new SkipLineStrategy(
+                this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this)))));
   }
 
   public void setBuilders(InteractiveBuilder<?> builder) {

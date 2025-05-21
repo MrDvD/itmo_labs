@@ -1,99 +1,62 @@
 package com.itmo.mrdvd.publicScope;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
-import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.proxy.AbstractProxy;
-import com.itmo.mrdvd.proxy.UpdateDTO;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
-import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.EmptyPacket;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
+import com.itmo.mrdvd.proxy.strategies.AuthWrapperStrategy;
 import com.itmo.mrdvd.proxy.strategies.InformStrategy;
 import com.itmo.mrdvd.proxy.strategies.LoginCheckStrategy;
+import com.itmo.mrdvd.proxy.strategies.ObjectWrapperStrategy;
 import com.itmo.mrdvd.proxy.strategies.ProxyStrategy;
 import com.itmo.mrdvd.proxy.strategies.WrapStrategy;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 public class PublicServerProxy extends AbstractProxy {
-  private final VariableMapper<Packet, ServiceQuery, String, List> mapper;
-  private final Mapper<ServiceQuery, ServiceQuery> authMapper;
-
   public PublicServerProxy(
-      AbstractExecutor exec, VariableMapper<Packet, ServiceQuery, String, List> mapper, Mapper<ServiceQuery, ServiceQuery> authMapper) {
-    this(exec, mapper, authMapper, new HashMap<>());
+      AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      Mapper<Map<String, Object>, ?> objMapper) {
+    this(exec, authMapper, objMapper, new HashMap<>());
   }
 
-  public PublicServerProxy(
-      AbstractExecutor exec,
-      VariableMapper<Packet, ServiceQuery, String, List> mapper,
-      Mapper<ServiceQuery, ServiceQuery> authMapper,
-      Map<String, ProxyStrategy> strats) {
+  public PublicServerProxy(AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper, Mapper<Map<String, Object>, ?> objMapper, Map<String, ProxyStrategy> strats) {
     super(strats);
-    this.mapper = mapper;
-    this.authMapper = authMapper;
-    this.mapper.setStrategy(
-        "add",
-        new ObjectDeserializer<>(
-            new XmlMapper(),
-            TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
-    this.mapper.setStrategy(
-        "add_if_max",
-        new ObjectDeserializer<>(
-            new XmlMapper(),
-            TypeFactory.defaultInstance().constructCollectionType(List.class, Ticket.class)));
-    this.mapper.setStrategy(
-        "update",
-        new ObjectDeserializer<>(
-            new XmlMapper(),
-            TypeFactory.defaultInstance()
-                .constructCollectionType(
-                    List.class,
-                    TypeFactory.defaultInstance()
-                        .constructParametricType(UpdateDTO.class, Ticket.class))));
-    setDefaultStrategy(new LoginCheckStrategy(this, "login", new WrapStrategy(exec)));
+    setDefaultStrategy(new WrapStrategy(exec, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "clear",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Коллекция очищена.")));
+        new InformStrategy(exec, "Коллекция очищена.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
-        "remove_last",
-        new LoginCheckStrategy(
-            this, "login", new InformStrategy(exec, "Последний элемент удалён.")));
+        "remove_last", new InformStrategy(exec, "Последний элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "remove_at",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент удалён.")));
+        new InformStrategy(exec, "Элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "remove_by_id",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент удалён.")));
+        new InformStrategy(exec, "Элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "add",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент добавлен.")));
+        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "add_if_max",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент добавлен.")));
+        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "update",
-        new LoginCheckStrategy(this, "login", new InformStrategy(exec, "Элемент обновлён.")));
+        new InformStrategy(exec, "Элемент обновлён.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy("login", new WrapStrategy(exec));
+    setStrategy("register", new InformStrategy(exec, "Пользователь зарегистрирован.", new AuthWrapperStrategy(authMapper)));
   }
 
-  public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial) {
-    Optional<ServiceQuery> deserial = this.mapper.convert(p);
-    if (deserial.isEmpty()) {
+  public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial, Mapper<Packet, ServiceQuery> deserial) {
+    Optional<ServiceQuery> incoming = deserial.convert(p);
+    if (incoming.isEmpty()) {
       return new EmptyPacket();
     }
-    deserial = this.authMapper.convert(deserial.get());
-    if (deserial.isEmpty()) {
-      return new EmptyPacket();
-    }
-    Optional<ServiceQuery> ans = processQuery(deserial.get());
+    Optional<ServiceQuery> ans = processQuery(incoming.get());
     if (ans.isEmpty()) {
       return new EmptyPacket();
     }

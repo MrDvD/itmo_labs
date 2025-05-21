@@ -54,6 +54,14 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 #   <version>{latest-version}</version>
 # </dependency>
 
+# PostgreSQL JDBC Driver
+
+# <dependency>
+#   <groupId>org.postgresql</groupId>
+#   <artifactId>postgresql</artifactId>
+#   <version>42.7.5</version>
+# </dependency>
+
 # compile maven subprojects to independent JAR files
 # the result will be placed into the target/ dir
 mvn clean fmt:format package assembly:single

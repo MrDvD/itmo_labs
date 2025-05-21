@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.proxy.strategies;
 
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.AuthContext;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class FillAuthContextStrategy implements ProxyStrategy {
   private final AuthContext<?> authContext;

@@ -1,32 +1,30 @@
 package com.itmo.mrdvd.proxy.strategies;
 
 import com.itmo.mrdvd.proxy.mappers.Mapper;
-import com.itmo.mrdvd.proxy.mappers.VariableMapper;
 import com.itmo.mrdvd.proxy.packet.Packet;
 import com.itmo.mrdvd.proxy.serviceQuery.EmptyServiceQuery;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.AbstractSender;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 
 public class SendServerStrategy implements ProxyStrategy {
   private final AbstractSender<Packet> sender;
   private final Mapper<? super ServiceQuery, Packet> serial;
-  private final VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial;
+  private final Mapper<Packet, ? extends ServiceQuery> deserial;
   private final ProxyStrategy prev;
 
   public SendServerStrategy(
       AbstractSender<Packet> sender,
       Mapper<? super ServiceQuery, Packet> serial,
-      VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial) {
+      Mapper<Packet, ? extends ServiceQuery> deserial) {
     this(sender, serial, deserial, null);
   }
 
   public SendServerStrategy(
       AbstractSender<Packet> sender,
       Mapper<? super ServiceQuery, Packet> serial,
-      VariableMapper<Packet, ? extends ServiceQuery, String, List> deserial,
+      Mapper<Packet, ? extends ServiceQuery> deserial,
       ProxyStrategy prev) {
     this.sender = sender;
     this.serial = serial;

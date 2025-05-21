@@ -13,6 +13,7 @@ import com.itmo.mrdvd.commands.InfoCommand;
 import com.itmo.mrdvd.commands.LoginCommand;
 import com.itmo.mrdvd.commands.MinByPriceCommand;
 import com.itmo.mrdvd.commands.PrintFieldDescendingTypeCommand;
+import com.itmo.mrdvd.commands.RegisterCommand;
 import com.itmo.mrdvd.commands.RemoveAtCommand;
 import com.itmo.mrdvd.commands.RemoveByIdCommand;
 import com.itmo.mrdvd.commands.RemoveLastCommand;
@@ -68,5 +69,6 @@ public class PublicServerExecutor extends AbstractExecutor {
             Set.of(1)));
     setCommand(new UpdateCommand(collect, validator));
     setCommand(new LoginCommand(loginWorker, hash));
+    setCommand(new RegisterCommand(loginWorker));
   }
 }

@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.collection.login;
 
+import com.fasterxml.jackson.dataformat.xml.XmlAnnotationIntrospector.Pair;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import java.sql.Connection;
@@ -13,8 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class LoginJdbc
-    implements CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
+public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
   private final String url;
   private final String user;
   private final String password;
@@ -30,10 +30,13 @@ public class LoginJdbc
   @Override
   public Optional<LoginPasswordPair> add(LoginPasswordPair t, Predicate<LoginPasswordPair> cond) {
     String sql = "insert into USERS (name, passwd_hash) values (?, ?)";
+    LoginPasswordPair pair = new LoginPasswordPair();
+    pair.setLogin(t.getLogin());
+    pair.setPassword(this.hash.hash(t.getPassword()));
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, t.getLogin());
-        stmt.setString(2, this.hash.hash(t.getPassword()));
+        stmt.setString(1, pair.getLogin());
+        stmt.setString(2, pair.getPassword());
         if (!cond.test(t)) {
           return Optional.empty();
         }
@@ -42,28 +45,29 @@ public class LoginJdbc
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return Optional.of(t);
+    return Optional.of(pair);
   }
 
   @Override
   public Optional<LoginPasswordPair> update(
       String key, LoginPasswordPair obj, Predicate<LoginPasswordPair> cond) {
     String sql = "update USERS set passwd_hash = ? where name = ?";
+    LoginPasswordPair pair = new LoginPasswordPair();
+    pair.setLogin(obj.getLogin());
+    pair.setPassword(this.hash.hash(obj.getPassword()));
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, this.hash.hash(obj.getPassword()));
+        stmt.setString(1, pair.getPassword());
         stmt.setString(2, key);
         if (!cond.test(obj)) {
           return Optional.empty();
         }
         stmt.executeUpdate();
       }
-
-      conn.rollback();
-      return Optional.empty();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
+    return Optional.of(pair);
   }
 
   @Override
@@ -122,7 +126,7 @@ public class LoginJdbc
 
   @Override
   public void clear() {
-    String sql = "truncate USERS";
+    String sql = "truncate USERS cascade";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement()) {
       stmt.executeUpdate(sql);
