@@ -10,4 +10,10 @@ public class AuthoredTicket extends Ticket {
   public String getAuthor() {
     return this.author;
   }
+
+  @Override
+  public String toString() {
+    String res = String.format("ВЛАДЕЛЕЦ: %s\n", getAuthor()); 
+    return res + super.toString();
+  }
 }

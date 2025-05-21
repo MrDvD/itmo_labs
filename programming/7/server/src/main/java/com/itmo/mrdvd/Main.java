@@ -33,7 +33,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-/** TODO: 1. Hide LoginCommand as a service one (client has its own command) */
+/** TODO:
+ * 1. Hide LoginCommand as a service one (client has its own command)
+ * 2. Add collection metadata to info command (+update TicketCollection constructor) */
 public class Main {
   public static void main(String[] args) {
     String envUser, envPass, publicHostname, pgHost, pgDbname;

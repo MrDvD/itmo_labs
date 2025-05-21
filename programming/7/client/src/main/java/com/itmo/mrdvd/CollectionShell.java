@@ -2,7 +2,9 @@ package com.itmo.mrdvd;
 
 import com.itmo.mrdvd.builder.builders.InteractiveBuilder;
 import com.itmo.mrdvd.device.TTY;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.proxy.Proxy;
+import com.itmo.mrdvd.service.AuthContext;
 import com.itmo.mrdvd.service.shell.DefaultShell;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ConnectQueryStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.FillLoginPasswordStrategy;
@@ -12,8 +14,8 @@ import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadLongQueryStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadObjectStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ReadStringQueryStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.ShellQueryStrategy;
+import com.itmo.mrdvd.service.shell.queryFillStrategy.SignObjectStrategy;
 import com.itmo.mrdvd.service.shell.queryFillStrategy.SkipLineStrategy;
-import com.itmo.mrdvd.service.shell.queryFillStrategy.UpdateObjectStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.PrintStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.ShellResponseStrategy;
 import com.itmo.mrdvd.service.shell.responseStrategy.ShutdownStrategy;
@@ -55,14 +57,13 @@ public class CollectionShell extends DefaultShell {
     setQueryStrategy(
         "register",
         new FillLoginPasswordStrategy(
-            this,
             new SkipLineStrategy(
                 this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this)))));
   }
 
-  public void setBuilders(InteractiveBuilder<?> builder) {
-    setQueryStrategy("add", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
-    setQueryStrategy("add_if_max", new ReadObjectStrategy(builder, new SkipLineStrategy(this)));
-    setQueryStrategy("update", new UpdateObjectStrategy<>(this, builder));
+  public void setBuilders(InteractiveBuilder<?> builder, AuthContext<LoginPasswordPair> authContext) {
+    setQueryStrategy("add", new SignObjectStrategy(authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
+    setQueryStrategy("add_if_max", new SignObjectStrategy(authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
+    setQueryStrategy("update", new SignObjectStrategy(authContext, 1, new ReadObjectStrategy(builder, new SkipLineStrategy(this, new ReadLongQueryStrategy(this)))));
   }
 }

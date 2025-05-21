@@ -71,7 +71,6 @@ public class Ticket {
   @Override
   public String toString() {
     String s = "";
-    s += "= = = = = = = = = = = = = = = =\n";
     s += String.format("ID: %d\n", getId());
     s += String.format("НАЗВАНИЕ БИЛЕТА: %s\n", getName());
     s += String.format("КООРДИНАТЫ: %s\n", getCoordinates());

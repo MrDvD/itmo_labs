@@ -20,11 +20,11 @@ import java.util.Optional;
 public class PublicServerProxy extends AbstractProxy {
   public PublicServerProxy(
       AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper,
-      Mapper<Map<String, Object>, ?> objMapper) {
-    this(exec, authMapper, objMapper, new HashMap<>());
+      Mapper<Map<String, Object>, ?> mapper) {
+    this(exec, authMapper, mapper, new HashMap<>());
   }
 
-  public PublicServerProxy(AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper, Mapper<Map<String, Object>, ?> objMapper, Map<String, ProxyStrategy> strats) {
+  public PublicServerProxy(AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper, Mapper<Map<String, Object>, ?> mapper, Map<String, ProxyStrategy> strats) {
     super(strats);
     setDefaultStrategy(new WrapStrategy(exec, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
@@ -40,13 +40,13 @@ public class PublicServerProxy extends AbstractProxy {
         new InformStrategy(exec, "Элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "add",
-        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(mapper, 0, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "add_if_max",
-        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(mapper, 0, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "update",
-        new InformStrategy(exec, "Элемент обновлён.", new ObjectWrapperStrategy<>(objMapper, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(exec, "Элемент обновлён.", new ObjectWrapperStrategy<>(mapper, 1, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy("login", new WrapStrategy(exec));
     setStrategy("register", new InformStrategy(exec, "Пользователь зарегистрирован.", new AuthWrapperStrategy(authMapper)));
   }

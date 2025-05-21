@@ -2,20 +2,17 @@ package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
-import com.itmo.mrdvd.service.shell.AbstractShell;
 import java.io.IOException;
 import java.util.stream.Stream;
 
 public class FillLoginPasswordStrategy implements QueryFillStrategy {
-  private final AbstractShell shell;
   private final QueryFillStrategy prev;
 
-  public FillLoginPasswordStrategy(AbstractShell shell) {
-    this(shell, null);
+  public FillLoginPasswordStrategy() {
+    this(null);
   }
 
-  public FillLoginPasswordStrategy(AbstractShell shell, QueryFillStrategy prev) {
-    this.shell = shell;
+  public FillLoginPasswordStrategy(QueryFillStrategy prev) {
     this.prev = prev;
   }
 

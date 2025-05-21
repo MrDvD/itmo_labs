@@ -1,19 +1,19 @@
 -- clear script
-DO $$
-DECLARE
-    t text;
-BEGIN
-    FOR t IN
-        SELECT table_name
-        FROM information_schema.tables
-        WHERE table_schema = 's466449'
-    LOOP
-        EXECUTE 'DROP TABLE IF EXISTS ' || t || ' CASCADE';
-    END LOOP;
-END $$;
+do $$
+declare
+  t text;
+begin
+  for t in
+    select table_name
+    from information_schema.tables
+    where table_schema = 's466449'
+  loop
+    execute 'drop table if exists ' || t || ' cascade';
+  end loop;
+end $$;
 
-DROP TYPE IF EXISTS ticket_type;
-DROP TYPE IF EXISTS event_type;
+drop type if exists ticket_type;
+drop type if exists event_type;
 
 -- create script
 create type ticket_type as enum(
@@ -35,8 +35,7 @@ create type event_type as enum(
 -- );
 
 create table USERS (
-  id serial primary key,
-  name varchar(42) not null unique,
+  name varchar(42) primary key,
   passwd_hash text not null
 );
 
@@ -56,5 +55,5 @@ create table TICKETS (
   price integer,
   type ticket_type not null,
   event bigint references EVENTS(id) on delete cascade,
-  author integer references USERS(id) on delete cascade
+  author varchar(42) references USERS(name) on delete cascade
 );

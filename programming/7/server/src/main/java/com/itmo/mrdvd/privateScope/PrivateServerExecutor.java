@@ -3,7 +3,6 @@ package com.itmo.mrdvd.privateScope;
 import com.itmo.mrdvd.collection.Collection;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.commands.FetchAllCommand;
-import com.itmo.mrdvd.commands.LoadDatabaseCommand;
 import com.itmo.mrdvd.commands.ShutdownCommand;
 import com.itmo.mrdvd.service.ListenerService;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -26,7 +25,6 @@ public class PrivateServerExecutor extends AbstractExecutor {
       Map<String, CommandMeta> cache) {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
-    setCommand(new LoadDatabaseCommand(dbworker, collect));
     setCommand(new ShutdownCommand(server));
   }
 }

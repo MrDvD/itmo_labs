@@ -17,27 +17,28 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTicket>> {
-  private final CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker;
+  private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> dbworker;
   private Set<AuthoredTicket> tickets;
   private TicketCollectionMetadata meta;
 
   public TicketCollection(
-      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker) {
+      CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> dbworker) {
     this(dbworker, "A new ticket collection");
   }
 
   public TicketCollection(
-      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker, String name) {
+      CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> dbworker, String name) {
     this(dbworker, name, new HashSet<>());
   }
 
   public TicketCollection(
-      CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> dbworker,
+      CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> dbworker,
       String name,
       Set<AuthoredTicket> tickets) {
     this.dbworker = dbworker;
     this.tickets = tickets;
     this.meta = new TicketCollectionMetadata(name);
+    setCache(this.dbworker.getAll());
   }
 
   @Override
@@ -67,7 +68,11 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
       Long id, AuthoredTicket obj, Predicate<AuthoredTicket> cond) {
     Optional<AuthoredTicket> ticket = dbworker.update(id, obj, cond);
     if (ticket.isPresent()) {
-      tickets.removeIf(t -> t.getId().equals(id));
+      Optional<AuthoredTicket> toRemove = get(id);
+      if (toRemove.isPresent()) {
+        tickets.remove(toRemove.get());
+        ticket.get().getEvent().setId(toRemove.get().getEvent().getId());
+      }
       tickets.add(ticket.get());
     }
     return ticket;
@@ -75,8 +80,16 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
 
   @Override
   public void remove(Long id) {
-    this.dbworker.remove(id);
-    this.tickets.removeIf(ticket -> ticket.getId().equals(id));
+    remove(id, (t) -> true);
+  }
+
+  @Override
+  public void remove(Long id, Predicate<AuthoredTicket> cond) {
+    Optional<AuthoredTicket> toRemove = dbworker.get(id);
+    if (toRemove.isPresent() && cond.test(toRemove.get())) {
+      this.dbworker.remove(id);
+      this.tickets.removeIf(ticket -> ticket.getId().equals(id));
+    }
   }
 
   @Override

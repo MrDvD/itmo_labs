@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.collection.login;
 
-import com.fasterxml.jackson.dataformat.xml.XmlAnnotationIntrospector.Pair;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import java.sql.Connection;

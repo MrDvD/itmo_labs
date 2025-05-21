@@ -22,6 +22,7 @@ public class LoginCollection
       Set<LoginPasswordPair> cache) {
     this.dbworker = dbworker;
     this.cache = cache;
+    setCache(this.dbworker.getAll());
   }
 
   @Override
@@ -55,7 +56,7 @@ public class LoginCollection
   }
 
   @Override
-  public Optional<? extends LoginPasswordPair> get(String key) {
+  public Optional<LoginPasswordPair> get(String key) {
     return this.cache.stream().filter(pair -> pair.getLogin().equals(key)).findAny();
   }
 
@@ -66,8 +67,16 @@ public class LoginCollection
 
   @Override
   public void remove(String key) {
-    this.dbworker.remove(key);
-    this.cache.removeIf(login -> login.getLogin().equals(key));
+    remove(key, (t) -> true);
+  }
+
+  @Override
+  public void remove(String key, Predicate<LoginPasswordPair> cond) {
+    Optional<LoginPasswordPair> pair = get(key);
+    if (pair.isPresent() && cond.test(pair.get())) {
+      this.dbworker.remove(key);
+      this.cache.removeIf(login -> login.getLogin().equals(key));
+    }
   }
 
   @Override

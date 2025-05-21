@@ -36,9 +36,6 @@ public class PrivateServerProxy extends AbstractProxy {
     setStrategy(
         "fetch_all", new FetchAllStrategy(exec, other, new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
-        "load",
-        new InformStrategy(exec, "Коллекция загружена.", new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
-    setStrategy(
         "shutdown",
         new InformStrategy(exec, "Сервер завершил работу.", new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
   }

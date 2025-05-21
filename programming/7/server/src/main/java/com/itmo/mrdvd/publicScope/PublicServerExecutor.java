@@ -29,12 +29,13 @@ import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
       Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
-      Validator<? extends Ticket> validator,
+      Validator<? super Ticket> validator,
       CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
       SelfContainedHash hash) {
     this(collect, validator, loginWorker, hash, new HashMap<>(), new HashMap<>());
@@ -42,7 +43,7 @@ public class PublicServerExecutor extends AbstractExecutor {
 
   public PublicServerExecutor(
       Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
-      Validator<? extends Ticket> validator,
+      Validator<? super Ticket> validator,
       CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
       SelfContainedHash hash,
       Map<String, Command<?>> commands,
@@ -56,7 +57,10 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(new ShowCommand(collect));
     setCommand(
         new PrintFieldDescendingTypeCommand(collect, new TicketComparator(TicketField.TYPE)));
-    setCommand(new RemoveAtCommand(collect));
+    setCommand(new RemoveAtCommand(collect, (t) -> {
+      Optional<AuthoredTicket> old = collect.get(t.getId());
+      return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
+    }));
     setCommand(new RemoveByIdCommand(collect));
     setCommand(new CountGreaterThanEventCommand(collect));
     setCommand(new AddCommand(collect, validator, AuthoredTicket.class));
@@ -67,7 +71,13 @@ public class PublicServerExecutor extends AbstractExecutor {
             new TicketComparator(TicketField.ID),
             AuthoredTicket.class,
             Set.of(1)));
-    setCommand(new UpdateCommand(collect, validator));
+    setCommand(new UpdateCommand<>(collect, (t) -> {
+      if (validator.validate(t)) {
+        Optional<AuthoredTicket> old = collect.get(t.getId());
+        return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
+      }
+      return false;
+    }));
     setCommand(new LoginCommand(loginWorker, hash));
     setCommand(new RegisterCommand(loginWorker));
   }

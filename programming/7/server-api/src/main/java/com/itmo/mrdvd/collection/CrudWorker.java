@@ -7,7 +7,7 @@ public interface CrudWorker<T, V extends java.util.Collection<? extends T>, K> {
   /** Adds an object if some condition is met. */
   public Optional<T> add(T obj, Predicate<T> cond) throws IllegalArgumentException;
 
-  public Optional<? extends T> get(K id);
+  public Optional<T> get(K id);
 
   public V getAll();
 

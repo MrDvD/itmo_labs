@@ -17,7 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends AuthoredTicket>, Long> {
+public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> {
   private final String url;
   private final String user;
   private final String password;
@@ -71,6 +71,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
         try (ResultSet generatedKeys = stmtTicket.getGeneratedKeys()) {
           if (generatedKeys.next()) {
             t.setId(generatedKeys.getLong(1));
+            t.getEvent().setId(eventId);
             if (cond.test(t)) {
               conn.commit();
               return Optional.of(t);
@@ -89,15 +90,16 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   public Optional<AuthoredTicket> update(
       Long id, AuthoredTicket t, Predicate<AuthoredTicket> cond) {
     String sqlEvent =
-        "update EVENTS set name = ?, description = ?, type = ? where id = (select event from TICKETS where id = ?)";
-    String sqlTicket = "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ? where id = ?";
+        "update EVENTS set name = ?, description = ?, type = ?::event_type where id = (select event from TICKETS where id = ?)";
+    String sqlTicket = "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ?::ticket_type where id = ?";
+    t.setId(id);
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       try (PreparedStatement stmtEvent = conn.prepareStatement(sqlEvent)) {
         stmtEvent.setString(1, t.getEvent().getName());
         stmtEvent.setString(2, t.getEvent().getDescription());
         stmtEvent.setString(3, t.getEvent().getType().toString());
-        stmtEvent.setLong(4, id);
+        stmtEvent.setLong(4, t.getId());
         if (stmtEvent.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
@@ -109,7 +111,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
         stmtTicket.setFloat(3, t.getCoordinates().getY());
         stmtTicket.setInt(4, t.getPrice());
         stmtTicket.setString(5, t.getType().toString());
-        stmtTicket.setLong(6, id);
+        stmtTicket.setLong(6, t.getId());
         if (stmtTicket.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
@@ -130,11 +132,10 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   public Optional<AuthoredTicket> get(Long id) {
     String sql =
         "select t.id, t.name, t.x, t.y, t.creation_date, t.price, t.type, "
-            + "u.name as author, e.id as event_id, e.name as event_name, "
+            + "t.author, e.id as event_id, e.name as event_name, "
             + "e.description as event_description, e.type as event_type "
             + "from TICKETS t "
             + "join EVENTS e on t.event = e.id "
-            + "join USERS u on u.id = t.author "
             + "where t.id = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -175,11 +176,10 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<? extends Auth
   public Set<AuthoredTicket> getAll(Set<AuthoredTicket> tickets) {
     String sql =
         "select t.id, t.name, t.x, t.y, t.creation_date, t.price, t.type, "
-            + "u.name as author, e.id as event_id, e.name as event_name, "
+            + "t.author, e.id as event_id, e.name as event_name, "
             + "e.description as event_description, e.type as event_type "
             + "from TICKETS t "
-            + "join EVENTS e on t.event = e.id "
-            + "join USERS u on u.id = t.author";
+            + "join EVENTS e on t.event = e.id ";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql)) {

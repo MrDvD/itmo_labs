@@ -1,13 +1,16 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CrudWorker;
+import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.object.AuthoredTicket;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
+import java.util.Optional;
 
 public class RemoveByIdCommand implements Command<Void> {
-  private final CrudWorker<?, ?, Long> collection;
+  private final CacheWorker<AuthoredTicket, ?, Long> collection;
 
-  public RemoveByIdCommand(CrudWorker<?, ?, Long> collection) {
+  public RemoveByIdCommand(CacheWorker<AuthoredTicket, ?, Long> collection) {
     this.collection = collection;
   }
 
@@ -16,7 +19,7 @@ public class RemoveByIdCommand implements Command<Void> {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    if (params.isEmpty()) {
+    if (params.size() < 2) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
     Long id = null;
@@ -29,9 +32,20 @@ public class RemoveByIdCommand implements Command<Void> {
         throw new IllegalArgumentException("Не удалось распознать id элемента.");
       }
     }
+    if (!(params.get(1) instanceof LoginPasswordPair)) {
+      throw new IllegalArgumentException("Не предоставлены реквизиты для работы.");
+    }
+    LoginPasswordPair pair = (LoginPasswordPair) params.get(1);
     if (id < 0) {
       throw new IllegalArgumentException("Параметр id не может быть отрицательным.");
     }
+    this.collection.get(id).ifPresentOrElse((t) -> {
+      if (!t.getAuthor().equals(pair.getLogin())) {
+        throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
+      }
+    }, () -> {
+      throw new IllegalArgumentException("Элемент с таким id не найден.");
+    });
     this.collection.remove(id);
     return null;
   }

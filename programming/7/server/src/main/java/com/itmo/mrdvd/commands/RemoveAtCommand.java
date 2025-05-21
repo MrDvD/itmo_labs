@@ -1,16 +1,20 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CrudWorker;
+import com.itmo.mrdvd.collection.CacheWorker;
 import com.itmo.mrdvd.object.AuthoredTicket;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class RemoveAtCommand implements Command<Void> {
-  private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
+  private final CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
+  private final Predicate<AuthoredTicket> cond;
 
-  public RemoveAtCommand(CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection) {
+  public RemoveAtCommand(CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection, Predicate<AuthoredTicket> cond) {
     this.collection = collection;
+    this.cond = cond;
   }
 
   @Override
@@ -21,7 +25,7 @@ public class RemoveAtCommand implements Command<Void> {
     if (this.collection.getAll().isEmpty()) {
       throw new RuntimeException("Коллекция пуста.");
     }
-    if (params.isEmpty()) {
+    if (params.size() < 2) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
     Integer idx = null;
@@ -34,6 +38,12 @@ public class RemoveAtCommand implements Command<Void> {
         throw new IllegalArgumentException("Не удалось распознать индекс элемента.");
       }
     }
+    LoginPasswordPair pair = null;
+    if (params.get(1) instanceof LoginPasswordPair) {
+      pair = (LoginPasswordPair) params.get(1);
+    } else {
+      throw new IllegalArgumentException("Не предоставлены реквизиты для работы.");
+    }
     if (idx < 0) {
       throw new IllegalArgumentException("Индекс элемента не может быть отрицательным.");
     }
@@ -45,7 +55,10 @@ public class RemoveAtCommand implements Command<Void> {
             .sorted((a, b) -> a.getCreationDate().compareTo(b.getCreationDate()))
             .toList();
     AuthoredTicket toRemove = sortedList.get(idx);
-    this.collection.remove(toRemove.getId());
+    if (!toRemove.getAuthor().equals(pair.getLogin())) {
+      throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
+    }
+    this.collection.remove(toRemove.getId(), cond);
     return null;
   }
 

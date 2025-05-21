@@ -5,6 +5,7 @@ import com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder;
 import com.itmo.mrdvd.builder.interactors.Interactor;
 import com.itmo.mrdvd.builder.interactors.UserInteractor;
 import com.itmo.mrdvd.device.input.DataInputDevice;
+import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.Coordinates;
 import com.itmo.mrdvd.object.Event;
 import com.itmo.mrdvd.object.Ticket;
@@ -19,7 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
+public class InteractiveTicketBuilder extends InteractiveObjectBuilder<AuthoredTicket> {
   public InteractiveTicketBuilder(
       InteractiveBuilder<Coordinates> coordBuild,
       InteractiveBuilder<Event> eventBuild,
@@ -45,7 +46,7 @@ public class InteractiveTicketBuilder extends InteractiveObjectBuilder<Ticket> {
       List<Predicate> validators,
       List<InteractiveBuilder<?>> builders) {
     super(interactors, setters, methods, validators, builders);
-    of(Ticket::new);
+    of(AuthoredTicket::new);
     addInteractiveSetter(
         Ticket::setName,
         new UserInteractor<>(
