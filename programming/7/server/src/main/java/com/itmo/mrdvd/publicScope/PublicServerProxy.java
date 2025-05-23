@@ -35,12 +35,6 @@ public class PublicServerProxy extends AbstractProxy {
         new WrapStrategy(
             exec, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
-        "clear",
-        new InformStrategy(
-            exec,
-            "Коллекция очищена.",
-            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
-    setStrategy(
         "remove_last",
         new InformStrategy(
             exec,

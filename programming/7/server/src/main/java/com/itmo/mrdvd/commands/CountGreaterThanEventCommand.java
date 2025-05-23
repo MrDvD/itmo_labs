@@ -1,14 +1,14 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class CountGreaterThanEventCommand implements Command<String> {
-  private final Collection<? extends Ticket, ?> collection;
+  private final CachedCrudWorker<? extends Ticket, ?, Long> collection;
 
-  public CountGreaterThanEventCommand(Collection<? extends Ticket, ?> collect) {
+  public CountGreaterThanEventCommand(CachedCrudWorker<? extends Ticket, ?, Long> collect) {
     this.collection = collect;
   }
 

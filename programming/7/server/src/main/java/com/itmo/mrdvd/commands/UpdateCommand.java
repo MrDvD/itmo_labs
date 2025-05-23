@@ -1,15 +1,15 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class UpdateCommand<T> implements Command<Void> {
-  private final CacheWorker<T, ?, Long> collect;
+  private final CachedCrudWorker<T, ?, Long> collect;
   private final Predicate<T> cond;
 
-  public UpdateCommand(CacheWorker<T, ?, Long> collection, Predicate<T> cond) {
+  public UpdateCommand(CachedCrudWorker<T, ?, Long> collection, Predicate<T> cond) {
     this.collect = collection;
     this.cond = cond;
   }

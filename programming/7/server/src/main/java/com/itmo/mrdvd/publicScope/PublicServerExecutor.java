@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.publicScope;
 
-import com.itmo.mrdvd.collection.CacheWorker;
-import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.AccessWorker;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.login.SelfContainedHash;
 import com.itmo.mrdvd.collection.ticket.TicketComparator;
 import com.itmo.mrdvd.commands.AddCommand;
 import com.itmo.mrdvd.commands.AddIfCommand;
-import com.itmo.mrdvd.commands.ClearCommand;
 import com.itmo.mrdvd.commands.CountGreaterThanEventCommand;
 import com.itmo.mrdvd.commands.FetchAllCommand;
 import com.itmo.mrdvd.commands.InfoCommand;
@@ -23,6 +22,7 @@ import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.object.TicketField;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
@@ -34,52 +34,63 @@ import java.util.Set;
 
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
-      Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
+      CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> objectWorker,
       Validator<? super Ticket> validator,
-      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      AccessWorker<Map<String, Object>> metaAccessor,
+      Mapper<? super Map<String, Object>, String> serializer,
       SelfContainedHash hash) {
-    this(collect, validator, loginWorker, hash, new HashMap<>(), new HashMap<>());
+    this(
+        objectWorker,
+        validator,
+        loginWorker,
+        metaAccessor,
+        serializer,
+        hash,
+        new HashMap<>(),
+        new HashMap<>());
   }
 
   public PublicServerExecutor(
-      Collection<AuthoredTicket, Set<AuthoredTicket>> collect,
+      CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> objectWorker,
       Validator<? super Ticket> validator,
-      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      AccessWorker<Map<String, Object>> metaAccessor,
+      Mapper<? super Map<String, Object>, String> serializer,
       SelfContainedHash hash,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
-    setCommand(new ClearCommand(collect));
-    setCommand(new InfoCommand(collect));
-    setCommand(new MinByPriceCommand(collect, new TicketComparator(TicketField.PRICE)));
-    setCommand(new RemoveLastCommand(collect));
-    setCommand(new ShowCommand(collect));
+    setCommand(new InfoCommand(metaAccessor, serializer));
+    setCommand(new MinByPriceCommand(objectWorker, new TicketComparator(TicketField.PRICE)));
+    setCommand(new RemoveLastCommand(objectWorker));
+    setCommand(new ShowCommand(objectWorker));
     setCommand(
-        new PrintFieldDescendingTypeCommand(collect, new TicketComparator(TicketField.TYPE)));
+        new PrintFieldDescendingTypeCommand(objectWorker, new TicketComparator(TicketField.TYPE)));
     setCommand(
         new RemoveAtCommand(
-            collect,
+            objectWorker,
             (t) -> {
-              Optional<AuthoredTicket> old = collect.get(t.getId());
+              Optional<AuthoredTicket> old = objectWorker.get(t.getId());
               return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
             }));
-    setCommand(new RemoveByIdCommand(collect));
-    setCommand(new CountGreaterThanEventCommand(collect));
-    setCommand(new AddCommand(collect, validator, AuthoredTicket.class));
+    setCommand(new RemoveByIdCommand(objectWorker));
+    setCommand(new CountGreaterThanEventCommand(objectWorker));
+    setCommand(new AddCommand(objectWorker, validator, AuthoredTicket.class));
     setCommand(
         new AddIfCommand(
-            collect,
+            objectWorker,
             validator,
             new TicketComparator(TicketField.ID),
             AuthoredTicket.class,
             Set.of(1)));
     setCommand(
         new UpdateCommand<>(
-            collect,
+            objectWorker,
             (t) -> {
               if (validator.validate(t)) {
-                Optional<AuthoredTicket> old = collect.get(t.getId());
+                Optional<AuthoredTicket> old = objectWorker.get(t.getId());
                 return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
               }
               return false;

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.login.BCryptHash;
 import com.itmo.mrdvd.collection.login.LoginCollection;
 import com.itmo.mrdvd.collection.login.LoginJdbc;
+import com.itmo.mrdvd.collection.meta.MetaCollection;
+import com.itmo.mrdvd.collection.meta.MetaJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
 import com.itmo.mrdvd.object.AuthoredTicket;
@@ -37,10 +39,11 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * TODO: 1. Hide LoginCommand as a service one (client has its own command) 2. Add collection
- * metadata to info command (+update TicketCollection constructor) 3. Remove unnecessary mapper
- * classes (merge with hashmapobjectmapper --- and maybe merge itself with object deserializer, just
- * implement there more than one mapper)
+ * TODO:
+ *
+ * <p>1. Hide LoginCommand as a service one (client has its own command) 2. Remove unnecessary
+ * mapper classes (merge with hashmapobjectmapper --- and maybe merge itself with object
+ * deserializer, just implement there more than one mapper)
  */
 public class Main {
   public static void main(String[] args) {
@@ -82,15 +85,15 @@ public class Main {
         new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class));
     ObjectDeserializer<? extends EmptyPacket> deserialPacket =
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
-    ObjectSerializer<Packet> serialPacket =
+    ObjectSerializer<Object> serialObject =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
     ReentrantReadWriteLock selectorLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock socketsLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock loginCollectionLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock objectCollectionLock = new ReentrantReadWriteLock();
-    TicketJdbc jdbc =
-        new TicketJdbc(
-            String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass);
+    ReentrantReadWriteLock metaCollectionLock = new ReentrantReadWriteLock();
+    String jdbcUrl = String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname);
+    TicketJdbc jdbc = new TicketJdbc(jdbcUrl, envUser, envPass);
     TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
@@ -101,7 +104,7 @@ public class Main {
                 selector, Executors.newCachedThreadPool(), selectorLock, socketsLock),
             new ServerClientHandler<>(
                 StandardCharsets.UTF_8,
-                serialPacket,
+                serialObject,
                 deserialPacket,
                 new ServerResponseSender(StandardCharsets.UTF_8),
                 new ForkJoinPool(),
@@ -111,15 +114,12 @@ public class Main {
             socketsLock);
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
-        new LoginCollection(
-            new LoginJdbc(
-                String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname),
-                envUser,
-                envPass,
-                hash),
-            loginCollectionLock);
+        new LoginCollection(new LoginJdbc(jdbcUrl, envUser, envPass, hash), loginCollectionLock);
+    MetaCollection metaCollection =
+        new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), metaCollectionLock);
     PublicServerExecutor publicExec =
-        new PublicServerExecutor(collect, validator, loginCollection, hash);
+        new PublicServerExecutor(
+            collect, validator, loginCollection, metaCollection, serialObject, hash);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
     PublicServerProxy publicProxy =
         new PublicServerProxy(

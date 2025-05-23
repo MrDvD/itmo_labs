@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Set;
 
 public class RemoveLastCommand implements Command<Void> {
-  private final CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
+  private final CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
 
-  public RemoveLastCommand(CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection) {
+  public RemoveLastCommand(CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection) {
     this.collection = collection;
   }
 

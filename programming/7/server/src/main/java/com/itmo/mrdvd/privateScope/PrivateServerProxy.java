@@ -45,6 +45,12 @@ public class PrivateServerProxy extends AbstractProxy {
             exec,
             "Сервер завершил работу.",
             new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
+    setStrategy(
+        "clear",
+        new InformStrategy(
+            exec,
+            "Коллекция очищена.",
+            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
   }
 
   public Packet processPacket(

@@ -1,16 +1,18 @@
 package com.itmo.mrdvd.collection.login;
 
-import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
 public class LoginCollection
-    implements CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
+    implements CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
   private Set<LoginPasswordPair> cache;
   private final CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> dbworker;
   private final ReadWriteLock loginCollectionLock;
@@ -122,11 +124,25 @@ public class LoginCollection
 
   @Override
   public void clear() {
+    this.loginCollectionLock.writeLock().lock();
     try {
       this.dbworker.clear();
       this.cache.clear();
     } finally {
       this.loginCollectionLock.writeLock().unlock();
+    }
+  }
+
+  @Override
+  public Iterator<LoginPasswordPair> iterator() {
+    this.loginCollectionLock.readLock().lock();
+    try {
+      if (this.cache == null) {
+        return Collections.emptyIterator();
+      }
+      return this.cache.iterator();
+    } finally {
+      this.loginCollectionLock.readLock().unlock();
     }
   }
 }

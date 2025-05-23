@@ -1,13 +1,8 @@
 package com.itmo.mrdvd.collection.ticket;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.CollectionMetadata;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.object.AuthoredTicket;
-import com.itmo.mrdvd.object.Ticket;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -16,10 +11,10 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
-public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTicket>> {
+public class TicketCollection
+    implements CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> {
   private final CrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> dbworker;
   private Set<AuthoredTicket> tickets;
-  private TicketCollectionMetadata meta;
   private final ReadWriteLock objectCollectionLock;
 
   public TicketCollection(
@@ -43,7 +38,6 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
     this.dbworker = dbworker;
     this.tickets = tickets;
     this.objectCollectionLock = objectCollectionLock;
-    this.meta = new TicketCollectionMetadata(name);
     setCache(this.dbworker.getAll());
   }
 
@@ -153,28 +147,6 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
     }
   }
 
-  @Override
-  public TicketCollectionMetadata getMetadata() {
-    this.objectCollectionLock.writeLock().lock();
-    try {
-      return this.meta;
-    } finally {
-      this.objectCollectionLock.writeLock().unlock();
-    }
-  }
-
-  // looks bad, but idk how to code this better
-  @Override
-  public void setMetadata(CollectionMetadata meta) {
-    this.objectCollectionLock.writeLock().lock();
-    try {
-      // ofc i can add 'instanceof' check, but it would be bad anyways
-      this.meta = (TicketCollectionMetadata) meta;
-    } finally {
-      this.objectCollectionLock.writeLock().unlock();
-    }
-  }
-
   public int getCount() {
     this.objectCollectionLock.readLock().lock();
     try {
@@ -192,50 +164,6 @@ public class TicketCollection extends Collection<AuthoredTicket, Set<AuthoredTic
       this.tickets.clear();
     } finally {
       this.objectCollectionLock.writeLock().unlock();
-    }
-  }
-
-  public static class TicketCollectionMetadata implements CollectionMetadata {
-    @JsonProperty private LocalDateTime creationTime;
-    @JsonProperty private String type;
-    private String name;
-
-    protected TicketCollectionMetadata() {}
-
-    protected TicketCollectionMetadata(String name) {
-      this.creationTime = LocalDateTime.now();
-      this.type = Ticket.class.getSimpleName();
-      this.name = name;
-    }
-
-    public void setName(String name) {
-      this.name = name;
-    }
-
-    public LocalDateTime getCreationTime() {
-      return this.creationTime;
-    }
-
-    public String getName() {
-      return this.name;
-    }
-
-    public String getType() {
-      return this.type;
-    }
-
-    @Override
-    public String toString() {
-      String result = "";
-      result += "# # # Метаданные коллекции # # #\n";
-      result += String.format("НАЗВАНИЕ: %s\n", getName());
-      result += String.format("ТИП: %s\n", getType());
-      result +=
-          String.format(
-              "ДАТА ИНИЦИАЛИЗАЦИИ: %s\n",
-              getCreationTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-      // result += String.format("КОЛИЧЕСТВО ЭЛЕМЕНТОВ: %d", getCount());
-      return result;
     }
   }
 }

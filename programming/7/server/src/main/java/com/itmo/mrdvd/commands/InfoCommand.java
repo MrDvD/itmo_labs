@@ -1,22 +1,41 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.Collection;
+import com.itmo.mrdvd.collection.AccessWorker;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public class InfoCommand implements Command<String> {
-  private final Collection<?, ?> collection;
+  private final AccessWorker<Map<String, Object>> metaCollection;
+  private final Mapper<? super Map<String, Object>, String> serializer;
 
-  public InfoCommand(Collection<?, ?> collect) {
-    this.collection = collect;
+  public InfoCommand(
+      AccessWorker<Map<String, Object>> metaCollection,
+      Mapper<? super Map<String, Object>, String> serializer) {
+    this.metaCollection = metaCollection;
+    this.serializer = serializer;
   }
 
   @Override
   public String execute(List<Object> params) throws IllegalStateException {
-    if (this.collection == null) {
+    if (this.metaCollection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
-    return this.collection.getMetadata().toString();
+    StringBuilder ans = new StringBuilder("# # # Метаданные коллекции # # #\n");
+    Optional<Map<String, Object>> meta = this.metaCollection.get();
+    if (meta.isPresent()) {
+      this.serializer
+          .convert(meta.get())
+          .ifPresent(
+              (t) -> {
+                ans.append(t);
+              });
+    } else {
+      ans.append("--- пусто ---");
+    }
+    return ans.toString();
   }
 
   @Override

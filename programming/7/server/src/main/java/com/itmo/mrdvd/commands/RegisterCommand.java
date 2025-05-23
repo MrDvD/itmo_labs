@@ -1,16 +1,16 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.collection.CacheWorker;
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Set;
 
 public class RegisterCommand implements Command<Void> {
-  private final CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker;
+  private final CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker;
 
   public RegisterCommand(
-      CacheWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker) {
+      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker) {
     this.loginWorker = loginWorker;
   }
 

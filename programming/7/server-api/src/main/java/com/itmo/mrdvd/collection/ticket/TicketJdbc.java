@@ -12,6 +12,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<AuthoredTicket
   public Optional<AuthoredTicket> add(AuthoredTicket t, Predicate<AuthoredTicket> cond) {
     String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?::event_type)";
     String sqlTicket =
-        "insert into TICKETS (name, x, y, price, type, event, author) values (?, ?, ?, ?, ?::ticket_type, ?, ?)";
+        "insert into TICKETS (name, x, y, creation_date, price, type, event, author) values (?, ?, ?, ?, ?, ?::ticket_type, ?, ?)";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       Long eventId = null;
@@ -60,10 +61,11 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<AuthoredTicket
         stmtTicket.setString(1, t.getName());
         stmtTicket.setFloat(2, t.getCoordinates().getX());
         stmtTicket.setFloat(3, t.getCoordinates().getY());
-        stmtTicket.setInt(4, t.getPrice());
-        stmtTicket.setString(5, t.getType().toString());
-        stmtTicket.setLong(6, eventId);
-        stmtTicket.setString(7, t.getAuthor());
+        stmtTicket.setTimestamp(4, Timestamp.valueOf(t.getCreationDate()));
+        stmtTicket.setInt(5, t.getPrice());
+        stmtTicket.setString(6, t.getType().toString());
+        stmtTicket.setLong(7, eventId);
+        stmtTicket.setString(8, t.getAuthor());
         if (stmtTicket.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
