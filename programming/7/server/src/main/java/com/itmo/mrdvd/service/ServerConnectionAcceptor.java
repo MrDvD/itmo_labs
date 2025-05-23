@@ -14,26 +14,21 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class ServerConnectionAcceptor implements ConnectionAcceptor {
   private final Map<SelectionKey, AbstractSelectableChannel> sockets;
   private final Selector selector;
-  private final ExecutorService connectionPool;
+  private ExecutorService connectionPool;
   private final ReadWriteLock socketsLock;
   private final ReadWriteLock selectorLock;
 
   public ServerConnectionAcceptor(
-      Selector selector,
-      ExecutorService connectionPool,
-      ReadWriteLock selectorLock,
-      ReadWriteLock socketsLock) {
-    this(selector, connectionPool, selectorLock, socketsLock, new HashMap<>());
+      Selector selector, ReadWriteLock selectorLock, ReadWriteLock socketsLock) {
+    this(selector, selectorLock, socketsLock, new HashMap<>());
   }
 
   public ServerConnectionAcceptor(
       Selector selector,
-      ExecutorService connectionPool,
       ReadWriteLock selectorLock,
       ReadWriteLock socketsLock,
       Map<SelectionKey, AbstractSelectableChannel> sockets) {
     this.selector = selector;
-    this.connectionPool = connectionPool;
     this.socketsLock = socketsLock;
     this.selectorLock = selectorLock;
     this.sockets = sockets;
@@ -41,6 +36,9 @@ public class ServerConnectionAcceptor implements ConnectionAcceptor {
 
   @Override
   public void acceptConnection(SelectionKey key) {
+    if (this.connectionPool == null) {
+      throw new IllegalStateException("Не передан сервис для многопоточной работы.");
+    }
     // System.out.println("Getting selectorLock in accept");
     this.selectorLock.writeLock().lock();
     key.interestOps(key.interestOps() & ~SelectionKey.OP_ACCEPT);
@@ -82,7 +80,14 @@ public class ServerConnectionAcceptor implements ConnectionAcceptor {
 
   @Override
   public ServerConnectionAcceptor setSockets(Map<SelectionKey, AbstractSelectableChannel> sockets) {
-    return new ServerConnectionAcceptor(
-        this.selector, this.connectionPool, this.selectorLock, this.socketsLock, sockets);
+    ServerConnectionAcceptor acceptor =
+        new ServerConnectionAcceptor(this.selector, this.selectorLock, this.socketsLock, sockets);
+    acceptor.setExecutorService(this.connectionPool);
+    return acceptor;
+  }
+
+  @Override
+  public void setExecutorService(ExecutorService service) {
+    this.connectionPool = service;
   }
 }

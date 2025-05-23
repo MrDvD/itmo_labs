@@ -9,6 +9,7 @@ import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
@@ -20,7 +21,9 @@ public class ServerListenerService<T> implements ListenerService<T> {
   protected final int bufferSize;
   protected final ReadWriteLock selectorLock;
   protected final ReadWriteLock socketsLock;
-  protected boolean isOpen;
+  protected final ExecutorService forkJoinPool;
+  protected final ExecutorService cachedThreadPool;
+  protected volatile boolean isOpen;
 
   public ServerListenerService(
       Selector selector,
@@ -28,8 +31,19 @@ public class ServerListenerService<T> implements ListenerService<T> {
       ClientHandler handler,
       int bufferSize,
       ReadWriteLock selectorLock,
-      ReadWriteLock socketsLock) {
-    this(selector, acceptor, handler, bufferSize, selectorLock, socketsLock, new HashMap<>());
+      ReadWriteLock socketsLock,
+      ExecutorService forkJoinPool,
+      ExecutorService cachedThreadPool) {
+    this(
+        selector,
+        acceptor,
+        handler,
+        bufferSize,
+        selectorLock,
+        socketsLock,
+        forkJoinPool,
+        cachedThreadPool,
+        new HashMap<>());
   }
 
   public ServerListenerService(
@@ -39,13 +53,19 @@ public class ServerListenerService<T> implements ListenerService<T> {
       int bufferSize,
       ReadWriteLock selectorLock,
       ReadWriteLock socketsLock,
+      ExecutorService forkJoinPool,
+      ExecutorService cachedThreadPool,
       Map<SelectionKey, AbstractSelectableChannel> sockets) {
     this.selector = selector;
     this.sockets = sockets;
     this.acceptor = acceptor.setSockets(this.sockets);
+    this.acceptor.setExecutorService(cachedThreadPool);
     this.handler = handler;
+    this.handler.setExecutorService(forkJoinPool);
     this.selectorLock = selectorLock;
     this.socketsLock = socketsLock;
+    this.forkJoinPool = forkJoinPool;
+    this.cachedThreadPool = cachedThreadPool;
     this.bufferSize = bufferSize;
   }
 
@@ -64,6 +84,10 @@ public class ServerListenerService<T> implements ListenerService<T> {
     try {
       while (this.isOpen) {
         this.selector.select();
+        if (!this.isOpen) {
+          System.out.println("woke up and closing...");
+          break;
+        }
         Set<SelectionKey> keys = selector.selectedKeys();
         for (SelectionKey key : keys) {
           if (key.isAcceptable()) {
@@ -77,11 +101,24 @@ public class ServerListenerService<T> implements ListenerService<T> {
       }
     } catch (IOException | RuntimeException e) {
       throw new RuntimeException(e);
+    } finally {
+      try {
+        this.cachedThreadPool.shutdown();
+        this.forkJoinPool.shutdown();
+        for (AbstractSelectableChannel ch : this.sockets.values()) {
+          ch.close();
+        }
+        this.selector.close();
+        System.out.println("closed everything!");
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
     }
   }
 
   @Override
   public void stop() {
     this.isOpen = false;
+    selector.wakeup();
   }
 }

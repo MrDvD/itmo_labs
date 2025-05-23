@@ -16,7 +16,7 @@ public class ServerClientHandler<T> implements ClientHandler {
   private final Mapper<? super T, String> serialDTO;
   private final Mapper<String, ? extends T> deserialDTO;
   private final ResponseSender sender;
-  private final ExecutorService processingPool;
+  private ExecutorService processingPool;
   private final ReadWriteLock selectorLock;
 
   public ServerClientHandler(
@@ -24,18 +24,19 @@ public class ServerClientHandler<T> implements ClientHandler {
       Mapper<? super T, String> serialDTO,
       Mapper<String, ? extends T> deserialDTO,
       ResponseSender sender,
-      ExecutorService processingPool,
       ReadWriteLock selectorLock) {
     this.chars = chars;
     this.serialDTO = serialDTO;
     this.deserialDTO = deserialDTO;
     this.sender = sender;
-    this.processingPool = processingPool;
     this.selectorLock = selectorLock;
   }
 
   @Override
   public void handleClient(SelectionKey key, ByteBuffer buffer) {
+    if (this.processingPool == null) {
+      throw new IllegalStateException("Не передан сервис для многопоточной работы.");
+    }
     // System.out.println("Trying to get the SelectorLock in handleclient");
     this.selectorLock.writeLock().lock();
     if (key.isValid()) {
@@ -78,5 +79,10 @@ public class ServerClientHandler<T> implements ClientHandler {
             // System.out.println("finally released selectorLock in accept");
           }
         });
+  }
+
+  @Override
+  public void setExecutorService(ExecutorService service) {
+    this.processingPool = service;
   }
 }

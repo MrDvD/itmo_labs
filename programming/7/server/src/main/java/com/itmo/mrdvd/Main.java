@@ -43,7 +43,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  *
  * <p>1. Hide LoginCommand as a service one (client has its own command) 2. Remove unnecessary
  * mapper classes (merge with hashmapobjectmapper --- and maybe merge itself with object
- * deserializer, just implement there more than one mapper)
+ * deserializer, just implement there more than one mapper).
  */
 public class Main {
   public static void main(String[] args) {
@@ -100,18 +100,18 @@ public class Main {
     ServerListenerService<Packet> listener =
         new ServerListenerService<>(
             selector,
-            new ServerConnectionAcceptor(
-                selector, Executors.newCachedThreadPool(), selectorLock, socketsLock),
+            new ServerConnectionAcceptor(selector, selectorLock, socketsLock),
             new ServerClientHandler<>(
                 StandardCharsets.UTF_8,
                 serialObject,
                 deserialPacket,
                 new ServerResponseSender(StandardCharsets.UTF_8),
-                new ForkJoinPool(),
                 selectorLock),
             8192,
             selectorLock,
-            socketsLock);
+            socketsLock,
+            new ForkJoinPool(),
+            Executors.newCachedThreadPool());
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
         new LoginCollection(new LoginJdbc(jdbcUrl, envUser, envPass, hash), loginCollectionLock);
