@@ -84,7 +84,6 @@ public class DefaultShell extends AbstractShell {
       }
       while (!getTty().get().getIn().hasNext()) {
         getTty().get().getIn().closeIn();
-        getTty().get().getOut().closeOut();
         popTty();
         if (getTty().isEmpty()) {
           stop();

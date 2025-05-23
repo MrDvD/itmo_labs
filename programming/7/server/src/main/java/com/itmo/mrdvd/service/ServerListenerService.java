@@ -85,7 +85,6 @@ public class ServerListenerService<T> implements ListenerService<T> {
       while (this.isOpen) {
         this.selector.select();
         if (!this.isOpen) {
-          System.out.println("woke up and closing...");
           break;
         }
         Set<SelectionKey> keys = selector.selectedKeys();
@@ -109,7 +108,6 @@ public class ServerListenerService<T> implements ListenerService<T> {
           ch.close();
         }
         this.selector.close();
-        System.out.println("closed everything!");
       } catch (IOException e) {
         throw new RuntimeException(e);
       }
