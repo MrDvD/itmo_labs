@@ -12,7 +12,9 @@ public class RemoveAtCommand implements Command<Void> {
   private final CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
   private final Predicate<AuthoredTicket> cond;
 
-  public RemoveAtCommand(CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection, Predicate<AuthoredTicket> cond) {
+  public RemoveAtCommand(
+      CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection,
+      Predicate<AuthoredTicket> cond) {
     this.collection = collection;
     this.cond = cond;
   }

@@ -20,7 +20,12 @@ public class FetchAllCommand implements Command<List<CommandMeta>> {
     for (String cmdName : this.exec.getCommandKeys()) {
       Optional<Command<?>> cmd = this.exec.getCommand(cmdName);
       if (cmd.isPresent()) {
-        queries = Stream.concat(queries, Stream.of(CommandMeta.of(cmd.get().name(), cmd.get().signature(), cmd.get().description())));
+        queries =
+            Stream.concat(
+                queries,
+                Stream.of(
+                    CommandMeta.of(
+                        cmd.get().name(), cmd.get().signature(), cmd.get().description())));
       }
     }
     return queries.toList();

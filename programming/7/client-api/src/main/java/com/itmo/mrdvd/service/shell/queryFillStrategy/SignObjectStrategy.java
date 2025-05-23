@@ -1,12 +1,11 @@
 package com.itmo.mrdvd.service.shell.queryFillStrategy;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
 import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import com.itmo.mrdvd.service.AuthContext;
+import java.io.IOException;
+import java.util.stream.Stream;
 
 public class SignObjectStrategy implements QueryFillStrategy {
   private final AuthContext<LoginPasswordPair> authContext;
@@ -16,8 +15,9 @@ public class SignObjectStrategy implements QueryFillStrategy {
   public SignObjectStrategy(AuthContext<LoginPasswordPair> authContext, int offset) {
     this(authContext, offset, null);
   }
-  
-  public SignObjectStrategy(AuthContext<LoginPasswordPair> authContext, int offset, QueryFillStrategy prev) {
+
+  public SignObjectStrategy(
+      AuthContext<LoginPasswordPair> authContext, int offset, QueryFillStrategy prev) {
     this.authContext = authContext;
     this.offset = offset;
     this.prev = prev;
@@ -40,10 +40,9 @@ public class SignObjectStrategy implements QueryFillStrategy {
       return ServiceQuery.of(
           q.getName(),
           Stream.concat(
-          q.getArgs().stream().limit(offset),
-          Stream.concat(Stream.of(ticket), q.getArgs().stream().skip(offset + 1))
-          ).toList()
-      );
+                  q.getArgs().stream().limit(offset),
+                  Stream.concat(Stream.of(ticket), q.getArgs().stream().skip(offset + 1)))
+              .toList());
     }
     return q;
   }

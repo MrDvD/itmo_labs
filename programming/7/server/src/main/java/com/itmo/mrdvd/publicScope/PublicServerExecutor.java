@@ -57,10 +57,13 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(new ShowCommand(collect));
     setCommand(
         new PrintFieldDescendingTypeCommand(collect, new TicketComparator(TicketField.TYPE)));
-    setCommand(new RemoveAtCommand(collect, (t) -> {
-      Optional<AuthoredTicket> old = collect.get(t.getId());
-      return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
-    }));
+    setCommand(
+        new RemoveAtCommand(
+            collect,
+            (t) -> {
+              Optional<AuthoredTicket> old = collect.get(t.getId());
+              return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
+            }));
     setCommand(new RemoveByIdCommand(collect));
     setCommand(new CountGreaterThanEventCommand(collect));
     setCommand(new AddCommand(collect, validator, AuthoredTicket.class));
@@ -71,13 +74,16 @@ public class PublicServerExecutor extends AbstractExecutor {
             new TicketComparator(TicketField.ID),
             AuthoredTicket.class,
             Set.of(1)));
-    setCommand(new UpdateCommand<>(collect, (t) -> {
-      if (validator.validate(t)) {
-        Optional<AuthoredTicket> old = collect.get(t.getId());
-        return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
-      }
-      return false;
-    }));
+    setCommand(
+        new UpdateCommand<>(
+            collect,
+            (t) -> {
+              if (validator.validate(t)) {
+                Optional<AuthoredTicket> old = collect.get(t.getId());
+                return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
+              }
+              return false;
+            }));
     setCommand(new LoginCommand(loginWorker, hash));
     setCommand(new RegisterCommand(loginWorker));
   }

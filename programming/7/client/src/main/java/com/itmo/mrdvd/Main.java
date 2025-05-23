@@ -39,7 +39,8 @@ public class Main {
     CollectionShell shell = new CollectionShell(proxy);
     shell.setBuilders(
         new InteractiveTicketBuilder(
-            new InteractiveCoordinatesBuilder(shell), new InteractiveEventBuilder(shell), shell), context);
+            new InteractiveCoordinatesBuilder(shell), new InteractiveEventBuilder(shell), shell),
+        context);
     DataConsole console = new DataConsole().init();
     shell.setTty(new DefaultTTY(null, console, console));
     shell.start();

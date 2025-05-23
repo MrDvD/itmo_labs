@@ -9,6 +9,7 @@ import java.nio.channels.spi.AbstractSelectableChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Function;
 
 public class ServerListenerService<T> implements ListenerService<T> {
@@ -17,11 +18,18 @@ public class ServerListenerService<T> implements ListenerService<T> {
   protected final ClientHandler handler;
   protected final Map<SelectionKey, AbstractSelectableChannel> sockets;
   protected final int bufferSize;
+  protected final ReadWriteLock selectorLock;
+  protected final ReadWriteLock socketsLock;
   protected boolean isOpen;
 
   public ServerListenerService(
-      Selector selector, ConnectionAcceptor acceptor, ClientHandler handler, int bufferSize) {
-    this(selector, acceptor, handler, bufferSize, new HashMap<>());
+      Selector selector,
+      ConnectionAcceptor acceptor,
+      ClientHandler handler,
+      int bufferSize,
+      ReadWriteLock selectorLock,
+      ReadWriteLock socketsLock) {
+    this(selector, acceptor, handler, bufferSize, selectorLock, socketsLock, new HashMap<>());
   }
 
   public ServerListenerService(
@@ -29,11 +37,15 @@ public class ServerListenerService<T> implements ListenerService<T> {
       ConnectionAcceptor acceptor,
       ClientHandler handler,
       int bufferSize,
+      ReadWriteLock selectorLock,
+      ReadWriteLock socketsLock,
       Map<SelectionKey, AbstractSelectableChannel> sockets) {
     this.selector = selector;
     this.sockets = sockets;
     this.acceptor = acceptor.setSockets(this.sockets);
     this.handler = handler;
+    this.selectorLock = selectorLock;
+    this.socketsLock = socketsLock;
     this.bufferSize = bufferSize;
   }
 
@@ -47,7 +59,7 @@ public class ServerListenerService<T> implements ListenerService<T> {
 
   /** Waits for incoming connections in a non-blocking way. */
   @Override
-  public void start() throws IllegalStateException, RuntimeException {
+  public void start() {
     this.isOpen = true;
     try {
       while (this.isOpen) {
@@ -59,12 +71,12 @@ public class ServerListenerService<T> implements ListenerService<T> {
           }
           if (key.isReadable()) {
             this.handler.handleClient(key, ByteBuffer.allocate(this.bufferSize));
-            this.sockets.remove(key);
           }
           keys.remove(key);
         }
       }
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
+      throw new RuntimeException(e);
     }
   }
 

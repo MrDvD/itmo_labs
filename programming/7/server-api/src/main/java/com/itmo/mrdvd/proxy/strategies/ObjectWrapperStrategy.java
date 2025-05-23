@@ -2,7 +2,6 @@ package com.itmo.mrdvd.proxy.strategies;
 
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
-
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -16,7 +15,8 @@ public class ObjectWrapperStrategy<T> implements ProxyStrategy {
     this(mapper, offset, null);
   }
 
-  public ObjectWrapperStrategy(Mapper<Map<String, Object>, T> mapper, int offset, ProxyStrategy prev) {
+  public ObjectWrapperStrategy(
+      Mapper<Map<String, Object>, T> mapper, int offset, ProxyStrategy prev) {
     this.mapper = mapper;
     this.offset = offset;
     this.prev = prev;
@@ -43,17 +43,12 @@ public class ObjectWrapperStrategy<T> implements ProxyStrategy {
     }
     if (obj.isPresent()) {
       return Optional.of(
-        ServiceQuery.of(
-          q.getName(),
-          Stream.concat(
-            Stream.concat(
-              q.getArgs().stream().limit(offset),
-              Stream.of(obj.get())
-            ),
-            q.getArgs().stream().skip(offset + 1)
-          ).toList()
-        )
-      );
+          ServiceQuery.of(
+              q.getName(),
+              Stream.concat(
+                      Stream.concat(q.getArgs().stream().limit(offset), Stream.of(obj.get())),
+                      q.getArgs().stream().skip(offset + 1))
+                  .toList()));
     }
     return Optional.empty();
   }

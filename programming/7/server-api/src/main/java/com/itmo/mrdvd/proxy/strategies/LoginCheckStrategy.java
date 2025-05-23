@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.proxy.strategies;
 
 import com.itmo.mrdvd.proxy.Proxy;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.proxy.serviceQuery.ServiceQuery;
 import java.util.List;
 import java.util.Optional;
@@ -43,7 +42,11 @@ public class LoginCheckStrategy implements ProxyStrategy {
         && !loginCheck.get().getArgs().isEmpty()
         && loginCheck.get().getArgs().get(0) instanceof Boolean success) {
       if (success) {
-        return Optional.of(ServiceQuery.of(q.getName(), Stream.concat(q.getArgs().stream().skip(1), Stream.of(q.getArgs().get(0))).toList()));
+        return Optional.of(
+            ServiceQuery.of(
+                q.getName(),
+                Stream.concat(q.getArgs().stream().skip(1), Stream.of(q.getArgs().get(0)))
+                    .toList()));
       }
       return Optional.of(
           ServiceQuery.of("login_error", List.of("Некорректные реквизиты для запроса.")));

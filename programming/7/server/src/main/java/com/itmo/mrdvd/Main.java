@@ -32,10 +32,16 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/** TODO:
- * 1. Hide LoginCommand as a service one (client has its own command)
- * 2. Add collection metadata to info command (+update TicketCollection constructor) */
+/**
+ * TODO: 1. Hide LoginCommand as a service one (client has its own command) 2. Add collection
+ * metadata to info command (+update TicketCollection constructor) 3. Remove unnecessary mapper
+ * classes (merge with hashmapobjectmapper --- and maybe merge itself with object deserializer, just
+ * implement there more than one mapper)
+ */
 public class Main {
   public static void main(String[] args) {
     String envUser, envPass, publicHostname, pgHost, pgDbname;
@@ -72,34 +78,56 @@ public class Main {
       return;
     }
     QueryPacketMapper queryPacket = new QueryPacketMapper(new ObjectSerializer<>(new XmlMapper()));
-    PacketQueryMapper packetQuery = new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class));
+    PacketQueryMapper packetQuery =
+        new PacketQueryMapper(new ObjectDeserializer<>(new XmlMapper(), List.class));
     ObjectDeserializer<? extends EmptyPacket> deserialPacket =
         new ObjectDeserializer<>(new XmlMapper(), EmptyPacket.class);
     ObjectSerializer<Packet> serialPacket =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
-    TicketJdbc jdbc = new TicketJdbc(String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass);
-    TicketCollection collect = new TicketCollection(jdbc);
+    ReentrantReadWriteLock selectorLock = new ReentrantReadWriteLock();
+    ReentrantReadWriteLock socketsLock = new ReentrantReadWriteLock();
+    ReentrantReadWriteLock loginCollectionLock = new ReentrantReadWriteLock();
+    ReentrantReadWriteLock objectCollectionLock = new ReentrantReadWriteLock();
+    TicketJdbc jdbc =
+        new TicketJdbc(
+            String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass);
+    TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
     TicketValidator validator =
         new TicketValidator(new CoordinatesValidator(), new EventValidator());
     ServerListenerService<Packet> listener =
         new ServerListenerService<>(
             selector,
-            new ServerConnectionAcceptor(selector),
+            new ServerConnectionAcceptor(
+                selector, Executors.newCachedThreadPool(), selectorLock, socketsLock),
             new ServerClientHandler<>(
                 StandardCharsets.UTF_8,
                 serialPacket,
                 deserialPacket,
-                new ServerResponseSender(StandardCharsets.UTF_8)),
-            8192);
+                new ServerResponseSender(StandardCharsets.UTF_8),
+                new ForkJoinPool(),
+                selectorLock),
+            8192,
+            selectorLock,
+            socketsLock);
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
         new LoginCollection(
-            new LoginJdbc(String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname), envUser, envPass, hash));
+            new LoginJdbc(
+                String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname),
+                envUser,
+                envPass,
+                hash),
+            loginCollectionLock);
     PublicServerExecutor publicExec =
         new PublicServerExecutor(collect, validator, loginCollection, hash);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
-    PublicServerProxy publicProxy = new PublicServerProxy(publicExec, new AuthMapper(), new HashmapObjectMapper<>(new XmlMapper(), AuthoredTicket.class));
-    PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy, new AuthMapper());
+    PublicServerProxy publicProxy =
+        new PublicServerProxy(
+            publicExec,
+            new AuthMapper(),
+            new HashmapObjectMapper<>(new XmlMapper(), AuthoredTicket.class));
+    PrivateServerProxy privateProxy =
+        new PrivateServerProxy(privateExec, publicProxy, new AuthMapper());
     try {
       ServerSocketChannel publicSock = ServerSocketChannel.open();
       ServerSocketChannel privateSock = ServerSocketChannel.open();

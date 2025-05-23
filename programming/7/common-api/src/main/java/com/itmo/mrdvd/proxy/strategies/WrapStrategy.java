@@ -27,7 +27,7 @@ public class WrapStrategy implements ProxyStrategy {
       } else {
         return newQ;
       }
-    } 
+    }
     Object obj = this.exec.processCommand(q.getName(), q.getArgs());
     if (obj instanceof List lst) {
       return Optional.of(ServiceQuery.of(q.getName(), lst));

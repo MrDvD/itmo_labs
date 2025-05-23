@@ -13,7 +13,7 @@ public class AuthoredTicket extends Ticket {
 
   @Override
   public String toString() {
-    String res = String.format("ВЛАДЕЛЕЦ: %s\n", getAuthor()); 
+    String res = String.format("ВЛАДЕЛЕЦ: %s\n", getAuthor());
     return res + super.toString();
   }
 }

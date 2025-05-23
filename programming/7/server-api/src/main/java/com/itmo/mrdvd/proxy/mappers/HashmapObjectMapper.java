@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.proxy.mappers;
 
-import java.util.Map;
-import java.util.Optional;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import java.util.Map;
+import java.util.Optional;
 
 public class HashmapObjectMapper<T> implements Mapper<Map<String, Object>, T> {
   private final ObjectMapper mapper;

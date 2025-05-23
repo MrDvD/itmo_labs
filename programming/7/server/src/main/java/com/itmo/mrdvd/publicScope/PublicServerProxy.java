@@ -19,39 +19,81 @@ import java.util.Optional;
 
 public class PublicServerProxy extends AbstractProxy {
   public PublicServerProxy(
-      AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      AbstractExecutor exec,
+      Mapper<Map<String, String>, LoginPasswordPair> authMapper,
       Mapper<Map<String, Object>, ?> mapper) {
     this(exec, authMapper, mapper, new HashMap<>());
   }
 
-  public PublicServerProxy(AbstractExecutor exec, Mapper<Map<String, String>, LoginPasswordPair> authMapper, Mapper<Map<String, Object>, ?> mapper, Map<String, ProxyStrategy> strats) {
+  public PublicServerProxy(
+      AbstractExecutor exec,
+      Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      Mapper<Map<String, Object>, ?> mapper,
+      Map<String, ProxyStrategy> strats) {
     super(strats);
-    setDefaultStrategy(new WrapStrategy(exec, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
+    setDefaultStrategy(
+        new WrapStrategy(
+            exec, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "clear",
-        new InformStrategy(exec, "Коллекция очищена.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
+        new InformStrategy(
+            exec,
+            "Коллекция очищена.",
+            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
-        "remove_last", new InformStrategy(exec, "Последний элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
+        "remove_last",
+        new InformStrategy(
+            exec,
+            "Последний элемент удалён.",
+            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "remove_at",
-        new InformStrategy(exec, "Элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
+        new InformStrategy(
+            exec,
+            "Элемент удалён.",
+            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "remove_by_id",
-        new InformStrategy(exec, "Элемент удалён.", new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
+        new InformStrategy(
+            exec,
+            "Элемент удалён.",
+            new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "add",
-        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(mapper, 0, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(
+            exec,
+            "Элемент добавлен.",
+            new ObjectWrapperStrategy<>(
+                mapper,
+                0,
+                new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "add_if_max",
-        new InformStrategy(exec, "Элемент добавлен.", new ObjectWrapperStrategy<>(mapper, 0, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(
+            exec,
+            "Элемент добавлен.",
+            new ObjectWrapperStrategy<>(
+                mapper,
+                0,
+                new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy(
         "update",
-        new InformStrategy(exec, "Элемент обновлён.", new ObjectWrapperStrategy<>(mapper, 1, new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
+        new InformStrategy(
+            exec,
+            "Элемент обновлён.",
+            new ObjectWrapperStrategy<>(
+                mapper,
+                1,
+                new LoginCheckStrategy(this, "login", new AuthWrapperStrategy(authMapper)))));
     setStrategy("login", new WrapStrategy(exec));
-    setStrategy("register", new InformStrategy(exec, "Пользователь зарегистрирован.", new AuthWrapperStrategy(authMapper)));
+    setStrategy(
+        "register",
+        new InformStrategy(
+            exec, "Пользователь зарегистрирован.", new AuthWrapperStrategy(authMapper)));
   }
 
-  public Packet processPacket(Packet p, Mapper<ServiceQuery, Packet> serial, Mapper<Packet, ServiceQuery> deserial) {
+  public Packet processPacket(
+      Packet p, Mapper<ServiceQuery, Packet> serial, Mapper<Packet, ServiceQuery> deserial) {
     Optional<ServiceQuery> incoming = deserial.convert(p);
     if (incoming.isEmpty()) {
       return new EmptyPacket();

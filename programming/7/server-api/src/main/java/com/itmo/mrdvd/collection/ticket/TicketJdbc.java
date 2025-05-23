@@ -91,7 +91,8 @@ public class TicketJdbc implements CrudWorker<AuthoredTicket, Set<AuthoredTicket
       Long id, AuthoredTicket t, Predicate<AuthoredTicket> cond) {
     String sqlEvent =
         "update EVENTS set name = ?, description = ?, type = ?::event_type where id = (select event from TICKETS where id = ?)";
-    String sqlTicket = "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ?::ticket_type where id = ?";
+    String sqlTicket =
+        "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ?::ticket_type where id = ?";
     t.setId(id);
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);

@@ -5,7 +5,6 @@ import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
-import java.util.Optional;
 
 public class RemoveByIdCommand implements Command<Void> {
   private final CacheWorker<AuthoredTicket, ?, Long> collection;
@@ -39,13 +38,17 @@ public class RemoveByIdCommand implements Command<Void> {
     if (id < 0) {
       throw new IllegalArgumentException("Параметр id не может быть отрицательным.");
     }
-    this.collection.get(id).ifPresentOrElse((t) -> {
-      if (!t.getAuthor().equals(pair.getLogin())) {
-        throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
-      }
-    }, () -> {
-      throw new IllegalArgumentException("Элемент с таким id не найден.");
-    });
+    this.collection
+        .get(id)
+        .ifPresentOrElse(
+            (t) -> {
+              if (!t.getAuthor().equals(pair.getLogin())) {
+                throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
+              }
+            },
+            () -> {
+              throw new IllegalArgumentException("Элемент с таким id не найден.");
+            });
     this.collection.remove(id);
     return null;
   }

@@ -1,10 +1,9 @@
 package com.itmo.mrdvd.mappers;
 
-import java.util.Map;
-import java.util.Optional;
-
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.CommandMeta;
+import java.util.Map;
+import java.util.Optional;
 
 public class CommandMetaMapper implements Mapper<Map<String, String>, CommandMeta> {
   @Override

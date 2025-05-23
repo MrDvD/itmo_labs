@@ -61,9 +61,22 @@ public class CollectionShell extends DefaultShell {
                 this, new ReadStringQueryStrategy(this, new ReadStringQueryStrategy(this)))));
   }
 
-  public void setBuilders(InteractiveBuilder<?> builder, AuthContext<LoginPasswordPair> authContext) {
-    setQueryStrategy("add", new SignObjectStrategy(authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
-    setQueryStrategy("add_if_max", new SignObjectStrategy(authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
-    setQueryStrategy("update", new SignObjectStrategy(authContext, 1, new ReadObjectStrategy(builder, new SkipLineStrategy(this, new ReadLongQueryStrategy(this)))));
+  public void setBuilders(
+      InteractiveBuilder<?> builder, AuthContext<LoginPasswordPair> authContext) {
+    setQueryStrategy(
+        "add",
+        new SignObjectStrategy(
+            authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
+    setQueryStrategy(
+        "add_if_max",
+        new SignObjectStrategy(
+            authContext, 0, new ReadObjectStrategy(builder, new SkipLineStrategy(this))));
+    setQueryStrategy(
+        "update",
+        new SignObjectStrategy(
+            authContext,
+            1,
+            new ReadObjectStrategy(
+                builder, new SkipLineStrategy(this, new ReadLongQueryStrategy(this)))));
   }
 }

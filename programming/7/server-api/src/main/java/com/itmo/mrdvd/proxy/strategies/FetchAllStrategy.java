@@ -32,7 +32,14 @@ public class FetchAllStrategy implements ProxyStrategy {
         return newQ;
       }
     }
-    Optional<ServiceQuery> obj = this.other.processQuery(ServiceQuery.of(q.getName(), Stream.concat(Stream.of(q.getArgs().get(q.getArgs().size() - 1)), q.getArgs().stream().limit(q.getArgs().size() - 1)).toList()));
+    Optional<ServiceQuery> obj =
+        this.other.processQuery(
+            ServiceQuery.of(
+                q.getName(),
+                Stream.concat(
+                        Stream.of(q.getArgs().get(q.getArgs().size() - 1)),
+                        q.getArgs().stream().limit(q.getArgs().size() - 1))
+                    .toList()));
     if (obj.isEmpty()) {
       return Optional.empty();
     }

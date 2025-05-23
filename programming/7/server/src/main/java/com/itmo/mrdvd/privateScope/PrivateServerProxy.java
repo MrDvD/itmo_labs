@@ -34,10 +34,17 @@ public class PrivateServerProxy extends AbstractProxy {
     super(strats);
     setDefaultStrategy(new RedirectStrategy(other));
     setStrategy(
-        "fetch_all", new FetchAllStrategy(exec, other, new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
+        "fetch_all",
+        new FetchAllStrategy(
+            exec,
+            other,
+            new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
     setStrategy(
         "shutdown",
-        new InformStrategy(exec, "Сервер завершил работу.", new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
+        new InformStrategy(
+            exec,
+            "Сервер завершил работу.",
+            new LoginCheckStrategy(other, "login", new AuthWrapperStrategy(authMapper))));
   }
 
   public Packet processPacket(

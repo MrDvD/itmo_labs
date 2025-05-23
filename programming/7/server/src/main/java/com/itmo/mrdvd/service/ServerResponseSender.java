@@ -13,7 +13,17 @@ public class ServerResponseSender implements ResponseSender {
   }
 
   @Override
-  public void sendResponse(SocketChannel client, String response) throws IOException {
-    client.write(this.chars.encode(CharBuffer.wrap(response)));
+  public void sendResponse(SocketChannel client, String response) {
+    new Thread(
+            () -> {
+              try {
+                client.write(this.chars.encode(CharBuffer.wrap(response)));
+                client.close();
+              } catch (IOException e) {
+                throw new RuntimeException(e);
+              }
+            })
+        .start();
+    ;
   }
 }

@@ -6,7 +6,6 @@ import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Predicate;
 
 public class RemoveLastCommand implements Command<Void> {
   private final CacheWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
