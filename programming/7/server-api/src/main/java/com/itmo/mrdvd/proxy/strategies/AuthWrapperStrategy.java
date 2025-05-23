@@ -8,9 +8,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class AuthWrapperStrategy implements ProxyStrategy {
-  private final Mapper<Map<String, String>, LoginPasswordPair> authMapper;
+  private final Mapper<Map<String, Object>, LoginPasswordPair> authMapper;
 
-  public AuthWrapperStrategy(Mapper<Map<String, String>, LoginPasswordPair> authMapper) {
+  public AuthWrapperStrategy(Mapper<Map<String, Object>, LoginPasswordPair> authMapper) {
     this.authMapper = authMapper;
   }
 

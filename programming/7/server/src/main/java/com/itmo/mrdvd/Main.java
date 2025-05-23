@@ -9,9 +9,9 @@ import com.itmo.mrdvd.collection.meta.MetaJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
 import com.itmo.mrdvd.object.AuthoredTicket;
+import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
-import com.itmo.mrdvd.proxy.mappers.AuthMapper;
 import com.itmo.mrdvd.proxy.mappers.HashmapObjectMapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectDeserializer;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
@@ -38,13 +38,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * TODO:
- *
- * <p>1. Hide LoginCommand as a service one (client has its own command) 2. Remove unnecessary
- * mapper classes (merge with hashmapobjectmapper --- and maybe merge itself with object
- * deserializer, just implement there more than one mapper).
- */
 public class Main {
   public static void main(String[] args) {
     String envUser, envPass, publicHostname, pgHost, pgDbname;
@@ -121,13 +114,14 @@ public class Main {
         new PublicServerExecutor(
             collect, validator, loginCollection, metaCollection, serialObject, hash);
     PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
+    HashmapObjectMapper<LoginPasswordPair> authMapper =
+        new HashmapObjectMapper<>(new XmlMapper(), LoginPasswordPair.class);
     PublicServerProxy publicProxy =
         new PublicServerProxy(
             publicExec,
-            new AuthMapper(),
+            authMapper,
             new HashmapObjectMapper<>(new XmlMapper(), AuthoredTicket.class));
-    PrivateServerProxy privateProxy =
-        new PrivateServerProxy(privateExec, publicProxy, new AuthMapper());
+    PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy, authMapper);
     try {
       ServerSocketChannel publicSock = ServerSocketChannel.open();
       ServerSocketChannel privateSock = ServerSocketChannel.open();

@@ -20,14 +20,14 @@ import java.util.Optional;
 public class PublicServerProxy extends AbstractProxy {
   public PublicServerProxy(
       AbstractExecutor exec,
-      Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      Mapper<Map<String, Object>, LoginPasswordPair> authMapper,
       Mapper<Map<String, Object>, ?> mapper) {
     this(exec, authMapper, mapper, new HashMap<>());
   }
 
   public PublicServerProxy(
       AbstractExecutor exec,
-      Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      Mapper<Map<String, Object>, LoginPasswordPair> authMapper,
       Mapper<Map<String, Object>, ?> mapper,
       Map<String, ProxyStrategy> strats) {
     super(strats);

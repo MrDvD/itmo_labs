@@ -22,14 +22,14 @@ public class PrivateServerProxy extends AbstractProxy {
   public PrivateServerProxy(
       AbstractExecutor exec,
       Proxy other,
-      Mapper<Map<String, String>, LoginPasswordPair> authMapper) {
+      Mapper<Map<String, Object>, LoginPasswordPair> authMapper) {
     this(exec, other, authMapper, new HashMap<>());
   }
 
   public PrivateServerProxy(
       AbstractExecutor exec,
       Proxy other,
-      Mapper<Map<String, String>, LoginPasswordPair> authMapper,
+      Mapper<Map<String, Object>, LoginPasswordPair> authMapper,
       Map<String, ProxyStrategy> strats) {
     super(strats);
     setDefaultStrategy(new RedirectStrategy(other));
