@@ -9,11 +9,7 @@ public class GrpcServer implements Service {
   private final Server server;
 
   public GrpcServer(ServerBuilder<?> serverBuilder, AbstractExecutor exec) {
-    this.server =
-        serverBuilder
-            .addService(new TicketServiceImpl(exec))
-            // .addService(ProtoReflectionServiceV1.newInstance())
-            .build();
+    this.server = serverBuilder.addService(new TicketServiceImpl(exec)).build();
   }
 
   @Override

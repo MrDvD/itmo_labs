@@ -17,6 +17,7 @@ import com.itmo.mrdvd.commands.RegisterCommand;
 import com.itmo.mrdvd.commands.RemoveAtCommand;
 import com.itmo.mrdvd.commands.RemoveByIdCommand;
 import com.itmo.mrdvd.commands.RemoveLastCommand;
+import com.itmo.mrdvd.commands.ShowByIdCommand;
 import com.itmo.mrdvd.commands.ShowCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
 import com.itmo.mrdvd.object.LoginPasswordPair;
@@ -66,6 +67,7 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(
         new RemoveLastCommand(objectWorker, new TicketComparator(TicketField.CREATION_DATE)));
     setCommand(new ShowCommand<>(objectWorker));
+    setCommand(new ShowByIdCommand<>(objectWorker));
     setCommand(
         new PrintFieldDescendingTypeCommand(objectWorker, new TicketComparator(TicketField.TYPE)));
     setCommand(

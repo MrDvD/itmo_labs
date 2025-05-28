@@ -63,21 +63,34 @@ message Value {
   }
 }
 
+message LongId {
+  int64 id = 1;
+}
+
+message IntId {
+  int32 id = 1;
+}
+
+message UpdateId {
+  LongId id = 1;
+  Node node = 2;
+}
+
 service TicketService {
   // Obtains Meta information about the used Collection
   rpc GetInfo(google.protobuf.Empty) returns (Meta);
   // Obtains stream of Tickets
   rpc GetTickets(google.protobuf.Empty) returns (stream Node) {}
   // ...
-  rpc GetTicket(google.protobuf.Empty) returns (Node) {}
+  rpc GetTicket(LongId) returns (Node) {}
   // ...
   rpc AddTicket(Node) returns (google.protobuf.Empty) {}
   // ...
-  rpc UpdateTicket(Node) returns (google.protobuf.Empty) {}
+  rpc UpdateTicket(UpdateId) returns (google.protobuf.Empty) {}
   // ...
   rpc RemoveLast(google.protobuf.Empty) returns (google.protobuf.Empty) {}
   // ...
-  rpc RemoveAt(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc RemoveAt(LongId) returns (google.protobuf.Empty) {}
   // ...
-  rpc RemoveById(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc RemoveById(IntId) returns (google.protobuf.Empty) {}
 }

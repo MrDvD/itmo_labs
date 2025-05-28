@@ -32,6 +32,6 @@ public class ShowCommand<T> implements Command<Set<T>> {
 
   @Override
   public String description() {
-    return "вывести в стандартный поток вывода все элементы коллекции в строковом представлении";
+    return "вывести все элементы коллекции";
   }
 }
