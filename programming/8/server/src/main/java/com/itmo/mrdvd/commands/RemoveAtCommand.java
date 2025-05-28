@@ -5,7 +5,6 @@ import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -60,7 +59,8 @@ public class RemoveAtCommand implements Command<Void> {
     }
     List<Node> sortedList =
         this.collection.getAll().stream()
-            .sorted((a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
+            .sorted(
+                (a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
             .toList();
     Node toRemove = sortedList.get(idx);
     if (!toRemove.getAuthor().equals(pair.getLogin())) {

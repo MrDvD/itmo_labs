@@ -1,25 +1,23 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
+import java.util.Set;
 
-public class ShowCommand implements Command<String> {
-  private final Iterable<?> collection;
+public class ShowCommand<T> implements Command<Set<T>> {
+  private final CachedCrudWorker<T, Set<T>, ?> collection;
 
-  public ShowCommand(Iterable<?> collect) {
+  public ShowCommand(CachedCrudWorker<T, Set<T>, ?> collect) {
     this.collection = collect;
   }
 
   @Override
-  public String execute(List<Object> params) throws IllegalStateException {
+  public Set<T> execute(List<Object> params) throws IllegalStateException {
     if (this.collection == null) {
       throw new IllegalStateException("Не предоставлена объект для чтения.");
     }
-    String result = "";
-    for (Object obj : collection) {
-      result += obj.toString() + "\n";
-    }
-    return result + "Конец коллекции.";
+    return this.collection.getAll();
   }
 
   @Override

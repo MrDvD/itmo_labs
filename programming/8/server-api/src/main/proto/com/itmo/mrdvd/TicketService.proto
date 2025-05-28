@@ -7,10 +7,6 @@ option java_multiple_files = true;
 option java_package = "com.itmo.mrdvd";
 option java_outer_classname = "TicketServiceProto";
 
-message Greeting {
-  string greeting = 1;
-}
-
 enum TicketType {
   VIP = 0;
   USUAL = 1;
@@ -75,9 +71,9 @@ service TicketService {
   // ...
   rpc GetTicket(google.protobuf.Empty) returns (Node) {}
   // ...
-  rpc AddTicket(Node) returns (Node) {}
+  rpc AddTicket(Node) returns (google.protobuf.Empty) {}
   // ...
-  rpc UpdateTicket(Node) returns (Node) {}
+  rpc UpdateTicket(Node) returns (google.protobuf.Empty) {}
   // ...
   rpc RemoveLast(google.protobuf.Empty) returns (google.protobuf.Empty) {}
   // ...

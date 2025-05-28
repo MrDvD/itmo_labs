@@ -5,7 +5,6 @@ import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +13,8 @@ public class RemoveLastCommand implements Command<Void> {
   private final CachedCrudWorker<Node, Set<Node>, Long> collection;
   private final Comparator<Ticket> comparator;
 
-  public RemoveLastCommand(CachedCrudWorker<Node, Set<Node>, Long> collection, Comparator<Ticket> comparator) {
+  public RemoveLastCommand(
+      CachedCrudWorker<Node, Set<Node>, Long> collection, Comparator<Ticket> comparator) {
     this.collection = collection;
     this.comparator = comparator;
   }
@@ -33,7 +33,8 @@ public class RemoveLastCommand implements Command<Void> {
     LoginPasswordPair pair = (LoginPasswordPair) params.get(0);
     List<Node> sortedList =
         this.collection.getAll().stream()
-            .sorted((a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
+            .sorted(
+                (a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
             .toList();
     Node toRemove = sortedList.get(sortedList.size() - 1);
     if (!toRemove.getAuthor().equals(pair.getLogin())) {

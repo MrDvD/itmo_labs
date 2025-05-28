@@ -69,7 +69,12 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtTicket.setString(1, t.getName());
         stmtTicket.setFloat(2, t.getCoords().getX());
         stmtTicket.setFloat(3, t.getCoords().getY());
-        stmtTicket.setTimestamp(4, java.sql.Timestamp.valueOf(Instant.ofEpochSecond(t.getCreateDate().getSeconds(), t.getCreateDate().getNanos()).atZone(ZoneId.systemDefault()).toLocalDateTime()));
+        stmtTicket.setTimestamp(
+            4,
+            java.sql.Timestamp.valueOf(
+                Instant.ofEpochSecond(t.getCreateDate().getSeconds(), t.getCreateDate().getNanos())
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime()));
         stmtTicket.setInt(5, t.getPrice());
         stmtTicket.setString(6, t.getType().toString());
         stmtTicket.setLong(7, eventId);
@@ -83,9 +88,10 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
             var result = node.getItem().getTicket().toBuilder();
             result.setId(generatedKeys.getLong(1));
             result.setEvent(t.getEvent().toBuilder().setId(eventId).build());
-            Node newNode = node.toBuilder()
-                .setItem(Item.newBuilder().setTicket(result.build()).build())
-                .build();
+            Node newNode =
+                node.toBuilder()
+                    .setItem(Item.newBuilder().setTicket(result.build()).build())
+                    .build();
             if (cond.test(newNode)) {
               conn.commit();
               return Optional.of(newNode);
@@ -101,8 +107,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
   }
 
   @Override
-  public Optional<Node> update(
-      Long id, Node node, Predicate<Node> cond) {
+  public Optional<Node> update(Long id, Node node, Predicate<Node> cond) {
     Ticket t = node.getItem().getTicket();
     if (t == null) {
       throw new IllegalArgumentException("Нельзя добавить узел без билета.");
@@ -154,7 +159,8 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       }
       Event newEvent = node.getItem().getTicket().getEvent().toBuilder().setId(eventId).build();
       Ticket newTicket = node.getItem().getTicket().toBuilder().setEvent(newEvent).build();
-      Node newNode = node.toBuilder().setItem(Item.newBuilder().setTicket(newTicket).build()).build();
+      Node newNode =
+          node.toBuilder().setItem(Item.newBuilder().setTicket(newTicket).build()).build();
       if (cond.test(newNode)) {
         conn.commit();
         return Optional.of(newNode);
@@ -192,14 +198,24 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
           ticket.setId(rs.getLong("id"));
           ticket.setName(rs.getString("name"));
           ticket.setCoords(coords.build());
-          Instant instant = rs.getTimestamp("creation_date").toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant();
-          ticket.setCreateDate(Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build());
+          Instant instant =
+              rs.getTimestamp("creation_date")
+                  .toLocalDateTime()
+                  .atZone(ZoneId.systemDefault())
+                  .toInstant();
+          ticket.setCreateDate(
+              Timestamp.newBuilder()
+                  .setSeconds(instant.getEpochSecond())
+                  .setNanos(instant.getNano())
+                  .build());
           ticket.setPrice(rs.getInt("price"));
           ticket.setType(TicketType.valueOf(rs.getString("type")));
           ticket.setEvent(event.build());
-          return Optional.ofNullable(Node.newBuilder()
-          .setItem(Item.newBuilder().setTicket(ticket.build()).build()).setAuthor(rs.getString("author"))
-          .build());
+          return Optional.ofNullable(
+              Node.newBuilder()
+                  .setItem(Item.newBuilder().setTicket(ticket.build()).build())
+                  .setAuthor(rs.getString("author"))
+                  .build());
         }
       }
     } catch (SQLException e) {
@@ -225,25 +241,35 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         ResultSet rs = stmt.executeQuery(sql)) {
       while (rs.next()) {
         var event = Event.newBuilder();
-          event.setId(rs.getLong("event_id"));
-          event.setName(rs.getString("event_name"));
-          event.setDesc(rs.getString("event_description"));
-          event.setType(EventType.valueOf(rs.getString("event_type")));
-          var coords = Coordinates.newBuilder();
-          coords.setX(rs.getFloat("x"));
-          coords.setY(rs.getFloat("y"));
-          var ticket = Ticket.newBuilder();
-          ticket.setId(rs.getLong("id"));
-          ticket.setName(rs.getString("name"));
-          ticket.setCoords(coords.build());
-          Instant instant = rs.getTimestamp("creation_date").toLocalDateTime().atZone(ZoneId.systemDefault()).toInstant();
-          ticket.setCreateDate(Timestamp.newBuilder().setSeconds(instant.getEpochSecond()).setNanos(instant.getNano()).build());
-          ticket.setPrice(rs.getInt("price"));
-          ticket.setType(TicketType.valueOf(rs.getString("type")));
-          ticket.setEvent(event.build());
-        tickets.add(Node.newBuilder()
-        .setItem(Item.newBuilder().setTicket(ticket.build()).build()).setAuthor(rs.getString("author"))
-        .build());
+        event.setId(rs.getLong("event_id"));
+        event.setName(rs.getString("event_name"));
+        event.setDesc(rs.getString("event_description"));
+        event.setType(EventType.valueOf(rs.getString("event_type")));
+        var coords = Coordinates.newBuilder();
+        coords.setX(rs.getFloat("x"));
+        coords.setY(rs.getFloat("y"));
+        var ticket = Ticket.newBuilder();
+        ticket.setId(rs.getLong("id"));
+        ticket.setName(rs.getString("name"));
+        ticket.setCoords(coords.build());
+        Instant instant =
+            rs.getTimestamp("creation_date")
+                .toLocalDateTime()
+                .atZone(ZoneId.systemDefault())
+                .toInstant();
+        ticket.setCreateDate(
+            Timestamp.newBuilder()
+                .setSeconds(instant.getEpochSecond())
+                .setNanos(instant.getNano())
+                .build());
+        ticket.setPrice(rs.getInt("price"));
+        ticket.setType(TicketType.valueOf(rs.getString("type")));
+        ticket.setEvent(event.build());
+        tickets.add(
+            Node.newBuilder()
+                .setItem(Item.newBuilder().setTicket(ticket.build()).build())
+                .setAuthor(rs.getString("author"))
+                .build());
       }
       return tickets;
     } catch (SQLException e) {

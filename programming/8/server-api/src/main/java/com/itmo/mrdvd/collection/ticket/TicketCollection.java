@@ -11,22 +11,18 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
-public class TicketCollection
-    implements CachedCrudWorker<Node, Set<Node>, Long> {
+public class TicketCollection implements CachedCrudWorker<Node, Set<Node>, Long> {
   private final CrudWorker<Node, Set<Node>, Long> dbworker;
   private Set<Node> tickets;
   private final ReadWriteLock objectCollectionLock;
 
   public TicketCollection(
-      CrudWorker<Node, Set<Node>, Long> dbworker,
-      ReadWriteLock objectCollectionLock) {
+      CrudWorker<Node, Set<Node>, Long> dbworker, ReadWriteLock objectCollectionLock) {
     this(dbworker, objectCollectionLock, "A new ticket collection");
   }
 
   public TicketCollection(
-      CrudWorker<Node, Set<Node>, Long> dbworker,
-      ReadWriteLock objectCollectionLock,
-      String name) {
+      CrudWorker<Node, Set<Node>, Long> dbworker, ReadWriteLock objectCollectionLock, String name) {
     this(dbworker, objectCollectionLock, name, new HashSet<>());
   }
 
@@ -59,7 +55,9 @@ public class TicketCollection
   public Optional<Node> get(Long id) {
     this.objectCollectionLock.readLock().lock();
     try {
-      return this.tickets.stream().filter(ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id)).findAny();
+      return this.tickets.stream()
+          .filter(ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id))
+          .findAny();
     } finally {
       this.objectCollectionLock.readLock().unlock();
     }
@@ -79,8 +77,7 @@ public class TicketCollection
   }
 
   @Override
-  public Optional<Node> update(
-      Long id, Node obj, Predicate<Node> cond) {
+  public Optional<Node> update(Long id, Node obj, Predicate<Node> cond) {
     this.objectCollectionLock.writeLock().lock();
     try {
       Optional<Node> ticket = dbworker.update(id, obj, cond);
@@ -109,7 +106,8 @@ public class TicketCollection
       Optional<Node> toRemove = dbworker.get(id);
       if (toRemove.isPresent() && cond.test(toRemove.get())) {
         this.dbworker.remove(id);
-        this.tickets.removeIf(ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id));
+        this.tickets.removeIf(
+            ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id));
       }
     } finally {
       this.objectCollectionLock.writeLock().unlock();

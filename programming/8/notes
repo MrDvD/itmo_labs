@@ -88,3 +88,5 @@ mvn clean generate-sources # for Protobuf class generation
 
 # connect to vpn via your login & password
 openvpn students.ovpn
+
+docker run -v $(pwd):/protos --network host fullstorydev/grpcurl -proto /protos/server-api/src/main/proto/com/itmo/mrdvd/TicketService.proto -import-path . -plaintext -d '{}' 127.0.0.1:8080 com.itmo.mrdvd.TicketService/GetTickets

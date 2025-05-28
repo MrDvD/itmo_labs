@@ -2,7 +2,6 @@ package com.itmo.mrdvd.collection.ticket;
 
 import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.object.TicketField;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -29,8 +28,14 @@ public class TicketComparator implements Comparator<Ticket> {
         result = t1.getName().compareTo(t2.getName());
         break;
       case CREATION_DATE:
-        LocalDateTime d1 = Instant.ofEpochSecond(t1.getCreateDate().getSeconds(), t1.getCreateDate().getNanos()).atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime d2 = Instant.ofEpochSecond(t2.getCreateDate().getSeconds(), t2.getCreateDate().getNanos()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime d1 =
+            Instant.ofEpochSecond(t1.getCreateDate().getSeconds(), t1.getCreateDate().getNanos())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+        LocalDateTime d2 =
+            Instant.ofEpochSecond(t2.getCreateDate().getSeconds(), t2.getCreateDate().getNanos())
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
         result = d1.compareTo(d2);
         break;
       case PRICE:

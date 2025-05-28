@@ -27,7 +27,6 @@ import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import com.itmo.mrdvd.service.executor.Command;
 import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -65,11 +64,12 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(new FetchAllCommand(this));
     setCommand(new InfoCommand(metaAccessor, serializer));
     setCommand(new MinByPriceCommand(objectWorker, new TicketComparator(TicketField.PRICE)));
-    setCommand(new RemoveLastCommand(objectWorker, new TicketComparator(TicketField.CREATION_DATE)));
-    setCommand(new ShowCommand(objectWorker));
+    setCommand(
+        new RemoveLastCommand(objectWorker, new TicketComparator(TicketField.CREATION_DATE)));
+    setCommand(new ShowCommand<>(objectWorker));
     setCommand(
         new PrintFieldDescendingTypeCommand(objectWorker, new TicketComparator(TicketField.TYPE)));
-        setCommand(
+    setCommand(
         new RemoveAtCommand(
             objectWorker,
             new TicketComparator(TicketField.CREATION_DATE),
@@ -82,11 +82,7 @@ public class PublicServerExecutor extends AbstractExecutor {
     setCommand(new AddCommand(objectWorker, validator, Node.class));
     setCommand(
         new AddIfCommand(
-            objectWorker,
-            validator,
-            new TicketComparator(TicketField.ID),
-            Node.class,
-            Set.of(1)));
+            objectWorker, validator, new TicketComparator(TicketField.ID), Node.class, Set.of(1)));
     setCommand(
         new UpdateCommand<>(
             objectWorker,
