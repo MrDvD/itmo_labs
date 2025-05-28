@@ -16,6 +16,7 @@ import com.itmo.mrdvd.publicScope.PublicServerProxy;
 import com.itmo.mrdvd.service.GrpcServer;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
+import com.itmo.mrdvd.validators.NodeValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
 import io.grpc.netty.NettyServerBuilder;
 import java.net.InetSocketAddress;
@@ -65,8 +66,8 @@ public class Main {
     String jdbcUrl = String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname);
     TicketJdbc jdbc = new TicketJdbc(jdbcUrl, envUser, envPass);
     TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
-    TicketValidator validator =
-        new TicketValidator(new CoordinatesValidator(), new EventValidator());
+    NodeValidator validator =
+        new NodeValidator(new TicketValidator(new CoordinatesValidator(), new EventValidator()));
 
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =

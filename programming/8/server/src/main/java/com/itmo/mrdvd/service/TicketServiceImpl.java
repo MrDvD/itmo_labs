@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.service;
 
+import com.google.protobuf.Empty;
 import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.TicketServiceGrpc.TicketServiceImplBase;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -36,7 +37,12 @@ public class TicketServiceImpl extends TicketServiceImplBase {
   public void addTicket(
       com.itmo.mrdvd.Node request,
       io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-    this.exec.processCommand("add", List.of(request));
-    responseObserver.onCompleted();
+    try {
+      this.exec.processCommand("add", List.of(request));
+      responseObserver.onNext(Empty.getDefaultInstance());
+      responseObserver.onCompleted();
+    } catch (RuntimeException e) {
+      responseObserver.onError(e);
+    }
   }
 }

@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.publicScope;
 
 import com.itmo.mrdvd.Node;
-import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.collection.AccessWorker;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.login.SelfContainedHash;
@@ -35,7 +34,7 @@ import java.util.Set;
 public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
       CachedCrudWorker<Node, Set<Node>, Long> objectWorker,
-      Validator<? super Ticket> validator,
+      Validator<Node> validator,
       CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
@@ -53,7 +52,7 @@ public class PublicServerExecutor extends AbstractExecutor {
 
   public PublicServerExecutor(
       CachedCrudWorker<Node, Set<Node>, Long> objectWorker,
-      Validator<? super Ticket> validator,
+      Validator<Node> validator,
       CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
@@ -79,7 +78,7 @@ public class PublicServerExecutor extends AbstractExecutor {
             }));
     setCommand(new RemoveByIdCommand(objectWorker));
     setCommand(new CountGreaterThanEventCommand(objectWorker));
-    setCommand(new AddCommand(objectWorker, validator, Node.class));
+    setCommand(new AddCommand<>(objectWorker, validator, Node.class));
     setCommand(
         new AddIfCommand(
             objectWorker, validator, new TicketComparator(TicketField.ID), Node.class, Set.of(1)));
@@ -87,7 +86,7 @@ public class PublicServerExecutor extends AbstractExecutor {
         new UpdateCommand<>(
             objectWorker,
             (t) -> {
-              if (validator.validate(t.getItem().getTicket())) {
+              if (validator.validate(t)) {
                 Optional<Node> old = objectWorker.get(t.getItem().getTicket().getId());
                 return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
               }
