@@ -8,7 +8,6 @@ import com.itmo.mrdvd.collection.meta.MetaCollection;
 import com.itmo.mrdvd.collection.meta.MetaJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
-import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.privateScope.PrivateServerExecutor;
 import com.itmo.mrdvd.privateScope.PrivateServerProxy;
@@ -39,23 +38,12 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * TODO:
- * 1. Plan out the api:
- *    - api/v1/register
- *    - api/v1/login
- *    - api/v1/info
- *    - api/v1/tickets
- *    - api/v1/ticket/1
- *    - api/v1/add
- *    - api/v1/update/2
- *    - api/v1/remove_at/1
- *    - api/v1/remove_last
- *    - api/v1/remove_by_id/1
- * localhost:
- *    - api/v1/clear
- *    - api/v1/shutdown
- * Перехватчики (Interceptors) - для аутентификации?
- * Metadata is information about a particular RPC call (such as authentication details) in the form of a list of key-value pairs, where the keys are strings and the values are typically strings, but can be binary data.
+ * TODO: 1. Plan out the api: - api/v1/register - api/v1/login - api/v1/info - api/v1/tickets -
+ * api/v1/ticket/1 - api/v1/add - api/v1/update/2 - api/v1/remove_at/1 - api/v1/remove_last -
+ * api/v1/remove_by_id/1 localhost: - api/v1/clear - api/v1/shutdown Перехватчики (Interceptors) -
+ * для аутентификации? Metadata is information about a particular RPC call (such as authentication
+ * details) in the form of a list of key-value pairs, where the keys are strings and the values are
+ * typically strings, but can be binary data.
  */
 public class Main {
   public static void main(String[] args) {
@@ -122,7 +110,7 @@ public class Main {
             8192,
             selectorLock,
             socketsLock,
-            new ForkJoinPool(), 
+            new ForkJoinPool(),
             Executors.newCachedThreadPool());
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
@@ -139,7 +127,7 @@ public class Main {
         new PublicServerProxy(
             publicExec,
             authMapper,
-            new HashmapObjectMapper<>(new XmlMapper(), AuthoredTicket.class));
+            new HashmapObjectMapper<>(new XmlMapper(), Node.class));
     PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy, authMapper);
     try {
       ServerSocketChannel publicSock = ServerSocketChannel.open();

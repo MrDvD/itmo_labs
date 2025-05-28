@@ -1,17 +1,22 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.Node;
+import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
 public class RemoveLastCommand implements Command<Void> {
-  private final CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
+  private final CachedCrudWorker<Node, Set<Node>, Long> collection;
+  private final Comparator<Ticket> comparator;
 
-  public RemoveLastCommand(CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection) {
+  public RemoveLastCommand(CachedCrudWorker<Node, Set<Node>, Long> collection, Comparator<Ticket> comparator) {
     this.collection = collection;
+    this.comparator = comparator;
   }
 
   @Override
@@ -26,15 +31,15 @@ public class RemoveLastCommand implements Command<Void> {
       throw new IllegalArgumentException("Не предоставлены реквизиты для работы.");
     }
     LoginPasswordPair pair = (LoginPasswordPair) params.get(0);
-    List<AuthoredTicket> sortedList =
+    List<Node> sortedList =
         this.collection.getAll().stream()
-            .sorted((a, b) -> a.getCreationDate().compareTo(b.getCreationDate()))
+            .sorted((a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
             .toList();
-    AuthoredTicket toRemove = sortedList.get(sortedList.size() - 1);
+    Node toRemove = sortedList.get(sortedList.size() - 1);
     if (!toRemove.getAuthor().equals(pair.getLogin())) {
       throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
     }
-    this.collection.remove(toRemove.getId());
+    this.collection.remove(toRemove.getItem().getTicket().getId());
     return null;
   }
 

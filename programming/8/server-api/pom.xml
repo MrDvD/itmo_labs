@@ -4,32 +4,21 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>7-server-api</artifactId>
+  <artifactId>8-server-api</artifactId>
   <version>1.0</version>
 
-  <name>Lab 7 - Server API</name>
+  <name>Lab 8 - Server API</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
+    <protobuf.version>3.25.3</protobuf.version>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>5.11.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>com.itmo.mrdvd</groupId>
-      <artifactId>7-common-api</artifactId>
+      <artifactId>8-common-api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -42,9 +31,68 @@
       <artifactId>postgresql</artifactId>
       <version>42.7.5</version>
     </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>1.72.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-protobuf</artifactId>
+      <version>1.72.0</version>
+    </dependency>
+    <dependency>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-stub</artifactId>
+      <version>1.72.0</version>
+    </dependency>
+    <dependency> <!-- necessary for Java 9+ -->
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>annotations-api</artifactId>
+      <version>6.0.53</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
+  <extensions>
+      <extension>
+        <groupId>kr.motd.maven</groupId>
+        <artifactId>os-maven-plugin</artifactId>
+        <version>1.7.1</version>
+      </extension>
+    </extensions>
+  <plugins>
+    <plugin>
+      <!-- Generate protobuf classes -->
+      <groupId>org.xolstice.maven.plugins</groupId>
+      <artifactId>protobuf-maven-plugin</artifactId>
+      <version>0.6.1</version>
+      <configuration>
+        <protocArtifact>com.google.protobuf:protoc:${protobuf.version}:exe:${os.detected.classifier}</protocArtifact>
+        <pluginId>grpc-java</pluginId>
+        <pluginArtifact>
+          io.grpc:protoc-gen-grpc-java:1.62.2:exe:${os.detected.classifier}
+        </pluginArtifact>
+        <!-- <protoSourceRoot>${project.basedir}/src/main/proto</protoSourceRoot> -->
+      </configuration>
+      <executions>
+        <execution>
+          <goals>
+            <goal>compile</goal>
+            <goal>test-compile</goal>
+            <goal>compile-custom</goal>
+          </goals>
+        </execution>
+      </executions>
+    </plugin>
+    </plugins>
     <pluginManagement>
       <plugins>
          <plugin>

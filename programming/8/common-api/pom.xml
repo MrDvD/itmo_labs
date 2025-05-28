@@ -4,27 +4,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.itmo.mrdvd</groupId>
-  <artifactId>7-common-api</artifactId>
+  <artifactId>8-common-api</artifactId>
   <version>1.0</version>
 
-  <name>Lab 7 - Common API</name>
+  <name>Lab 8 - Common API</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
   </properties>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.junit</groupId>
-        <artifactId>junit-bom</artifactId>
-        <version>5.11.0</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
   <dependencies>
     <dependency>
@@ -70,10 +58,6 @@
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.4.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.3.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>

@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "com.itmo.mrdvd";
+option java_outer_classname = "TicketServiceProto";
+
+message Greeting {
+  string greeting = 1;
+}
+
+enum TicketType {
+  VIP = 0;
+  USUAL = 1;
+  BUDGETARY = 2;
+  CHEAP = 3;
+}
+
+enum EventType {
+  CONCERT = 0;
+  BASEBALL = 1;
+  OPERA = 2;
+}
+
+message Coordinates {
+  float x = 1;
+  float y = 2;
+}
+
+message Event {
+  int64 id = 1;
+  string name = 2;
+  string desc = 3;
+  EventType type = 4;
+}
+
+message Ticket {
+  int64 id = 1;
+  string name = 2;
+  Coordinates coords = 3;
+  google.protobuf.Timestamp createDate = 4;
+  int32 price = 5;
+  TicketType type = 6;
+  Event event = 7;
+}
+
+message Node {
+  Item item = 1;
+  string author = 2;
+}
+
+message Item {
+  oneof kind {
+    Ticket ticket = 1;
+  }
+}
+
+message Meta {
+  map<string, Value> fields = 1;
+}
+
+message Value {
+  oneof kind {
+    string string_value = 1;
+  }
+}
+
+service TicketService {
+  // Obtains Meta information about the used Collection
+  rpc GetInfo(google.protobuf.Empty) returns (Meta);
+  // Obtains stream of Tickets
+  rpc GetTickets(google.protobuf.Empty) returns (stream Node) {}
+  // ...
+  rpc GetTicket(google.protobuf.Empty) returns (Node) {}
+  // ...
+  rpc AddTicket(Node) returns (Node) {}
+  // ...
+  rpc UpdateTicket(Node) returns (Node) {}
+  // ...
+  rpc RemoveLast(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  // ...
+  rpc RemoveAt(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  // ...
+  rpc RemoveById(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}

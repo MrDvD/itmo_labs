@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.validators;
 
-import com.itmo.mrdvd.object.Coordinates;
+import com.itmo.mrdvd.Coordinates;
 
 public class CoordinatesValidator extends ObjectValidator<Coordinates> {
   public static boolean validateX(Float x) {

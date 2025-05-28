@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.validators;
 
-import com.itmo.mrdvd.object.Event;
-import com.itmo.mrdvd.object.EventType;
+import com.itmo.mrdvd.Event;
+import com.itmo.mrdvd.EventType;
 
 public class EventValidator extends ObjectValidator<Event> {
   public static boolean validateId(Long id) {
@@ -22,7 +22,7 @@ public class EventValidator extends ObjectValidator<Event> {
 
   private void init() {
     check(Event::getName, String.class, EventValidator::validateName);
-    check(Event::getDescription, String.class, EventValidator::validateDescription);
+    check(Event::getDesc, String.class, EventValidator::validateDescription);
     check(Event::getType, EventType.class, EventValidator::validateType);
   }
 

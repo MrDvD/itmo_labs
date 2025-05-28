@@ -1,14 +1,14 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.object.Ticket;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class CountGreaterThanEventCommand implements Command<String> {
-  private final CachedCrudWorker<? extends Ticket, ?, Long> collection;
+  private final CachedCrudWorker<Node, ?, Long> collection;
 
-  public CountGreaterThanEventCommand(CachedCrudWorker<? extends Ticket, ?, Long> collect) {
+  public CountGreaterThanEventCommand(CachedCrudWorker<Node, ?, Long> collect) {
     this.collection = collect;
   }
 
@@ -34,8 +34,8 @@ public class CountGreaterThanEventCommand implements Command<String> {
       throw new IllegalArgumentException("Параметр id не может быть отрицательным.");
     }
     int count = 0;
-    for (Ticket ticket : collection) {
-      if (ticket.getEvent().getId() > id) {
+    for (Node node : collection) {
+      if (node.getItem().getTicket().getEvent().getId() > id) {
         count++;
       }
     }

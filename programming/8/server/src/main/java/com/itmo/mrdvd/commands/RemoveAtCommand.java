@@ -1,21 +1,27 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.Node;
+import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
+
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 
 public class RemoveAtCommand implements Command<Void> {
-  private final CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection;
-  private final Predicate<AuthoredTicket> cond;
+  private final CachedCrudWorker<Node, Set<Node>, Long> collection;
+  private final Predicate<Node> cond;
+  private final Comparator<Ticket> comparator;
 
   public RemoveAtCommand(
-      CachedCrudWorker<AuthoredTicket, Set<AuthoredTicket>, Long> collection,
-      Predicate<AuthoredTicket> cond) {
+      CachedCrudWorker<Node, Set<Node>, Long> collection,
+      Comparator<Ticket> comparator,
+      Predicate<Node> cond) {
     this.collection = collection;
+    this.comparator = comparator;
     this.cond = cond;
   }
 
@@ -52,15 +58,15 @@ public class RemoveAtCommand implements Command<Void> {
     if (idx >= collection.getAll().size()) {
       throw new IllegalArgumentException("В коллекции нет элемента с введённым индексом.");
     }
-    List<AuthoredTicket> sortedList =
+    List<Node> sortedList =
         this.collection.getAll().stream()
-            .sorted((a, b) -> a.getCreationDate().compareTo(b.getCreationDate()))
+            .sorted((a, b) -> this.comparator.compare(a.getItem().getTicket(), b.getItem().getTicket()))
             .toList();
-    AuthoredTicket toRemove = sortedList.get(idx);
+    Node toRemove = sortedList.get(idx);
     if (!toRemove.getAuthor().equals(pair.getLogin())) {
       throw new IllegalArgumentException("Не удалось удалить чужой элемент.");
     }
-    this.collection.remove(toRemove.getId(), cond);
+    this.collection.remove(toRemove.getItem().getTicket().getId(), cond);
     return null;
   }
 

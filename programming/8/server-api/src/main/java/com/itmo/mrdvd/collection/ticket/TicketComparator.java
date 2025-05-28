@@ -1,7 +1,11 @@
 package com.itmo.mrdvd.collection.ticket;
 
-import com.itmo.mrdvd.object.Ticket;
+import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.object.TicketField;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Comparator;
 
 public class TicketComparator implements Comparator<Ticket> {
@@ -25,7 +29,9 @@ public class TicketComparator implements Comparator<Ticket> {
         result = t1.getName().compareTo(t2.getName());
         break;
       case CREATION_DATE:
-        result = t1.getCreationDate().compareTo(t2.getCreationDate());
+        LocalDateTime d1 = Instant.ofEpochSecond(t1.getCreateDate().getSeconds(), t1.getCreateDate().getNanos()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime d2 = Instant.ofEpochSecond(t2.getCreateDate().getSeconds(), t2.getCreateDate().getNanos()).atZone(ZoneId.systemDefault()).toLocalDateTime();
+        result = d1.compareTo(d2);
         break;
       case PRICE:
         result = Integer.compare(t1.getPrice(), t2.getPrice());
@@ -34,11 +40,11 @@ public class TicketComparator implements Comparator<Ticket> {
         result = t1.getType().compareTo(t2.getType());
         break;
       case EVENT:
-        result = t1.getEvent().compareTo(t2.getEvent());
+        result = Long.valueOf(t1.getEvent().getId()).compareTo(t2.getEvent().getId());
         break;
       case ID:
       default:
-        result = t1.getId().compareTo(t2.getId());
+        result = Long.valueOf(t1.getId()).compareTo(t2.getId());
     }
     return this.descending ? -result : result;
   }

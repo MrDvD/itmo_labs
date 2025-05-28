@@ -1,15 +1,15 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.object.AuthoredTicket;
 import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 
 public class RemoveByIdCommand implements Command<Void> {
-  private final CachedCrudWorker<AuthoredTicket, ?, Long> collection;
+  private final CachedCrudWorker<Node, ?, Long> collection;
 
-  public RemoveByIdCommand(CachedCrudWorker<AuthoredTicket, ?, Long> collection) {
+  public RemoveByIdCommand(CachedCrudWorker<Node, ?, Long> collection) {
     this.collection = collection;
   }
 
