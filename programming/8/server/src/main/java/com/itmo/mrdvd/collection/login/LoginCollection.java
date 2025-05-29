@@ -1,8 +1,8 @@
 package com.itmo.mrdvd.collection.login;
 
+import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.object.LoginPasswordPair;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -11,22 +11,21 @@ import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.function.Predicate;
 
-public class LoginCollection
-    implements CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
-  private Set<LoginPasswordPair> cache;
-  private final CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> dbworker;
+public class LoginCollection implements CachedCrudWorker<Credentials, Set<Credentials>, String> {
+  private Set<Credentials> cache;
+  private final CrudWorker<Credentials, Set<Credentials>, String> dbworker;
   private final ReadWriteLock loginCollectionLock;
 
   public LoginCollection(
-      CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> dbworker,
+      CrudWorker<Credentials, Set<Credentials>, String> dbworker,
       ReadWriteLock loginCollectionLock) {
     this(dbworker, loginCollectionLock, new HashSet<>());
   }
 
   public LoginCollection(
-      CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> dbworker,
+      CrudWorker<Credentials, Set<Credentials>, String> dbworker,
       ReadWriteLock loginCollectionLock,
-      Set<LoginPasswordPair> cache) {
+      Set<Credentials> cache) {
     this.dbworker = dbworker;
     this.cache = cache;
     this.loginCollectionLock = loginCollectionLock;
@@ -34,7 +33,7 @@ public class LoginCollection
   }
 
   @Override
-  public void setCache(Set<LoginPasswordPair> cache) {
+  public void setCache(Set<Credentials> cache) {
     this.loginCollectionLock.writeLock().lock();
     try {
       this.cache = cache;
@@ -54,10 +53,10 @@ public class LoginCollection
   }
 
   @Override
-  public Optional<LoginPasswordPair> add(LoginPasswordPair obj, Predicate<LoginPasswordPair> cond) {
+  public Optional<Credentials> add(Credentials obj, Predicate<Credentials> cond) {
     this.loginCollectionLock.writeLock().lock();
     try {
-      Optional<LoginPasswordPair> pair = dbworker.add(obj, cond);
+      Optional<Credentials> pair = dbworker.add(obj, cond);
       if (pair.isPresent()) {
         this.cache.add(pair.get());
       }
@@ -68,11 +67,10 @@ public class LoginCollection
   }
 
   @Override
-  public Optional<LoginPasswordPair> update(
-      String key, LoginPasswordPair obj, Predicate<LoginPasswordPair> cond) {
+  public Optional<Credentials> update(String key, Credentials obj, Predicate<Credentials> cond) {
     this.loginCollectionLock.writeLock().lock();
     try {
-      Optional<LoginPasswordPair> pair = dbworker.update(key, obj, cond);
+      Optional<Credentials> pair = dbworker.update(key, obj, cond);
       if (pair.isPresent()) {
         this.cache.removeIf(t -> t.getLogin().equals(key));
         this.cache.add(pair.get());
@@ -84,7 +82,7 @@ public class LoginCollection
   }
 
   @Override
-  public Optional<LoginPasswordPair> get(String key) {
+  public Optional<Credentials> get(String key) {
     this.loginCollectionLock.readLock().lock();
     try {
       return this.cache.stream().filter(pair -> pair.getLogin().equals(key)).findAny();
@@ -94,7 +92,7 @@ public class LoginCollection
   }
 
   @Override
-  public Set<LoginPasswordPair> getAll() {
+  public Set<Credentials> getAll() {
     this.loginCollectionLock.readLock().lock();
     try {
       return this.cache;
@@ -105,15 +103,10 @@ public class LoginCollection
 
   @Override
   public void remove(String key) {
-    remove(key, (t) -> true);
-  }
-
-  @Override
-  public void remove(String key, Predicate<LoginPasswordPair> cond) {
     this.loginCollectionLock.writeLock().lock();
     try {
-      Optional<LoginPasswordPair> pair = get(key);
-      if (pair.isPresent() && cond.test(pair.get())) {
+      Optional<Credentials> pair = get(key);
+      if (pair.isPresent()) {
         this.dbworker.remove(key);
         this.cache.removeIf(login -> login.getLogin().equals(key));
       }
@@ -134,7 +127,7 @@ public class LoginCollection
   }
 
   @Override
-  public Iterator<LoginPasswordPair> iterator() {
+  public Iterator<Credentials> iterator() {
     this.loginCollectionLock.readLock().lock();
     try {
       if (this.cache == null) {

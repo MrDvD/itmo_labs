@@ -1,16 +1,15 @@
 package com.itmo.mrdvd.commands;
 
+import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Set;
 
 public class RegisterCommand implements Command<Void> {
-  private final CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker;
+  private final CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker;
 
-  public RegisterCommand(
-      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker) {
+  public RegisterCommand(CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker) {
     this.loginWorker = loginWorker;
   }
 
@@ -22,9 +21,9 @@ public class RegisterCommand implements Command<Void> {
     if (params.isEmpty()) {
       throw new IllegalArgumentException("Недостаточное количество аргументов для команды.");
     }
-    LoginPasswordPair pair = null;
+    Credentials pair = null;
     try {
-      pair = (LoginPasswordPair) params.get(0);
+      pair = (Credentials) params.get(0);
     } catch (ClassCastException e) {
       throw new IllegalArgumentException("Не удалось распознать аргументы команды.");
     }

@@ -1,9 +1,11 @@
 package com.itmo.mrdvd.publicScope;
 
+import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.collection.AccessWorker;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
-import com.itmo.mrdvd.collection.login.SelfContainedHash;
+import com.itmo.mrdvd.collection.SelfContainedHash;
+import com.itmo.mrdvd.collection.ticket.NodeComparator;
 import com.itmo.mrdvd.collection.ticket.TicketComparator;
 import com.itmo.mrdvd.commands.AddCommand;
 import com.itmo.mrdvd.commands.AddIfCommand;
@@ -14,13 +16,12 @@ import com.itmo.mrdvd.commands.LoginCommand;
 import com.itmo.mrdvd.commands.MinByPriceCommand;
 import com.itmo.mrdvd.commands.PrintFieldDescendingTypeCommand;
 import com.itmo.mrdvd.commands.RegisterCommand;
-import com.itmo.mrdvd.commands.RemoveAtCommand;
 import com.itmo.mrdvd.commands.RemoveByIdCommand;
-import com.itmo.mrdvd.commands.RemoveLastCommand;
+import com.itmo.mrdvd.commands.ShowAtCommand;
 import com.itmo.mrdvd.commands.ShowByIdCommand;
 import com.itmo.mrdvd.commands.ShowCommand;
+import com.itmo.mrdvd.commands.ShowLastCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
-import com.itmo.mrdvd.object.LoginPasswordPair;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -36,7 +37,7 @@ public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
       CachedCrudWorker<Node, Set<Node>, Long> objectWorker,
       Validator<Node> validator,
-      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
       SelfContainedHash hash) {
@@ -54,7 +55,7 @@ public class PublicServerExecutor extends AbstractExecutor {
   public PublicServerExecutor(
       CachedCrudWorker<Node, Set<Node>, Long> objectWorker,
       Validator<Node> validator,
-      CachedCrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> loginWorker,
+      CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
       SelfContainedHash hash,
@@ -63,27 +64,30 @@ public class PublicServerExecutor extends AbstractExecutor {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
     setCommand(new InfoCommand(metaAccessor, serializer));
-    setCommand(new MinByPriceCommand(objectWorker, new TicketComparator(TicketField.PRICE)));
     setCommand(
-        new RemoveLastCommand(objectWorker, new TicketComparator(TicketField.CREATION_DATE)));
+        new MinByPriceCommand<>(
+            objectWorker, new NodeComparator(new TicketComparator(TicketField.PRICE))));
+    setCommand(
+        new ShowLastCommand<>(
+            objectWorker, new NodeComparator(new TicketComparator(TicketField.CREATION_DATE))));
     setCommand(new ShowCommand<>(objectWorker));
     setCommand(new ShowByIdCommand<>(objectWorker));
     setCommand(
-        new PrintFieldDescendingTypeCommand(objectWorker, new TicketComparator(TicketField.TYPE)));
+        new PrintFieldDescendingTypeCommand<>(
+            objectWorker, new NodeComparator(new TicketComparator(TicketField.TYPE))));
     setCommand(
-        new RemoveAtCommand(
-            objectWorker,
-            new TicketComparator(TicketField.CREATION_DATE),
-            (t) -> {
-              Optional<Node> old = objectWorker.get(t.getItem().getTicket().getId());
-              return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
-            }));
+        new ShowAtCommand<>(
+            objectWorker, new NodeComparator(new TicketComparator(TicketField.CREATION_DATE))));
     setCommand(new RemoveByIdCommand(objectWorker));
     setCommand(new CountGreaterThanEventCommand(objectWorker));
     setCommand(new AddCommand<>(objectWorker, validator, Node.class));
     setCommand(
-        new AddIfCommand(
-            objectWorker, validator, new TicketComparator(TicketField.ID), Node.class, Set.of(1)));
+        new AddIfCommand<>(
+            objectWorker,
+            validator,
+            new NodeComparator(new TicketComparator(TicketField.ID)),
+            Node.class,
+            Set.of(1)));
     setCommand(
         new UpdateCommand<>(
             objectWorker,

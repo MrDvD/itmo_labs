@@ -8,11 +8,8 @@ import com.itmo.mrdvd.collection.meta.MetaCollection;
 import com.itmo.mrdvd.collection.meta.MetaJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
-import com.itmo.mrdvd.object.LoginPasswordPair;
-import com.itmo.mrdvd.proxy.mappers.HashmapObjectMapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.publicScope.PublicServerExecutor;
-import com.itmo.mrdvd.publicScope.PublicServerProxy;
 import com.itmo.mrdvd.service.GrpcServer;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
@@ -78,13 +75,6 @@ public class Main {
         new PublicServerExecutor(
             collect, validator, loginCollection, metaCollection, serialObject, hash);
     // PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
-    HashmapObjectMapper<LoginPasswordPair> authMapper =
-        new HashmapObjectMapper<>(new XmlMapper(), LoginPasswordPair.class);
-    PublicServerProxy publicProxy =
-        new PublicServerProxy(
-            publicExec, authMapper, new HashmapObjectMapper<>(new XmlMapper(), Node.class));
-    // PrivateServerProxy privateProxy = new PrivateServerProxy(privateExec, publicProxy,
-    // authMapper);
     GrpcServer server =
         new GrpcServer(
             NettyServerBuilder.forAddress(new InetSocketAddress(publicHostname, publicPort)),

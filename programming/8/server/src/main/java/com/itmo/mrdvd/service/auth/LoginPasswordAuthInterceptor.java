@@ -1,6 +1,6 @@
 package com.itmo.mrdvd.service.auth;
 
-import com.itmo.mrdvd.object.LoginPasswordPair;
+import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Metadata;
 import java.util.List;
@@ -21,12 +21,16 @@ public class LoginPasswordAuthInterceptor extends AuthInterceptor {
             return false;
           }
           try {
-            LoginPasswordPair pair = new LoginPasswordPair();
             Object login = t.get(loginKey);
-            pair.setLogin((String) login);
             Object password = t.get(passwordKey);
-            pair.setPassword((String) password);
-            Object rawResult = exec.processCommand("login", List.of(pair));
+            Object rawResult =
+                exec.processCommand(
+                    "login",
+                    List.of(
+                        Credentials.newBuilder()
+                            .setLogin((String) login)
+                            .setPassword((String) password)
+                            .build()));
             return (Boolean) rawResult;
           } catch (ClassCastException e) {
             return false;

@@ -3,6 +3,7 @@ package com.itmo.mrdvd.collection.login;
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import at.favre.lib.crypto.bcrypt.BCrypt.Version;
 import at.favre.lib.crypto.bcrypt.LongPasswordStrategy;
+import com.itmo.mrdvd.collection.SelfContainedHash;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

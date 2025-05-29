@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.collection.login;
+package com.itmo.mrdvd.collection;
 
 public interface SelfContainedHash {
   public String hash(String secret);

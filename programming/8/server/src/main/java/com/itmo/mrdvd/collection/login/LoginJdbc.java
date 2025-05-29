@@ -1,7 +1,8 @@
 package com.itmo.mrdvd.collection.login;
 
+import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.object.LoginPasswordPair;
+import com.itmo.mrdvd.collection.SelfContainedHash;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,7 +14,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswordPair>, String> {
+public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, String> {
   private final String url;
   private final String user;
   private final String password;
@@ -27,15 +28,12 @@ public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswor
   }
 
   @Override
-  public Optional<LoginPasswordPair> add(LoginPasswordPair t, Predicate<LoginPasswordPair> cond) {
+  public Optional<Credentials> add(Credentials t, Predicate<Credentials> cond) {
     String sql = "insert into USERS (name, passwd_hash) values (?, ?)";
-    LoginPasswordPair pair = new LoginPasswordPair();
-    pair.setLogin(t.getLogin());
-    pair.setPassword(this.hash.hash(t.getPassword()));
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, pair.getLogin());
-        stmt.setString(2, pair.getPassword());
+        stmt.setString(1, t.getLogin());
+        stmt.setString(2, this.hash.hash(t.getPassword()));
         if (!cond.test(t)) {
           return Optional.empty();
         }
@@ -44,19 +42,15 @@ public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswor
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return Optional.of(pair);
+    return Optional.of(t);
   }
 
   @Override
-  public Optional<LoginPasswordPair> update(
-      String key, LoginPasswordPair obj, Predicate<LoginPasswordPair> cond) {
+  public Optional<Credentials> update(String key, Credentials obj, Predicate<Credentials> cond) {
     String sql = "update USERS set passwd_hash = ? where name = ?";
-    LoginPasswordPair pair = new LoginPasswordPair();
-    pair.setLogin(obj.getLogin());
-    pair.setPassword(this.hash.hash(obj.getPassword()));
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-        stmt.setString(1, pair.getPassword());
+        stmt.setString(1, this.hash.hash(obj.getPassword()));
         stmt.setString(2, key);
         if (!cond.test(obj)) {
           return Optional.empty();
@@ -66,21 +60,22 @@ public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswor
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-    return Optional.of(pair);
+    return Optional.of(obj);
   }
 
   @Override
-  public Optional<LoginPasswordPair> get(String key) {
+  public Optional<Credentials> get(String key) {
     String sql = "select name, passwd_hash from USERS where name = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setString(1, key);
         ResultSet rs = stmt.executeQuery();
         if (rs.next()) {
-          LoginPasswordPair pair = new LoginPasswordPair();
-          pair.setLogin(rs.getString("name"));
-          pair.setPassword(rs.getString("passwd_hash"));
-          return Optional.of(pair);
+          return Optional.of(
+              Credentials.newBuilder()
+                  .setLogin(rs.getString("name"))
+                  .setPassword(rs.getString("passwd_hash"))
+                  .build());
         }
       }
     } catch (SQLException e) {
@@ -90,20 +85,21 @@ public class LoginJdbc implements CrudWorker<LoginPasswordPair, Set<LoginPasswor
   }
 
   @Override
-  public Set<LoginPasswordPair> getAll() {
+  public Set<Credentials> getAll() {
     return getAll(new HashSet<>());
   }
 
-  public Set<LoginPasswordPair> getAll(Set<LoginPasswordPair> pairs) {
+  public Set<Credentials> getAll(Set<Credentials> pairs) {
     String sql = "select name, passwd_hash from USERS";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password);
         Statement stmt = conn.createStatement();
         ResultSet rs = stmt.executeQuery(sql)) {
       while (rs.next()) {
-        LoginPasswordPair pair = new LoginPasswordPair();
-        pair.setLogin(rs.getString("name"));
-        pair.setPassword(rs.getString("passwd_hash"));
-        pairs.add(pair);
+        pairs.add(
+            Credentials.newBuilder()
+                .setLogin(rs.getString("name"))
+                .setPassword(rs.getString("passwd_hash"))
+                .build());
       }
       return pairs;
     } catch (SQLException e) {

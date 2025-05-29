@@ -96,15 +96,10 @@ public class TicketCollection implements CachedCrudWorker<Node, Set<Node>, Long>
 
   @Override
   public void remove(Long id) {
-    remove(id, (t) -> true);
-  }
-
-  @Override
-  public void remove(Long id, Predicate<Node> cond) {
     this.objectCollectionLock.writeLock().lock();
     try {
       Optional<Node> toRemove = dbworker.get(id);
-      if (toRemove.isPresent() && cond.test(toRemove.get())) {
+      if (toRemove.isPresent()) {
         this.dbworker.remove(id);
         this.tickets.removeIf(
             ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id));
