@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.service;
 
+import com.itmo.mrdvd.service.auth.LoginPasswordAuthInterceptor;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -9,7 +10,11 @@ public class GrpcServer implements Service {
   private final Server server;
 
   public GrpcServer(ServerBuilder<?> serverBuilder, AbstractExecutor exec) {
-    this.server = serverBuilder.addService(new TicketServiceImpl(exec)).build();
+    this.server =
+        serverBuilder
+            .addService(new TicketServiceImpl(exec))
+            .intercept(new LoginPasswordAuthInterceptor(exec))
+            .build();
   }
 
   @Override
