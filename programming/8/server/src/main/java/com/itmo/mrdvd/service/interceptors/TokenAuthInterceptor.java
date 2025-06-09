@@ -3,9 +3,8 @@ package com.itmo.mrdvd.service.interceptors;
 import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.AuthResponse;
 import com.itmo.mrdvd.AuthServiceGrpc.AuthServiceImplBase;
-import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.AuthStatus;
-
+import com.itmo.mrdvd.mappers.Mapper;
 import io.grpc.Metadata;
 import io.grpc.stub.StreamObserver;
 import java.util.Optional;

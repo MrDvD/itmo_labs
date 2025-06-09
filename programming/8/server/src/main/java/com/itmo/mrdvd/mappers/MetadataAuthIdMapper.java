@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.mappers;
 
 import com.itmo.mrdvd.AuthID;
-
 import io.grpc.Metadata;
 import java.util.Optional;
 

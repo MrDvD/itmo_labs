@@ -7,7 +7,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.UserInfo;
-
 import java.util.Optional;
 
 public class AuthIdUserInfoMapper implements Mapper<AuthID, UserInfo> {

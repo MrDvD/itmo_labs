@@ -10,7 +10,6 @@ import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.TicketType;
 import com.itmo.mrdvd.collection.CrudWorker;
 import com.itmo.mrdvd.mappers.Mapper;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -57,10 +56,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtEvent.setString(1, t.getEvent().getName());
         stmtEvent.setString(2, t.getEvent().getDesc());
         stmtEvent.setString(3, t.getEvent().getType().toString());
-        if (stmtEvent.executeUpdate() == 0) {
-          conn.rollback();
-          return Optional.empty();
-        }
+        stmtEvent.executeUpdate();
         try (ResultSet generatedKeys = stmtEvent.getGeneratedKeys()) {
           if (generatedKeys.next()) {
             eventId = generatedKeys.getLong(1);
@@ -80,10 +76,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtTicket.setString(5, t.getType().toString());
         stmtTicket.setLong(6, eventId);
         stmtTicket.setString(7, node.getAuthor());
-        if (stmtTicket.executeUpdate() == 0) {
-          conn.rollback();
-          return Optional.empty();
-        }
+        stmtTicket.executeUpdate();
         try (ResultSet generatedKeys = stmtTicket.getGeneratedKeys()) {
           if (generatedKeys.next()) {
             Long ticketId = generatedKeys.getLong(1);
@@ -133,6 +126,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
     String sqlEventId = "select event from TICKETS where id = ? limit 1";
     String sqlTicket =
         "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ?::ticket_type where id = ?";
+    String sqlTicketDate = "select creation_date from TICKETS where id = ?";
     var result = node.getItem().getTicket().toBuilder();
     result.setId(id);
     Long eventId = null;
@@ -156,10 +150,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtEvent.setString(2, t.getEvent().getDesc());
         stmtEvent.setString(3, t.getEvent().getType().toString());
         stmtEvent.setLong(4, eventId);
-        if (stmtEvent.executeUpdate() == 0) {
-          conn.rollback();
-          return Optional.empty();
-        }
+        stmtEvent.executeUpdate();
       }
       try (PreparedStatement stmtTicket = conn.prepareStatement(sqlTicket)) {
         stmtTicket.setString(1, t.getName());
@@ -168,18 +159,32 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtTicket.setInt(4, t.getPrice());
         stmtTicket.setString(5, t.getType().toString());
         stmtTicket.setLong(6, t.getId());
-        if (stmtTicket.executeUpdate() == 0) {
-          conn.rollback();
-          return Optional.empty();
-        }
+        stmtTicket.executeUpdate();
       }
-      Event newEvent = node.getItem().getTicket().getEvent().toBuilder().setId(eventId).build();
-      Ticket newTicket = node.getItem().getTicket().toBuilder().setEvent(newEvent).build();
-      Node newNode =
-          node.toBuilder().setItem(Item.newBuilder().setTicket(newTicket).build()).build();
-      if (cond.test(newNode)) {
-        conn.commit();
-        return Optional.of(newNode);
+      try (PreparedStatement stmtTicketDate = conn.prepareStatement(sqlTicketDate)) {
+        stmtTicketDate.setLong(1, id);
+        try (ResultSet dates = stmtTicketDate.executeQuery()) {
+          if (dates.next()) {
+            Optional<Timestamp> date =
+                this.timeMapper.convert(dates.getTimestamp(1).toLocalDateTime());
+            if (date.isPresent()) {
+              Event newEvent =
+                  node.getItem().getTicket().getEvent().toBuilder().setId(eventId).build();
+              Ticket newTicket =
+                  node.getItem().getTicket().toBuilder()
+                      .setId(id)
+                      .setCreateDate(date.get())
+                      .setEvent(newEvent)
+                      .build();
+              Node newNode =
+                  node.toBuilder().setItem(Item.newBuilder().setTicket(newTicket).build()).build();
+              if (cond.test(newNode)) {
+                conn.commit();
+                return Optional.of(newNode);
+              }
+            }
+          }
+        }
       }
       conn.rollback();
       return Optional.empty();
@@ -202,36 +207,37 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       stmt.setLong(1, id);
       try (ResultSet rs = stmt.executeQuery()) {
         if (rs.next()) {
-          var event = Event.newBuilder();
-          event.setId(rs.getLong("event_id"));
-          event.setName(rs.getString("event_name"));
-          event.setDesc(rs.getString("event_description"));
-          event.setType(EventType.valueOf(rs.getString("event_type")));
-          var coords = Coordinates.newBuilder();
-          coords.setX(rs.getFloat("x"));
-          coords.setY(rs.getFloat("y"));
-          var ticket = Ticket.newBuilder();
-          ticket.setId(rs.getLong("id"));
-          ticket.setName(rs.getString("name"));
-          ticket.setCoords(coords.build());
-          Instant instant =
-              rs.getTimestamp("creation_date")
-                  .toLocalDateTime()
-                  .atZone(ZoneId.systemDefault())
-                  .toInstant();
-          ticket.setCreateDate(
-              Timestamp.newBuilder()
-                  .setSeconds(instant.getEpochSecond())
-                  .setNanos(instant.getNano())
-                  .build());
-          ticket.setPrice(rs.getInt("price"));
-          ticket.setType(TicketType.valueOf(rs.getString("type")));
-          ticket.setEvent(event.build());
-          return Optional.ofNullable(
-              Node.newBuilder()
-                  .setItem(Item.newBuilder().setTicket(ticket.build()).build())
-                  .setAuthor(rs.getString("author"))
-                  .build());
+          Optional<Timestamp> time =
+              this.timeMapper.convert(rs.getTimestamp("creation_date").toLocalDateTime());
+          if (time.isPresent()) {
+            return Optional.ofNullable(
+                Node.newBuilder()
+                    .setItem(
+                        Item.newBuilder()
+                            .setTicket(
+                                Ticket.newBuilder()
+                                    .setId(rs.getLong("id"))
+                                    .setName(rs.getString("name"))
+                                    .setCoords(
+                                        Coordinates.newBuilder()
+                                            .setX(rs.getFloat("x"))
+                                            .setY(rs.getFloat("y"))
+                                            .build())
+                                    .setPrice(rs.getInt("price"))
+                                    .setType(TicketType.valueOf(rs.getString("type")))
+                                    .setEvent(
+                                        Event.newBuilder()
+                                            .setId(rs.getLong("event_id"))
+                                            .setName(rs.getString("event_name"))
+                                            .setDesc(rs.getString("event_description"))
+                                            .setType(EventType.valueOf(rs.getString("event_type")))
+                                            .build())
+                                    .setCreateDate(time.get())
+                                    .build())
+                            .build())
+                    .setAuthor(rs.getString("author"))
+                    .build());
+          }
         }
       }
     } catch (SQLException e) {

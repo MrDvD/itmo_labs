@@ -7,7 +7,10 @@ import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.TicketServiceGrpc.TicketServiceImplBase;
 import com.itmo.mrdvd.UserInfo;
 import com.itmo.mrdvd.UserServiceGrpc.UserServiceImplBase;
+import com.itmo.mrdvd.collection.ticket.NodeComparator;
+import com.itmo.mrdvd.collection.ticket.TicketComparator;
 import com.itmo.mrdvd.mappers.Mapper;
+import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Context;
 import io.grpc.Status;
@@ -49,6 +52,7 @@ public class TicketServiceImpl extends TicketServiceImplBase {
       try {
         Set<Node> tickets = (Set) result;
         tickets.stream()
+            .sorted(new NodeComparator(new TicketComparator(TicketField.CREATION_DATE)))
             .forEach(
                 ticket -> {
                   responseObserver.onNext(ticket);
@@ -109,12 +113,15 @@ public class TicketServiceImpl extends TicketServiceImplBase {
               responseObserver.onError(Status.INTERNAL.asRuntimeException());
               return;
             }
-            Object toUpdate = exec.processCommand("show_by_id", List.of(request.getId()));
+            Object toUpdate = exec.processCommand("show_by_id", List.of(request.getId().getId()));
             if (toUpdate != null && toUpdate instanceof Optional opt && opt.isPresent()) {
               Node node = (Node) opt.get();
               if (node.getAuthor().equals(info.getUsername())) {
                 exec.processCommand(
-                    "update", List.of(node.getItem().getTicket().getId(), request.getNode()));
+                    "update",
+                    List.of(
+                        node.getItem().getTicket().getId(),
+                        request.getNode().toBuilder().setAuthor(info.getUsername()).build()));
                 responseObserver.onNext(Empty.getDefaultInstance());
                 responseObserver.onCompleted();
               } else {
@@ -134,9 +141,6 @@ public class TicketServiceImpl extends TicketServiceImplBase {
           @Override
           public void onCompleted() {}
         });
-    this.exec.processCommand("update", List.of(request.getId().getId(), request.getNode()));
-    responseObserver.onNext(Empty.getDefaultInstance());
-    responseObserver.onCompleted();
   }
 
   @Override

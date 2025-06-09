@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.mappers;
 
 import com.google.protobuf.Timestamp;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

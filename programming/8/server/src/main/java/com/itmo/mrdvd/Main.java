@@ -12,7 +12,6 @@ import com.itmo.mrdvd.mappers.ContextAuthIdMapper;
 import com.itmo.mrdvd.mappers.CredentialsJwtMapper;
 import com.itmo.mrdvd.mappers.LocalDatetimeTimestampMapper;
 import com.itmo.mrdvd.mappers.MetadataAuthIdMapper;
-import com.itmo.mrdvd.publicScope.PublicServerExecutor;
 import com.itmo.mrdvd.service.AuthGrpcServer;
 import com.itmo.mrdvd.service.ContextKeys;
 import com.itmo.mrdvd.service.TicketGrpcServer;
@@ -26,84 +25,99 @@ import com.itmo.mrdvd.validators.NodeValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
 import io.grpc.Metadata;
 import io.grpc.netty.NettyServerBuilder;
+import java.io.Console;
 import java.net.InetSocketAddress;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * TODO: 1. Plan out the api: - api/v1/register - api/v1/login - api/v1/info - api/v1/tickets -
- * api/v1/ticket/1 - api/v1/add - api/v1/update/2 - api/v1/remove_at/1 - api/v1/remove_last -
- * api/v1/remove_by_id/1 localhost: - api/v1/clear - api/v1/shutdown Перехватчики (Interceptors) -
- * для аутентификации? Metadata is information about a particular RPC call (such as authentication
- * details) in the form of a list of key-value pairs, where the keys are strings and the values are
- * typically strings, but can be binary data.
- */
 public class Main {
   public static void main(String[] args) {
-    String envUser, envPass, publicHostname, pgHost, pgDbname;
-    int publicPort, privatePort;
-    String secret = "testytesttoremoveasap";
+    String envUser, envPass, hostname, pgHost, pgDbname;
+    int ticketPort = 0, authPort = 0;
+    String secret;
     if (args.length < 5) {
-      publicHostname = "localhost";
-      publicPort = 8080;
-      privatePort = 8090;
+      hostname = "localhost";
+      ticketPort = 8080;
+      authPort = 8090;
       pgHost = "localhost";
       pgDbname = "";
       System.err.println(
           "Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
+      Console console = System.console();
+      if (console == null) {
+        System.err.println("Консоль недоступна. Невозможно ввести данные в режиме DEBUG.");
+        System.exit(1);
+      }
+      System.out.print("Введите имя пользователя PostgreSQL: ");
+      envUser = console.readLine();
+      System.out.print("Введите пароль пользователя PostgreSQL: ");
+      envPass = new String(console.readPassword());
+      System.out.print("Введите секрет приложения: ");
+      secret = new String(console.readPassword());
     } else {
-      publicHostname = args[0];
+      hostname = args[0];
       pgHost = args[3];
       pgDbname = args[4];
       try {
-        publicPort = Integer.parseInt(args[1]);
-        privatePort = Integer.parseInt(args[2]);
+        ticketPort = Integer.parseInt(args[1]);
+        authPort = Integer.parseInt(args[2]);
       } catch (NumberFormatException e) {
         System.err.println("Не удалось распарсить порты.");
-        return;
+        System.exit(1);
       }
+      if (System.getenv("PG_USER") == null) {
+        System.err.println("Ошибка: переменная PG_USER не задана.");
+        System.exit(1);
+      }
+      if (System.getenv("PG_PASS") == null) {
+        System.err.println("Ошибка: переменная PG_PASS не задана.");
+        System.exit(1);
+      }
+      if (System.getenv("APP_SECRET") == null) {
+        System.err.println("Ошибка: переменная APP_SECRET не задана.");
+        System.exit(1);
+      }
+      envUser = System.getenv("PG_USER");
+      envPass = System.getenv("PG_PASS");
+      secret = System.getenv("APP_SECRET");
     }
-    System.out.print("Введите имя пользователя PostgreSQL: ");
-    envUser = System.console().readLine();
-    System.out.print("Введите пароль пользователя PostgreSQL: ");
-    envPass = System.console().readLine();
     MetadataAuthIdMapper idMapper =
         new MetadataAuthIdMapper(
             Metadata.Key.of(
                 ContextKeys.TOKEN.getKey().toString(), Metadata.ASCII_STRING_MARSHALLER));
-    CredentialsJwtMapper tokenMapper = new CredentialsJwtMapper(secret);
-    AuthIdUserInfoMapper userMapper = new AuthIdUserInfoMapper(secret);
-    LocalDatetimeTimestampMapper timeMapper = new LocalDatetimeTimestampMapper();
-    ReentrantReadWriteLock loginCollectionLock = new ReentrantReadWriteLock();
-    ReentrantReadWriteLock objectCollectionLock = new ReentrantReadWriteLock();
-    ReentrantReadWriteLock metaCollectionLock = new ReentrantReadWriteLock();
     String jdbcUrl = String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname);
-    TicketJdbc jdbc = new TicketJdbc(timeMapper, jdbcUrl, envUser, envPass);
-    TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
-    NodeValidator validator =
-        new NodeValidator(new TicketValidator(new CoordinatesValidator(), new EventValidator()));
-    AuthIdValidator idValidator = new AuthIdValidator(secret);
+    TicketCollection collect =
+        new TicketCollection(
+            new TicketJdbc(new LocalDatetimeTimestampMapper(), jdbcUrl, envUser, envPass),
+            new ReentrantReadWriteLock());
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
-        new LoginCollection(new LoginJdbc(jdbcUrl, envUser, envPass, hash), loginCollectionLock);
+        new LoginCollection(
+            new LoginJdbc(jdbcUrl, envUser, envPass, hash), new ReentrantReadWriteLock());
     MetaCollection metaCollection =
-        new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), metaCollectionLock);
-    PublicServerExecutor publicExec =
-        new PublicServerExecutor(
-            collect, validator, loginCollection, metaCollection, tokenMapper, idValidator, hash);
-    // PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
+        new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), new ReentrantReadWriteLock());
+    ServerExecutor publicExec =
+        new ServerExecutor(
+            collect,
+            new NodeValidator(
+                new TicketValidator(new CoordinatesValidator(), new EventValidator())),
+            loginCollection,
+            metaCollection,
+            new CredentialsJwtMapper(secret),
+            new AuthIdValidator(secret),
+            hash);
     AuthServiceImpl authService = new AuthServiceImpl(publicExec);
     AuthGrpcServer authServer =
         new AuthGrpcServer(
-            NettyServerBuilder.forAddress(new InetSocketAddress("localhost", 5555)),
+            NettyServerBuilder.forAddress(new InetSocketAddress(hostname, authPort)),
             authService,
             idMapper);
     authServer.start();
     TicketGrpcServer ticketServer =
         new TicketGrpcServer(
-            NettyServerBuilder.forAddress(new InetSocketAddress(publicHostname, publicPort)),
+            NettyServerBuilder.forAddress(new InetSocketAddress(hostname, ticketPort)),
             new TicketServiceImpl(
                 publicExec,
-                new UserServiceImpl(publicExec, userMapper),
+                new UserServiceImpl(publicExec, new AuthIdUserInfoMapper(secret)),
                 new ContextAuthIdMapper("collect-token")),
             authService,
             idMapper,
