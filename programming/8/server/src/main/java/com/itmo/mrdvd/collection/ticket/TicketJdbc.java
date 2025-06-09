@@ -9,6 +9,7 @@ import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.TicketType;
 import com.itmo.mrdvd.collection.CrudWorker;
+import com.itmo.mrdvd.proxy.mappers.Mapper;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -16,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Optional;
@@ -23,11 +25,14 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
+  private final Mapper<LocalDateTime, Timestamp> timeMapper;
   private final String url;
   private final String user;
   private final String password;
 
-  public TicketJdbc(String url, String user, String password) {
+  public TicketJdbc(
+      Mapper<LocalDateTime, Timestamp> timeMapper, String url, String user, String password) {
+    this.timeMapper = timeMapper;
     this.url = url;
     this.user = user;
     this.password = password;
@@ -41,7 +46,8 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
     }
     String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?::event_type)";
     String sqlTicket =
-        "insert into TICKETS (name, x, y, creation_date, price, type, event, author) values (?, ?, ?, ?, ?, ?::ticket_type, ?, ?)";
+        "insert into TICKETS (name, x, y, price, type, event, author) values (?, ?, ?, ?, ?::ticket_type, ?, ?)";
+    String sqlTicketDate = "select creation_date from TICKETS where id = ?";
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       conn.setAutoCommit(false);
       Long eventId = null;
@@ -63,44 +69,53 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
           }
         }
       }
-
       try (PreparedStatement stmtTicket =
-          conn.prepareStatement(sqlTicket, Statement.RETURN_GENERATED_KEYS)) {
+              conn.prepareStatement(sqlTicket, Statement.RETURN_GENERATED_KEYS);
+          PreparedStatement stmtTicketDate = conn.prepareStatement(sqlTicketDate)) {
         stmtTicket.setString(1, t.getName());
         stmtTicket.setFloat(2, t.getCoords().getX());
         stmtTicket.setFloat(3, t.getCoords().getY());
-        stmtTicket.setTimestamp(
-            4,
-            java.sql.Timestamp.valueOf(
-                Instant.ofEpochSecond(t.getCreateDate().getSeconds(), t.getCreateDate().getNanos())
-                    .atZone(ZoneId.systemDefault())
-                    .toLocalDateTime()));
-        stmtTicket.setInt(5, t.getPrice());
-        stmtTicket.setString(6, t.getType().toString());
-        stmtTicket.setLong(7, eventId);
-        stmtTicket.setString(8, node.getAuthor());
+        stmtTicket.setInt(4, t.getPrice());
+        stmtTicket.setString(5, t.getType().toString());
+        stmtTicket.setLong(6, eventId);
+        stmtTicket.setString(7, node.getAuthor());
         if (stmtTicket.executeUpdate() == 0) {
           conn.rollback();
           return Optional.empty();
         }
         try (ResultSet generatedKeys = stmtTicket.getGeneratedKeys()) {
           if (generatedKeys.next()) {
-            var result = node.getItem().getTicket().toBuilder();
-            result.setId(generatedKeys.getLong(1));
-            result.setEvent(t.getEvent().toBuilder().setId(eventId).build());
-            Node newNode =
-                node.toBuilder()
-                    .setItem(Item.newBuilder().setTicket(result.build()).build())
-                    .build();
-            if (cond.test(newNode)) {
-              conn.commit();
-              return Optional.of(newNode);
+            Long ticketId = generatedKeys.getLong(1);
+            stmtTicketDate.setLong(1, ticketId);
+            try (ResultSet creationDates = stmtTicketDate.executeQuery()) {
+              if (creationDates.next()) {
+                Optional<Timestamp> time =
+                    this.timeMapper.convert(creationDates.getTimestamp(1).toLocalDateTime());
+                if (time.isPresent()) {
+                  Node newNode =
+                      node.toBuilder()
+                          .setItem(
+                              Item.newBuilder()
+                                  .setTicket(
+                                      node.getItem().getTicket().toBuilder()
+                                          .setId(ticketId)
+                                          .setCreateDate(time.get())
+                                          .setEvent(t.getEvent().toBuilder().setId(eventId).build())
+                                          .build())
+                                  .build())
+                          .build();
+                  if (cond.test(newNode)) {
+                    conn.commit();
+                    return Optional.of(newNode);
+                  }
+                }
+              }
             }
           }
-          conn.rollback();
-          return Optional.empty();
         }
       }
+      conn.rollback();
+      return Optional.empty();
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

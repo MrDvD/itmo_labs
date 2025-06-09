@@ -1,6 +1,5 @@
 package com.itmo.mrdvd;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.itmo.mrdvd.collection.login.BCryptHash;
 import com.itmo.mrdvd.collection.login.LoginCollection;
 import com.itmo.mrdvd.collection.login.LoginJdbc;
@@ -11,8 +10,8 @@ import com.itmo.mrdvd.collection.ticket.TicketJdbc;
 import com.itmo.mrdvd.mappers.AuthIdUserInfoMapper;
 import com.itmo.mrdvd.mappers.ContextAuthIdMapper;
 import com.itmo.mrdvd.mappers.CredentialsJwtMapper;
+import com.itmo.mrdvd.mappers.LocalDatetimeTimestampMapper;
 import com.itmo.mrdvd.mappers.MetadataAuthIdMapper;
-import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.publicScope.PublicServerExecutor;
 import com.itmo.mrdvd.service.AuthGrpcServer;
 import com.itmo.mrdvd.service.ContextKeys;
@@ -67,19 +66,18 @@ public class Main {
     envUser = System.console().readLine();
     System.out.print("Введите пароль пользователя PostgreSQL: ");
     envPass = System.console().readLine();
-    ObjectSerializer<Object> serialObject =
-        new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
     MetadataAuthIdMapper idMapper =
         new MetadataAuthIdMapper(
             Metadata.Key.of(
                 ContextKeys.TOKEN.getKey().toString(), Metadata.ASCII_STRING_MARSHALLER));
     CredentialsJwtMapper tokenMapper = new CredentialsJwtMapper(secret);
     AuthIdUserInfoMapper userMapper = new AuthIdUserInfoMapper(secret);
+    LocalDatetimeTimestampMapper timeMapper = new LocalDatetimeTimestampMapper();
     ReentrantReadWriteLock loginCollectionLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock objectCollectionLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock metaCollectionLock = new ReentrantReadWriteLock();
     String jdbcUrl = String.format("jdbc:postgresql://%s:5432/%s", pgHost, pgDbname);
-    TicketJdbc jdbc = new TicketJdbc(jdbcUrl, envUser, envPass);
+    TicketJdbc jdbc = new TicketJdbc(timeMapper, jdbcUrl, envUser, envPass);
     TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
     NodeValidator validator =
         new NodeValidator(new TicketValidator(new CoordinatesValidator(), new EventValidator()));
@@ -91,14 +89,7 @@ public class Main {
         new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), metaCollectionLock);
     PublicServerExecutor publicExec =
         new PublicServerExecutor(
-            collect,
-            validator,
-            loginCollection,
-            metaCollection,
-            serialObject,
-            tokenMapper,
-            idValidator,
-            hash);
+            collect, validator, loginCollection, metaCollection, tokenMapper, idValidator, hash);
     // PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
     AuthServiceImpl authService = new AuthServiceImpl(publicExec);
     AuthGrpcServer authServer =

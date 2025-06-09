@@ -41,7 +41,6 @@ public class PublicServerExecutor extends AbstractExecutor {
       Validator<Node> validator,
       CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
-      Mapper<? super Map<String, Object>, String> serializer,
       Mapper<Credentials, String> tokenMapper,
       Validator<AuthID> idValidator,
       SelfContainedHash hash) {
@@ -50,7 +49,6 @@ public class PublicServerExecutor extends AbstractExecutor {
         validator,
         loginWorker,
         metaAccessor,
-        serializer,
         tokenMapper,
         idValidator,
         hash,
@@ -63,7 +61,6 @@ public class PublicServerExecutor extends AbstractExecutor {
       Validator<Node> validator,
       CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
-      Mapper<? super Map<String, Object>, String> serializer,
       Mapper<Credentials, String> tokenMapper,
       Validator<AuthID> idValidator,
       SelfContainedHash hash,
@@ -71,7 +68,7 @@ public class PublicServerExecutor extends AbstractExecutor {
       Map<String, CommandMeta> cache) {
     super(commands, cache);
     setCommand(new FetchAllCommand(this));
-    setCommand(new InfoCommand(metaAccessor, serializer));
+    setCommand(new InfoCommand(metaAccessor));
     setCommand(
         new MinByPriceCommand<>(
             objectWorker, new NodeComparator(new TicketComparator(TicketField.PRICE))));

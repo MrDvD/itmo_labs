@@ -2,6 +2,7 @@ package com.itmo.mrdvd.service.implementations;
 
 import com.google.protobuf.Empty;
 import com.itmo.mrdvd.AuthID;
+import com.itmo.mrdvd.Meta;
 import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.TicketServiceGrpc.TicketServiceImplBase;
 import com.itmo.mrdvd.UserInfo;
@@ -28,6 +29,19 @@ public class TicketServiceImpl extends TicketServiceImplBase {
   }
 
   @Override
+  public void getInfo(
+      com.google.protobuf.Empty request,
+      io.grpc.stub.StreamObserver<com.itmo.mrdvd.Meta> responseObserver) {
+    Object result = this.exec.processCommand("info", List.of());
+    if (result instanceof Meta infoMeta) {
+      responseObserver.onNext(infoMeta);
+    } else {
+      responseObserver.onNext(Meta.getDefaultInstance());
+    }
+    responseObserver.onCompleted();
+  }
+
+  @Override
   public void getTickets(
       com.google.protobuf.Empty request, io.grpc.stub.StreamObserver<Node> responseObserver) {
     Object result = this.exec.processCommand("show", List.of());
@@ -49,13 +63,80 @@ public class TicketServiceImpl extends TicketServiceImplBase {
   @Override
   public void addTicket(
       Node request, io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-    try {
-      this.exec.processCommand("add", List.of(request));
-      responseObserver.onNext(Empty.getDefaultInstance());
-      responseObserver.onCompleted();
-    } catch (RuntimeException e) {
-      responseObserver.onError(e);
+    Optional<AuthID> id = this.idMapper.convert(Context.current());
+    if (id.isEmpty()) {
+      responseObserver.onError(Status.INTERNAL.asRuntimeException());
+      return;
     }
+    this.userService.getUserInfo(
+        id.get(),
+        new StreamObserver<UserInfo>() {
+          @Override
+          public void onNext(UserInfo info) {
+            if (info == null) {
+              responseObserver.onError(Status.INTERNAL.asRuntimeException());
+              return;
+            }
+            exec.processCommand(
+                "add", List.of(request.toBuilder().setAuthor(info.getUsername()).build()));
+            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onCompleted();
+          }
+
+          @Override
+          public void onError(Throwable e) {}
+
+          @Override
+          public void onCompleted() {}
+        });
+  }
+
+  @Override
+  public void updateTicket(
+      com.itmo.mrdvd.UpdateId request,
+      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+    Optional<AuthID> id = this.idMapper.convert(Context.current());
+    if (id.isEmpty()) {
+      responseObserver.onError(Status.INTERNAL.asRuntimeException());
+      return;
+    }
+    this.userService.getUserInfo(
+        id.get(),
+        new StreamObserver<UserInfo>() {
+          @Override
+          public void onNext(UserInfo info) {
+            if (info == null) {
+              responseObserver.onError(Status.INTERNAL.asRuntimeException());
+              return;
+            }
+            Object toUpdate = exec.processCommand("show_by_id", List.of(request.getId()));
+            if (toUpdate != null && toUpdate instanceof Optional opt && opt.isPresent()) {
+              Node node = (Node) opt.get();
+              if (node.getAuthor().equals(info.getUsername())) {
+                exec.processCommand(
+                    "update", List.of(node.getItem().getTicket().getId(), request.getNode()));
+                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onCompleted();
+              } else {
+                responseObserver.onError(
+                    Status.PERMISSION_DENIED
+                        .withDescription("Невозможно изменить чужой объект.")
+                        .asRuntimeException());
+              }
+            } else {
+              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+            }
+          }
+
+          @Override
+          public void onError(Throwable e) {}
+
+          @Override
+          public void onCompleted() {}
+        });
+    this.exec.processCommand("update", List.of(request.getId().getId(), request.getNode()));
+    responseObserver.onNext(Empty.getDefaultInstance());
+    responseObserver.onCompleted();
   }
 
   @Override
@@ -95,25 +176,110 @@ public class TicketServiceImpl extends TicketServiceImplBase {
               responseObserver.onError(Status.INTERNAL.asRuntimeException());
               return;
             }
-            try {
-              Object toRemove = exec.processCommand("show_last", List.of());
-              if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
-                Node node = (Node) opt.get();
-                if (node.getAuthor().equals(info.getUsername())) {
-                  exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
-                  responseObserver.onNext(Empty.getDefaultInstance());
-                  responseObserver.onCompleted();
-                  return;
-                }
+            Object toRemove = exec.processCommand("show_last", List.of());
+            if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
+              Node node = (Node) opt.get();
+              if (node.getAuthor().equals(info.getUsername())) {
+                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
+                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onCompleted();
+              } else {
+                responseObserver.onError(
+                    Status.PERMISSION_DENIED
+                        .withDescription("Невозможно изменить чужой объект.")
+                        .asRuntimeException());
               }
-            } catch (ClassCastException e) {
+            } else {
+              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+            }
+          }
+
+          @Override
+          public void onError(Throwable e) {}
+
+          @Override
+          public void onCompleted() {}
+        });
+  }
+
+  @Override
+  public void removeAt(
+      com.itmo.mrdvd.IntId request,
+      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+    Optional<AuthID> id = this.idMapper.convert(Context.current());
+    if (id.isEmpty()) {
+      responseObserver.onError(Status.INTERNAL.asRuntimeException());
+      return;
+    }
+    this.userService.getUserInfo(
+        id.get(),
+        new StreamObserver<UserInfo>() {
+          @Override
+          public void onNext(UserInfo info) {
+            if (info == null) {
               responseObserver.onError(Status.INTERNAL.asRuntimeException());
               return;
             }
-            responseObserver.onError(
-                Status.PERMISSION_DENIED
-                    .withDescription("Невозможно изменить объект.")
-                    .asRuntimeException());
+            Object toRemove = exec.processCommand("show_at", List.of(request.getId()));
+            if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
+              Node node = (Node) opt.get();
+              if (node.getAuthor().equals(info.getUsername())) {
+                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
+                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onCompleted();
+              } else {
+                responseObserver.onError(
+                    Status.PERMISSION_DENIED
+                        .withDescription("Невозможно изменить чужой объект.")
+                        .asRuntimeException());
+              }
+            } else {
+              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+            }
+          }
+
+          @Override
+          public void onError(Throwable e) {}
+
+          @Override
+          public void onCompleted() {}
+        });
+  }
+
+  @Override
+  public void removeById(
+      com.itmo.mrdvd.LongId request,
+      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+    Optional<AuthID> id = this.idMapper.convert(Context.current());
+    if (id.isEmpty()) {
+      responseObserver.onError(Status.INTERNAL.asRuntimeException());
+      return;
+    }
+    this.userService.getUserInfo(
+        id.get(),
+        new StreamObserver<UserInfo>() {
+          @Override
+          public void onNext(UserInfo info) {
+            if (info == null) {
+              responseObserver.onError(Status.INTERNAL.asRuntimeException());
+              return;
+            }
+            Object toRemove = exec.processCommand("show_by_id", List.of(request.getId()));
+            if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
+              Node node = (Node) opt.get();
+              if (node.getAuthor().equals(info.getUsername())) {
+                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
+                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onCompleted();
+              } else {
+                responseObserver.onError(
+                    Status.PERMISSION_DENIED
+                        .withDescription("Невозможно изменить чужой объект.")
+                        .asRuntimeException());
+              }
+            } else {
+              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
+            }
           }
 
           @Override

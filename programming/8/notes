@@ -81,6 +81,14 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 #   <version>1.72.0</version>
 # </dependency>
 
+# JWT support
+
+# <dependency>
+#   <groupId>com.auth0</groupId>
+#   <artifactId>java-jwt</artifactId>
+#   <version>4.5.0</version>
+# </dependency>
+
 # compile maven subprojects to independent JAR files
 # the result will be placed into the target/ dir
 mvn clean fmt:format package assembly:single
@@ -88,7 +96,3 @@ mvn clean generate-sources # for Protobuf class generation
 
 # connect to vpn via your login & password
 openvpn students.ovpn
-
-docker run -v $(pwd)/server-api/src/main/proto:/protos --network host fullstorydev/grpcurl -import-path /protos -proto com/itmo/mrdvd/TicketService.proto -plaintext -H "collect-token: ..." 127.0.0.1:8080 TicketService/GetTickets
-
-docker run -v $(pwd)/server-api/src/main/proto:/protos --network host fullstorydev/grpcurl -import-path /protos -proto com/itmo/mrdvd/AuthService.proto -proto com/itmo/mrdvd/CommonMessage.proto -plaintext -d '{"login": "111", "password": "2"}' 127.0.0.1:5555 AuthService/Register

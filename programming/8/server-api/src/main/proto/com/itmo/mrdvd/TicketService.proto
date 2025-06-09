@@ -83,16 +83,16 @@ service TicketService {
   rpc GetInfo(google.protobuf.Empty) returns (Meta);
   // Obtains stream of Tickets
   rpc GetTickets(google.protobuf.Empty) returns (stream Node) {}
-  // ...
+  // Obtains a Ticket object by its id 
   rpc GetTicket(LongId) returns (Node) {}
-  // ...
+  // Adds a Ticket object into collection
   rpc AddTicket(Node) returns (google.protobuf.Empty) {}
-  // ...
+  // Updates the Ticket object in collection
   rpc UpdateTicket(UpdateId) returns (google.protobuf.Empty) {}
-  // ...
+  // Removes the last added Ticket object from the collection
   rpc RemoveLast(google.protobuf.Empty) returns (google.protobuf.Empty) {}
-  // ...
-  rpc RemoveAt(LongId) returns (google.protobuf.Empty) {}
-  // ...
-  rpc RemoveById(IntId) returns (google.protobuf.Empty) {}
+  // Removes the Ticket object by its index from the collection 
+  rpc RemoveAt(IntId) returns (google.protobuf.Empty) {}
+  // Removes the Ticket object by its id from the collection
+  rpc RemoveById(LongId) returns (google.protobuf.Empty) {}
 }
