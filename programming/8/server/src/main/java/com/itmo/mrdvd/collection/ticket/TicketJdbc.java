@@ -9,7 +9,8 @@ import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.TicketType;
 import com.itmo.mrdvd.collection.CrudWorker;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;

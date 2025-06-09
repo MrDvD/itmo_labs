@@ -2,7 +2,7 @@ package com.itmo.mrdvd.service;
 
 import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.AuthServiceGrpc.AuthServiceImplBase;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.service.implementations.TicketServiceImpl;
 import com.itmo.mrdvd.service.interceptors.ExceptionInterceptor;
 import com.itmo.mrdvd.service.interceptors.KeyFillContextInterceptor;

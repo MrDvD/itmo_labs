@@ -3,7 +3,7 @@ package com.itmo.mrdvd.service.implementations;
 import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.UserInfo;
 import com.itmo.mrdvd.UserServiceGrpc.UserServiceImplBase;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Status;
 import java.util.Optional;

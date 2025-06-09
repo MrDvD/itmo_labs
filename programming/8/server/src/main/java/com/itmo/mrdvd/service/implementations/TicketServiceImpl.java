@@ -7,7 +7,7 @@ import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.TicketServiceGrpc.TicketServiceImplBase;
 import com.itmo.mrdvd.UserInfo;
 import com.itmo.mrdvd.UserServiceGrpc.UserServiceImplBase;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Context;
 import io.grpc.Status;

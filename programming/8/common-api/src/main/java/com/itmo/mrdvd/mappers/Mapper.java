@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.proxy.mappers;
+package com.itmo.mrdvd.mappers;
 
 import java.util.Optional;
 

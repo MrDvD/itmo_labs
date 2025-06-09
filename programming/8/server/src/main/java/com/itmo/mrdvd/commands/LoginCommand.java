@@ -6,7 +6,7 @@ import com.itmo.mrdvd.AuthStatus;
 import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.collection.CachedCrudWorker;
 import com.itmo.mrdvd.collection.SelfContainedHash;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Optional;

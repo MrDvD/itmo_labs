@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.itmo.mrdvd.Credentials;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+
 import java.util.Optional;
 
 public class CredentialsJwtMapper implements Mapper<Credentials, String> {

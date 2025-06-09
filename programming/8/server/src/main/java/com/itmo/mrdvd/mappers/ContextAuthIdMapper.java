@@ -1,7 +1,6 @@
 package com.itmo.mrdvd.mappers;
 
 import com.itmo.mrdvd.AuthID;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.ContextKeys;
 import io.grpc.Context;
 import java.util.Optional;

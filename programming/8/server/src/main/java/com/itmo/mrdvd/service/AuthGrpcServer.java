@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.service;
 
 import com.itmo.mrdvd.AuthID;
-import com.itmo.mrdvd.proxy.mappers.Mapper;
+import com.itmo.mrdvd.mappers.Mapper;
 import com.itmo.mrdvd.service.implementations.AuthServiceImpl;
 import io.grpc.Metadata;
 import io.grpc.ServerBuilder;
