@@ -4,27 +4,30 @@ option java_multiple_files = true;
 option java_package = "com.itmo.mrdvd";
 option java_outer_classname = "AuthServiceProto";
 
+import "com/itmo/mrdvd/CommonMessage.proto";
+
 message Credentials {
   string login = 1;
   string password = 2;
 }
 
 enum AuthStatus {
-  INVALID = 0;
+  AUTHSTATUS_DEFAULT = 0;
   AUTHORIZED = 1;
   REGISTERED = 2;
+  INVALID = 3;
 }
 
-message AuthID {
+message AuthResponse {
   AuthStatus status = 1;
-  optional string token = 2;
+  optional AuthID id = 2;
 }
 
 service AuthService {
   // Authorizes a user and returns a valid token for future queries
-  rpc Login(Credentials) returns (AuthID);
+  rpc Login(Credentials) returns (AuthResponse);
   // Registers a new user
-  rpc Register(Credentials) returns (AuthID);
+  rpc Register(Credentials) returns (AuthResponse);
   // Validates AuthID
-  rpc Check(AuthID) returns (AuthID);
+  rpc Check(AuthID) returns (AuthResponse);
 }

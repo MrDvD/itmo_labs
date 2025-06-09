@@ -8,16 +8,18 @@ option java_package = "com.itmo.mrdvd";
 option java_outer_classname = "TicketServiceProto";
 
 enum TicketType {
-  VIP = 0;
-  USUAL = 1;
-  BUDGETARY = 2;
-  CHEAP = 3;
+  TICKETTYPE_DEFAULT = 0;
+  VIP = 1;
+  USUAL = 2;
+  BUDGETARY = 3;
+  CHEAP = 4;
 }
 
 enum EventType {
-  CONCERT = 0;
-  BASEBALL = 1;
-  OPERA = 2;
+  EVENTTYPE_DEFAULT = 0;
+  CONCERT = 1;
+  BASEBALL = 2;
+  OPERA = 3;
 }
 
 message Coordinates {

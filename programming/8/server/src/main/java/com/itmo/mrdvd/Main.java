@@ -8,13 +8,24 @@ import com.itmo.mrdvd.collection.meta.MetaCollection;
 import com.itmo.mrdvd.collection.meta.MetaJdbc;
 import com.itmo.mrdvd.collection.ticket.TicketCollection;
 import com.itmo.mrdvd.collection.ticket.TicketJdbc;
+import com.itmo.mrdvd.mappers.AuthIdUserInfoMapper;
+import com.itmo.mrdvd.mappers.ContextAuthIdMapper;
+import com.itmo.mrdvd.mappers.CredentialsJwtMapper;
+import com.itmo.mrdvd.mappers.MetadataAuthIdMapper;
 import com.itmo.mrdvd.proxy.mappers.ObjectSerializer;
 import com.itmo.mrdvd.publicScope.PublicServerExecutor;
-import com.itmo.mrdvd.service.GrpcServer;
+import com.itmo.mrdvd.service.AuthGrpcServer;
+import com.itmo.mrdvd.service.ContextKeys;
+import com.itmo.mrdvd.service.TicketGrpcServer;
+import com.itmo.mrdvd.service.implementations.AuthServiceImpl;
+import com.itmo.mrdvd.service.implementations.TicketServiceImpl;
+import com.itmo.mrdvd.service.implementations.UserServiceImpl;
+import com.itmo.mrdvd.validators.AuthIdValidator;
 import com.itmo.mrdvd.validators.CoordinatesValidator;
 import com.itmo.mrdvd.validators.EventValidator;
 import com.itmo.mrdvd.validators.NodeValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
+import io.grpc.Metadata;
 import io.grpc.netty.NettyServerBuilder;
 import java.net.InetSocketAddress;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,6 +42,7 @@ public class Main {
   public static void main(String[] args) {
     String envUser, envPass, publicHostname, pgHost, pgDbname;
     int publicPort, privatePort;
+    String secret = "testytesttoremoveasap";
     if (args.length < 5) {
       publicHostname = "localhost";
       publicPort = 8080;
@@ -57,6 +69,12 @@ public class Main {
     envPass = System.console().readLine();
     ObjectSerializer<Object> serialObject =
         new ObjectSerializer<>(XmlMapper.builder().defaultUseWrapper(true).build());
+    MetadataAuthIdMapper idMapper =
+        new MetadataAuthIdMapper(
+            Metadata.Key.of(
+                ContextKeys.TOKEN.getKey().toString(), Metadata.ASCII_STRING_MARSHALLER));
+    CredentialsJwtMapper tokenMapper = new CredentialsJwtMapper(secret);
+    AuthIdUserInfoMapper userMapper = new AuthIdUserInfoMapper(secret);
     ReentrantReadWriteLock loginCollectionLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock objectCollectionLock = new ReentrantReadWriteLock();
     ReentrantReadWriteLock metaCollectionLock = new ReentrantReadWriteLock();
@@ -65,7 +83,7 @@ public class Main {
     TicketCollection collect = new TicketCollection(jdbc, objectCollectionLock);
     NodeValidator validator =
         new NodeValidator(new TicketValidator(new CoordinatesValidator(), new EventValidator()));
-
+    AuthIdValidator idValidator = new AuthIdValidator(secret);
     BCryptHash hash = new BCryptHash();
     LoginCollection loginCollection =
         new LoginCollection(new LoginJdbc(jdbcUrl, envUser, envPass, hash), loginCollectionLock);
@@ -73,13 +91,33 @@ public class Main {
         new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), metaCollectionLock);
     PublicServerExecutor publicExec =
         new PublicServerExecutor(
-            collect, validator, loginCollection, metaCollection, serialObject, hash);
+            collect,
+            validator,
+            loginCollection,
+            metaCollection,
+            serialObject,
+            tokenMapper,
+            idValidator,
+            hash);
     // PrivateServerExecutor privateExec = new PrivateServerExecutor(listener, jdbc, collect);
-    GrpcServer server =
-        new GrpcServer(
+    AuthServiceImpl authService = new AuthServiceImpl(publicExec);
+    AuthGrpcServer authServer =
+        new AuthGrpcServer(
+            NettyServerBuilder.forAddress(new InetSocketAddress("localhost", 5555)),
+            authService,
+            idMapper);
+    authServer.start();
+    TicketGrpcServer ticketServer =
+        new TicketGrpcServer(
             NettyServerBuilder.forAddress(new InetSocketAddress(publicHostname, publicPort)),
-            publicExec);
-    server.start();
-    server.block();
+            new TicketServiceImpl(
+                publicExec,
+                new UserServiceImpl(publicExec, userMapper),
+                new ContextAuthIdMapper("collect-token")),
+            authService,
+            idMapper,
+            ContextKeys.TOKEN.getKey());
+    ticketServer.start();
+    ticketServer.block();
   }
 }

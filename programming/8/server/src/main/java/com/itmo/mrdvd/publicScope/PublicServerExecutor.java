@@ -1,5 +1,6 @@
 package com.itmo.mrdvd.publicScope;
 
+import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.Credentials;
 import com.itmo.mrdvd.Node;
 import com.itmo.mrdvd.collection.AccessWorker;
@@ -22,6 +23,7 @@ import com.itmo.mrdvd.commands.ShowByIdCommand;
 import com.itmo.mrdvd.commands.ShowCommand;
 import com.itmo.mrdvd.commands.ShowLastCommand;
 import com.itmo.mrdvd.commands.UpdateCommand;
+import com.itmo.mrdvd.commands.ValidateLoginCommand;
 import com.itmo.mrdvd.object.TicketField;
 import com.itmo.mrdvd.proxy.mappers.Mapper;
 import com.itmo.mrdvd.service.executor.AbstractExecutor;
@@ -40,6 +42,8 @@ public class PublicServerExecutor extends AbstractExecutor {
       CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
+      Mapper<Credentials, String> tokenMapper,
+      Validator<AuthID> idValidator,
       SelfContainedHash hash) {
     this(
         objectWorker,
@@ -47,6 +51,8 @@ public class PublicServerExecutor extends AbstractExecutor {
         loginWorker,
         metaAccessor,
         serializer,
+        tokenMapper,
+        idValidator,
         hash,
         new HashMap<>(),
         new HashMap<>());
@@ -58,6 +64,8 @@ public class PublicServerExecutor extends AbstractExecutor {
       CachedCrudWorker<Credentials, Set<Credentials>, String> loginWorker,
       AccessWorker<Map<String, Object>> metaAccessor,
       Mapper<? super Map<String, Object>, String> serializer,
+      Mapper<Credentials, String> tokenMapper,
+      Validator<AuthID> idValidator,
       SelfContainedHash hash,
       Map<String, Command<?>> commands,
       Map<String, CommandMeta> cache) {
@@ -98,7 +106,8 @@ public class PublicServerExecutor extends AbstractExecutor {
               }
               return false;
             }));
-    setCommand(new LoginCommand(loginWorker, hash));
+    setCommand(new LoginCommand(loginWorker, hash, tokenMapper));
     setCommand(new RegisterCommand(loginWorker));
+    setCommand(new ValidateLoginCommand(idValidator));
   }
 }
