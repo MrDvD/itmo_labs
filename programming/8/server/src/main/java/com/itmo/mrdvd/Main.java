@@ -86,7 +86,7 @@ public class Main {
             new LoginJdbc(jdbcUrl, envUser, envPass, hash), new ReentrantReadWriteLock());
     MetaCollection metaCollection =
         new MetaCollection(new MetaJdbc(jdbcUrl, envUser, envPass), new ReentrantReadWriteLock());
-    ServerExecutor publicExec =
+    ServerExecutor exec =
         new ServerExecutor(
             collect,
             new NodeValidator(
@@ -96,7 +96,7 @@ public class Main {
             new CredentialsJwtMapper(secret),
             new AuthIdValidator(secret),
             hash);
-    AuthServiceImpl authService = new AuthServiceImpl(publicExec);
+    AuthServiceImpl authService = new AuthServiceImpl(exec);
     AuthGrpcServer authServer =
         new AuthGrpcServer(
             NettyServerBuilder.forAddress(new InetSocketAddress(hostname, authPort)),
@@ -107,8 +107,8 @@ public class Main {
         new TicketGrpcServer(
             NettyServerBuilder.forAddress(new InetSocketAddress(hostname, ticketPort)),
             new TicketServiceImpl(
-                publicExec,
-                new UserServiceImpl(publicExec, new AuthIdUserInfoMapper(secret)),
+                exec,
+                new UserServiceImpl(new AuthIdUserInfoMapper(secret)),
                 new ContextAuthIdMapper()),
             authService,
             idMapper,

@@ -77,7 +77,7 @@ public class ServerExecutor extends AbstractExecutor {
             objectWorker,
             (t) -> {
               if (validator.validate(t)) {
-                Optional<Node> old = objectWorker.get(t.getItem().getTicket().getId());
+                Optional<Node> old = objectWorker.get(t.getItem().getTicket().getId().getId());
                 return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
               }
               return false;

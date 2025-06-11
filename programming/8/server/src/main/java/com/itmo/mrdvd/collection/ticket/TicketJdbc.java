@@ -4,8 +4,9 @@ import com.google.protobuf.Timestamp;
 import com.itmo.mrdvd.Coordinates;
 import com.itmo.mrdvd.Event;
 import com.itmo.mrdvd.EventType;
-import com.itmo.mrdvd.Item;
 import com.itmo.mrdvd.Node;
+import com.itmo.mrdvd.NodeValue;
+import com.itmo.mrdvd.ObjectId;
 import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.TicketType;
 import com.itmo.mrdvd.collection.CrudWorker;
@@ -89,10 +90,10 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
                   Node newNode =
                       node.toBuilder()
                           .setItem(
-                              Item.newBuilder()
+                              NodeValue.newBuilder()
                                   .setTicket(
                                       node.getItem().getTicket().toBuilder()
-                                          .setId(ticketId)
+                                          .setId(ObjectId.newBuilder().setId(ticketId).build())
                                           .setCreateDate(time.get())
                                           .setEvent(t.getEvent().toBuilder().setId(eventId).build())
                                           .build())
@@ -128,7 +129,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         "update TICKETS set name = ?, x = ?, y = ?, price = ?, type = ?::ticket_type where id = ?";
     String sqlTicketDate = "select creation_date from TICKETS where id = ?";
     var result = node.getItem().getTicket().toBuilder();
-    result.setId(id);
+    result.setId(ObjectId.newBuilder().setId(id).build());
     Long eventId = null;
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmtEventId = conn.prepareStatement(sqlEventId)) {
@@ -158,7 +159,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         stmtTicket.setFloat(3, t.getCoords().getY());
         stmtTicket.setInt(4, t.getPrice());
         stmtTicket.setString(5, t.getType().toString());
-        stmtTicket.setLong(6, t.getId());
+        stmtTicket.setLong(6, t.getId().getId());
         stmtTicket.executeUpdate();
       }
       try (PreparedStatement stmtTicketDate = conn.prepareStatement(sqlTicketDate)) {
@@ -172,12 +173,14 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
                   node.getItem().getTicket().getEvent().toBuilder().setId(eventId).build();
               Ticket newTicket =
                   node.getItem().getTicket().toBuilder()
-                      .setId(id)
+                      .setId(ObjectId.newBuilder().setId(id).build())
                       .setCreateDate(date.get())
                       .setEvent(newEvent)
                       .build();
               Node newNode =
-                  node.toBuilder().setItem(Item.newBuilder().setTicket(newTicket).build()).build();
+                  node.toBuilder()
+                      .setItem(NodeValue.newBuilder().setTicket(newTicket).build())
+                      .build();
               if (cond.test(newNode)) {
                 conn.commit();
                 return Optional.of(newNode);
@@ -213,10 +216,10 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
             return Optional.ofNullable(
                 Node.newBuilder()
                     .setItem(
-                        Item.newBuilder()
+                        NodeValue.newBuilder()
                             .setTicket(
                                 Ticket.newBuilder()
-                                    .setId(rs.getLong("id"))
+                                    .setId(ObjectId.newBuilder().setId(rs.getLong("id")).build())
                                     .setName(rs.getString("name"))
                                     .setCoords(
                                         Coordinates.newBuilder()
@@ -271,7 +274,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         coords.setX(rs.getFloat("x"));
         coords.setY(rs.getFloat("y"));
         var ticket = Ticket.newBuilder();
-        ticket.setId(rs.getLong("id"));
+        ticket.setId(ObjectId.newBuilder().setId(rs.getLong("id")).build());
         ticket.setName(rs.getString("name"));
         ticket.setCoords(coords.build());
         Instant instant =
@@ -289,7 +292,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         ticket.setEvent(event.build());
         tickets.add(
             Node.newBuilder()
-                .setItem(Item.newBuilder().setTicket(ticket.build()).build())
+                .setItem(NodeValue.newBuilder().setTicket(ticket.build()).build())
                 .setAuthor(rs.getString("author"))
                 .build());
       }

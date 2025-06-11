@@ -1,14 +1,14 @@
 package com.itmo.mrdvd.commands;
 
-import com.itmo.mrdvd.Meta;
-import com.itmo.mrdvd.Value;
+import com.itmo.mrdvd.CollectionMeta;
+import com.itmo.mrdvd.CollectionMetaValue;
 import com.itmo.mrdvd.collection.AccessWorker;
 import com.itmo.mrdvd.service.executor.Command;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class InfoCommand implements Command<Meta> {
+public class InfoCommand implements Command<CollectionMeta> {
   private final AccessWorker<Map<String, Object>> metaCollection;
 
   public InfoCommand(AccessWorker<Map<String, Object>> metaCollection) {
@@ -16,20 +16,23 @@ public class InfoCommand implements Command<Meta> {
   }
 
   @Override
-  public Meta execute(List<Object> params) throws IllegalStateException {
+  public CollectionMeta execute(List<Object> params) throws IllegalStateException {
     if (this.metaCollection == null) {
       throw new IllegalStateException("Не предоставлена коллекция для работы.");
     }
     Optional<Map<String, Object>> meta = this.metaCollection.get();
     if (meta.isPresent()) {
-      Meta.Builder res = Meta.newBuilder();
+      CollectionMeta.Builder res = CollectionMeta.newBuilder();
       for (String key : meta.get().keySet()) {
         res.putFields(
-            key, Value.newBuilder().setStringValue(meta.get().get(key).toString()).build());
+            key,
+            CollectionMetaValue.newBuilder()
+                .setStringValue(meta.get().get(key).toString())
+                .build());
       }
       return res.build();
     }
-    return Meta.getDefaultInstance();
+    return CollectionMeta.getDefaultInstance();
   }
 
   @Override

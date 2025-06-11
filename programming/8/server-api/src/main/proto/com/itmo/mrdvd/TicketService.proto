@@ -1,7 +1,6 @@
 syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
-import "google/protobuf/empty.proto";
 
 option java_multiple_files = true;
 option java_package = "com.itmo.mrdvd";
@@ -34,8 +33,14 @@ message Event {
   EventType type = 4;
 }
 
+message ObjectId {
+  oneof abstract_id {
+    int64 id = 1;
+  }
+}
+
 message Ticket {
-  int64 id = 1;
+  ObjectId id = 1;
   string name = 2;
   Coordinates coords = 3;
   google.protobuf.Timestamp createDate = 4;
@@ -45,54 +50,56 @@ message Ticket {
 }
 
 message Node {
-  Item item = 1;
+  NodeValue item = 1;
   string author = 2;
 }
 
-message Item {
-  oneof kind {
+message NodeValue {
+  oneof value {
     Ticket ticket = 1;
   }
 }
 
-message Meta {
-  map<string, Value> fields = 1;
+message GetInfoRequest {}
+
+message CollectionMeta {
+  map<string, CollectionMetaValue> fields = 1;
 }
 
-message Value {
-  oneof kind {
+message CollectionMetaValue {
+  oneof value {
     string string_value = 1;
   }
 }
 
-message LongId {
-  int64 id = 1;
+message RemoveTicketRequest {
+  oneof header {
+    ObjectId id = 1;
+    int32 idx = 2;
+  }
 }
 
-message IntId {
-  int32 id = 1;
-}
-
-message UpdateId {
-  LongId id = 1;
+message UpdateTicketRequest {
+  ObjectId id = 1;
   Node node = 2;
 }
 
+message UpdateTicketResponse {}
+message GetTicketsRequest {}
+message AddTicketResponse {}
+message RemoveTicketResponse {}
+
 service TicketService {
   // Obtains Meta information about the used Collection
-  rpc GetInfo(google.protobuf.Empty) returns (Meta);
+  rpc GetInfo(GetInfoRequest) returns (CollectionMeta);
   // Obtains stream of Tickets
-  rpc GetTickets(google.protobuf.Empty) returns (stream Node) {}
+  rpc GetTickets(GetTicketsRequest) returns (stream Node) {}
   // Obtains a Ticket object by its id 
-  rpc GetTicket(LongId) returns (Node) {}
+  rpc GetTicket(ObjectId) returns (Node) {}
   // Adds a Ticket object into collection
-  rpc AddTicket(Node) returns (google.protobuf.Empty) {}
+  rpc AddTicket(Node) returns (AddTicketResponse) {}
   // Updates the Ticket object in collection
-  rpc UpdateTicket(UpdateId) returns (google.protobuf.Empty) {}
-  // Removes the last added Ticket object from the collection
-  rpc RemoveLast(google.protobuf.Empty) returns (google.protobuf.Empty) {}
-  // Removes the Ticket object by its index from the collection 
-  rpc RemoveAt(IntId) returns (google.protobuf.Empty) {}
-  // Removes the Ticket object by its id from the collection
-  rpc RemoveById(LongId) returns (google.protobuf.Empty) {}
+  rpc UpdateTicket(UpdateTicketRequest) returns (UpdateTicketResponse) {}
+  // Removes the mentioned Ticket object from the collection (by default - last)
+  rpc RemoveTicket(RemoveTicketRequest) returns (RemoveTicketResponse) {}
 }

@@ -56,7 +56,7 @@ public class TicketCollection implements CachedCrudWorker<Node, Set<Node>, Long>
     this.objectCollectionLock.readLock().lock();
     try {
       return this.tickets.stream()
-          .filter(ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id))
+          .filter(ticket -> Long.valueOf(ticket.getItem().getTicket().getId().getId()).equals(id))
           .findAny();
     } finally {
       this.objectCollectionLock.readLock().unlock();
@@ -102,7 +102,7 @@ public class TicketCollection implements CachedCrudWorker<Node, Set<Node>, Long>
       if (toRemove.isPresent()) {
         this.dbworker.remove(id);
         this.tickets.removeIf(
-            ticket -> Long.valueOf(ticket.getItem().getTicket().getId()).equals(id));
+            ticket -> Long.valueOf(ticket.getItem().getTicket().getId().getId()).equals(id));
       }
     } finally {
       this.objectCollectionLock.writeLock().unlock();

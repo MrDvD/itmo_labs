@@ -4,16 +4,13 @@ import com.itmo.mrdvd.AuthID;
 import com.itmo.mrdvd.UserInfo;
 import com.itmo.mrdvd.UserServiceGrpc.UserServiceImplBase;
 import com.itmo.mrdvd.mappers.Mapper;
-import com.itmo.mrdvd.service.executor.AbstractExecutor;
 import io.grpc.Status;
 import java.util.Optional;
 
 public class UserServiceImpl extends UserServiceImplBase {
-  private final AbstractExecutor exec;
   private final Mapper<AuthID, UserInfo> mapper;
 
-  public UserServiceImpl(AbstractExecutor exec, Mapper<AuthID, UserInfo> mapper) {
-    this.exec = exec;
+  public UserServiceImpl(Mapper<AuthID, UserInfo> mapper) {
     this.mapper = mapper;
   }
 

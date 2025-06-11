@@ -5,5 +5,5 @@ option java_package = "com.itmo.mrdvd";
 option java_outer_classname = "CommonMessageProto";
 
 message AuthID {
-  optional string token = 1;
+  string token = 1;
 }

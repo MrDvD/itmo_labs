@@ -19,8 +19,10 @@ enum AuthStatus {
 }
 
 message AuthResponse {
-  AuthStatus status = 1;
-  optional AuthID id = 2;
+  oneof response {
+    AuthStatus status = 1;
+    AuthID id = 2;
+  }
 }
 
 service AuthService {

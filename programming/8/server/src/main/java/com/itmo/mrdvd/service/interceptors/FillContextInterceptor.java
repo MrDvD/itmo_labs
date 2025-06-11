@@ -6,19 +6,14 @@ import io.grpc.Metadata;
 import io.grpc.ServerCall;
 import io.grpc.ServerCallHandler;
 import io.grpc.ServerInterceptor;
-import java.util.function.Function;
 
-public class FillContextInterceptor implements ServerInterceptor {
-  private final Function<Metadata, Context> fillContext;
-
-  public FillContextInterceptor(Function<Metadata, Context> fillContext) {
-    this.fillContext = fillContext;
-  }
+public abstract class FillContextInterceptor implements ServerInterceptor {
+  protected abstract Context fillContext(Metadata meta);
 
   @Override
   public <ReqT, RespT> ServerCall.Listener<ReqT> interceptCall(
       ServerCall<ReqT, RespT> serverCall, Metadata headers, ServerCallHandler<ReqT, RespT> next) {
-    Context ctx = this.fillContext.apply(headers);
+    Context ctx = this.fillContext(headers);
     return Contexts.interceptCall(ctx, serverCall, headers, next);
   }
 }

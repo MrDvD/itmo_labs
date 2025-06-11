@@ -94,5 +94,5 @@ mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifa
 mvn clean fmt:format package assembly:single
 mvn clean generate-sources # for Protobuf class generation
 
-# connect to vpn via your login & password
-openvpn students.ovpn
+# docker compose launch
+HOSTNAME=0.0.0.0 TICKET_PORT=8080 AUTH_PORT=8090 PG_HOST=database docker compose up

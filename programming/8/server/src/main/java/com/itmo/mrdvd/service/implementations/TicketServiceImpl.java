@@ -1,10 +1,17 @@
 package com.itmo.mrdvd.service.implementations;
 
-import com.google.protobuf.Empty;
+import com.itmo.mrdvd.AddTicketResponse;
 import com.itmo.mrdvd.AuthID;
-import com.itmo.mrdvd.Meta;
+import com.itmo.mrdvd.CollectionMeta;
+import com.itmo.mrdvd.GetInfoRequest;
+import com.itmo.mrdvd.GetTicketsRequest;
 import com.itmo.mrdvd.Node;
+import com.itmo.mrdvd.ObjectId;
+import com.itmo.mrdvd.RemoveTicketRequest;
+import com.itmo.mrdvd.RemoveTicketResponse;
 import com.itmo.mrdvd.TicketServiceGrpc.TicketServiceImplBase;
+import com.itmo.mrdvd.UpdateTicketRequest;
+import com.itmo.mrdvd.UpdateTicketResponse;
 import com.itmo.mrdvd.UserInfo;
 import com.itmo.mrdvd.UserServiceGrpc.UserServiceImplBase;
 import com.itmo.mrdvd.collection.ticket.NodeComparator;
@@ -33,20 +40,20 @@ public class TicketServiceImpl extends TicketServiceImplBase {
 
   @Override
   public void getInfo(
-      com.google.protobuf.Empty request,
-      io.grpc.stub.StreamObserver<com.itmo.mrdvd.Meta> responseObserver) {
+      GetInfoRequest request,
+      io.grpc.stub.StreamObserver<com.itmo.mrdvd.CollectionMeta> responseObserver) {
     Object result = this.exec.processCommand("info", List.of());
-    if (result instanceof Meta infoMeta) {
+    if (result instanceof CollectionMeta infoMeta) {
       responseObserver.onNext(infoMeta);
     } else {
-      responseObserver.onNext(Meta.getDefaultInstance());
+      responseObserver.onNext(CollectionMeta.getDefaultInstance());
     }
     responseObserver.onCompleted();
   }
 
   @Override
   public void getTickets(
-      com.google.protobuf.Empty request, io.grpc.stub.StreamObserver<Node> responseObserver) {
+      GetTicketsRequest request, io.grpc.stub.StreamObserver<Node> responseObserver) {
     Object result = this.exec.processCommand("show", List.of());
     if (result != null) {
       try {
@@ -66,7 +73,7 @@ public class TicketServiceImpl extends TicketServiceImplBase {
 
   @Override
   public void addTicket(
-      Node request, io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      Node request, io.grpc.stub.StreamObserver<AddTicketResponse> responseObserver) {
     Optional<AuthID> id = this.idMapper.convert(Context.current());
     if (id.isEmpty()) {
       responseObserver.onError(Status.INTERNAL.asRuntimeException());
@@ -83,7 +90,7 @@ public class TicketServiceImpl extends TicketServiceImplBase {
             }
             exec.processCommand(
                 "add", List.of(request.toBuilder().setAuthor(info.getUsername()).build()));
-            responseObserver.onNext(Empty.getDefaultInstance());
+            responseObserver.onNext(AddTicketResponse.getDefaultInstance());
             responseObserver.onCompleted();
           }
 
@@ -97,8 +104,8 @@ public class TicketServiceImpl extends TicketServiceImplBase {
 
   @Override
   public void updateTicket(
-      com.itmo.mrdvd.UpdateId request,
-      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+      UpdateTicketRequest request,
+      io.grpc.stub.StreamObserver<UpdateTicketResponse> responseObserver) {
     Optional<AuthID> id = this.idMapper.convert(Context.current());
     if (id.isEmpty()) {
       responseObserver.onError(Status.INTERNAL.asRuntimeException());
@@ -120,9 +127,9 @@ public class TicketServiceImpl extends TicketServiceImplBase {
                 exec.processCommand(
                     "update",
                     List.of(
-                        node.getItem().getTicket().getId(),
+                        node.getItem().getTicket().getId().getId(),
                         request.getNode().toBuilder().setAuthor(info.getUsername()).build()));
-                responseObserver.onNext(Empty.getDefaultInstance());
+                responseObserver.onNext(UpdateTicketResponse.getDefaultInstance());
                 responseObserver.onCompleted();
               } else {
                 responseObserver.onError(
@@ -144,8 +151,7 @@ public class TicketServiceImpl extends TicketServiceImplBase {
   }
 
   @Override
-  public void getTicket(
-      com.itmo.mrdvd.LongId request, io.grpc.stub.StreamObserver<Node> responseObserver) {
+  public void getTicket(ObjectId request, io.grpc.stub.StreamObserver<Node> responseObserver) {
     try {
       Object raw = this.exec.processCommand("show_by_id", List.of(request.getId()));
       if (raw instanceof Optional result) {
@@ -163,9 +169,9 @@ public class TicketServiceImpl extends TicketServiceImplBase {
   }
 
   @Override
-  public void removeLast(
-      com.google.protobuf.Empty request,
-      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
+  public void removeTicket(
+      RemoveTicketRequest request,
+      io.grpc.stub.StreamObserver<RemoveTicketResponse> responseObserver) {
     Optional<AuthID> id = this.idMapper.convert(Context.current());
     if (id.isEmpty()) {
       responseObserver.onError(Status.INTERNAL.asRuntimeException());
@@ -180,100 +186,24 @@ public class TicketServiceImpl extends TicketServiceImplBase {
               responseObserver.onError(Status.INTERNAL.asRuntimeException());
               return;
             }
-            Object toRemove = exec.processCommand("show_last", List.of());
+            Object toRemove = null;
+            switch (request.getHeaderCase()) {
+              case ID:
+                toRemove = exec.processCommand("show_by_id", List.of(request.getId().getId()));
+                break;
+              case IDX:
+                toRemove = exec.processCommand("show_at", List.of(request.getIdx()));
+                break;
+              case HEADER_NOT_SET:
+                toRemove = exec.processCommand("show_last", List.of());
+                break;
+            }
             if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
               Node node = (Node) opt.get();
               if (node.getAuthor().equals(info.getUsername())) {
-                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
-                responseObserver.onNext(Empty.getDefaultInstance());
-                responseObserver.onCompleted();
-              } else {
-                responseObserver.onError(
-                    Status.PERMISSION_DENIED
-                        .withDescription("Невозможно изменить чужой объект.")
-                        .asRuntimeException());
-              }
-            } else {
-              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
-            }
-          }
-
-          @Override
-          public void onError(Throwable e) {}
-
-          @Override
-          public void onCompleted() {}
-        });
-  }
-
-  @Override
-  public void removeAt(
-      com.itmo.mrdvd.IntId request,
-      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-    Optional<AuthID> id = this.idMapper.convert(Context.current());
-    if (id.isEmpty()) {
-      responseObserver.onError(Status.INTERNAL.asRuntimeException());
-      return;
-    }
-    this.userService.getUserInfo(
-        id.get(),
-        new StreamObserver<UserInfo>() {
-          @Override
-          public void onNext(UserInfo info) {
-            if (info == null) {
-              responseObserver.onError(Status.INTERNAL.asRuntimeException());
-              return;
-            }
-            Object toRemove = exec.processCommand("show_at", List.of(request.getId()));
-            if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
-              Node node = (Node) opt.get();
-              if (node.getAuthor().equals(info.getUsername())) {
-                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
-                responseObserver.onNext(Empty.getDefaultInstance());
-                responseObserver.onCompleted();
-              } else {
-                responseObserver.onError(
-                    Status.PERMISSION_DENIED
-                        .withDescription("Невозможно изменить чужой объект.")
-                        .asRuntimeException());
-              }
-            } else {
-              responseObserver.onError(Status.NOT_FOUND.asRuntimeException());
-            }
-          }
-
-          @Override
-          public void onError(Throwable e) {}
-
-          @Override
-          public void onCompleted() {}
-        });
-  }
-
-  @Override
-  public void removeById(
-      com.itmo.mrdvd.LongId request,
-      io.grpc.stub.StreamObserver<com.google.protobuf.Empty> responseObserver) {
-    Optional<AuthID> id = this.idMapper.convert(Context.current());
-    if (id.isEmpty()) {
-      responseObserver.onError(Status.INTERNAL.asRuntimeException());
-      return;
-    }
-    this.userService.getUserInfo(
-        id.get(),
-        new StreamObserver<UserInfo>() {
-          @Override
-          public void onNext(UserInfo info) {
-            if (info == null) {
-              responseObserver.onError(Status.INTERNAL.asRuntimeException());
-              return;
-            }
-            Object toRemove = exec.processCommand("show_by_id", List.of(request.getId()));
-            if (toRemove != null && toRemove instanceof Optional opt && opt.isPresent()) {
-              Node node = (Node) opt.get();
-              if (node.getAuthor().equals(info.getUsername())) {
-                exec.processCommand("remove_by_id", List.of(node.getItem().getTicket().getId()));
-                responseObserver.onNext(Empty.getDefaultInstance());
+                exec.processCommand(
+                    "remove_by_id", List.of(node.getItem().getTicket().getId().getId()));
+                responseObserver.onNext(RemoveTicketResponse.getDefaultInstance());
                 responseObserver.onCompleted();
               } else {
                 responseObserver.onError(

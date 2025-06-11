@@ -49,7 +49,7 @@ public class TicketComparator implements Comparator<Ticket> {
         break;
       case ID:
       default:
-        result = Long.valueOf(t1.getId()).compareTo(t2.getId());
+        result = Long.valueOf(t1.getId().getId()).compareTo(t2.getId().getId());
     }
     return this.descending ? -result : result;
   }
