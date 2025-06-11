@@ -6,7 +6,7 @@ begin
   for t in
     select table_name
     from information_schema.tables
-    where table_schema = 's466449'
+    where table_schema = 'public'
   loop
     execute 'drop table if exists ' || t || ' cascade';
   end loop;
@@ -59,3 +59,5 @@ create table TICKETS (
   event bigint references EVENTS(id) on delete cascade,
   author varchar(42) references USERS(name) on delete cascade
 );
+
+insert into COLLECTIONS(name, type) values ('A new collection', 'Tickets');

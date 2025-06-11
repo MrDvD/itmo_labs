@@ -11,6 +11,6 @@ message UserInfo {
 }
 
 service UserService {
-  // Maps given AuthID to user's info from database.
+  // Maps given AuthID to user's info.
   rpc GetUserInfo(AuthID) returns (UserInfo);
 }

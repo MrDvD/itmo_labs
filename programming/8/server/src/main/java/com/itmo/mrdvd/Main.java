@@ -25,12 +25,14 @@ import com.itmo.mrdvd.validators.NodeValidator;
 import com.itmo.mrdvd.validators.TicketValidator;
 import io.grpc.Metadata;
 import io.grpc.netty.NettyServerBuilder;
-import java.io.Console;
 import java.net.InetSocketAddress;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
   public static void main(String[] args) {
+    String pgUserVar = "POSTGRES_USER",
+        pgPassVar = "POSTGRES_PASSWORD",
+        appSecretVar = "APP_SECRET";
     String envUser, envPass, hostname, pgHost, pgDbname;
     int ticketPort = 0, authPort = 0;
     String secret;
@@ -42,17 +44,6 @@ public class Main {
       pgDbname = "";
       System.err.println(
           "Программа запущена с неполным набором аргументов: активируется режим DEBUG.");
-      Console console = System.console();
-      if (console == null) {
-        System.err.println("Консоль недоступна. Невозможно ввести данные в режиме DEBUG.");
-        System.exit(1);
-      }
-      System.out.print("Введите имя пользователя PostgreSQL: ");
-      envUser = console.readLine();
-      System.out.print("Введите пароль пользователя PostgreSQL: ");
-      envPass = new String(console.readPassword());
-      System.out.print("Введите секрет приложения: ");
-      secret = new String(console.readPassword());
     } else {
       hostname = args[0];
       pgHost = args[3];
@@ -64,22 +55,22 @@ public class Main {
         System.err.println("Не удалось распарсить порты.");
         System.exit(1);
       }
-      if (System.getenv("PG_USER") == null) {
-        System.err.println("Ошибка: переменная PG_USER не задана.");
-        System.exit(1);
-      }
-      if (System.getenv("PG_PASS") == null) {
-        System.err.println("Ошибка: переменная PG_PASS не задана.");
-        System.exit(1);
-      }
-      if (System.getenv("APP_SECRET") == null) {
-        System.err.println("Ошибка: переменная APP_SECRET не задана.");
-        System.exit(1);
-      }
-      envUser = System.getenv("PG_USER");
-      envPass = System.getenv("PG_PASS");
-      secret = System.getenv("APP_SECRET");
     }
+    if (System.getenv(pgUserVar) == null) {
+      System.err.println(String.format("Ошибка: переменная %s не задана.", pgUserVar));
+      System.exit(1);
+    }
+    if (System.getenv(pgPassVar) == null) {
+      System.err.println(String.format("Ошибка: переменная %s не задана.", pgPassVar));
+      System.exit(1);
+    }
+    if (System.getenv(appSecretVar) == null) {
+      System.err.println(String.format("Ошибка: переменная %s не задана.", appSecretVar));
+      System.exit(1);
+    }
+    envUser = System.getenv(pgUserVar);
+    envPass = System.getenv(pgPassVar);
+    secret = System.getenv(appSecretVar);
     MetadataAuthIdMapper idMapper =
         new MetadataAuthIdMapper(
             Metadata.Key.of(
@@ -118,7 +109,7 @@ public class Main {
             new TicketServiceImpl(
                 publicExec,
                 new UserServiceImpl(publicExec, new AuthIdUserInfoMapper(secret)),
-                new ContextAuthIdMapper("collect-token")),
+                new ContextAuthIdMapper()),
             authService,
             idMapper,
             ContextKeys.TOKEN.getKey());

@@ -6,12 +6,6 @@ import io.grpc.Context;
 import java.util.Optional;
 
 public class ContextAuthIdMapper implements Mapper<Context, AuthID> {
-  private final String token;
-
-  public ContextAuthIdMapper(String token) {
-    this.token = token;
-  }
-
   @Override
   public Optional<AuthID> convert(Context ctx) {
     Object tokenValue = ContextKeys.TOKEN.getKey().get(ctx);
