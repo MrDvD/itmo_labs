@@ -41,7 +41,7 @@ public class MetaJdbc implements AccessWorker<Map<String, Object>> {
         }
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось получить метаданные коллекции.");
     }
     return Optional.empty();
   }
@@ -66,7 +66,7 @@ public class MetaJdbc implements AccessWorker<Map<String, Object>> {
         stmt.executeUpdate();
       }
     } catch (SQLException | ClassCastException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось обновить метаданные коллекции.");
     }
   }
 }

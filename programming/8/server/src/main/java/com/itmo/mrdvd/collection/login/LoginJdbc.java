@@ -31,17 +31,18 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
   public Optional<Credentials> add(Credentials t, Predicate<Credentials> cond) {
     String sql = "insert into USERS (name, passwd_hash) values (?, ?)";
     String passHash = this.hash.hash(t.getPassword());
+    if (!cond.test(t)) {
+      return Optional.empty();
+    }
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setString(1, t.getLogin());
         stmt.setString(2, passHash);
-        if (!cond.test(t)) {
-          return Optional.empty();
-        }
+
         stmt.executeUpdate();
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось добавить пользователя.");
     }
     return Optional.of(t.toBuilder().setPassword(passHash).build());
   }
@@ -50,17 +51,17 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
   public Optional<Credentials> update(String key, Credentials obj, Predicate<Credentials> cond) {
     String sql = "update USERS set passwd_hash = ? where name = ?";
     String passHash = this.hash.hash(obj.getPassword());
+    if (!cond.test(obj)) {
+      return Optional.empty();
+    }
     try (Connection conn = DriverManager.getConnection(this.url, this.user, this.password)) {
       try (PreparedStatement stmt = conn.prepareStatement(sql)) {
         stmt.setString(1, passHash);
         stmt.setString(2, key);
-        if (!cond.test(obj)) {
-          return Optional.empty();
-        }
         stmt.executeUpdate();
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось обновить пользователя.");
     }
     return Optional.of(obj.toBuilder().setPassword(passHash).build());
   }
@@ -81,7 +82,7 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
         }
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось получить пользователя.");
     }
     return Optional.empty();
   }
@@ -105,7 +106,7 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
       }
       return pairs;
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось получить пользователей.");
     }
   }
 
@@ -117,7 +118,7 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
       stmt.setString(1, key);
       stmt.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось удалить пользователя.");
     }
   }
 
@@ -128,7 +129,7 @@ public class LoginJdbc implements CrudWorker<Credentials, Set<Credentials>, Stri
         Statement stmt = conn.createStatement()) {
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось очистить всех пользователей.");
     }
   }
 }

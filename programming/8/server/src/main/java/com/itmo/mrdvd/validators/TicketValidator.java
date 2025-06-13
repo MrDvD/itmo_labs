@@ -4,9 +4,7 @@ import com.itmo.mrdvd.Coordinates;
 import com.itmo.mrdvd.Event;
 import com.itmo.mrdvd.Ticket;
 import com.itmo.mrdvd.TicketType;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class TicketValidator extends ObjectValidator<Ticket> {
   public static boolean validateId(Long id) {
@@ -35,14 +33,6 @@ public class TicketValidator extends ObjectValidator<Ticket> {
     check(Ticket::getPrice, Integer.class, TicketValidator::validatePrice);
     check(Ticket::getType, TicketType.class, TicketValidator::validateType);
     check(Ticket::getEvent, eventValidator);
-    check(
-        (t) -> {
-          return Instant.ofEpochSecond(t.getCreateDate().getSeconds(), t.getCreateDate().getNanos())
-              .atZone(ZoneId.systemDefault())
-              .toLocalDateTime();
-        },
-        LocalDateTime.class,
-        TicketValidator::validateCreationDate);
   }
 
   public TicketValidator(

@@ -25,7 +25,6 @@ import com.itmo.mrdvd.service.executor.CommandMeta;
 import com.itmo.mrdvd.validators.Validator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 
 public class ServerExecutor extends AbstractExecutor {
@@ -72,16 +71,7 @@ public class ServerExecutor extends AbstractExecutor {
     setCommand(new RemoveByIdCommand(objectWorker));
     setCommand(new CountGreaterThanEventCommand(objectWorker));
     setCommand(new AddCommand<>(objectWorker, validator, Node.class));
-    setCommand(
-        new UpdateCommand<>(
-            objectWorker,
-            (t) -> {
-              if (validator.validate(t)) {
-                Optional<Node> old = objectWorker.get(t.getItem().getTicket().getId().getId());
-                return old.isPresent() && old.get().getAuthor().equals(t.getAuthor());
-              }
-              return false;
-            }));
+    setCommand(new UpdateCommand<>(objectWorker, (t) -> validator.validate(t)));
     setCommand(new LoginCommand(loginWorker, hash, tokenMapper));
     setCommand(new RegisterCommand(loginWorker));
     setCommand(new ValidateLoginCommand(idValidator));

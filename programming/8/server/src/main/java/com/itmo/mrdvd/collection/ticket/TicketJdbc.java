@@ -45,6 +45,9 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
     if (t == null) {
       throw new IllegalArgumentException("Нельзя добавить узел без билета.");
     }
+    if (!cond.test(node)) {
+      return Optional.empty();
+    }
     String sqlEvent = "insert into EVENTS (name, description, type) values (?, ?, ?::event_type)";
     String sqlTicket =
         "insert into TICKETS (name, x, y, price, type, event, author) values (?, ?, ?, ?, ?::ticket_type, ?, ?)";
@@ -99,10 +102,8 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
                                           .build())
                                   .build())
                           .build();
-                  if (cond.test(newNode)) {
-                    conn.commit();
-                    return Optional.of(newNode);
-                  }
+                  conn.commit();
+                  return Optional.of(newNode);
                 }
               }
             }
@@ -112,7 +113,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       conn.rollback();
       return Optional.empty();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось добавить билет в коллекцию.");
     }
   }
 
@@ -121,6 +122,9 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
     Ticket t = node.getItem().getTicket();
     if (t == null) {
       throw new IllegalArgumentException("Нельзя добавить узел без билета.");
+    }
+    if (!cond.test(node)) {
+      return Optional.empty();
     }
     String sqlEvent =
         "update EVENTS set name = ?, description = ?, type = ?::event_type where id = ?";
@@ -181,10 +185,8 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
                   node.toBuilder()
                       .setItem(NodeValue.newBuilder().setTicket(newTicket).build())
                       .build();
-              if (cond.test(newNode)) {
-                conn.commit();
-                return Optional.of(newNode);
-              }
+              conn.commit();
+              return Optional.of(newNode);
             }
           }
         }
@@ -192,7 +194,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       conn.rollback();
       return Optional.empty();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось обновить билет в коллекции.");
     }
   }
 
@@ -244,7 +246,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         }
       }
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось получить билет из коллекции.");
     }
     return Optional.empty();
   }
@@ -298,7 +300,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       }
       return tickets;
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось получить билеты из коллекции.");
     }
   }
 
@@ -310,7 +312,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
       stmt.setLong(1, id);
       stmt.executeUpdate();
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось удалить билет из коллекции.");
     }
   }
 
@@ -321,7 +323,7 @@ public class TicketJdbc implements CrudWorker<Node, Set<Node>, Long> {
         Statement stmt = conn.createStatement()) {
       stmt.executeUpdate(sql);
     } catch (SQLException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Не удалось очистить коллекцию.");
     }
   }
 }
