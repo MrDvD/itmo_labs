@@ -6,6 +6,7 @@ services:
       - POSTGRES_PASSWORD
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql:/var/lib/postgresql/data
     networks:
       - backend
     healthcheck:
