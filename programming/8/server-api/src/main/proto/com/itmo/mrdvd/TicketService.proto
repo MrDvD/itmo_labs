@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.itmo.mrdvd";
+option java_outer_classname = "TicketServiceProto";
+
+enum TicketType {
+  TICKETTYPE_DEFAULT = 0;
+  VIP = 1;
+  USUAL = 2;
+  BUDGETARY = 3;
+  CHEAP = 4;
+}
+
+enum EventType {
+  EVENTTYPE_DEFAULT = 0;
+  CONCERT = 1;
+  BASEBALL = 2;
+  OPERA = 3;
+}
+
+message Coordinates {
+  float x = 1;
+  float y = 2;
+}
+
+message Event {
+  int64 id = 1;
+  string name = 2;
+  string desc = 3;
+  EventType type = 4;
+}
+
+message ObjectId {
+  oneof abstract_id {
+    int64 id = 1;
+  }
+}
+
+message Ticket {
+  ObjectId id = 1;
+  string name = 2;
+  Coordinates coords = 3;
+  google.protobuf.Timestamp createDate = 4;
+  int32 price = 5;
+  TicketType type = 6;
+  Event event = 7;
+}
+
+message Node {
+  NodeValue item = 1;
+  string author = 2;
+}
+
+message NodeValue {
+  oneof value {
+    Ticket ticket = 1;
+  }
+}
+
+message GetInfoRequest {}
+
+message CollectionMeta {
+  map<string, CollectionMetaValue> fields = 1;
+}
+
+message CollectionMetaValue {
+  oneof value {
+    string string_value = 1;
+  }
+}
+
+message RemoveTicketRequest {
+  oneof header {
+    ObjectId id = 1;
+    int32 idx = 2;
+  }
+}
+
+message UpdateTicketRequest {
+  ObjectId id = 1;
+  Node node = 2;
+}
+
+message UpdateTicketResponse {}
+message GetTicketsRequest {}
+message AddTicketResponse {}
+message RemoveTicketResponse {}
+
+service TicketService {
+  // Obtains Meta information about the used Collection
+  rpc GetInfo(GetInfoRequest) returns (CollectionMeta);
+  // Obtains stream of Tickets
+  rpc GetTickets(GetTicketsRequest) returns (stream Node) {}
+  // Obtains a Ticket object by its id 
+  rpc GetTicket(ObjectId) returns (Node) {}
+  // Adds a Ticket object into collection
+  rpc AddTicket(Node) returns (AddTicketResponse) {}
+  // Updates the Ticket object in collection
+  rpc UpdateTicket(UpdateTicketRequest) returns (UpdateTicketResponse) {}
+  // Removes the mentioned Ticket object from the collection (by default - last)
+  rpc RemoveTicket(RemoveTicketRequest) returns (RemoveTicketResponse) {}
+}

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.itmo.mrdvd";
+option java_outer_classname = "UserServiceProto";
+
+import "com/itmo/mrdvd/CommonMessage.proto";
+
+message UserInfo {
+  string username = 1;
+}
+
+service UserService {
+  // Maps given AuthID to user's info.
+  rpc GetUserInfo(AuthID) returns (UserInfo);
+}

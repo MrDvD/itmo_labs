@@ -1,0 +1,98 @@
+# build maven project
+mvn archetype:generate -DgroupId=com.itmo.mrdvd -DartifactId=5 -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.5 -DinteractiveMode=false
+
+# add plugins to pom.xml
+
+# <plugin>
+#    <artifactId>maven-assembly-plugin</artifactId>
+#    <configuration>
+#       <archive>
+#          <manifest>
+#             <mainClass>com.itmo.mrdvd.Main</mainClass>
+#          </manifest>
+#       </archive>
+#       <descriptorRefs>
+#          <descriptorRef>jar-with-dependencies</descriptorRef>
+#       </descriptorRefs>
+#    </configuration>
+# </plugin>
+# <plugin>
+#    <groupId>com.spotify.fmt</groupId>
+#    <artifactId>fmt-maven-plugin</artifactId>
+#    <version>2.25</version>
+#    <executions>
+#       <execution>
+#          <goals>
+#             <goal>format</goal>
+#          </goals>
+#       </execution>
+#    </executions>
+# </plugin>
+# <plugin>
+
+# JacksonXML module
+
+# <dependency>
+#    <groupId>com.fasterxml.jackson.dataformat</groupId>
+#    <artifactId>jackson-dataformat-xml</artifactId>
+#    <version>2.11.1</version>
+# </dependency>
+
+# Jackson module for LocalDateTimeFormatter
+
+# <dependency>
+#    <groupId>com.fasterxml.jackson.datatype</groupId>
+#    <artifactId>jackson-datatype-jsr310</artifactId>
+#    <version>2.6.0</version>
+# </dependency>
+
+# BCrypt module
+
+# <dependency>
+#   <groupId>at.favre.lib</groupId>
+#   <artifactId>bcrypt</artifactId>
+#   <version>{latest-version}</version>
+# </dependency>
+
+# PostgreSQL JDBC Driver
+
+# <dependency>
+#   <groupId>org.postgresql</groupId>
+#   <artifactId>postgresql</artifactId>
+#   <version>42.7.5</version>
+# </dependency>
+
+# gRPC
+
+# <dependency>
+#   <groupId>io.grpc</groupId>
+#   <artifactId>grpc-netty-shaded</artifactId>
+#   <version>1.72.0</version>
+#   <scope>runtime</scope>
+# </dependency>
+# <dependency>
+#   <groupId>io.grpc</groupId>
+#   <artifactId>grpc-protobuf</artifactId>
+#   <version>1.72.0</version>
+# </dependency>
+# <dependency>
+#   <groupId>io.grpc</groupId>
+#   <artifactId>grpc-stub</artifactId>
+#   <version>1.72.0</version>
+# </dependency>
+
+# JWT support
+
+# <dependency>
+#   <groupId>com.auth0</groupId>
+#   <artifactId>java-jwt</artifactId>
+#   <version>4.5.0</version>
+# </dependency>
+
+# compile maven subprojects to independent JAR files
+# the result will be placed into the target/ dir
+mvn clean fmt:format package assembly:single
+mvn clean generate-sources # for Protobuf class generation
+
+# docker compose launch
+HOSTNAME=0.0.0.0 TICKET_PORT=8080 AUTH_PORT=8090 PG_HOST=database docker compose up

@@ -1,0 +1,36 @@
+services:
+  database:
+    image: "postgres:latest"
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgresql:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  lab:
+    build: .
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - APP_SECRET
+    command:
+      - $HOSTNAME
+      - $TICKET_PORT
+      - $AUTH_PORT
+      - $PG_HOST
+      - $PG_DBNAME
+    networks:
+      - backend
+    depends_on:
+      database:
+        condition: service_healthy
+
+networks:
+  backend: {}
