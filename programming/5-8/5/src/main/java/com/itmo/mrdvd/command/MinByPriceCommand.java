@@ -1,7 +1,7 @@
 package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.CollectionWorker;
-import com.itmo.mrdvd.collection.HavingId;
+import com.itmo.mrdvd.object.HavingId;
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Comparator;
 import java.util.List;

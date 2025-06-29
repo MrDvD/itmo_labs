@@ -1,0 +1,92 @@
+@startuml collection
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+abstract class com.itmo.mrdvd.collection.Collection {
+	{method}  {abstract} +getMetadata () : CollectionMetadata
+	{method}  {abstract} +setMetadata ( metadata : CollectionMetadata ) : void
+}
+
+
+interface com.itmo.mrdvd.collection.CollectionMetadata {
+}
+
+
+interface com.itmo.mrdvd.collection.CollectionWorker {
+	{method}  {abstract} +add ( obj : Builder ) : Optional
+	{method}  {abstract} +add ( rawObject : HavingId , validator : Validator ) : Optional
+	{method}  {abstract} +add ( obj : Builder , cond : Comparator , values : Set ) : Optional
+	{method}  {abstract} +clear () : void
+	{method}  {abstract} +get ( id : Long ) : Optional
+	{method}  {abstract} +getCollection () : Object
+	{method}  {abstract} +remove ( id : Long ) : void
+	{method}  {abstract} +update ( id : Long , obj : Updater ) : Optional
+	{method}  {abstract} +update ( id : Long , obj : Updater , cond : Comparator , values : Set ) : Optional
+}
+
+
+interface com.itmo.mrdvd.collection.IdGenerator {
+	{method}  {abstract} +freeId ( id : Long ) : void
+	{method}  {abstract} +getId ( obj : Object ) : Optional
+	{method}  {abstract} +isTaken ( id : Long ) : boolean
+	{method}  {abstract} +takeId ( id : Long ) : void
+}
+
+
+class com.itmo.mrdvd.collection.TicketCollection {
+	{field} -tickets : List
+	{method} #acquireId ( obj : Ticket ) : Optional
+	{method} +add ( obj : Builder ) : Optional
+	{method} +add ( rawObject : Ticket , validator : Validator ) : Optional
+	{method} +add ( obj : Builder , cond : Comparator , values : Set ) : Optional
+	{method} +clear () : void
+	{method} +get ( id : Long ) : Optional
+	{method} +getCollection () : List
+	{method} +getCount () : int
+	{method} +getEventIdGenerator () : IdGenerator
+	{method} +getMetadata () : TicketCollectionMetadata
+	{method} +getTicketIdGenerator () : IdGenerator
+	{method} +iterator () : Iterator
+	{method} +remove ( id : Long ) : void
+	{method} +setMetadata ( meta : CollectionMetadata ) : void
+	{method} +update ( id : Long , updater : Updater ) : Optional
+	{method} +update ( id : Long , updater : Updater , cond : Comparator , values : Set ) : Optional
+}
+
+
+class com.itmo.mrdvd.collection.TicketCollection$TicketCollectionMetadata {
+	{field} -creationTime : LocalDateTime
+	{field} +name : String
+	{field} -type : String
+	{method} +toString () : String
+}
+
+
+class com.itmo.mrdvd.collection.TicketCollection$TicketIdGenerator {
+	{field} -usedIds : Set
+	{method} +freeId ( id : Long ) : void
+	{method} +getId ( obj : Object ) : Optional
+	{method} +isTaken ( id : Long ) : boolean
+	{method} +takeId ( id : Long ) : void
+}
+
+
+class com.itmo.mrdvd.collection.TicketComparator {
+	{field} -descending : boolean
+	{field} -field : TicketField
+	{method} +compare ( t1 : Ticket , t2 : Ticket ) : int
+}
+
+
+
+
+com.itmo.mrdvd.collection.Collection ..|>  com.itmo.mrdvd.collection.CollectionWorker
+com.itmo.mrdvd.collection.TicketCollection -->  com.itmo.mrdvd.collection.IdGenerator : eventGenerator
+com.itmo.mrdvd.collection.TicketCollection -->  com.itmo.mrdvd.collection.IdGenerator : ticketGenerator
+com.itmo.mrdvd.collection.TicketCollection -->  com.itmo.mrdvd.collection.TicketCollection$TicketCollectionMetadata : meta
+com.itmo.mrdvd.collection.TicketCollection --|>  com.itmo.mrdvd.collection.Collection
+com.itmo.mrdvd.collection.TicketCollection$TicketCollectionMetadata ..|>  com.itmo.mrdvd.collection.CollectionMetadata
+com.itmo.mrdvd.collection.TicketCollection$TicketIdGenerator ..|>  com.itmo.mrdvd.collection.IdGenerator
+
+@enduml

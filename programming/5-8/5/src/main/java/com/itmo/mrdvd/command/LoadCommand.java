@@ -2,10 +2,10 @@ package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.builder.validators.Validator;
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.Deserializer;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.input.InputDevice;
+import com.itmo.mrdvd.object.HavingId;
 import com.itmo.mrdvd.shell.Shell;
 import java.io.IOException;
 import java.util.Optional;

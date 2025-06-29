@@ -1,4 +1,4 @@
-package com.itmo.mrdvd.collection;
+package com.itmo.mrdvd.object;
 
 public interface HavingId {
   public Long getId();

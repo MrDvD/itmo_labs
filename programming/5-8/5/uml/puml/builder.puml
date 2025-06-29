@@ -1,0 +1,39 @@
+@startuml builder
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+interface com.itmo.mrdvd.builder.Interactor {
+	{method}  {abstract} +attributeName () : String
+	{method}  {abstract} +comment () : Optional
+	{method}  {abstract} +error () : String
+	{method}  {abstract} +get ( in : InputDevice ) : Optional
+	{method}  {abstract} +options () : Optional
+}
+
+
+enum com.itmo.mrdvd.builder.ProcessStatus {
+	{field} +FAILURE
+	{field} +SUCCESS
+}
+
+
+class com.itmo.mrdvd.builder.UserInteractor {
+	{field} -attributeName : String
+	{field} -comment : Optional
+	{field} -error : String
+	{field} -options : Optional
+	{method} +attributeName () : String
+	{method} +comment () : Optional
+	{method} +error () : String
+	{method} +get ( in : InputDevice ) : Optional
+	{method} +options () : Optional
+}
+
+
+
+
+com.itmo.mrdvd.builder.UserInteractor *--  com.itmo.mrdvd.builder.functionals.ExFunction : inMethod
+com.itmo.mrdvd.builder.UserInteractor ..|>  com.itmo.mrdvd.builder.Interactor
+
+@enduml

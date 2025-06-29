@@ -1,0 +1,38 @@
+@startuml shell
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+abstract class com.itmo.mrdvd.shell.Shell {
+	{field} #commands : Object
+	{field} #in : DataInputDevice
+	{field} #out : OutputDevice
+	{field} #preExecute : Optional
+	{method}  {abstract} +addCommand ( cmd : Command ) : Optional
+	{method}  {abstract} +close () : void
+	{method}  {abstract} +forkSubshell ( in : DataInputDevice , out : OutputDevice ) : Shell
+	{method}  {abstract} +getCommand ( str : String ) : Optional
+	{method}  {abstract} +open () : void
+	{method} +processCommandLine () : Optional
+}
+
+
+class com.itmo.mrdvd.shell.TicketShell {
+	{field} -isOpen : boolean
+	{method} +addCommand ( cmd : Command ) : Optional
+	{method} +addCommand ( cmd : Command , preExec : boolean ) : Optional
+	{method} +close () : void
+	{method} +forkSubshell ( in : DataInputDevice , out : OutputDevice ) : TicketShell
+	{method} +getCommand ( line : String ) : Optional
+	{method} +getIn () : DataInputDevice
+	{method} +initDefaultCommands ( collection : TicketCollection , envName : String , fd : DataFileDescriptor , serial : Serializer , deserial : Deserializer , usedPaths : Set ) : void
+	{method} +iterator () : Iterator
+	{method} +open () : void
+}
+
+
+
+
+com.itmo.mrdvd.shell.TicketShell --|>  com.itmo.mrdvd.shell.Shell
+
+@enduml

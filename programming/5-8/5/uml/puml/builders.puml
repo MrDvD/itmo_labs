@@ -1,0 +1,89 @@
+@startuml builders
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+
+interface com.itmo.mrdvd.builder.builders.Builder {
+	{method}  {abstract} +build () : Optional
+	{method}  {abstract} +of ( newMethod : Supplier ) : Builder
+	{method}  {abstract} +set ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : Builder
+	{method}  {abstract} +setFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : Builder
+}
+
+
+interface com.itmo.mrdvd.builder.builders.InteractiveBuilder {
+	{method}  {abstract} +addInteractiveBuilder ( builder : InteractiveBuilder , setter : BiConsumer , valueCls : Class , validator : Predicate ) : InteractiveBuilder
+	{method}  {abstract} +addInteractiveSetter ( setter : BiConsumer , valueCls : Class , inter : Interactor , validator : Predicate ) : InteractiveBuilder
+	{method}  {abstract} +getIn () : Optional
+	{method}  {abstract} +setIn ( in : InputDevice ) : InteractiveBuilder
+}
+
+
+class com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder {
+	{method} -init () : InteractiveCoordinatesBuilder
+	{method} +setIn ( in : FloatInputDevice ) : InteractiveCoordinatesBuilder
+}
+
+
+class com.itmo.mrdvd.builder.builders.InteractiveEventBuilder {
+	{method} -init () : InteractiveEventBuilder
+	{method} +setIn ( in : EnumInputDevice ) : InteractiveEventBuilder
+}
+
+
+class com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder {
+	{field} +in : InputDevice
+	{field} #out : OutputDevice
+	{method} +addInteractiveBuilder ( builder : InteractiveBuilder , setter : BiConsumer , valueCls : Class ) : InteractiveObjectBuilder
+	{method} +addInteractiveBuilder ( builder : InteractiveBuilder , setter : BiConsumer , valueCls : Class , validator : Predicate ) : InteractiveObjectBuilder
+	{method} +addInteractiveSetter ( setter : BiConsumer , valueCls : Class , inter : Interactor ) : InteractiveObjectBuilder
+	{method} +addInteractiveSetter ( setter : BiConsumer , valueCls : Class , inter : Interactor , validator : Predicate ) : InteractiveObjectBuilder
+	{method} #getObject () : Optional
+	{method} +of ( newMethod : Supplier ) : InteractiveObjectBuilder
+	{method} #processSetter ( index : int ) : ProcessStatus
+	{method} +set ( setter : BiConsumer , value : Object , valueCls : Class ) : InteractiveObjectBuilder
+	{method} +set ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : InteractiveObjectBuilder
+	{method} +setFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class ) : InteractiveObjectBuilder
+	{method} +setFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : InteractiveObjectBuilder
+}
+
+
+class com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder {
+	{method} -init () : InteractiveTicketBuilder
+	{method} +setIn ( in : DataInputDevice ) : InteractiveTicketBuilder
+}
+
+
+class com.itmo.mrdvd.builder.builders.ObjectBuilder {
+	{field} #methods : List
+	{field} #newMethod : Supplier
+	{field} #objects : List
+	{field} #rawObject : Object
+	{field} #setters : List
+	{field} #validators : List
+	{method} +build () : Optional
+	{method} #getObject () : Optional
+	{method} +of ( newMethod : Supplier ) : ObjectBuilder
+	{method} #processSetter ( index : int ) : ProcessStatus
+	{method} +set ( setter : BiConsumer , value : Object , valueCls : Class ) : ObjectBuilder
+	{method} +set ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : ObjectBuilder
+	{method} +setFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class ) : ObjectBuilder
+	{method} +setFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : ObjectBuilder
+}
+
+
+
+
+com.itmo.mrdvd.builder.builders.InteractiveBuilder ..|>  com.itmo.mrdvd.builder.builders.Builder
+com.itmo.mrdvd.builder.builders.InteractiveCoordinatesBuilder --|>  com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder
+com.itmo.mrdvd.builder.builders.InteractiveEventBuilder --|>  com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder
+com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder "1" o-- "0..*"  com.itmo.mrdvd.builder.builders.InteractiveBuilder : builders
+com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder --|>  com.itmo.mrdvd.builder.builders.ObjectBuilder
+com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder ..|>  com.itmo.mrdvd.builder.builders.InteractiveBuilder
+com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder *--  com.itmo.mrdvd.builder.builders.InteractiveBuilder : coordBuild
+com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder *--  com.itmo.mrdvd.builder.builders.InteractiveBuilder : eventBuild
+com.itmo.mrdvd.builder.builders.InteractiveTicketBuilder --|>  com.itmo.mrdvd.builder.builders.InteractiveObjectBuilder
+com.itmo.mrdvd.builder.builders.ObjectBuilder ..|>  com.itmo.mrdvd.builder.builders.Builder
+
+@enduml

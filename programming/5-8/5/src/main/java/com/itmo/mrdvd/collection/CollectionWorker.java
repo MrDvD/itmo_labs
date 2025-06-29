@@ -3,6 +3,8 @@ package com.itmo.mrdvd.collection;
 import com.itmo.mrdvd.builder.builders.Builder;
 import com.itmo.mrdvd.builder.updaters.Updater;
 import com.itmo.mrdvd.builder.validators.Validator;
+import com.itmo.mrdvd.object.HavingId;
+
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;

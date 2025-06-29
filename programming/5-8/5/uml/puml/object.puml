@@ -1,0 +1,71 @@
+@startuml object
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+class com.itmo.mrdvd.object.Coordinates {
+	{field} +x : Float
+	{field} +y : Float
+	{method} +toString () : String
+}
+
+
+class com.itmo.mrdvd.object.Event {
+	{field} +description : String
+	{field} +id : Long
+	{field} +name : String
+	{method} +compareTo ( other : Event ) : int
+	{method} +toString () : String
+}
+
+
+enum com.itmo.mrdvd.object.EventType {
+	{field} +BASEBALL
+	{field} +CONCERT
+	{field} +OPERA
+}
+
+
+interface com.itmo.mrdvd.object.HavingId {
+	{method}  {abstract} +getId () : Long
+	{method}  {abstract} +setId ( id : Long ) : void
+}
+
+
+class com.itmo.mrdvd.object.Ticket {
+	{field} +creationDate : LocalDateTime
+	{field} +id : Long
+	{field} +name : String
+	{field} +price : int
+	{method} +toString () : String
+}
+
+
+enum com.itmo.mrdvd.object.TicketField {
+	{field} +CREATION_DATE
+	{field} +EVENT
+	{field} +ID
+	{field} +NAME
+	{field} +PRICE
+	{field} +TYPE
+}
+
+
+enum com.itmo.mrdvd.object.TicketType {
+	{field} +BUDGETARY
+	{field} +CHEAP
+	{field} +USUAL
+	{field} +VIP
+}
+
+
+
+
+com.itmo.mrdvd.object.Event -->  com.itmo.mrdvd.object.EventType : type
+com.itmo.mrdvd.object.Event ..|>  com.itmo.mrdvd.object.HavingId
+com.itmo.mrdvd.object.Ticket -->  com.itmo.mrdvd.object.Coordinates : coordinates
+com.itmo.mrdvd.object.Ticket -->  com.itmo.mrdvd.object.Event : event
+com.itmo.mrdvd.object.Ticket -->  com.itmo.mrdvd.object.TicketType : type
+com.itmo.mrdvd.object.Ticket ..|>  com.itmo.mrdvd.object.HavingId
+
+@enduml

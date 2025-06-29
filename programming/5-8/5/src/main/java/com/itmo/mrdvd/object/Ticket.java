@@ -1,6 +1,5 @@
 package com.itmo.mrdvd.object;
 
-import com.itmo.mrdvd.collection.HavingId;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 

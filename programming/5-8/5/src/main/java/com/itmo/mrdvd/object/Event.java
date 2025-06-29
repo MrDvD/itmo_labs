@@ -1,12 +1,10 @@
 package com.itmo.mrdvd.object;
 
-import com.itmo.mrdvd.collection.HavingId;
-
 public class Event implements HavingId, Comparable<Event> {
   private Long id;
   private String name;
   private String description;
-  private EventType eventType;
+  private EventType type;
 
   @Override
   public void setId(Long id) {
@@ -22,7 +20,7 @@ public class Event implements HavingId, Comparable<Event> {
   }
 
   public void setType(EventType type) {
-    this.eventType = type;
+    this.type = type;
   }
 
   @Override
@@ -39,7 +37,7 @@ public class Event implements HavingId, Comparable<Event> {
   }
 
   public EventType getType() {
-    return eventType;
+    return type;
   }
 
   @Override

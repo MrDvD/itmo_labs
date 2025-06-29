@@ -1,0 +1,19 @@
+@startuml command
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+
+interface com.itmo.mrdvd.command.Command {
+	{method}  {abstract} +description () : String
+	{method}  {abstract} +execute () : void
+	{method}  {abstract} +getShell () : Optional
+	{method} +hasParams () : boolean
+	{method}  {abstract} +name () : String
+	{method}  {abstract} +setShell ( shell : Shell ) : Command
+	{method}  {abstract} +signature () : String
+}
+
+
+
+@enduml

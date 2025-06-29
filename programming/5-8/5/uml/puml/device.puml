@@ -1,0 +1,185 @@
+@startuml device
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+
+abstract class com.itmo.mrdvd.device.Console {
+	{field} -in : Scanner
+	{field} -out : OutputStreamWriter
+	{method} +closeIn () : IOStatus
+	{method} +closeOut () : IOStatus
+	{method} +hasNext () : boolean
+	{method} +init () : Console
+	{method} +openIn () : IOStatus
+	{method} +openOut () : IOStatus
+	{method} +read () : Optional
+	{method} +readAll () : Optional
+	{method} +readToken () : Optional
+	{method} +skipLine () : void
+	{method} +write ( str : String ) : IOStatus
+	{method} +writeln ( str : String ) : IOStatus
+}
+
+
+class com.itmo.mrdvd.device.DataConsole {
+	{method} +init () : DataConsole
+	{method} +readEnum ( cls : Class ) : Optional
+	{method} +readFloat () : Optional
+	{method} +readInt () : Optional
+	{method} +readLong () : Optional
+}
+
+
+abstract class com.itmo.mrdvd.device.DataFileDescriptor {
+	{method}  {abstract} +duplicate () : DataFileDescriptor
+	{method} +readEnum ( cls : Class ) : Optional
+	{method} +readFloat () : Optional
+	{method} +readInt () : Optional
+	{method} +readLong () : Optional
+}
+
+
+interface com.itmo.mrdvd.device.Deserializer {
+	{method}  {abstract} +deserialize ( str : String ) : Optional
+}
+
+
+abstract class com.itmo.mrdvd.device.FileDescriptor {
+	{field} #fs : FileSystem
+	{field} +path : Path
+	{method}  {abstract} +duplicate () : FileDescriptor
+}
+
+
+class com.itmo.mrdvd.device.FileIO {
+	{field} -inReader : BufferedInputStream
+	{field} -inStream : InputStream
+	{field} -outStream : OutputStream
+	{field} -outWriter : OutputStreamWriter
+	{method} +closeIn () : IOStatus
+	{method} +closeOut () : IOStatus
+	{method} +duplicate () : FileIO
+	{method} +hasNext () : boolean
+	{method} +openIn () : IOStatus
+	{method} +openOut () : IOStatus
+	{method} +read () : Optional
+	{method} +read ( delimiters : String ) : Optional
+	{method} +readAll () : Optional
+	{method} +readToken () : Optional
+	{method} +skipLine () : void
+	{method} +write ( str : String ) : IOStatus
+	{method} +writeln ( str : String ) : IOStatus
+}
+
+
+interface com.itmo.mrdvd.device.FileMeta {
+	{method}  {abstract} +getPath () : Optional
+	{method}  {abstract} +setPath ( filePath : String ) : Optional
+}
+
+
+enum com.itmo.mrdvd.device.IOStatus {
+	{field} +FAILURE
+	{field} +SUCCESS
+}
+
+
+class com.itmo.mrdvd.device.ObjectMapperDecorator {
+	{field} -cls : Class
+	{field} -mapper : ObjectMapper
+	{method} +deserialize ( str : String ) : Optional
+	{method} +serialize ( obj : Object ) : Optional
+}
+
+
+interface com.itmo.mrdvd.device.OutputDevice {
+	{method}  {abstract} +closeOut () : IOStatus
+	{method}  {abstract} +openOut () : IOStatus
+	{method}  {abstract} +write ( str : String ) : IOStatus
+	{method}  {abstract} +writeln ( str : String ) : IOStatus
+}
+
+
+interface com.itmo.mrdvd.device.Serializer {
+	{method}  {abstract} +serialize ( obj : Object ) : Optional
+}
+
+
+interface com.itmo.mrdvd.device.input.DataInputDevice {
+}
+
+
+interface com.itmo.mrdvd.device.input.EnumInputDevice {
+	{method}  {abstract} +readEnum ( cls : Class ) : Optional
+}
+
+
+interface com.itmo.mrdvd.device.input.FloatInputDevice {
+	{method}  {abstract} +readFloat () : Optional
+}
+
+
+interface com.itmo.mrdvd.device.input.InputDevice {
+	{method}  {abstract} +closeIn () : IOStatus
+	{method}  {abstract} +hasNext () : boolean
+	{method}  {abstract} +openIn () : IOStatus
+	{method}  {abstract} +read () : Optional
+	{method}  {abstract} +readAll () : Optional
+	{method}  {abstract} +readToken () : Optional
+	{method}  {abstract} +skipLine () : void
+}
+
+
+interface com.itmo.mrdvd.device.input.IntEnumInputDevice {
+}
+
+
+interface com.itmo.mrdvd.device.input.IntInputDevice {
+	{method}  {abstract} +readInt () : Optional
+}
+
+
+interface com.itmo.mrdvd.device.input.InteractiveDataInputDevice {
+}
+
+
+interface com.itmo.mrdvd.device.input.InteractiveInputDevice {
+}
+
+
+interface com.itmo.mrdvd.device.input.LongInputDevice {
+	{method}  {abstract} +readLong () : Optional
+}
+
+
+
+
+com.itmo.mrdvd.device.Console ..|>  com.itmo.mrdvd.device.input.InteractiveInputDevice
+com.itmo.mrdvd.device.DataConsole --|>  com.itmo.mrdvd.device.Console
+com.itmo.mrdvd.device.DataConsole ..|>  com.itmo.mrdvd.device.input.InteractiveDataInputDevice
+com.itmo.mrdvd.device.DataFileDescriptor --|>  com.itmo.mrdvd.device.FileDescriptor
+com.itmo.mrdvd.device.DataFileDescriptor ..|>  com.itmo.mrdvd.device.input.DataInputDevice
+com.itmo.mrdvd.device.FileDescriptor ..|>  com.itmo.mrdvd.device.FileMeta
+com.itmo.mrdvd.device.FileDescriptor ..|>  com.itmo.mrdvd.device.OutputDevice
+com.itmo.mrdvd.device.FileDescriptor ..|>  com.itmo.mrdvd.device.input.InputDevice
+com.itmo.mrdvd.device.FileIO --|>  com.itmo.mrdvd.device.DataFileDescriptor
+com.itmo.mrdvd.device.ObjectMapperDecorator ..|>  com.itmo.mrdvd.device.Deserializer
+com.itmo.mrdvd.device.ObjectMapperDecorator ..|>  com.itmo.mrdvd.device.Serializer
+com.itmo.mrdvd.device.input.DataInputDevice ..|>  com.itmo.mrdvd.device.input.FloatInputDevice
+com.itmo.mrdvd.device.input.DataInputDevice ..|>  com.itmo.mrdvd.device.input.IntEnumInputDevice
+com.itmo.mrdvd.device.input.DataInputDevice ..|>  com.itmo.mrdvd.device.input.LongInputDevice
+com.itmo.mrdvd.device.input.EnumInputDevice ..|>  com.itmo.mrdvd.device.input.InputDevice
+com.itmo.mrdvd.device.input.FloatInputDevice ..|>  com.itmo.mrdvd.device.input.InputDevice
+com.itmo.mrdvd.device.input.IntEnumInputDevice ..|>  com.itmo.mrdvd.device.input.EnumInputDevice
+com.itmo.mrdvd.device.input.IntEnumInputDevice ..|>  com.itmo.mrdvd.device.input.IntInputDevice
+com.itmo.mrdvd.device.input.IntInputDevice ..|>  com.itmo.mrdvd.device.input.InputDevice
+com.itmo.mrdvd.device.input.InteractiveDataInputDevice ..|>  com.itmo.mrdvd.device.input.DataInputDevice
+com.itmo.mrdvd.device.input.InteractiveDataInputDevice ..|>  com.itmo.mrdvd.device.input.InteractiveInputDevice
+com.itmo.mrdvd.device.input.InteractiveInputDevice ..|>  com.itmo.mrdvd.device.OutputDevice
+com.itmo.mrdvd.device.input.InteractiveInputDevice ..|>  com.itmo.mrdvd.device.input.InputDevice
+com.itmo.mrdvd.device.input.LongInputDevice ..|>  com.itmo.mrdvd.device.input.InputDevice
+
+
+
+@enduml

@@ -1,0 +1,90 @@
+@startuml updaters
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+
+
+class com.itmo.mrdvd.builder.updaters.InteractiveCoordinatesUpdater {
+	{method} -init () : void
+	{method} +setIn ( in : FloatInputDevice ) : InteractiveCoordinatesUpdater
+}
+
+
+class com.itmo.mrdvd.builder.updaters.InteractiveEventUpdater {
+	{method} -init () : void
+	{method} +setIn ( in : EnumInputDevice ) : InteractiveEventUpdater
+}
+
+
+class com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater {
+	{field} #getters : List
+	{field} +in : InputDevice
+	{field} #out : OutputDevice
+	{method} +addInteractiveChange ( setter : BiConsumer , getter : Function , valueCls : Class , inter : Interactor ) : InteractiveObjectUpdater
+	{method} +addInteractiveChange ( setter : BiConsumer , getter : Function , valueCls : Class , inter : Interactor , validator : Predicate ) : InteractiveObjectUpdater
+	{method} +addInteractiveUpdater ( updater : InteractiveUpdater , setter : BiConsumer , getter : Function , valueCls : Class ) : InteractiveUpdater
+	{method} +addInteractiveUpdater ( updater : InteractiveUpdater , setter : BiConsumer , getter : Function , valueCls : Class , validator : Predicate ) : InteractiveUpdater
+	{method} +change ( setter : BiConsumer , value : Object , valueCls : Class ) : InteractiveObjectUpdater
+	{method} +change ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : InteractiveObjectUpdater
+	{method} +changeFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class ) : InteractiveObjectUpdater
+	{method} +changeFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : InteractiveObjectUpdater
+	{method} #getObject () : Optional
+	{method} #processChange ( index : int ) : ProcessStatus
+}
+
+
+class com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater {
+	{method} -init () : void
+	{method} +setIn ( in : DataInputDevice ) : InteractiveTicketUpdater
+}
+
+
+interface com.itmo.mrdvd.builder.updaters.InteractiveUpdater {
+	{method}  {abstract} +addInteractiveChange ( setter : BiConsumer , getter : Function , valueCls : Class , inter : Interactor , validator : Predicate ) : InteractiveUpdater
+	{method}  {abstract} +addInteractiveUpdater ( updater : InteractiveUpdater , setter : BiConsumer , getter : Function , valueCls : Class , validator : Predicate ) : InteractiveUpdater
+	{method}  {abstract} +getIn () : Optional
+	{method}  {abstract} +setIn ( in : InputDevice ) : InteractiveUpdater
+}
+
+
+class com.itmo.mrdvd.builder.updaters.ObjectUpdater {
+	{field} #methods : List
+	{field} #newMethod : Supplier
+	{field} #objects : List
+	{field} #rawObject : Object
+	{field} #setters : List
+	{field} #validators : List
+	{method} +change ( setter : BiConsumer , value : Object , valueCls : Class ) : ObjectUpdater
+	{method} +change ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : ObjectUpdater
+	{method} +changeFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class ) : ObjectUpdater
+	{method} +changeFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : ObjectUpdater
+	{method} #getObject () : Optional
+	{method} #processChange ( index : int ) : ProcessStatus
+	{method} +update ( rawObject : Object ) : Optional
+}
+
+
+interface com.itmo.mrdvd.builder.updaters.Updater {
+	{method}  {abstract} +change ( setter : BiConsumer , value : Object , valueCls : Class , validator : Predicate ) : Updater
+	{method}  {abstract} +changeFromMethod ( setter : BiConsumer , method : Supplier , valueCls : Class , validator : Predicate ) : Updater
+	{method}  {abstract} +update ( rawObject : Object ) : Optional
+}
+
+
+
+
+
+com.itmo.mrdvd.builder.updaters.InteractiveCoordinatesUpdater --|>  com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater
+com.itmo.mrdvd.builder.updaters.InteractiveEventUpdater --|>  com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater
+com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater "1" o-- "0..*"  com.itmo.mrdvd.builder.Interactor : interactors
+com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater "1" o-- "0..*"  com.itmo.mrdvd.builder.updaters.InteractiveUpdater : updaters
+com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater --|>  com.itmo.mrdvd.builder.updaters.ObjectUpdater
+com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater ..|>  com.itmo.mrdvd.builder.updaters.InteractiveUpdater
+com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater *--  com.itmo.mrdvd.builder.updaters.InteractiveUpdater : coordUpdate
+com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater *--  com.itmo.mrdvd.builder.updaters.InteractiveUpdater : eventUpdate
+com.itmo.mrdvd.builder.updaters.InteractiveTicketUpdater --|>  com.itmo.mrdvd.builder.updaters.InteractiveObjectUpdater
+com.itmo.mrdvd.builder.updaters.InteractiveUpdater ..|>  com.itmo.mrdvd.builder.updaters.Updater
+com.itmo.mrdvd.builder.updaters.ObjectUpdater ..|>  com.itmo.mrdvd.builder.updaters.Updater
+
+@enduml

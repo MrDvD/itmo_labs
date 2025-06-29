@@ -1,10 +1,10 @@
 package com.itmo.mrdvd.command;
 
 import com.itmo.mrdvd.collection.Collection;
-import com.itmo.mrdvd.collection.HavingId;
 import com.itmo.mrdvd.device.FileDescriptor;
 import com.itmo.mrdvd.device.IOStatus;
 import com.itmo.mrdvd.device.Serializer;
+import com.itmo.mrdvd.object.HavingId;
 import com.itmo.mrdvd.shell.Shell;
 import java.util.Optional;
 

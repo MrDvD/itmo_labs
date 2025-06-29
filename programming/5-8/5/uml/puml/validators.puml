@@ -1,0 +1,62 @@
+@startuml validators
+
+!$BASEPATH = ".."
+!include $BASEPATH/globals/stylesheet.iuml
+
+
+
+class com.itmo.mrdvd.builder.validators.CoordinatesValidator {
+	{method} -init () : void
+	{method}  {static} +validateX ( x : Float ) : boolean
+	{method}  {static} +validateY ( y : Float ) : boolean
+}
+
+
+class com.itmo.mrdvd.builder.validators.EventValidator {
+	{method} -init () : void
+	{method}  {static} +validateDescription ( description : String ) : boolean
+	{method}  {static} +validateId ( id : Long ) : boolean
+	{method}  {static} +validateName ( name : String ) : boolean
+	{method}  {static} +validateType ( type : EventType ) : boolean
+}
+
+
+class com.itmo.mrdvd.builder.validators.ObjectValidator {
+	{field} #getters : List
+	{field} #methods : List
+	{field} #object : Object
+	{method} +check ( getter : Function , validator : Validator ) : Validator
+	{method} +check ( getter : Function , valueCls : Class , validator : Predicate ) : ObjectValidator
+	{method} #checkObject () : boolean
+	{method} #processCheck ( index : int ) : ProcessStatus
+	{method} #processValidator ( index : int ) : ProcessStatus
+	{method} +validate ( obj : Object ) : boolean
+}
+
+
+class com.itmo.mrdvd.builder.validators.TicketValidator {
+	{method} -init ( coordinatesValidator : Validator , eventValidator : Validator ) : void
+	{method}  {static} +validateCreationDate ( creationDate : LocalDateTime ) : boolean
+	{method}  {static} +validateId ( id : Long ) : boolean
+	{method}  {static} +validateName ( name : String ) : boolean
+	{method}  {static} +validatePrice ( cost : Integer ) : boolean
+	{method}  {static} +validateType ( type : TicketType ) : boolean
+}
+
+
+interface com.itmo.mrdvd.builder.validators.Validator {
+	{method}  {abstract} +check ( getter : Function , validator : Validator ) : Validator
+	{method}  {abstract} +check ( getter : Function , valueCls : Class , validator : Predicate ) : Validator
+	{method}  {abstract} +validate ( obj : Object ) : boolean
+}
+
+
+
+
+com.itmo.mrdvd.builder.validators.CoordinatesValidator --|>  com.itmo.mrdvd.builder.validators.ObjectValidator
+com.itmo.mrdvd.builder.validators.EventValidator --|>  com.itmo.mrdvd.builder.validators.ObjectValidator
+com.itmo.mrdvd.builder.validators.ObjectValidator "1" o-- "0..*"  com.itmo.mrdvd.builder.validators.Validator : validators
+com.itmo.mrdvd.builder.validators.ObjectValidator ..|>  com.itmo.mrdvd.builder.validators.Validator
+com.itmo.mrdvd.builder.validators.TicketValidator --|>  com.itmo.mrdvd.builder.validators.ObjectValidator
+
+@enduml
